@@ -19,8 +19,7 @@ struct RadarNotificationContent: Sendable, Hashable {
     init?(from metadata: [String: RadarMetadataValue]) {
         // required fields
         guard let notificationText = metadata["radar:notificationText"]?.string(),
-            let campaignId = metadata["radar:campaignId"]?.string()
-        else {
+              let campaignId = metadata["radar:campaignId"]?.string() else {
             return nil
         }
         self.notificationText = notificationText
@@ -48,8 +47,7 @@ struct RadarNotificationContent: Sendable, Hashable {
         content.userInfo["campaignId"] = campaignId
         content.userInfo["url"] = notificationURL
         if let data = campaignMetadata?.data(using: .utf8),
-            let json = try? JSONSerialization.jsonObject(with: data)
-        {
+           let json = try? JSONSerialization.jsonObject(with: data) {
             content.userInfo["campaignMetadata"] = json
         }
 
@@ -62,8 +60,7 @@ extension RadarGeofence_Swift {
         let identifier = GEOFENCE_NOTIFICATION_PREFIX + _id
         // Content
         guard let metadata = metadata,
-            let metadataContent = RadarNotificationContent(from: metadata)
-        else {
+              let metadataContent = RadarNotificationContent(from: metadata) else {
             return nil
         }
         guard let geofenceData = try? JSONEncoder().encode(self) else {

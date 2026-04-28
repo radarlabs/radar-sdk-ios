@@ -8,7 +8,6 @@
 
 import Foundation
 import Testing
-
 @testable import RadarSDK
 
 extension RadarSerializedTests {
@@ -31,10 +30,8 @@ extension RadarSerializedTests {
 
         // MARK: - Helpers
 
-        func makeCircleGeofence(
-            id: String, lat: Double, lng: Double, radius: Double,
-            dwellThreshold: Double? = nil, stopDetection: Bool? = nil
-        ) -> RadarGeofenceSwift {
+        func makeCircleGeofence(id: String, lat: Double, lng: Double, radius: Double,
+                                dwellThreshold: Double? = nil, stopDetection: Bool? = nil) -> RadarGeofenceSwift {
             let center = RadarCoordinateSwift(latitude: lat, longitude: lng)
 
             return RadarGeofenceSwift(
@@ -44,10 +41,8 @@ extension RadarSerializedTests {
             )
         }
 
-        func makePolygonGeofence(
-            id: String, coords: [RadarCoordinateSwift],
-            center: RadarCoordinateSwift, radius: Double
-        ) -> RadarGeofenceSwift {
+        func makePolygonGeofence(id: String, coords: [RadarCoordinateSwift],
+                                 center: RadarCoordinateSwift, radius: Double) -> RadarGeofenceSwift {
 
             return RadarGeofenceSwift(
                 id: id, description: "Test Polygon", tag: "test", externalId: id,
@@ -79,10 +74,10 @@ extension RadarSerializedTests {
                 "_id": "test_user",
                 "location": [
                     "type": "Point",
-                    "coordinates": [testLng, testLat],
+                    "coordinates": [testLng, testLat]
                 ],
                 "geofences": [] as [[String: Any]],
-                "beacons": [] as [[String: Any]],
+                "beacons": [] as [[String: Any]]
             ]
             if let placeId = placeId {
                 dict["place"] = [
@@ -90,8 +85,8 @@ extension RadarSerializedTests {
                     "name": "Test Place",
                     "location": [
                         "type": "Point",
-                        "coordinates": [testLng, testLat],
-                    ],
+                        "coordinates": [testLng, testLat]
+                    ]
                 ]
             }
             return RadarUser(object: dict as NSDictionary)!

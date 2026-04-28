@@ -6,14 +6,14 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import CoreLocation
 import Foundation
+import CoreLocation
 
 @objc(RadarOfflineEventManager) @objcMembers
 class RadarOfflineEventManager: NSObject {
 
     private static let queue = DispatchQueue(label: "io.radar.offlineEventManager")
-    nonisolated(unsafe) private static var _offlineGeofenceIds: Set<String>? = nil
+    nonisolated(unsafe)  private static var _offlineGeofenceIds: Set<String>? = nil
 
     private static var offlineGeofenceIds: Set<String>? {
         get { queue.sync { _offlineGeofenceIds } }
@@ -70,7 +70,7 @@ class RadarOfflineEventManager: NSObject {
         }
 
         let currentGeofences = RadarSyncManager.getGeofences(for: location)
-        offlineGeofenceIds = Set(currentGeofences.map { $0.id })
+        offlineGeofenceIds = Set(currentGeofences.map { $0.id})
 
         let user = buildSyntheticUser(location: location, geofences: currentGeofences)
         completionHandler(events, user, location)
@@ -106,8 +106,7 @@ class RadarOfflineEventManager: NSObject {
             RadarLogger.shared.debug("OfflineEventManager: Ramping up tracking options")
             return RadarRemoteTrackingOptions.trackingOptions(forKey: "inGeofence", in: remoteOptions)
         } else if let onTripOptions = RadarRemoteTrackingOptions.trackingOptions(forKey: "onTrip", in: remoteOptions),
-            Radar.getTripOptions() != nil
-        {
+                  Radar.getTripOptions() != nil {
             RadarLogger.shared.debug("OfflineEventManager: Using on-trip tracking options")
             return onTripOptions
         } else {
@@ -147,7 +146,7 @@ class RadarOfflineEventManager: NSObject {
             ],
             "locationAccuracy": location.horizontalAccuracy,
             "replayed": false,
-            "metadata": ["offline": true],
+            "metadata": ["offline": true]
         ]
         return RadarSwift.bridge?.createEvent(dict: eventDict)
     }
@@ -155,7 +154,7 @@ class RadarOfflineEventManager: NSObject {
     private static func geofenceDictionary(from geofence: RadarGeofenceSwift) -> [String: Any] {
         var dict: [String: Any] = [
             "_id": geofence.id,
-            "description": geofence.description,
+            "description": geofence.description
         ]
         if let tag = geofence.tag { dict["tag"] = tag }
         if let externalId = geofence.externalId { dict["externalId"] = externalId }

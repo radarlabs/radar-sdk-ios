@@ -8,7 +8,7 @@
 import Foundation
 
 @objc(RadarInAppMessage_Swift) @objcMembers
-public final class RadarInAppMessage_Swift: RadarInAppMessage {
+public final class RadarInAppMessage_Swift : RadarInAppMessage {
     public struct Text: Sendable {
         public var text: String
         public var color: UIColor
@@ -43,8 +43,7 @@ public final class RadarInAppMessage_Swift: RadarInAppMessage {
     public static override func fromDictionary(_ dict: [String: Any]) -> RadarInAppMessage? {
         // required fields
         guard let title = Text.fromDictionary(dict: dict["title"]),
-            let body = Text.fromDictionary(dict: dict["body"])
-        else {
+              let body = Text.fromDictionary(dict: dict["body"]) else {
             return nil
         }
         // optional fields
@@ -59,9 +58,9 @@ public final class RadarInAppMessage_Swift: RadarInAppMessage {
 
     public static override func fromArray(_ array: Any) -> [RadarInAppMessage] {
         guard let array = array as? [[String: Any]] else {
-            return []
+            return [];
         }
-        return array.compactMap(RadarInAppMessage_Swift.fromDictionary)
+        return array.compactMap(RadarInAppMessage_Swift.fromDictionary);
     }
 
     public override func toDictionary() -> [String: Any] {
@@ -116,10 +115,9 @@ func uiColorToString(_ color: UIColor) -> String {
 
 extension RadarInAppMessage_Swift.Text {
     static func fromDictionary(dict: Any?) -> RadarInAppMessage_Swift.Text? {
-        guard let dict = dict as? [String: String],
-            let text = dict["text"],
-            let color = uiColorFromString(dict["color"])
-        else {
+        guard let dict = dict as? Dictionary<String, String>,
+              let text = dict["text"],
+              let color = uiColorFromString(dict["color"]) else {
             return nil
         }
 
@@ -132,18 +130,17 @@ extension RadarInAppMessage_Swift.Text {
     func toDictionary() -> [String: String] {
         return [
             "text": text,
-            "color": uiColorToString(color),
+            "color": uiColorToString(color)
         ]
     }
 }
 
 extension RadarInAppMessage_Swift.Button {
     static func fromDictionary(dict: Any?) -> RadarInAppMessage_Swift.Button? {
-        guard let dict = dict as? [String: String?],
-            let text = dict["text"] ?? nil,
-            let color = uiColorFromString(dict["color"] ?? nil),
-            let backgroundColor = uiColorFromString(dict["backgroundColor"] ?? nil)
-        else {
+        guard let dict = dict as? Dictionary<String, String?>,
+              let text = dict["text"] ?? nil,
+              let color = uiColorFromString(dict["color"] ?? nil),
+              let backgroundColor = uiColorFromString(dict["backgroundColor"] ?? nil) else {
             return nil
         }
         let deepLink = dict["deepLink"] ?? nil
@@ -157,7 +154,7 @@ extension RadarInAppMessage_Swift.Button {
         var dict = [
             "text": text,
             "color": uiColorToString(color),
-            "backgroundColor": uiColorToString(backgroundColor),
+            "backgroundColor": uiColorToString(backgroundColor)
         ]
         if deepLink != nil {
             dict["deepLink"] = deepLink
@@ -168,10 +165,9 @@ extension RadarInAppMessage_Swift.Button {
 
 extension RadarInAppMessage_Swift.Image {
     static func fromDictionary(dict: Any?) -> RadarInAppMessage_Swift.Image? {
-        guard let dict = dict as? [String: String],
-            let name = dict["name"],
-            let url = dict["url"]
-        else {
+        guard let dict = dict as? Dictionary<String, String>,
+              let name = dict["name"],
+              let url = dict["url"] else {
             return nil
         }
 
@@ -183,7 +179,7 @@ extension RadarInAppMessage_Swift.Image {
     func toDictionary() -> [String: String] {
         return [
             "name": name,
-            "url": url,
+            "url": url
         ]
     }
 }

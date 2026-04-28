@@ -27,13 +27,12 @@ public class RadarInAppMessageManager: NSObject {
 
     func logConversion(name: String, withDuration: Bool = true) {
         guard let messageShownTime = messageShownTime,
-            let message = currentMessage
-        else {
+              let message = currentMessage else {
             return
         }
 
         var metadata: [String: Any] = [:]
-        if withDuration {
+        if (withDuration) {
             metadata["displayDuration"] = Date().timeIntervalSince(messageShownTime)
         }
         let campaignId = message.metadata["radar:campaignId"] as? String
@@ -56,7 +55,7 @@ public class RadarInAppMessageManager: NSObject {
             return
         }
         // check before getting the view that there is no existing IAM shown
-        if view != nil {
+        if (view != nil) {
             RadarLogger.shared.debug("Existing in-app message view, new in-app message ignored")
             return
         }
@@ -85,7 +84,7 @@ public class RadarInAppMessageManager: NSObject {
             }
         }
         // check after getting the view asynchronously that there is no existing IAM shown
-        if view != nil {
+        if (view != nil) {
             RadarLogger.shared.debug("Existing in-app message view, new in-app message ignored")
             return
         }

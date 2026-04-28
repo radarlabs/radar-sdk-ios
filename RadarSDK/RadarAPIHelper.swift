@@ -13,13 +13,9 @@ final class RadarApiHelper: Sendable {
 
         // transform URL
         // turn query into a string of format: "?key=value&key2=value2" or "" if there are no queries
-        let queryString =
-            query.isEmpty
-            ? ""
-            : ("?"
-                + query.compactMap { key, value in
-                    key + "=" + value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-                }.joined(separator: "&"))
+        let queryString = query.isEmpty ? "" : ("?" + query.compactMap { key, value in
+            key + "=" + value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+        }.joined(separator: "&"))
 
         guard let urlObject = URL(string: "\(url)\(queryString)") else {
             // could not turn url into an URL object
@@ -34,7 +30,7 @@ final class RadarApiHelper: Sendable {
             request.addValue(value, forHTTPHeaderField: key)
         }
 
-        if !body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH") {
+        if (!body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH")) {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
 

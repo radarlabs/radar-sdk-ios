@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import CoreLocation
 import Foundation
+import CoreLocation
 
 struct RadarPlaceSwift: Codable, Sendable {
     let id: String
@@ -47,7 +47,7 @@ struct RadarPlaceSwift: Codable, Sendable {
         self.geometryRadius = geometryRadius
     }
 
-    func encode(to encoder: Encoder) throws {
+   func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)

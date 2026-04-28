@@ -8,7 +8,6 @@
 import Foundation
 import Testing
 import UserNotifications
-
 @testable import RadarSDK
 
 extension NotificationPermissions {
@@ -197,7 +196,7 @@ struct RadarNotificationHelperTest {
         ])
 
         await helper.registerGeofenceNotifications(geofences: [
-            makeGeofenceDict(id: "3")
+            makeGeofenceDict(id: "3"),
         ])
 
         let pending = await mockCenter.pendingNotificationRequests()
@@ -221,17 +220,15 @@ struct RadarNotificationHelperTest {
         var registerTasks: [Task<Void, Never>] = []
         var getPendingTasks: [Task<Int, Never>] = []
         for i in 0..<10 {
-            registerTasks.append(
-                Task {
-                    await helper.registerGeofenceNotifications(geofences: [
-                        makeGeofenceDict(id: "\(i)")
-                    ])
-                })
-            getPendingTasks.append(
-                Task {
-                    let delivered = await helper.getDeliveredNotifications()
-                    return delivered.count
-                })
+            registerTasks.append(Task {
+                await helper.registerGeofenceNotifications(geofences: [
+                    makeGeofenceDict(id: "\(i)"),
+                ])
+            })
+            getPendingTasks.append(Task {
+                let delivered = await helper.getDeliveredNotifications()
+                return delivered.count
+            })
         }
 
         for task in registerTasks {

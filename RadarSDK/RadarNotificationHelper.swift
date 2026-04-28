@@ -5,9 +5,9 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import CoreLocation
 import Foundation
 import UserNotifications
+import CoreLocation
 
 @available(iOS 13.0, *)
 protocol NotificationCenterProtocol {
@@ -53,9 +53,8 @@ actor RadarNotificationHelper: NSObject {
         let now = Date()
         let notifications: [UNNotificationRequest] = geofences.compactMap { (geofenceDict) -> UNNotificationRequest? in
             if let json = try? JSONSerialization.data(withJSONObject: geofenceDict),
-                let geofence = try? JSONDecoder().decode(RadarGeofence_Swift.self, from: json),
-                let notification = geofence.toNotificationRequest(now: now)
-            {
+               let geofence = try? JSONDecoder().decode(RadarGeofence_Swift.self, from: json),
+               let notification = geofence.toNotificationRequest(now: now) {
                 return notification
             }
             return nil
@@ -137,10 +136,9 @@ actor RadarNotificationHelper: NSObject {
 
     public func getDeliveredNotifications() async -> [[String: Sendable]] {
         let permissions = await notificationCenter.radarNotificationPermissions()
-        if !permissions.canSendNotification() {
+        if (!permissions.canSendNotification()) {
             if let data = try? JSONEncoder().encode(permissions),
-                let string = String(data: data, encoding: .utf8)
-            {
+               let string = String(data: data, encoding: .utf8) {
                 RadarLogger.debug("NotificationHelper no permission to send notification \(string)")
             }
             return []
@@ -171,8 +169,7 @@ actor RadarNotificationHelper: NSObject {
         RadarLogger.debug("NotificationHelper delivered: \(delivered.map(\.identifier))")
 
         if let data = try? JSONEncoder().encode(Array(delivered)),
-            let json = try? JSONSerialization.jsonObject(with: data) as? [[String: Sendable]]
-        {
+           let json = try? JSONSerialization.jsonObject(with: data) as? [[String: Sendable]] {
             return json
         }
         return []
@@ -207,3 +204,4 @@ actor RadarNotificationHelper: NSObject {
         return String(data: data, encoding: .utf8) ?? ""
     }
 }
+

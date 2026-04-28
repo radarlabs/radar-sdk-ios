@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import CoreLocation
 import Foundation
+import CoreLocation
 
 struct RadarBeaconSwift: Codable, Sendable {
     let id: String
@@ -30,7 +30,7 @@ struct RadarBeaconSwift: Codable, Sendable {
         case geometry
     }
 
-    init(from decoder: Decoder) throws {
+   init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decodeIfPresent(String.self, forKey: .id) ?? ""
         description = try container.decodeIfPresent(String.self, forKey: .description)
@@ -47,10 +47,8 @@ struct RadarBeaconSwift: Codable, Sendable {
         }
     }
 
-    init(
-        id: String, description: String?, tag: String?, externalId: String?,
-        uuid: String, major: String, minor: String, geometry: RadarCoordinateSwift?
-    ) {
+    init(id: String, description: String?, tag: String?, externalId: String?,
+         uuid: String, major: String, minor: String, geometry: RadarCoordinateSwift?) {
         self.id = id
         self.description = description
         self.tag = tag
@@ -61,7 +59,7 @@ struct RadarBeaconSwift: Codable, Sendable {
         self.geometry = geometry
     }
 
-    func encode(to encoder: Encoder) throws {
+   func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encodeIfPresent(description, forKey: .description)

@@ -17,9 +17,8 @@ class RadarRemoteTrackingOptions: NSObject {
 
     init?(dict: [String: Any]) {
         guard let type = dict["type"] as? String,
-            let trackingOptionsDict = dict["trackingOptions"] as? [String: Any],
-            let trackingOptions = RadarTrackingOptions(from: trackingOptionsDict)
-        else {
+              let trackingOptionsDict = dict["trackingOptions"] as? [String: Any],
+              let trackingOptions = RadarTrackingOptions(from: trackingOptionsDict) else {
             return nil
         }
         self.type = type
@@ -42,7 +41,7 @@ class RadarRemoteTrackingOptions: NSObject {
 
     static func from(array: [[String: Any]]?) -> [RadarRemoteTrackingOptions]? {
         guard let array, !array.isEmpty else { return nil }
-        return array.compactMap { RadarRemoteTrackingOptions(dict: $0) }
+        return array.compactMap { RadarRemoteTrackingOptions(dict: $0)}
     }
 
     static func toDictionaries(_ options: [RadarRemoteTrackingOptions]?) -> [[String: Any]]? {
@@ -56,6 +55,6 @@ class RadarRemoteTrackingOptions: NSObject {
     }
 
     static func trackingOptions(forKey key: String, in options: [RadarRemoteTrackingOptions]?) -> RadarTrackingOptions? {
-        return options?.first { $0.type == key }?.trackingOptions
+       return options?.first { $0.type == key }?.trackingOptions
     }
 }

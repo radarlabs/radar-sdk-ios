@@ -5,11 +5,12 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
-import SwiftUI
-import Testing
 
-@testable import RadarSDK
+import Foundation
+import Testing
+@testable
+import RadarSDK
+import SwiftUI
 
 // run tests in series because we want to test UserDefaults.standard, which is a shared instance
 @Suite(.serialized)
@@ -20,11 +21,12 @@ actor RadarSettingsTest {
             return
         }
         userDefaults.dictionaryRepresentation().forEach { key, value in
-            if key.starts(with: "radar-") {
+            if (key.starts(with: "radar-")) {
                 userDefaults.removeObject(forKey: key)
             }
         }
     }
+
 
     @Test("Clones to new UserDefaults on setAppGroup")
     func clonesToNewUserdefaultOnSetAppGroup() {

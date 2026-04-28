@@ -6,10 +6,9 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import CoreLocation
 import Foundation
 import Testing
-
+import CoreLocation
 @testable import RadarSDK
 
 extension RadarSerializedTests {
@@ -68,8 +67,8 @@ extension RadarSerializedTests {
                     "showBlueBar": false,
                     "syncGeofences": true,
                     "batchInterval": 0,
-                    "batchSize": 0,
-                ],
+                    "batchSize": 0
+                ]
             ]
             if let geofenceTags {
                 dict["geofenceTags"] = geofenceTags
@@ -124,7 +123,7 @@ extension RadarSerializedTests {
                 "remoteTrackingOptions": [
                     makeRemoteTrackingOptions(type: "default", preset: "responsive"),
                     makeRemoteTrackingOptions(type: "inGeofence", preset: "continuous", geofenceTags: ["neighborhood"]),
-                ],
+                ]
             ])
             RadarSettings.sdkConfiguration = config
 
@@ -139,7 +138,7 @@ extension RadarSerializedTests {
                 "remoteTrackingOptions": [
                     makeRemoteTrackingOptions(type: "default", preset: "responsive"),
                     makeRemoteTrackingOptions(type: "inGeofence", preset: "continuous", geofenceTags: ["neighborhood"]),
-                ],
+                ]
             ])
             RadarSettings.sdkConfiguration = config
 
@@ -150,7 +149,7 @@ extension RadarSerializedTests {
         @Test("updateTrackingOptions returns nil when no remoteTrackingOptions")
         func updateTrackingOptions_noRemoteOptions() {
             let config = RadarSdkConfiguration(dict: [
-                "useOfflineRTOUpdates": false
+                "useOfflineRTOUpdates": false,
             ])
             RadarSettings.sdkConfiguration = config
 
@@ -165,7 +164,7 @@ extension RadarSerializedTests {
                 "remoteTrackingOptions": [
                     makeRemoteTrackingOptions(type: "default", preset: "responsive"),
                     makeRemoteTrackingOptions(type: "inGeofence", preset: "continuous", geofenceTags: ["neighborhood"]),
-                ],
+                ]
             ])
             RadarSettings.sdkConfiguration = config
 
@@ -181,7 +180,7 @@ extension RadarSerializedTests {
                     makeRemoteTrackingOptions(type: "default", preset: "responsive"),
                     makeRemoteTrackingOptions(type: "inGeofence", preset: "continuous", geofenceTags: ["neighborhood"]),
                     makeRemoteTrackingOptions(type: "onTrip", preset: "continuous"),
-                ],
+                ]
             ])
             RadarSettings.sdkConfiguration = config
 
@@ -208,7 +207,7 @@ extension RadarSerializedTests {
                 "remoteTrackingOptions": [
                     makeRemoteTrackingOptions(type: "default", preset: "responsive"),
                     makeRemoteTrackingOptions(type: "inGeofence", preset: "continuous", geofenceTags: ["neighborhood"]),
-                ],
+                ]
             ])
             RadarSettings.sdkConfiguration = config
 
@@ -229,7 +228,7 @@ extension RadarSerializedTests {
                 "remoteTrackingOptions": [
                     makeRemoteTrackingOptions(type: "default", preset: "responsive"),
                     makeRemoteTrackingOptions(type: "inGeofence", preset: "continuous", geofenceTags: ["neighborhood"]),
-                ],
+                ]
             ])
             RadarSettings.sdkConfiguration = config
 
@@ -252,7 +251,7 @@ extension RadarSerializedTests {
 
             await withCheckedContinuation { continuation in
                 RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in
-                    #expect(events.count > 0 || user == nil)  // events generated but user/event creation depends on bridge
+                    #expect(events.count > 0 || user == nil) // events generated but user/event creation depends on bridge
                     continuation.resume()
                 }
             }
@@ -324,13 +323,13 @@ extension RadarSerializedTests {
             // Bridge is nil so no RadarEvent objects are created, but we can verify
             // the exit/entry detection ran by checking offlineGeofenceIds was repopulated.
             // Call generateEvents twice: first repopulates, second should show no change.
-            RadarOfflineEventManager.generateEvents(location: location) { _, _, _ in }
+            RadarOfflineEventManager.generateEvents(location: location) {_, _, _ in }
 
             var postResetEvents: [RadarEvent] = []
             RadarOfflineEventManager.generateEvents(location: location) { events, _, _ in
                 postResetEvents = events
             }
-            #expect(postResetEvents.isEmpty)  // no change on second call proves state was repopulated
+            #expect(postResetEvents.isEmpty) // no change on second call proves state was repopulated
         }
     }
 }

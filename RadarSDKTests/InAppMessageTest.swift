@@ -6,14 +6,14 @@
 //
 
 import Foundation
-import SwiftUI
 import Testing
-
-@testable import RadarSDK
+@testable
+import RadarSDK
+import SwiftUI
 
 @available(iOS 13.0, *)
 @MainActor
-class MockRadarInAppMessageDelegate: NSObject, RadarInAppMessageProtocol {
+class MockRadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     weak var manager: RadarInAppMessageManager?
     init(manager: RadarInAppMessageManager) {
         self.manager = manager
@@ -23,7 +23,7 @@ class MockRadarInAppMessageDelegate: NSObject, RadarInAppMessageProtocol {
     var showInAppMessage = false
     func onNewInAppMessage(_ message: RadarSDK.RadarInAppMessage) {
         onNewInAppMessageCounter += 1
-        if showInAppMessage {
+        if (showInAppMessage) {
             Task {
                 await manager?.showInAppMessage(message)
             }
@@ -46,11 +46,9 @@ class MockRadarInAppMessageDelegate: NSObject, RadarInAppMessageProtocol {
     var createInAppMessageViewReturnValue: UIViewController = UIViewController()
     var viewOnDismiss: (() -> Void)?
     var viewOnInAppMessageClicked: (() -> Void)?
-    func createInAppMessageView(
-        _ message: RadarSDK.RadarInAppMessage,
-        onDismiss: @escaping () -> Void,
-        onInAppMessageClicked: @escaping () -> Void
-    ) async -> UIViewController {
+    func createInAppMessageView(_ message: RadarSDK.RadarInAppMessage,
+                                onDismiss: @escaping () -> Void,
+                                onInAppMessageClicked: @escaping () -> Void) async -> UIViewController {
         createInAppMessageViewCounter += 1
         viewOnDismiss = onDismiss
         viewOnInAppMessageClicked = onInAppMessageClicked
@@ -58,7 +56,7 @@ class MockRadarInAppMessageDelegate: NSObject, RadarInAppMessageProtocol {
     }
 }
 
-class MockWindow: UIWindow {
+class MockWindow : UIWindow {
     var addSubviewCounter = 0
     var continuation: CheckedContinuation<Void, Never>?
     override func addSubview(_ view: UIView) {
@@ -68,7 +66,7 @@ class MockWindow: UIWindow {
     }
 
     func waitForSubviewAddition() async {
-        if addSubviewCounter > 0 {
+        if (addSubviewCounter > 0) {
             return
         }
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
@@ -84,11 +82,11 @@ actor InAppMessageTest {
     let message = RadarInAppMessage.fromDictionary([
         "title": [
             "text": "This is the title",
-            "color": "#ff0000",
+            "color": "#ff0000"
         ],
         "body": [
             "text": "This is a demo message.",
-            "color": "#00ff00",
+            "color": "#00ff00"
         ],
         "button": [
             "text": "Buy it",
@@ -97,11 +95,11 @@ actor InAppMessageTest {
         ],
         "image": [
             "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
-            "name": "image.jpeg",
+            "name": "image.jpeg"
         ],
         "metadata": [
             "campaignId": "1234"
-        ],
+        ]
     ])
 
     @Test("In app message construction")
@@ -116,7 +114,7 @@ actor InAppMessageTest {
         #expect(message!.body.color == UIColor(red: 0, green: 1, blue: 0, alpha: 1))
         #expect(message!.button?.text == "Buy it")
         #expect(message!.button?.color == UIColor(red: 0, green: 0, blue: 1, alpha: 1))
-        #expect(message!.button?.backgroundColor == UIColor(red: 0xeb / 255, green: 0x00 / 255, blue: 0x83 / 255, alpha: 1))
+        #expect(message!.button?.backgroundColor == UIColor(red: 0xeb/255, green: 0x00/255, blue: 0x83/255, alpha: 1))
         #expect(message!.image?.name == "image.jpeg")
         #expect(message!.image?.url == "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg")
         #expect(message!.metadata["campaignId"] as? String == "1234")
@@ -153,6 +151,7 @@ actor InAppMessageTest {
         #expect(metadata != nil)
         #expect(metadata!["campaignId"] as? String == "1234")
     }
+
 
     @Test("In app message received calls create view")
     @MainActor
