@@ -17,6 +17,7 @@
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
+#import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarSDKFraudProtocol.h"
@@ -79,24 +80,24 @@
         });
     }
     
-    [[RadarAPIClient sharedInstance]
-     getConfigForUsage:@"verify"
-     verified:YES
-     completionHandler:^(RadarStatus status, RadarConfig *_Nullable config) {
+    BOOL autoFailover = [RadarSettings initializeOptions].trackVerifiedAutoFailover;
+
+    void (^continueWithConfig)(RadarStatus, RadarConfig * _Nullable, NSString * _Nullable) =
+    ^(RadarStatus status, RadarConfig * _Nullable config, NSString * _Nullable chosenVerifiedHost) {
         if (status != RadarStatusSuccess || !config) {
             [RadarUtilsDeprecated runOnMainThread:^{
                 if (status != RadarStatusSuccess) {
                     [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
                 }
-                
+
                 if (completionHandler) {
                     completionHandler(status, nil);
                 }
             }];
-            
+
             return;
         }
-        
+
         [[RadarLocationManager sharedInstance]
          getLocationWithDesiredAccuracy:desiredAccuracy
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
@@ -169,12 +170,11 @@
                  indoorScan:nil
                  verified:YES
                  fraudPayload:fraudPayload
-                 // -- payload encryption --
-                 // fraudKeyVersion:fraudKeyVersion
                  expectedCountryCode:self.expectedCountryCode
                  expectedStateCode:self.expectedStateCode
                  reason:reason
                  transactionId:transactionId
+                 verifiedHostOverride:chosenVerifiedHost
                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                      RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                      RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
@@ -244,7 +244,41 @@
                 }
             }];
         }];
-    }];
+    };
+
+    if (autoFailover) {
+        [[RadarAPIClient sharedInstance]
+         getConfigForUsage:@"verify"
+         verified:YES
+         verifiedHostOverride:nil
+         completionHandler:^(RadarStatus status, RadarConfig * _Nullable config) {
+            BOOL primaryRadarResponse = (status == RadarStatusSuccess && config && config.meta);
+            if (primaryRadarResponse) {
+                continueWithConfig(status, config, nil);
+                return;
+            }
+
+            NSString *secondary = [RadarSettings defaultVerifiedHostSecondary];
+            [[RadarLogger sharedInstance]
+                logWithLevel:RadarLogLevelDebug
+                     message:[NSString stringWithFormat:@"trackVerified: primary verified host returned non-Radar response, retrying on secondary | secondary = %@", secondary]];
+
+            [[RadarAPIClient sharedInstance]
+             getConfigForUsage:@"verify"
+             verified:YES
+             verifiedHostOverride:secondary
+             completionHandler:^(RadarStatus status2, RadarConfig * _Nullable config2) {
+                continueWithConfig(status2, config2, secondary);
+            }];
+        }];
+    } else {
+        [[RadarAPIClient sharedInstance]
+         getConfigForUsage:@"verify"
+         verified:YES
+         completionHandler:^(RadarStatus status, RadarConfig * _Nullable config) {
+            continueWithConfig(status, config, nil);
+        }];
+    }
 }
 
 - (void)intervalFired {

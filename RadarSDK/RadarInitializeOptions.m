@@ -18,6 +18,7 @@
         _autoLogNotificationConversions = NO;
         _autoHandleNotificationDeepLinks = NO;
         _silentPush = NO;
+        _trackVerifiedAutoFailover = NO;
     }
     return self;
 }
@@ -27,6 +28,7 @@
     dict[@"autoLogNotificationConversions"] = @(_autoLogNotificationConversions);
     dict[@"autoHandleNotificationDeepLinks"] = @(_autoHandleNotificationDeepLinks);
     dict[@"silentPush"] = @(_silentPush);
+    dict[@"trackVerifiedAutoFailover"] = @(_trackVerifiedAutoFailover);
     return dict;
 }
 
@@ -36,6 +38,7 @@
         _autoLogNotificationConversions = [dict[@"autoLogNotificationConversions"] boolValue];
         _autoHandleNotificationDeepLinks = [dict[@"autoHandleNotificationDeepLinks"] boolValue];
         _silentPush = [dict[@"silentPush"] boolValue];
+        _trackVerifiedAutoFailover = [dict[@"trackVerifiedAutoFailover"] boolValue];
     }
     return self;
 }

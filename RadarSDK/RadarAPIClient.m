@@ -102,6 +102,13 @@
 }
 
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
+    [self getConfigForUsage:usage verified:verified verifiedHostOverride:nil completionHandler:completionHandler];
+}
+
+- (void)getConfigForUsage:(NSString *_Nullable)usage
+                 verified:(BOOL)verified
+     verifiedHostOverride:(NSString *_Nullable)verifiedHostOverride
+        completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil);
@@ -127,7 +134,7 @@
     [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
     [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]];
 
-    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
+    NSString *host = verified ? (verifiedHostOverride ?: [RadarSettings verifiedHost]) : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
@@ -228,6 +235,38 @@
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
             transactionId:(NSString * _Nullable)transactionId
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [self trackWithLocation:location
+                    stopped:stopped
+                 foreground:foreground
+                     source:source
+                   replayed:replayed
+                    beacons:beacons
+                 indoorScan:indoorScan
+                   verified:verified
+               fraudPayload:fraudPayload
+        expectedCountryCode:expectedCountryCode
+          expectedStateCode:expectedStateCode
+                     reason:reason
+              transactionId:transactionId
+       verifiedHostOverride:nil
+          completionHandler:completionHandler];
+}
+
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
+                  stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+             indoorScan:(NSString *_Nullable)indoorScan
+                 verified:(BOOL)verified
+            fraudPayload:(NSString * _Nullable)fraudPayload
+      expectedCountryCode:(NSString * _Nullable)expectedCountryCode
+        expectedStateCode:(NSString * _Nullable)expectedStateCode
+                   reason:(NSString * _Nullable)reason
+            transactionId:(NSString * _Nullable)transactionId
+     verifiedHostOverride:(NSString * _Nullable)verifiedHostOverride
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -443,6 +482,7 @@
                                                             location:location
                                                                 source:source
                                                             verified:verified
+                                                   verifiedHostOverride:verifiedHostOverride
                                                         publishableKey:publishableKey
                                                 notificationsRemaining:notificationsRemaining
                                                 locationMetadata:locationMetadata
@@ -455,6 +495,7 @@
                                                         location:location
                                                             source:source
                                                         verified:verified
+                                               verifiedHostOverride:verifiedHostOverride
                                                     publishableKey:publishableKey
                                             notificationsRemaining:@[]
                                             locationMetadata:locationMetadata
@@ -468,6 +509,7 @@
                         location:(CLLocation *)location
                         source:(RadarLocationSource)source
                         verified:(BOOL)verified
+              verifiedHostOverride:(NSString *_Nullable)verifiedHostOverride
                 publishableKey:(NSString *)publishableKey
                 notificationsRemaining:(NSArray *)notificationsRemaining
                 locationMetadata:(NSDictionary *)locationMetadata
@@ -492,7 +534,7 @@
         return;
     }
 
-    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
+    NSString *host = verified ? (verifiedHostOverride ?: [RadarSettings verifiedHost]) : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
