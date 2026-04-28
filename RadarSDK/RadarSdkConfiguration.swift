@@ -21,13 +21,13 @@ extension RadarLogLevel: Codable {
 
     func toString() -> String {
         switch self {
-            case .none: return "none"
-            case .error: return "error"
-            case .warning: return "warning"
-            case .info: return "info"
-            case .debug: return "debug"
-            @unknown default:
-                return "none"
+        case .none: return "none"
+        case .error: return "error"
+        case .warning: return "warning"
+        case .info: return "info"
+        case .debug: return "debug"
+        @unknown default:
+            return "none"
         }
     }
 
@@ -120,7 +120,7 @@ class RadarSdkConfiguration: NSObject {
             "skipForegroundCheck": skipForegroundCheck,
             "useOfflineRTOUpdates": useOfflineRTOUpdates,
             "offlineEventGenerationEnabled": offlineEventGenerationEnabled,
-            "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any
+            "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any,
         ]
     }
 }

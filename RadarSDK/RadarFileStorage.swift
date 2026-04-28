@@ -35,7 +35,6 @@ final class RadarFileStorage<T: Codable & Sendable>: @unchecked Sendable {
         self.fileURL = dir.appendingPathComponent(fileName)
     }
 
-
     func read() -> T? {
         queue.sync {
             if cacheLoaded { return cache }

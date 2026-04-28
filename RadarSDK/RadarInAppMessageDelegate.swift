@@ -12,11 +12,11 @@ import SwiftUI
 @objc(RadarInAppMessageDelegate_Swift)
 @objcMembers
 @MainActor
-open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
+open class RadarInAppMessageDelegate: NSObject, RadarInAppMessageProtocol {
 
     @available(iOS 13.0, *)
     public static func loadImage(_ url: String) async -> UIImage? {
-        if (url.isEmpty) {
+        if url.isEmpty {
             return nil
         }
         do {
@@ -32,7 +32,9 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
     /**
      Returns the view controller for the message to show, can be overwritten to display a custom view
      */
-    open func createInAppMessageView(_ message: RadarInAppMessage, onDismiss: @escaping () -> Void, onInAppMessageClicked: @escaping () -> Void, completionHandler: @escaping (UIViewController) -> Void) {
+    open func createInAppMessageView(
+        _ message: RadarInAppMessage, onDismiss: @escaping () -> Void, onInAppMessageClicked: @escaping () -> Void, completionHandler: @escaping (UIViewController) -> Void
+    ) {
         Task {
             guard let message = message as? RadarInAppMessage_Swift else {
                 RadarLogger.shared.debug("RadarInAppMessage is not a RadarInAppMessage_Swift instance")
@@ -54,7 +56,8 @@ open class RadarInAppMessageDelegate : NSObject, RadarInAppMessageProtocol {
             return
         }
         if let urlString = message.button?.deepLink,
-           let url = URL(string: urlString) {
+            let url = URL(string: urlString)
+        {
             UIApplication.shared.open(url)
         }
     }

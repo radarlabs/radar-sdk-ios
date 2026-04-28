@@ -82,7 +82,7 @@ internal class RadarSettings: NSObject {
         var sessionIdSeconds: Double = RadarUserDefaults.double(forKey: .SessionId)
 
         let sdkConfiguration = RadarSettings.sdkConfiguration
-        if (sdkConfiguration?.extendFlushReplays ?? false) {
+        if sdkConfiguration?.extendFlushReplays ?? false {
             RadarLogger.shared.info("Flushing replays from updateSessionId()", type: .sdkCall)
             // TODO: call swift RadarReplayBuffer when implemented
             RadarSwift.bridge?.flushReplays()
@@ -109,7 +109,7 @@ internal class RadarSettings: NSObject {
         get { return RadarUserDefaults.string(forKey: .UserId) }
         set {
             let oldUserId = RadarUserDefaults.string(forKey: .UserId)
-            if (oldUserId != nil && oldUserId != newValue) {
+            if oldUserId != nil && oldUserId != newValue {
                 RadarSettings.id = nil
             }
             RadarUserDefaults.set(newValue, forKey: .UserId)
@@ -210,7 +210,7 @@ internal class RadarSettings: NSObject {
             RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .SdkConfiguration)
 
             if let newValue = newValue {
-                logLevel = newValue.logLevel;
+                logLevel = newValue.logLevel
                 RadarSwift.bridge?.setLogBufferPersistantLog(newValue.useLogPersistence)
             } else {
                 RadarSwift.bridge?.setLogBufferPersistantLog(false)
@@ -225,13 +225,13 @@ internal class RadarSettings: NSObject {
                     return .debug
                 } else {
                     #if DEBUG
-                    return .debug;
+                        return .debug
                     #else
-                    return .none
+                        return .none
                     #endif
                 }
             }
-            return RadarLogLevel(rawValue: RadarUserDefaults.integer(forKey: .LogLevel)) ?? .none;
+            return RadarLogLevel(rawValue: RadarUserDefaults.integer(forKey: .LogLevel)) ?? .none
         }
         set { RadarUserDefaults.set(newValue.rawValue, forKey: .LogLevel) }
     }
@@ -242,7 +242,7 @@ internal class RadarSettings: NSObject {
     }
 
     public static var host: String {
-        get { return RadarUserDefaults.string(forKey: .Host) ?? DefaultHost }
+        return RadarUserDefaults.string(forKey: .Host) ?? DefaultHost
     }
 
     public static func updateLastTrackedTime() {

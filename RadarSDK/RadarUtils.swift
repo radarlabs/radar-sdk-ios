@@ -6,10 +6,10 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
-import UIKit
-import SystemConfiguration
 import CoreTelephony
+import Foundation
+import SystemConfiguration
+import UIKit
 
 let SDK_VERSION = "3.31.0"
 
@@ -80,7 +80,8 @@ class RadarUtils: NSObject {
         }
 
         guard let carrierTypes = CTTelephonyNetworkInfo().serviceCurrentRadioAccessTechnology,
-              !carrierTypes.isEmpty else {
+            !carrierTypes.isEmpty
+        else {
             return .unknown
         }
 
@@ -104,31 +105,32 @@ class RadarUtils: NSObject {
     }
 
     static var appInfo: [String: String] {
-        get {
-            var info = Bundle.main.infoDictionary ?? [:]
-            info.merge(Bundle.main.localizedInfoDictionary ?? [:]) { (_, new) in new }
+        var info = Bundle.main.infoDictionary ?? [:]
+        info.merge(Bundle.main.localizedInfoDictionary ?? [:]) { (_, new) in new }
 
-            return info.isEmpty ? [:] : [
+        return info.isEmpty
+            ? [:]
+            : [
                 "name": info["CFBundleDisplayName"] as? String ?? "",
                 "version": info["CFBundleShortVersionString"] as? String ?? "",
                 "build": info["CFBundleVersion"] as? String ?? "",
-                "namespace": Bundle.main.bundleIdentifier ?? ""
+                "namespace": Bundle.main.bundleIdentifier ?? "",
             ]
-        }
     }
 
-#if targetEnvironment(simulator)
-    static let isSimulator: Bool = true
-#else
-    static let isSimulator: Bool = false
-#endif
+    #if targetEnvironment(simulator)
+        static let isSimulator: Bool = true
+    #else
+        static let isSimulator: Bool = false
+    #endif
 
     static let locationBackgroundMode: Bool = {
         guard let info = Bundle.main.infoDictionary,
-            let backgroundModes = info["UIBackgroundModes"] as? [String] else {
+            let backgroundModes = info["UIBackgroundModes"] as? [String]
+        else {
             return false
         }
-        return backgroundModes.contains("location");
+        return backgroundModes.contains("location")
     }()
 
     static var locationAuthorization: String {
@@ -141,36 +143,34 @@ class RadarUtils: NSObject {
         }
         switch status {
         case .authorizedWhenInUse:
-            return "GRANTED_FOREGROUND";
+            return "GRANTED_FOREGROUND"
         case .authorizedAlways:
-            return "GRANTED_BACKGROUND";
+            return "GRANTED_BACKGROUND"
         case .denied:
-            return "DENIED";
+            return "DENIED"
         case .restricted:
-            return "DENIED";
+            return "DENIED"
         case .notDetermined:
-            return "NOT_DETERMINED";
+            return "NOT_DETERMINED"
         @unknown default:
-            return "NOT_DETERMINED";
+            return "NOT_DETERMINED"
         }
     }
 
     static var locationAccuracyAuthorization: String {
-        get {
-            if #available(iOS 14.0, *) {
-                let locationManager = CLLocationManager()
-                let accuracy = locationManager.accuracyAuthorization
-                switch accuracy {
-                case .reducedAccuracy:
-                    return "REDUCED"
-                case .fullAccuracy:
-                    return "FULL"
-                @unknown default:
-                    return "FULL"
-                }
-            } else {
+        if #available(iOS 14.0, *) {
+            let locationManager = CLLocationManager()
+            let accuracy = locationManager.accuracyAuthorization
+            switch accuracy {
+            case .reducedAccuracy:
+                return "REDUCED"
+            case .fullAccuracy:
+                return "FULL"
+            @unknown default:
                 return "FULL"
             }
+        } else {
+            return "FULL"
         }
     }
 
@@ -250,7 +250,8 @@ internal extension CLLocation {
 
     static func from(dict: [String: Any]) -> CLLocation? {
         guard let latitude = dict["latitude"] as? CLLocationDegrees,
-              let longitude = dict["longitude"] as? CLLocationDegrees else {
+            let longitude = dict["longitude"] as? CLLocationDegrees
+        else {
             return nil
         }
         let horizontalAccuracy = dict["horizontalAccuracy"] as? CLLocationAccuracy ?? 0
