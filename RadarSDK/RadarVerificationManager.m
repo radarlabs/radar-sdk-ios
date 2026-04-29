@@ -260,7 +260,7 @@
 
             NSString *secondary = [RadarSettings defaultVerifiedHostSecondary];
             [[RadarLogger sharedInstance]
-                logWithLevel:RadarLogLevelDebug
+                logWithLevel:RadarLogLevelInfo
                      message:[NSString stringWithFormat:@"trackVerified: primary verified host returned non-Radar response, retrying on secondary | secondary = %@", secondary]];
 
             [[RadarAPIClient sharedInstance]
