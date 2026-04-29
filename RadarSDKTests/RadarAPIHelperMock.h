@@ -22,10 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSDictionary *lastHeaders;
 @property (nonatomic, strong, nullable) NSDictionary *lastParams;
 
-// Ordered history of every URL the mock was asked to request, for tests
-// that need to assert the full call sequence (e.g. failover behavior).
-@property (nonatomic, strong, nonnull) NSMutableArray<NSString *> *urlHistory;
-
 - (void)setMockResponse:(NSDictionary *)response forMethod:(NSString *)urlString;
 - (void)setMockStatus:(RadarStatus)mockStatus forMethod:(NSString *)urlString;
 - (void)setMockStatus:(RadarStatus)mockStatus response:(NSDictionary*)response forMethod:(NSString *)urlString;
