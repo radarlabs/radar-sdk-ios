@@ -4,4 +4,5 @@
 
 #import "RadarSyncTestHelper.h"
 #import "../RadarSDK/RadarAPIClient.h"
+#import "../RadarSDK/RadarVerificationManager.h"
 #import "RadarAPIHelperMock.h"

@@ -22,6 +22,7 @@
     if (self) {
         self.mockResponses = [NSMutableDictionary new];
         self.mockStatuses = [NSMutableDictionary new];
+        self.urlHistory = [NSMutableArray new];
     }
 
     return self;
@@ -40,6 +41,7 @@
     self.lastUrl = url;
     self.lastHeaders = headers;
     self.lastParams = params;
+    [self.urlHistory addObject:url];
     
     NSDictionary *response = self.mockResponses[url];
     if (response == nil) {
