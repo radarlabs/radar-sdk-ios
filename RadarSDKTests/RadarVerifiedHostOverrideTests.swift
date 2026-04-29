@@ -5,6 +5,7 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import XCTest
 @testable import RadarSDK
 
@@ -66,6 +67,93 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
         let url = apiHelperMock.lastUrl ?? ""
         XCTAssertFalse(url.hasPrefix(secondary), "non-verified request must not use override; got \(url)")
         XCTAssertTrue(url.hasPrefix(RadarSettings.DefaultHost), "expected standard host for non-verified, got \(url)")
+    }
+
+    // MARK: - trackWithLocation
+
+    func test_track_verified_withOverride_usesSecondaryHost() {
+        let exp = expectation(description: "track completes")
+        let secondary = RadarSettings.defaultVerifiedHostSecondary
+        let location = CLLocation(latitude: 40.0, longitude: -73.0)
+        RadarAPIClient.sharedInstance().track(
+            with: location,
+            stopped: false,
+            foreground: true,
+            source: .foregroundLocation,
+            replayed: false,
+            beacons: nil,
+            indoorScan: nil,
+            verified: true,
+            fraudPayload: nil,
+            expectedCountryCode: nil,
+            expectedStateCode: nil,
+            reason: nil,
+            transactionId: nil,
+            verifiedHostOverride: secondary
+        ) { _, _, _, _, _, _, _ in
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1)
+
+        let url = apiHelperMock.lastUrl ?? ""
+        XCTAssertTrue(url.hasPrefix(secondary), "expected secondary verified host on track, got \(url)")
+        XCTAssertTrue(url.contains("/v1/track"), "expected /v1/track path, got \(url)")
+    }
+
+    func test_track_verified_noOverride_usesPrimaryHost() {
+        let exp = expectation(description: "track completes")
+        let location = CLLocation(latitude: 40.0, longitude: -73.0)
+        RadarAPIClient.sharedInstance().track(
+            with: location,
+            stopped: false,
+            foreground: true,
+            source: .foregroundLocation,
+            replayed: false,
+            beacons: nil,
+            indoorScan: nil,
+            verified: true,
+            fraudPayload: nil,
+            expectedCountryCode: nil,
+            expectedStateCode: nil,
+            reason: nil,
+            transactionId: nil,
+            verifiedHostOverride: nil
+        ) { _, _, _, _, _, _, _ in
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1)
+
+        let url = apiHelperMock.lastUrl ?? ""
+        XCTAssertTrue(url.hasPrefix(RadarSettings.DefaultVerifiedHost), "expected primary verified host on track, got \(url)")
+    }
+
+    func test_track_nonVerified_ignoresOverride() {
+        let exp = expectation(description: "track completes")
+        let secondary = RadarSettings.defaultVerifiedHostSecondary
+        let location = CLLocation(latitude: 40.0, longitude: -73.0)
+        RadarAPIClient.sharedInstance().track(
+            with: location,
+            stopped: false,
+            foreground: true,
+            source: .foregroundLocation,
+            replayed: false,
+            beacons: nil,
+            indoorScan: nil,
+            verified: false,
+            fraudPayload: nil,
+            expectedCountryCode: nil,
+            expectedStateCode: nil,
+            reason: nil,
+            transactionId: nil,
+            verifiedHostOverride: secondary
+        ) { _, _, _, _, _, _, _ in
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1)
+
+        let url = apiHelperMock.lastUrl ?? ""
+        XCTAssertFalse(url.hasPrefix(secondary), "non-verified track must not use override; got \(url)")
+        XCTAssertTrue(url.hasPrefix(RadarSettings.DefaultHost), "expected standard host for non-verified track, got \(url)")
     }
 
     // MARK: - RadarInitializeOptions roundtrip
