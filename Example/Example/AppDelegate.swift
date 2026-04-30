@@ -10,12 +10,16 @@ import UserNotifications
 import RadarSDK
 import SwiftUI
 import ActivityKit
+import Combine
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarVerifiedDelegate {
 
     let locationManager = CLLocationManager()
     var window: UIWindow? // required for UIWindowSceneDelegate
+    
+    let logStream = LogStream()
+    private var cancellables = Set<AnyCancellable>()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
@@ -35,7 +39,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setAppGroup("group.waypoint.data")
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions)
         Radar.setMetadata([ "foo": "bar" ])
-        Radar.setDelegate(self)
+        Radar.setDelegate(logStream)
+        wireLiveActivitySubscriptions()
         Radar.setVerifiedDelegate(self)
         Radar.setInAppMessageDelegate(MyIAMDelegate())
         
@@ -59,7 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .white
-        let controller = UIHostingController(rootView: MainView())
+        let controller = UIHostingController(rootView: MainView().environmentObject(logStream))
         controller.view.frame = UIScreen.main.bounds
         window.addSubview(controller.view)
         window.makeKeyAndVisible()
@@ -115,21 +120,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     func notify(_ body: String) {
     }
     
-    // MARK: - RadarDelegate Methods (for Live Activity)
-    // These delegate methods are optional and only needed if you want to update a Live Activity based on trip events and location updates.
-    func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
-        // End the Live Activity when the user stops a trip
+    // MARK: - Live Activity (subscribes to LogStream)
+    
+    private func wireLiveActivitySubscriptions() {
+        logStream.didReceiveEventsPublisher
+            .sink { [weak self] events, _ in
+                self?.handleEventsForLiveActivity(events)
+            }
+            .store(in: &cancellables)
+        logStream.didUpdateLocationPublisher
+            .sink { [weak self] _, user in
+                self?.handleLocationUpdateForLiveActivity(user: user)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func handleEventsForLiveActivity(_ events: [RadarEvent]) {
         if #available(iOS 16.2, *) {
-            for event in events {
-                if event.type == .userStoppedTrip {
-                    TripLiveActivityManager.shared.endActivity(status: "completed")
-                }
+            for event in events where event.type == .userStoppedTrip {
+                TripLiveActivityManager.shared.endActivity(status: "completed")
             }
         }
     }
     
-    func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
-        // Update the Live Activity with the latest trip progress
+    private func handleLocationUpdateForLiveActivity(user: RadarUser) {
         if #available(iOS 16.2, *) {
             if user.trip != nil {
                 handleTripLiveActivity(user: user)

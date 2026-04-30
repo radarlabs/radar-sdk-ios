@@ -12,11 +12,11 @@
 		BA51988D2ED10AEB004A3B35 /* TripActivityExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BA51987A2ED10AEA004A3B35 /* TripActivityExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */; };
 		BA5198C92EDE3B8C004A3B35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */; };
+		BA7792EF2FA3D1DD00E197CA /* LogStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792EE2FA3D1D800E197CA /* LogStream.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
 		F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886B92EA7DB180072E87C /* TestsView.swift */; };
-		F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */; };
 		F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C22EA7DB5C0072E87C /* LogsView.swift */; };
 		F61886C52EA7DC820072E87C /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C42EA7DC800072E87C /* MapView.swift */; };
 		F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */; };
@@ -145,6 +145,7 @@
 		BA51987D2ED10AEA004A3B35 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripLiveActivityManager.swift; sourceTree = "<group>"; };
 		BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BA7792EE2FA3D1D800E197CA /* LogStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogStream.swift; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -155,7 +156,6 @@
 		E632FA1C2CAC366C00E86C85 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKMotion.xcodeproj; path = ../RadarSDKMotion/RadarSDKMotion.xcodeproj; sourceTree = "<group>"; };
 		F61886B92EA7DB180072E87C /* TestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsView.swift; sourceTree = "<group>"; };
-		F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyRadarDelegate.swift; sourceTree = "<group>"; };
 		F61886C22EA7DB5C0072E87C /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
 		F61886C42EA7DC800072E87C /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -236,6 +236,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BA7792E72FA3D1D200E197CA /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				BA7792EE2FA3D1D800E197CA /* LogStream.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		DD236D1A230A006700EB88F9 = {
 			isa = PBXGroup;
 			children = (
@@ -263,6 +271,7 @@
 		DD236D25230A006700EB88F9 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				BA7792E72FA3D1D200E197CA /* Services */,
 				BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */,
 				E632FA1C2CAC366C00E86C85 /* Example.entitlements */,
 				DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */,
@@ -272,7 +281,6 @@
 				F6513F5F2E6B736200523472 /* MainView.swift */,
 				F61886C42EA7DC800072E87C /* MapView.swift */,
 				F63DDAD42E746BB0006991F5 /* StyledButton.swift */,
-				F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */,
 				F65F79382EF458E000399E84 /* MyIAMDelegate.swift */,
 				BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */,
 				F61886B92EA7DB180072E87C /* TestsView.swift */,
@@ -531,10 +539,10 @@
 				F63DDAD52E746BB0006991F5 /* StyledButton.swift in Sources */,
 				F61886C52EA7DC820072E87C /* MapView.swift in Sources */,
 				BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */,
+				BA7792EF2FA3D1DD00E197CA /* LogStream.swift in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
-				F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */,
 				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,

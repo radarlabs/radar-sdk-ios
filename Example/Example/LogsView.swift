@@ -9,43 +9,32 @@ import SwiftUI
 import RadarSDK
 
 struct LogsView: View {
-    @StateObject var radarDelegateState = RadarDelegateState()
-    let radarDelegate = MyRadarDelegate()
+    @EnvironmentObject var logStream: LogStream
     
     var body: some View {
         VStack {
             HStack {
                 Text("Logs")
-                Button("clear") {
-                    radarDelegateState.logs.removeAll()
-                }
+                Button("clear") { logStream.clearLogs() }
             }
-            List(radarDelegateState.logs, id:\.0) { item in
-                return Text("\(item.1)")
+            List(logStream.logs) { entry in
+                Text(entry.message)
             }
-
+            
             HStack {
                 Text("Events")
-                Button("clear") {
-                    radarDelegateState.events.removeAll()
-                }
+                Button("clear") { logStream.clearEvents() }
             }
-            List(radarDelegateState.events, id:\.self) { item in
-                let type = RadarEvent.string(for: item.type) ?? "unknown-type"
-                var description = ""
-                if let geofence = item.geofence {
-                    description = geofence.externalId ?? ""
-                }
-                return Text("\(type): \(description)")
+            List(logStream.events, id: \.self) { event in
+                let type = RadarEvent.string(for: event.type) ?? "unknown-type"
+                let description = event.geofence?.externalId ?? ""
+                Text("\(type): \(description)")
             }
-
-        }.onAppear {
-            radarDelegate.state = radarDelegateState
-            Radar.setDelegate(radarDelegate)
         }
     }
 }
 
 #Preview {
     LogsView()
+        .environmentObject(LogStream())
 }
