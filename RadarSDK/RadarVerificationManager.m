@@ -82,8 +82,8 @@
     
     BOOL autoFailover = [RadarSettings initializeOptions].trackVerifiedAutoFailover;
 
-    void (^continueWithConfig)(RadarStatus, RadarConfig * _Nullable, NSString * _Nullable) =
-    ^(RadarStatus status, RadarConfig * _Nullable config, NSString * _Nullable chosenVerifiedHost) {
+    void (^continueWithConfig)(RadarStatus, RadarConfig * _Nullable, BOOL) =
+    ^(RadarStatus status, RadarConfig * _Nullable config, BOOL useSecondaryVerifiedHost) {
         if (status != RadarStatusSuccess || !config) {
             [RadarUtilsDeprecated runOnMainThread:^{
                 if (status != RadarStatusSuccess) {
@@ -174,7 +174,7 @@
                  expectedStateCode:self.expectedStateCode
                  reason:reason
                  transactionId:transactionId
-                 verifiedHostOverride:chosenVerifiedHost
+              useSecondaryVerifiedHost:useSecondaryVerifiedHost
                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                      RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                      RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
@@ -246,39 +246,28 @@
         }];
     };
 
-    if (autoFailover) {
+    [[RadarAPIClient sharedInstance]
+     getConfigForUsage:@"verify"
+     verified:YES
+     completionHandler:^(RadarStatus status, RadarConfig * _Nullable config) {
+        BOOL primaryRadarResponse = (config && config.meta);
+        if (!autoFailover || primaryRadarResponse) {
+            continueWithConfig(status, config, NO);
+            return;
+        }
+
+        [[RadarLogger sharedInstance]
+            logWithLevel:RadarLogLevelInfo
+                 message:@"trackVerified: primary verified host returned non-Radar response, retrying on secondary"];
+
         [[RadarAPIClient sharedInstance]
          getConfigForUsage:@"verify"
          verified:YES
-         verifiedHostOverride:nil
-         completionHandler:^(RadarStatus status, RadarConfig * _Nullable config) {
-            BOOL primaryRadarResponse = (config && config.meta);
-            if (primaryRadarResponse) {
-                continueWithConfig(status, config, nil);
-                return;
-            }
-
-            NSString *secondary = [RadarSettings defaultVerifiedHostSecondary];
-            [[RadarLogger sharedInstance]
-                logWithLevel:RadarLogLevelInfo
-                     message:[NSString stringWithFormat:@"trackVerified: primary verified host returned non-Radar response, retrying on secondary | secondary = %@", secondary]];
-
-            [[RadarAPIClient sharedInstance]
-             getConfigForUsage:@"verify"
-             verified:YES
-             verifiedHostOverride:secondary
-             completionHandler:^(RadarStatus status2, RadarConfig * _Nullable config2) {
-                continueWithConfig(status2, config2, secondary);
-            }];
+         useSecondaryVerifiedHost:YES
+         completionHandler:^(RadarStatus status2, RadarConfig * _Nullable config2) {
+            continueWithConfig(status2, config2, YES);
         }];
-    } else {
-        [[RadarAPIClient sharedInstance]
-         getConfigForUsage:@"verify"
-         verified:YES
-         completionHandler:^(RadarStatus status, RadarConfig * _Nullable config) {
-            continueWithConfig(status, config, nil);
-        }];
-    }
+    }];
 }
 
 - (void)intervalFired {
