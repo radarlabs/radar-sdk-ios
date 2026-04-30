@@ -77,7 +77,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 - (void)getConfigForUsage:(NSString *_Nullable)usage
                  verified:(BOOL)verified
-     verifiedHostOverride:(NSString *_Nullable)verifiedHostOverride
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
@@ -119,7 +119,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
         expectedStateCode:(NSString *_Nullable)expectedStateCode
                    reason:(NSString *_Nullable)reason
             transactionId:(NSString *_Nullable)transactionId
-     verifiedHostOverride:(NSString *_Nullable)verifiedHostOverride
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler;

@@ -38,34 +38,32 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
 
     func test_getConfig_verified_withOverride_usesSecondaryHost() {
         let exp = expectation(description: "getConfig completes")
-        let secondary = RadarSettings.defaultVerifiedHostSecondary
         RadarAPIClient.sharedInstance().getConfigForUsage(
             "verify",
             verified: true,
-            verifiedHostOverride: secondary
+            useSecondaryVerifiedHost: true
         ) { _, _ in
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1)
 
         let url = apiHelperMock.lastUrl ?? ""
-        XCTAssertTrue(url.hasPrefix(secondary), "expected secondary verified host, got \(url)")
+        XCTAssertTrue(url.hasPrefix(RadarSettings.defaultVerifiedHostSecondary), "expected secondary verified host, got \(url)")
     }
 
     func test_getConfig_nonVerified_ignoresOverride() {
         let exp = expectation(description: "getConfig completes")
-        let secondary = RadarSettings.defaultVerifiedHostSecondary
         RadarAPIClient.sharedInstance().getConfigForUsage(
             "verify",
             verified: false,
-            verifiedHostOverride: secondary
+            useSecondaryVerifiedHost: true
         ) { _, _ in
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1)
 
         let url = apiHelperMock.lastUrl ?? ""
-        XCTAssertFalse(url.hasPrefix(secondary), "non-verified request must not use override; got \(url)")
+        XCTAssertFalse(url.hasPrefix(RadarSettings.defaultVerifiedHostSecondary), "non-verified request must not use secondary; got \(url)")
         XCTAssertTrue(url.hasPrefix(RadarSettings.DefaultHost), "expected standard host for non-verified, got \(url)")
     }
 
@@ -73,7 +71,6 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
 
     func test_track_verified_withOverride_usesSecondaryHost() {
         let exp = expectation(description: "track completes")
-        let secondary = RadarSettings.defaultVerifiedHostSecondary
         let location = CLLocation(latitude: 40.0, longitude: -73.0)
         RadarAPIClient.sharedInstance().track(
             with: location,
@@ -89,14 +86,14 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
             expectedStateCode: nil,
             reason: nil,
             transactionId: nil,
-            verifiedHostOverride: secondary
+            useSecondaryVerifiedHost: true
         ) { _, _, _, _, _, _, _ in
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1)
 
         let url = apiHelperMock.lastUrl ?? ""
-        XCTAssertTrue(url.hasPrefix(secondary), "expected secondary verified host on track, got \(url)")
+        XCTAssertTrue(url.hasPrefix(RadarSettings.defaultVerifiedHostSecondary), "expected secondary verified host on track, got \(url)")
         XCTAssertTrue(url.contains("/v1/track"), "expected /v1/track path, got \(url)")
     }
 
@@ -117,7 +114,7 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
             expectedStateCode: nil,
             reason: nil,
             transactionId: nil,
-            verifiedHostOverride: nil
+            useSecondaryVerifiedHost: false
         ) { _, _, _, _, _, _, _ in
             exp.fulfill()
         }
@@ -129,7 +126,6 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
 
     func test_track_nonVerified_ignoresOverride() {
         let exp = expectation(description: "track completes")
-        let secondary = RadarSettings.defaultVerifiedHostSecondary
         let location = CLLocation(latitude: 40.0, longitude: -73.0)
         RadarAPIClient.sharedInstance().track(
             with: location,
@@ -145,14 +141,14 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
             expectedStateCode: nil,
             reason: nil,
             transactionId: nil,
-            verifiedHostOverride: secondary
+            useSecondaryVerifiedHost: true
         ) { _, _, _, _, _, _, _ in
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1)
 
         let url = apiHelperMock.lastUrl ?? ""
-        XCTAssertFalse(url.hasPrefix(secondary), "non-verified track must not use override; got \(url)")
+        XCTAssertFalse(url.hasPrefix(RadarSettings.defaultVerifiedHostSecondary), "non-verified track must not use secondary; got \(url)")
         XCTAssertTrue(url.hasPrefix(RadarSettings.DefaultHost), "expected standard host for non-verified track, got \(url)")
     }
 

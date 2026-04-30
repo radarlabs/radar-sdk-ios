@@ -102,12 +102,12 @@
 }
 
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
-    [self getConfigForUsage:usage verified:verified verifiedHostOverride:nil completionHandler:completionHandler];
+    [self getConfigForUsage:usage verified:verified useSecondaryVerifiedHost:NO completionHandler:completionHandler];
 }
 
 - (void)getConfigForUsage:(NSString *_Nullable)usage
                  verified:(BOOL)verified
-     verifiedHostOverride:(NSString *_Nullable)verifiedHostOverride
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -134,7 +134,7 @@
     [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
     [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]];
 
-    NSString *host = verified ? (verifiedHostOverride ?: [RadarSettings verifiedHost]) : [RadarSettings host];
+    NSString *host = verified ? (useSecondaryVerifiedHost ? [RadarSettings defaultVerifiedHostSecondary] : [RadarSettings verifiedHost]) : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
@@ -249,7 +249,7 @@
           expectedStateCode:expectedStateCode
                      reason:reason
               transactionId:transactionId
-       verifiedHostOverride:nil
+  useSecondaryVerifiedHost:NO
           completionHandler:completionHandler];
 }
 
@@ -266,7 +266,7 @@
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
             transactionId:(NSString * _Nullable)transactionId
-     verifiedHostOverride:(NSString * _Nullable)verifiedHostOverride
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -482,7 +482,7 @@
                                                             location:location
                                                                 source:source
                                                             verified:verified
-                                                   verifiedHostOverride:verifiedHostOverride
+                                              useSecondaryVerifiedHost:useSecondaryVerifiedHost
                                                         publishableKey:publishableKey
                                                 notificationsRemaining:notificationsRemaining
                                                 locationMetadata:locationMetadata
@@ -495,7 +495,7 @@
                                                         location:location
                                                             source:source
                                                         verified:verified
-                                               verifiedHostOverride:verifiedHostOverride
+                                          useSecondaryVerifiedHost:useSecondaryVerifiedHost
                                                     publishableKey:publishableKey
                                             notificationsRemaining:@[]
                                             locationMetadata:locationMetadata
@@ -509,7 +509,7 @@
                         location:(CLLocation *)location
                         source:(RadarLocationSource)source
                         verified:(BOOL)verified
-              verifiedHostOverride:(NSString *_Nullable)verifiedHostOverride
+        useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                 publishableKey:(NSString *)publishableKey
                 notificationsRemaining:(NSArray *)notificationsRemaining
                 locationMetadata:(NSDictionary *)locationMetadata
@@ -534,7 +534,7 @@
         return;
     }
 
-    NSString *host = verified ? (verifiedHostOverride ?: [RadarSettings verifiedHost]) : [RadarSettings host];
+    NSString *host = verified ? (useSecondaryVerifiedHost ? [RadarSettings defaultVerifiedHostSecondary] : [RadarSettings verifiedHost]) : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
