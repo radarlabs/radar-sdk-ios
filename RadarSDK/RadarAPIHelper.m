@@ -118,11 +118,14 @@
                 NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
 
                 if (error) {
+                    long elapsedMs = (long)(latency * 1000);
+                    NSString *host = req.URL.host ?: @"unknown";
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelError
                                     type:RadarLogTypeSDKError
-                                 message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
+                                 message:[NSString stringWithFormat:@"Network error | host = %@; errorDomain = %@; errorCode = %ld; errorDescription = %@; elapsedMs = %ld",
+                                          host, error.domain, (long)error.code, error.localizedDescription, elapsedMs]];
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 

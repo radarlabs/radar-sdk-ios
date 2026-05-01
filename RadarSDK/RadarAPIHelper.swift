@@ -34,7 +34,20 @@ final class RadarApiHelper: Sendable {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let startTime = Date()
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await URLSession.shared.data(for: request)
+        } catch {
+            let elapsedMs = Int(Date().timeIntervalSince(startTime) * 1000)
+            RadarLogger.shared.log(
+                level: .error,
+                message: RadarApiHelper.networkErrorMessage(host: urlObject.host, error: error, elapsedMs: elapsedMs),
+                type: .sdkError
+            )
+            throw error
+        }
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
@@ -66,5 +79,10 @@ final class RadarApiHelper: Sendable {
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
 
         return (data, response)
+    }
+
+    static func networkErrorMessage(host: String?, error: Error, elapsedMs: Int) -> String {
+        let nsError = error as NSError
+        return "Network error | host = \(host ?? "unknown"); errorDomain = \(nsError.domain); errorCode = \(nsError.code); errorDescription = \(nsError.localizedDescription); elapsedMs = \(elapsedMs)"
     }
 }
