@@ -118,4 +118,14 @@ actor RadarSettingsTest {
         #expect(UserDefaults.standard.string(forKey: "radar-appGroup") == "test.app.group")
         #expect(appGroupDefaults.string(forKey: "radar-appGroup") == "test.app.group")
     }
+    
+    @Test("set() returns without forcing a disk write")
+    func setDoesNotSynchronizeSynchronously() {
+        let start = CFAbsoluteTimeGetCurrent()
+        for i in 0..<1000 {
+            RadarUserDefaults.set("value\(i)", forKey: .UserId)
+        }
+        let elapsed = CFAbsoluteTimeGetCurrent() - start
+        #expect(elapsed < 0.1)  // 1000 in-memory writes
+    }
 }

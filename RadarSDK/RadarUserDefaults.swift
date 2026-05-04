@@ -1,13 +1,11 @@
 //
-//  RadarSettings.swift
+//  RadarUserDefaults.swift
 //  RadarSDK
 //
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
 import Foundation
-
-
 
 class RadarUserDefaults: NSObject {
     
@@ -77,6 +75,15 @@ class RadarUserDefaults: NSObject {
         }
     }()
     
+    private static let flushQueue = DispatchQueue(
+        label: "io.radar.userdefaults.flush",
+        qos: .utility
+    )
+    
+    private static let flushLock = NSLock()
+    nonisolated(unsafe)
+    private static var flushScheduled = false
+    
     public static func clone(from: UserDefaults, to: UserDefaults) {
         for key in Key.allCases {
             let value = from.value(forKey: key.rawValue)
@@ -86,9 +93,30 @@ class RadarUserDefaults: NSObject {
     
     public static func set(_ value: Any?, forKey key: Key) {
         userDefaults.set(value, forKey: key.rawValue)
-        userDefaults.synchronize()
+        scheduleFlushIfNeeded()
     }
     
+    private static func scheduleFlushIfNeeded() {
+        flushLock.lock()
+        let alreadyScheduled = flushScheduled
+        flushScheduled = true
+        flushLock.unlock()
+        
+        guard !alreadyScheduled else { return }
+        
+        flushQueue.async {
+            let target: UserDefaults = {
+                flushLock.lock()
+                defer { flushLock.unlock() }
+                // reset before synchronize so any write during the flush
+                // schedules a follow-up flush instead of being silently dropped
+                flushScheduled = false
+                return userDefaults
+            }()
+            target.synchronize()
+        }
+    }
+
     public static func string(forKey key: Key) -> String? {
         return userDefaults.string(forKey: key.rawValue)
     }
