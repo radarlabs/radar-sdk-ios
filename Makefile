@@ -4,6 +4,7 @@ PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
 SCHEME_EXAMPLE := Example
+SWIFTLINT := $(firstword $(wildcard .tools/swiftlint) swiftlint)
 XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 XC_EXAMPLE_ARGS := -sdk $(SDK) -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
@@ -29,7 +30,9 @@ build-example:
 lint:
 	@for spec in *.podspec; do \
 		if [ "$$spec" != "RadarSDKIndoors.podspec" ]; then \
-			pod lib lint "$$spec" || exit 1; \
+			# Allow warnings for deprecated Beacons API calls in RadarSDK.podspec.
+			# TODO: update deprecated Beacons API calls and remove --allow-warnings.
+			pod lib lint "$$spec" --allow-warnings || exit 1; \
 		fi; \
 	done 
 
