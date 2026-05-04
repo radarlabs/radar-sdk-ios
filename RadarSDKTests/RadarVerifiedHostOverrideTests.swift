@@ -180,7 +180,8 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
         options.networkTimeoutInterval = 45
 
         let dict = options.dictionaryValue()
-        XCTAssertEqual((dict["networkTimeoutInterval"] as? NSNumber)?.doubleValue, 45, accuracy: 0.001)
+        let value = dict["networkTimeoutInterval"] as? NSNumber
+        XCTAssertEqual(value?.doubleValue ?? 0, 45, accuracy: 0.001)
 
         let restored = RadarInitializeOptions(dict: dict)
         XCTAssertEqual(restored.networkTimeoutInterval, 45, accuracy: 0.001)
