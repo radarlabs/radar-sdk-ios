@@ -11,6 +11,26 @@
 #import "RadarSettings.h"
 #import "RadarUtils.h"
 
+#import <math.h>
+
+static NSTimeInterval RadarAPIHelperStandardNetworkTimeoutInterval(void) {
+    RadarInitializeOptions *opts = [RadarSettings initializeOptions];
+    NSTimeInterval t = opts ? opts.networkTimeoutInterval : 10;
+    if (t <= 0 || isnan(t) || isinf(t)) {
+        t = 10;
+    }
+    if (t < 1) {
+        t = 1;
+    } else if (t > 300) {
+        t = 300;
+    }
+    return t;
+}
+
+static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterval standard) {
+    return MAX(25, standard * 2.5);
+}
+
 @interface RadarAPIHelper ()
 
 @property (strong, nonatomic) dispatch_queue_t queue;
@@ -29,14 +49,17 @@
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
         _semaphore = dispatch_semaphore_create(1);
 
+        NSTimeInterval standardTimeout = RadarAPIHelperStandardNetworkTimeoutInterval();
+        NSTimeInterval extendedTimeout = RadarAPIHelperExtendedNetworkTimeoutInterval(standardTimeout);
+
         NSURLSessionConfiguration *standardConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-        standardConfig.timeoutIntervalForRequest = 10;
-        standardConfig.timeoutIntervalForResource = 10;
+        standardConfig.timeoutIntervalForRequest = standardTimeout;
+        standardConfig.timeoutIntervalForResource = standardTimeout;
         _standardSession = [NSURLSession sessionWithConfiguration:standardConfig];
 
         NSURLSessionConfiguration *extendedConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-        extendedConfig.timeoutIntervalForRequest = 25;
-        extendedConfig.timeoutIntervalForResource = 25;
+        extendedConfig.timeoutIntervalForRequest = extendedTimeout;
+        extendedConfig.timeoutIntervalForResource = extendedTimeout;
         _extendedTimeoutSession = [NSURLSession sessionWithConfiguration:extendedConfig];
     }
     return self;

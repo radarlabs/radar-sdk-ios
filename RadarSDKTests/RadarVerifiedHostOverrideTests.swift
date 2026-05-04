@@ -170,6 +170,22 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
         XCTAssertTrue(restored.trackVerifiedAutoFailover)
     }
 
+    func test_initializeOptions_networkTimeoutInterval_defaultsToTen() {
+        let options = RadarInitializeOptions()
+        XCTAssertEqual(options.networkTimeoutInterval, 10, accuracy: 0.001)
+    }
+
+    func test_initializeOptions_networkTimeoutInterval_roundtripsThroughDictionary() {
+        let options = RadarInitializeOptions()
+        options.networkTimeoutInterval = 45
+
+        let dict = options.dictionaryValue()
+        XCTAssertEqual((dict["networkTimeoutInterval"] as? NSNumber)?.doubleValue, 45, accuracy: 0.001)
+
+        let restored = RadarInitializeOptions(dict: dict)
+        XCTAssertEqual(restored.networkTimeoutInterval, 45, accuracy: 0.001)
+    }
+
     // MARK: - Secondary host constant
 
     func test_defaultVerifiedHostSecondary_isExpected() {
