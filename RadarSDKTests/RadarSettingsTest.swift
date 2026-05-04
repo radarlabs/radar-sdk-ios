@@ -119,7 +119,7 @@ actor RadarSettingsTest {
         #expect(appGroupDefaults.string(forKey: "radar-appGroup") == "test.app.group")
     }
     
-    @Test("set() returns without forcing a disk write")
+    @Test("set() returns substantially faster than 1000 forced synchronizes would take")
     func setDoesNotSynchronizeSynchronously() {
         let start = CFAbsoluteTimeGetCurrent()
         for i in 0..<1000 {

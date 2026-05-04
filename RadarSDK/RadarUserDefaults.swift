@@ -82,8 +82,8 @@ class RadarUserDefaults: NSObject {
     
     private static let flushLock = NSLock()
     nonisolated(unsafe)
-    private static var flushScheduled = false
-    
+    private static var pendingFlushTargets: [ObjectIdentifier: UserDefaults] = [:]
+
     public static func clone(from: UserDefaults, to: UserDefaults) {
         for key in Key.allCases {
             let value = from.value(forKey: key.rawValue)
@@ -92,28 +92,26 @@ class RadarUserDefaults: NSObject {
     }
     
     public static func set(_ value: Any?, forKey key: Key) {
-        userDefaults.set(value, forKey: key.rawValue)
-        scheduleFlushIfNeeded()
+        let target = userDefaults
+        target.set(value, forKey: key.rawValue)
+        scheduleFlush(for: target)
     }
     
-    private static func scheduleFlushIfNeeded() {
+    private static func scheduleFlush(for target: UserDefaults) {
+        let id = ObjectIdentifier(target)
+        
         flushLock.lock()
-        let alreadyScheduled = flushScheduled
-        flushScheduled = true
+        let alreadyScheduled = pendingFlushTargets[id] != nil
+        pendingFlushTargets[id] = target
         flushLock.unlock()
         
         guard !alreadyScheduled else { return }
-        
         flushQueue.async {
-            let target: UserDefaults = {
-                flushLock.lock()
-                defer { flushLock.unlock() }
-                // reset before synchronize so any write during the flush
-                // schedules a follow-up flush instead of being silently dropped
-                flushScheduled = false
-                return userDefaults
-            }()
-            target.synchronize()
+            flushLock.lock()
+            let captured = pendingFlushTargets.removeValue(forKey: id)
+            flushLock.unlock()
+            
+            captured?.synchronize()
         }
     }
 
