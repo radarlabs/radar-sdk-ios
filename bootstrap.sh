@@ -58,6 +58,8 @@ else
   rm -rf "$TMP"
 fi
 
+# swift-format ships no prebuilt binaries; its version is coupled to the Swift
+# toolchain, so brew will install the version matching the active Xcode.
 if ! command -v swift-format >/dev/null; then
   echo "installing swift-format..."
   brew install swift-format
