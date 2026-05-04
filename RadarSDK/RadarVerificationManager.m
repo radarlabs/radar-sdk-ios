@@ -174,7 +174,7 @@
                  expectedStateCode:self.expectedStateCode
                  reason:reason
                  transactionId:transactionId
-              useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                 useSecondaryVerifiedHost:useSecondaryVerifiedHost
                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                      RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                      RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
