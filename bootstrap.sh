@@ -42,11 +42,20 @@ else
   echo "clang-format already installed"
 fi
 
-if ! command -v swiftlint >/dev/null; then
-  echo "installing swiftlint..."
-  brew install swiftlint
+SWIFTLINT_VERSION="0.63.2"
+SWIFTLINT_BIN=".tools/swiftlint"
+
+if [ -f "$SWIFTLINT_BIN" ] && "$SWIFTLINT_BIN" version 2>/dev/null | grep -qx "$SWIFTLINT_VERSION"; then
+  echo "swiftlint $SWIFTLINT_VERSION already installed"
 else
-  echo "swiftlint already installed"
+  echo "installing swiftlint $SWIFTLINT_VERSION..."
+  mkdir -p ".tools"
+  TMP=$(mktemp -d)
+  curl -fsSL "https://github.com/realm/SwiftLint/releases/download/$SWIFTLINT_VERSION/portable_swiftlint.zip" -o "$TMP/portable_swiftlint.zip"
+  unzip -q "$TMP/portable_swiftlint.zip" -d "$TMP"
+  mv "$TMP/swiftlint" "$SWIFTLINT_BIN"
+  chmod +x "$SWIFTLINT_BIN"
+  rm -rf "$TMP"
 fi
 
 if ! command -v swift-format >/dev/null; then

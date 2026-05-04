@@ -4,6 +4,7 @@ PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
 SCHEME_EXAMPLE := Example
+SWIFTLINT := $(firstword $(wildcard .tools/swiftlint) swiftlint)
 XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 XC_EXAMPLE_ARGS := -sdk $(SDK) -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
@@ -36,11 +37,11 @@ lint:
 FORMAT_BASE ?= origin/master
 
 lint-swift:
-	@if ! command -v swiftlint >/dev/null; then \
-		echo "swiftlint not installed; run 'make bootstrap' or 'brew install swiftlint'"; \
+	@if ! command -v $(SWIFTLINT) >/dev/null 2>&1 && [ ! -f "$(SWIFTLINT)" ]; then \
+		echo "swiftlint not installed; run 'make bootstrap'"; \
 		exit 1; \
 	fi
-	swiftlint lint --strict --baseline .swiftlint-baseline.json
+	$(SWIFTLINT) lint --strict --baseline .swiftlint-baseline.json
 
 format-check:
 	@if ! command -v swift-format >/dev/null; then \
