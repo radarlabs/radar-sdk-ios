@@ -13,6 +13,7 @@
 		BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */; };
 		BA5198C92EDE3B8C004A3B35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */; };
 		BA7792EF2FA3D1DD00E197CA /* LogStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792EE2FA3D1D800E197CA /* LogStream.swift */; };
+		BA7792F12FA8FF0600E197CA /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
@@ -146,6 +147,7 @@
 		BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripLiveActivityManager.swift; sourceTree = "<group>"; };
 		BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BA7792EE2FA3D1D800E197CA /* LogStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogStream.swift; sourceTree = "<group>"; };
+		BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -239,6 +241,7 @@
 		BA7792E72FA3D1D200E197CA /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */,
 				BA7792EE2FA3D1D800E197CA /* LogStream.swift */,
 			);
 			path = Services;
@@ -539,6 +542,7 @@
 				F63DDAD52E746BB0006991F5 /* StyledButton.swift in Sources */,
 				F61886C52EA7DC820072E87C /* MapView.swift in Sources */,
 				BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */,
+				BA7792F12FA8FF0600E197CA /* SettingsStore.swift in Sources */,
 				BA7792EF2FA3D1DD00E197CA /* LogStream.swift in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,

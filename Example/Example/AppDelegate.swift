@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     var window: UIWindow? // required for UIWindowSceneDelegate
     
     let logStream = LogStream()
+    let settingsStore = SettingsStore()
     private var cancellables = Set<AnyCancellable>()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -37,12 +38,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.silentPush = true
 
         Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions)
-        Radar.setMetadata([ "foo": "bar" ])
+        Radar.initialize(publishableKey: settingsStore.resolvedPublishableKey, options: radarInitializeOptions)
         Radar.setDelegate(logStream)
         wireLiveActivitySubscriptions()
         Radar.setVerifiedDelegate(self)
         Radar.setInAppMessageDelegate(MyIAMDelegate())
+        settingsStore.loadFromSDK()
+
         
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in
@@ -64,7 +66,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .white
-        let controller = UIHostingController(rootView: MainView().environmentObject(logStream))
+        let controller = UIHostingController(
+            rootView: MainView()
+                .environmentObject(logStream)
+                .environmentObject(settingsStore)
+        )
         controller.view.frame = UIScreen.main.bounds
         window.addSubview(controller.view)
         window.makeKeyAndVisible()
