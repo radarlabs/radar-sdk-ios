@@ -18,6 +18,7 @@
 		BA7792F62FA9081A00E197CA /* FieldEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F52FA9081700E197CA /* FieldEditor.swift */; };
 		BA7792F82FA9087200E197CA /* TogglePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F72FA9086B00E197CA /* TogglePanel.swift */; };
 		BA7792FA2FA9088F00E197CA /* ActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F92FA9088D00E197CA /* ActionButton.swift */; };
+		BA7792FC2FA92DF100E197CA /* TestPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792FB2FA92DEF00E197CA /* TestPreset.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
@@ -156,6 +157,7 @@
 		BA7792F52FA9081700E197CA /* FieldEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldEditor.swift; sourceTree = "<group>"; };
 		BA7792F72FA9086B00E197CA /* TogglePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglePanel.swift; sourceTree = "<group>"; };
 		BA7792F92FA9088D00E197CA /* ActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButton.swift; sourceTree = "<group>"; };
+		BA7792FB2FA92DEF00E197CA /* TestPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPreset.swift; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -249,6 +251,7 @@
 		BA7792E72FA3D1D200E197CA /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				BA7792FB2FA92DEF00E197CA /* TestPreset.swift */,
 				BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */,
 				BA7792EE2FA3D1D800E197CA /* LogStream.swift */,
 			);
@@ -562,6 +565,7 @@
 				F63DDAD52E746BB0006991F5 /* StyledButton.swift in Sources */,
 				F61886C52EA7DC820072E87C /* MapView.swift in Sources */,
 				BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */,
+				BA7792FC2FA92DF100E197CA /* TestPreset.swift in Sources */,
 				BA7792F82FA9087200E197CA /* TogglePanel.swift in Sources */,
 				BA7792F12FA8FF0600E197CA /* SettingsStore.swift in Sources */,
 				BA7792F62FA9081A00E197CA /* FieldEditor.swift in Sources */,
