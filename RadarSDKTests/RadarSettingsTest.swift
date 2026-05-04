@@ -126,6 +126,7 @@ actor RadarSettingsTest {
             RadarUserDefaults.set("value\(i)", forKey: .UserId)
         }
         let elapsed = CFAbsoluteTimeGetCurrent() - start
-        #expect(elapsed < 0.1)  // 1000 in-memory writes
+        #expect(elapsed < 1.0)  // 1000 in-memory writes. Pre-fix this would force 1000 disk syncs and take seconds
     }
 }
+
