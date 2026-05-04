@@ -14,6 +14,7 @@
 @property (assign, nonatomic) BOOL autoLogNotificationConversions;
 @property (assign, nonatomic) BOOL autoHandleNotificationDeepLinks;
 @property (assign, nonatomic) BOOL silentPush;
+@property (assign, nonatomic) BOOL trackVerifiedAutoFailover;
 
 - (NSDictionary *_Nonnull)dictionaryValue;
 - (instancetype _Nonnull)initWithDict:(NSDictionary *_Nullable)dict;

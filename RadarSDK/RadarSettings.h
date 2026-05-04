@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)updateLastTrackedTime;
 + (NSDate *)lastTrackedTime;
 + (NSString *)verifiedHost;
++ (NSString *)defaultVerifiedHostSecondary;
 + (BOOL)userDebug;
 + (void)setUserDebug:(BOOL)userDebug;
 + (void)updateLastAppOpenTime;

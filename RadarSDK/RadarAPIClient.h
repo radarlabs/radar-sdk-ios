@@ -75,6 +75,11 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
 
+- (void)getConfigForUsage:(NSString *_Nullable)usage
+                 verified:(BOOL)verified
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+        completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
+
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
@@ -99,6 +104,22 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
         expectedStateCode:(NSString *_Nullable)expectedStateCode
                    reason:(NSString *_Nullable)reason
             transactionId:(NSString *_Nullable)transactionId
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
+                  stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+             indoorScan:(NSString *_Nullable)indoorScan
+                 verified:(BOOL)verified
+            fraudPayload:(NSString *_Nullable)fraudPayload
+      expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+        expectedStateCode:(NSString *_Nullable)expectedStateCode
+                   reason:(NSString *_Nullable)reason
+            transactionId:(NSString *_Nullable)transactionId
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler;
