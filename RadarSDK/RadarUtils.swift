@@ -11,7 +11,7 @@ import Foundation
 import SystemConfiguration
 import UIKit
 
-let SDK_VERSION = "3.31.0"
+let SDK_VERSION = "3.32.0"
 
 enum RadarConnectionType: String {
     case unknown = "unknown"
