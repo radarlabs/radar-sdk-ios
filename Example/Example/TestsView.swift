@@ -11,15 +11,14 @@ import RadarSDK
 struct TestsView: View {
     @EnvironmentObject var settingsStore: SettingsStore
     @EnvironmentObject var logStream: LogStream
+    @EnvironmentObject var permissionsStore: PermissionsStore
     @Binding var selectedTab: MainView.TabIdentifier
+    @State private var isShowingSettings = false
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                presetSection
-                identitySection
-                trackingSection
-                Divider().padding(.vertical, 4)
+                header
                 recentActivitySection
                 TrackingPanel()
                 TripsPanel()
@@ -30,94 +29,24 @@ struct TestsView: View {
             }
             .padding()
         }
-    }
-    
-    // MARK: - Sections
-    
-    private var presetSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Presets").font(.headline)
-            LazyVGrid(
-                columns: [GridItem(.adaptive(minimum: 110), spacing: 8)],
-                alignment: .leading,
-                spacing: 8
-            ) {
-                ForEach(TestPreset.all) { preset in
-                    Button {
-                        apply(preset)
-                    } label: {
-                        Text(preset.name)
-                            .font(.subheadline.weight(.medium))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
-                            .background(isActive(preset) ? Color.accentColor : Color(.tertiarySystemFill))
-                            .foregroundColor(isActive(preset) ? .white : .primary)
-                            .cornerRadius(20)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            Text(presetStatusText)
-                .font(.caption)
-                .foregroundColor(.secondary)
+        .sheet(isPresented: $isShowingSettings) {
+            TestsSettingsView()
+                .environmentObject(settingsStore)
+                .environmentObject(logStream)
+                .environmentObject(permissionsStore)
         }
     }
     
-    private var presetStatusText: String {
-        if let active = TestPreset.all.first(where: { $0.id == settingsStore.activePresetId }) {
-            return active.summary
-        }
-        return "No preset active — manual identity in effect."
-    }
-    
-    private func isActive(_ preset: TestPreset) -> Bool {
-        preset.id == settingsStore.activePresetId
-    }
-    
-    private var identitySection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Identity").font(.headline)
-            FieldEditor("User ID", text: $settingsStore.userId, placeholder: "—", commitOnSubmit: true)
-            FieldEditor("Description", text: $settingsStore.userDescription, placeholder: "—", commitOnSubmit: true)
-            ControlRow("Metadata") {
-                Text(formattedMetadata)
-                    .foregroundColor(settingsStore.metadata.isEmpty ? .secondary : .primary)
-                    .lineLimit(2)
-            }
-        }
-    }
-    
-    private var formattedMetadata: String {
-        if settingsStore.metadata.isEmpty {
-            return "—"
-        }
-        return settingsStore.metadata
-            .sorted(by: { $0.key < $1.key })
-            .map { "\($0.key)=\($0.value)" }
-            .joined(separator: ", ")
-    }
-    
-    private var trackingSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("Tracking").font(.headline)
-                Spacer()
-                Button("Refresh") {
-                    settingsStore.refresh()
-                }
-                .font(.caption)
-                .buttonStyle(.borderless)
-            }
-            ControlRow("Status") {
-                Text(settingsStore.isTracking ? "On" : "Off")
-                    .foregroundColor(settingsStore.isTracking ? .green : .secondary)
-            }
-            ControlRow("Source") {
-                Text(settingsStore.isUsingRemoteOptions ? "Remote (server)" : "Local")
-                    .foregroundColor(settingsStore.isUsingRemoteOptions ? .blue : .secondary)
-            }
-            ControlRow("Configured") {
-                Text(settingsStore.trackingOptionsSummary)
+    /// Right-aligned gear button. Single entry point to TestsSettingsView.
+    private var header: some View {
+        HStack {
+            Spacer()
+            Button {
+                isShowingSettings = true
+            } label: {
+                Image(systemName: "gearshape")
+                    .font(.title2)
+                    .foregroundColor(.secondary)
             }
         }
     }
@@ -162,20 +91,11 @@ struct TestsView: View {
             .cornerRadius(8)
         }
     }
-    
-    // MARK: - Actions
-    
-    private func apply(_ preset: TestPreset) {
-        settingsStore.apply(preset)
-        if let raw = preset.suggestedTabRaw,
-           let tab = MainView.TabIdentifier(rawValue: raw) {
-            selectedTab = tab
-        }
-    }
 }
 
 #Preview {
     TestsView(selectedTab: .constant(.Tests))
         .environmentObject(SettingsStore())
         .environmentObject(LogStream())
+        .environmentObject(PermissionsStore())
 }

@@ -68,9 +68,6 @@ struct TrackingPanel: View {
                     i += 1
                 }
             }
-            ActionButton("request motion activity permission") {
-                Radar.requestMotionActivityPermission()
-            }
         }
     }
 }

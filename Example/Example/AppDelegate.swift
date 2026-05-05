@@ -20,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     let logStream = LogStream()
     let settingsStore = SettingsStore()
+    let permissionsStore = PermissionsStore()
     private var cancellables = Set<AnyCancellable>()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -70,6 +71,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             rootView: MainView()
                 .environmentObject(logStream)
                 .environmentObject(settingsStore)
+                .environmentObject(permissionsStore)
         )
         controller.view.frame = UIScreen.main.bounds
         window.addSubview(controller.view)

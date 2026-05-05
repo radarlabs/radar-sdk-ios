@@ -26,6 +26,8 @@
 		BA7793322FAA6FE600E197CA /* NotificationsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */; };
 		BA7793342FAA70F100E197CA /* MessagingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793332FAA70EC00E197CA /* MessagingPanel.swift */; };
 		BA7793362FAA997300E197CA /* ConsoleEntry+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793352FAA996800E197CA /* ConsoleEntry+UI.swift */; };
+		BA7793392FAAA12000E197CA /* PermissionsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793382FAAA11C00E197CA /* PermissionsStore.swift */; };
+		BA77933B2FAAA46A00E197CA /* TestsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
@@ -171,6 +173,8 @@
 		BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsPanel.swift; sourceTree = "<group>"; };
 		BA7793332FAA70EC00E197CA /* MessagingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingPanel.swift; sourceTree = "<group>"; };
 		BA7793352FAA996800E197CA /* ConsoleEntry+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConsoleEntry+UI.swift"; sourceTree = "<group>"; };
+		BA7793382FAAA11C00E197CA /* PermissionsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsStore.swift; sourceTree = "<group>"; };
+		BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsSettingsView.swift; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -263,6 +267,7 @@
 		BA7792E72FA3D1D200E197CA /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				BA7793382FAAA11C00E197CA /* PermissionsStore.swift */,
 				BA7792FB2FA92DEF00E197CA /* TestPreset.swift */,
 				BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */,
 				BA7792EE2FA3D1D800E197CA /* LogStream.swift */,
@@ -322,6 +327,7 @@
 		DD236D25230A006700EB88F9 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */,
 				BA7792F22FA907E600E197CA /* Components */,
 				BA7792E72FA3D1D200E197CA /* Services */,
 				BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */,
@@ -599,12 +605,14 @@
 				BA7793342FAA70F100E197CA /* MessagingPanel.swift in Sources */,
 				BA7792F62FA9081A00E197CA /* FieldEditor.swift in Sources */,
 				BA7793362FAA997300E197CA /* ConsoleEntry+UI.swift in Sources */,
+				BA77933B2FAAA46A00E197CA /* TestsSettingsView.swift in Sources */,
 				BA7792EF2FA3D1DD00E197CA /* LogStream.swift in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
 				BA77932C2FAA663C00E197CA /* TripsPanel.swift in Sources */,
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
 				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
+				BA7793392FAAA12000E197CA /* PermissionsStore.swift in Sources */,
 				BA7792F42FA907EE00E197CA /* ControlRow.swift in Sources */,
 				BA77932E2FAA695B00E197CA /* VerifiedPanel.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
