@@ -122,27 +122,3 @@ extension TestPreset {
     )
 }
 
-// MARK: - Application
-
-extension SettingsStore {
-    /// Applies a preset: writes identity through to the SDK, performs the requested
-    /// tracking action, and refreshes tracking snapshots. Tab navigation is the
-    /// caller's concern — read `preset.suggestedTabRaw` if you want to honor it.
-    func apply(_ preset: TestPreset) {
-        userId = preset.userId
-        userDescription = preset.userDescription
-        metadata = preset.metadata
-        
-        switch preset.trackingAction {
-        case .leaveUnchanged:
-            break
-        case .start(let options):
-            Radar.startTracking(trackingOptions: options)
-        case .stop:
-            Radar.stopTracking()
-        }
-        
-        activePresetId = preset.id
-        refresh()
-    }
-}

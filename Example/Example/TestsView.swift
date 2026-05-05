@@ -17,6 +17,7 @@ struct TestsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 presetSection
+                identitySection
                 trackingSection
                 Divider().padding(.vertical, 4)
                 recentActivitySection
@@ -56,16 +57,44 @@ struct TestsView: View {
                     .buttonStyle(.plain)
                 }
             }
-            if let active = TestPreset.all.first(where: { $0.id == settingsStore.activePresetId }) {
-                Text(active.summary)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
+            Text(presetStatusText)
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
+    }
+    
+    private var presetStatusText: String {
+        if let active = TestPreset.all.first(where: { $0.id == settingsStore.activePresetId }) {
+            return active.summary
+        }
+        return "No preset active — manual identity in effect."
     }
     
     private func isActive(_ preset: TestPreset) -> Bool {
         preset.id == settingsStore.activePresetId
+    }
+    
+    private var identitySection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Identity").font(.headline)
+            FieldEditor("User ID", text: $settingsStore.userId, placeholder: "—", commitOnSubmit: true)
+            FieldEditor("Description", text: $settingsStore.userDescription, placeholder: "—", commitOnSubmit: true)
+            ControlRow("Metadata") {
+                Text(formattedMetadata)
+                    .foregroundColor(settingsStore.metadata.isEmpty ? .secondary : .primary)
+                    .lineLimit(2)
+            }
+        }
+    }
+    
+    private var formattedMetadata: String {
+        if settingsStore.metadata.isEmpty {
+            return "—"
+        }
+        return settingsStore.metadata
+            .sorted(by: { $0.key < $1.key })
+            .map { "\($0.key)=\($0.value)" }
+            .joined(separator: ", ")
     }
     
     private var trackingSection: some View {

@@ -22,6 +22,10 @@ import RadarSDK
 ///       → user edits the value
 ///       → `didSet` fires
 ///       → `Radar.setUserId(...)` writes through to the SDK
+///       → `activePresetId` is cleared (manual edit drifts away from any preset)
+///
+/// During `apply(_:)`, the `isApplyingPreset` flag suppresses the activePresetId
+/// clearing so the UI doesn't flicker the chip de-highlighted then re-highlighted.
 ///
 /// Initial load:
 ///
@@ -50,6 +54,7 @@ final class SettingsStore: ObservableObject {
         didSet {
             guard !isLoadingFromSDK else { return }
             Radar.setUserId(userId)
+            if !isApplyingPreset { activePresetId = nil }
         }
     }
     
@@ -58,6 +63,7 @@ final class SettingsStore: ObservableObject {
         didSet {
             guard !isLoadingFromSDK else { return }
             Radar.setDescription(userDescription)
+            if !isApplyingPreset { activePresetId = nil }
         }
     }
     
@@ -69,6 +75,7 @@ final class SettingsStore: ObservableObject {
             } else {
                 Radar.setMetadata(metadata as [String: Any])
             }
+            if !isApplyingPreset { activePresetId = nil }
         }
     }
     
@@ -79,8 +86,8 @@ final class SettingsStore: ObservableObject {
     @Published private(set) var trackingOptionsSummary: String = "—"
     
     /// Last preset applied via `apply(_: TestPreset)`. Set by the preset machinery,
-    /// read by the Tests view to highlight the active chip. Not auto-invalidated when
-    /// other code paths mutate state — re-tapping a preset re-establishes the truth.
+    /// cleared automatically when any identity field is mutated outside of `apply(_:)`.
+    /// Read by the Tests view to highlight the active chip.
     @Published var activePresetId: String? = nil
     
     
@@ -102,6 +109,10 @@ final class SettingsStore: ObservableObject {
     
     /// Suppresses `didSet` writebacks to the SDK during `loadFromSDK()`.
     private var isLoadingFromSDK = false
+    
+    /// Suppresses `activePresetId` clearing during `apply(_:)`. The didSet on each
+    /// identity field would otherwise nil out the chip mid-application.
+    private var isApplyingPreset = false
     
     init() {
         // UserDefaults — safe to read before Radar is initialized.
@@ -139,6 +150,31 @@ final class SettingsStore: ObservableObject {
         isTracking = Radar.isTracking()
         isUsingRemoteOptions = Radar.isUsingRemoteTrackingOptions()
         trackingOptionsSummary = Self.summarize(Radar.getTrackingOptions(), remote: isUsingRemoteOptions)
+    }
+    
+    /// Apply a preset: write identity through to the SDK, perform the requested
+    /// tracking action, and refresh tracking snapshots. The `isApplyingPreset` flag
+    /// prevents the identity didSets from clearing `activePresetId` while we set it.
+    /// Tab navigation is the caller's concern — read `preset.suggestedTabRaw`.
+    func apply(_ preset: TestPreset) {
+        isApplyingPreset = true
+        defer { isApplyingPreset = false }
+        
+        userId = preset.userId
+        userDescription = preset.userDescription
+        metadata = preset.metadata
+        
+        switch preset.trackingAction {
+        case .leaveUnchanged:
+            break
+        case .start(let options):
+            Radar.startTracking(trackingOptions: options)
+        case .stop:
+            Radar.stopTracking()
+        }
+        
+        activePresetId = preset.id
+        refresh()
     }
     
     
@@ -180,4 +216,3 @@ final class SettingsStore: ObservableObject {
         return "Custom (\(moving)s/\(sync)s)"
     }
 }
-
