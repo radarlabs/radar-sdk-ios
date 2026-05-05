@@ -19,6 +19,12 @@
 		BA7792F82FA9087200E197CA /* TogglePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F72FA9086B00E197CA /* TogglePanel.swift */; };
 		BA7792FA2FA9088F00E197CA /* ActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F92FA9088D00E197CA /* ActionButton.swift */; };
 		BA7792FC2FA92DF100E197CA /* TestPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792FB2FA92DEF00E197CA /* TestPreset.swift */; };
+		BA77932A2FAA62E700E197CA /* TrackingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793292FAA62E300E197CA /* TrackingPanel.swift */; };
+		BA77932C2FAA663C00E197CA /* TripsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77932B2FAA663800E197CA /* TripsPanel.swift */; };
+		BA77932E2FAA695B00E197CA /* VerifiedPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77932D2FAA695700E197CA /* VerifiedPanel.swift */; };
+		BA7793302FAA6A7300E197CA /* SearchPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77932F2FAA6A6E00E197CA /* SearchPanel.swift */; };
+		BA7793322FAA6FE600E197CA /* NotificationsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */; };
+		BA7793342FAA70F100E197CA /* MessagingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793332FAA70EC00E197CA /* MessagingPanel.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
@@ -158,6 +164,12 @@
 		BA7792F72FA9086B00E197CA /* TogglePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglePanel.swift; sourceTree = "<group>"; };
 		BA7792F92FA9088D00E197CA /* ActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButton.swift; sourceTree = "<group>"; };
 		BA7792FB2FA92DEF00E197CA /* TestPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPreset.swift; sourceTree = "<group>"; };
+		BA7793292FAA62E300E197CA /* TrackingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingPanel.swift; sourceTree = "<group>"; };
+		BA77932B2FAA663800E197CA /* TripsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripsPanel.swift; sourceTree = "<group>"; };
+		BA77932D2FAA695700E197CA /* VerifiedPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedPanel.swift; sourceTree = "<group>"; };
+		BA77932F2FAA6A6E00E197CA /* SearchPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPanel.swift; sourceTree = "<group>"; };
+		BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsPanel.swift; sourceTree = "<group>"; };
+		BA7793332FAA70EC00E197CA /* MessagingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingPanel.swift; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -269,6 +281,19 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		BA7793282FAA62CC00E197CA /* Panels */ = {
+			isa = PBXGroup;
+			children = (
+				BA7793332FAA70EC00E197CA /* MessagingPanel.swift */,
+				BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */,
+				BA77932F2FAA6A6E00E197CA /* SearchPanel.swift */,
+				BA77932D2FAA695700E197CA /* VerifiedPanel.swift */,
+				BA77932B2FAA663800E197CA /* TripsPanel.swift */,
+				BA7793292FAA62E300E197CA /* TrackingPanel.swift */,
+			);
+			path = Panels;
+			sourceTree = "<group>";
+		};
 		DD236D1A230A006700EB88F9 = {
 			isa = PBXGroup;
 			children = (
@@ -314,6 +339,7 @@
 				F66DAD642E707F0300896773 /* waypoints.gpx */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
 				F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */,
+				BA7793282FAA62CC00E197CA /* Panels */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -566,15 +592,21 @@
 				F61886C52EA7DC820072E87C /* MapView.swift in Sources */,
 				BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */,
 				BA7792FC2FA92DF100E197CA /* TestPreset.swift in Sources */,
+				BA77932A2FAA62E700E197CA /* TrackingPanel.swift in Sources */,
+				BA7793302FAA6A7300E197CA /* SearchPanel.swift in Sources */,
 				BA7792F82FA9087200E197CA /* TogglePanel.swift in Sources */,
+				BA7793322FAA6FE600E197CA /* NotificationsPanel.swift in Sources */,
 				BA7792F12FA8FF0600E197CA /* SettingsStore.swift in Sources */,
+				BA7793342FAA70F100E197CA /* MessagingPanel.swift in Sources */,
 				BA7792F62FA9081A00E197CA /* FieldEditor.swift in Sources */,
 				BA7792EF2FA3D1DD00E197CA /* LogStream.swift in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
+				BA77932C2FAA663C00E197CA /* TripsPanel.swift in Sources */,
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
 				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
 				BA7792F42FA907EE00E197CA /* ControlRow.swift in Sources */,
+				BA77932E2FAA695B00E197CA /* VerifiedPanel.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
 				BA7792FA2FA9088F00E197CA /* ActionButton.swift in Sources */,
