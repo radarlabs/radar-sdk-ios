@@ -15,6 +15,8 @@ import SwiftUI
 ///     ActionButton("startTracking", style: .primary) { ... }
 ///     ActionButton("stopTracking", style: .destructive) { ... }
 struct ActionButton: View {
+    @EnvironmentObject var logStream: LogStream
+
     enum Style {
         case primary
         case secondary
@@ -36,7 +38,10 @@ struct ActionButton: View {
     }
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            logStream.write(action: title)
+            action()
+        } label: {
             Text(title)
                 .font(.body.weight(.medium))
                 .frame(maxWidth: .infinity)
@@ -48,7 +53,7 @@ struct ActionButton: View {
         }
         .buttonStyle(.plain)
     }
-
+    
     private var backgroundColor: Color {
         switch style {
         case .primary: return .blue
@@ -73,4 +78,5 @@ struct ActionButton: View {
         ActionButton("stopTracking", style: .destructive) { }
     }
     .padding()
+    .environmentObject(LogStream())
 }
