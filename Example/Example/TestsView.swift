@@ -10,8 +10,8 @@ import RadarSDK
 
 struct TestsView: View {
     @EnvironmentObject var settingsStore: SettingsStore
+    @EnvironmentObject var logStream: LogStream
     @Binding var selectedTab: MainView.TabIdentifier
-    @State private var outputText: String = ""
     
     var body: some View {
         ScrollView {
@@ -19,12 +19,12 @@ struct TestsView: View {
                 presetSection
                 trackingSection
                 Divider().padding(.vertical, 4)
-                consoleSection
+                recentActivitySection
                 TrackingPanel()
                 TripsPanel()
                 VerifiedPanel()
                 SearchPanel()
-                NotificationsPanel(outputText: $outputText)
+                NotificationsPanel()
                 MessagingPanel()
             }
             .padding()
@@ -32,6 +32,7 @@ struct TestsView: View {
     }
     
     // MARK: - Sections
+    
     private var presetSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Presets").font(.headline)
@@ -92,25 +93,38 @@ struct TestsView: View {
         }
     }
     
-    private var consoleSection: some View {
+    private var recentActivitySection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("Console").font(.headline)
+                Text("Recent activity").font(.headline)
                 Spacer()
-                if !outputText.isEmpty {
-                    Button("Clear") { outputText = "" }
-                        .font(.caption)
-                        .buttonStyle(.borderless)
+                Button("View all") {
+                    selectedTab = .Logs
                 }
+                .font(.caption)
+                .buttonStyle(.borderless)
+                .disabled(logStream.entries.isEmpty)
             }
+            
             Group {
-                if outputText.isEmpty {
-                    Text("Output from notification-permission and pending-request actions appears here. (Step 6 wires every action to a real in-app console.)")
+                if logStream.entries.isEmpty {
+                    Text("Tap an action below to see it flow through the console.")
                         .font(.callout)
                         .foregroundColor(.secondary)
                 } else {
-                    Text(outputText)
-                        .font(.system(.body, design: .monospaced))
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(Array(logStream.entries.reversed().prefix(5))) { entry in
+                            HStack(spacing: 8) {
+                                Image(systemName: entry.kind.iconName)
+                                    .foregroundColor(entry.kind.tintColor)
+                                    .frame(width: 14)
+                                Text(entry.summary)
+                                    .font(.caption)
+                                    .lineLimit(1)
+                                Spacer(minLength: 0)
+                            }
+                        }
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -121,6 +135,7 @@ struct TestsView: View {
     }
     
     // MARK: - Actions
+    
     private func apply(_ preset: TestPreset) {
         settingsStore.apply(preset)
         if let raw = preset.suggestedTabRaw,
@@ -133,4 +148,5 @@ struct TestsView: View {
 #Preview {
     TestsView(selectedTab: .constant(.Tests))
         .environmentObject(SettingsStore())
+        .environmentObject(LogStream())
 }

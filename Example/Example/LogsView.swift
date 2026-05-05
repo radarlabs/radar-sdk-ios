@@ -122,17 +122,17 @@ struct LogsView: View {
         
         return VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .top, spacing: 8) {
-                Image(systemName: iconName(for: entry.kind))
-                    .foregroundColor(color(for: entry.kind))
+                Image(systemName: entry.kind.iconName)
+                    .foregroundColor(entry.kind.tintColor)
                     .frame(width: 18)
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
                         Text(timeString(entry.timestamp))
                             .font(.system(.caption, design: .monospaced))
                             .foregroundColor(.secondary)
-                        Text(label(for: entry.kind))
+                        Text(entry.kind.label)
                             .font(.caption2.weight(.semibold))
-                            .foregroundColor(color(for: entry.kind))
+                            .foregroundColor(entry.kind.tintColor)
                     }
                     Text(entry.summary)
                         .font(.callout)
@@ -187,39 +187,6 @@ struct LogsView: View {
     
     private func timeString(_ date: Date) -> String {
         Self.timeFormatter.string(from: date)
-    }
-    
-    private func iconName(for kind: ConsoleEntry.Kind) -> String {
-        switch kind {
-        case .action:   return "play.fill"
-        case .result:   return "checkmark.circle"
-        case .event:    return "bolt"
-        case .location: return "location.fill"
-        case .log:      return "text.alignleft"
-        case .error:    return "exclamationmark.triangle.fill"
-        }
-    }
-    
-    private func color(for kind: ConsoleEntry.Kind) -> Color {
-        switch kind {
-        case .action:   return .blue
-        case .result:   return .green
-        case .event:    return .purple
-        case .location: return Color(.systemTeal)
-        case .log:      return .gray
-        case .error:    return .red
-        }
-    }
-    
-    private func label(for kind: ConsoleEntry.Kind) -> String {
-        switch kind {
-        case .action:   return "ACTION"
-        case .result:   return "RESULT"
-        case .event:    return "EVENT"
-        case .location: return "LOCATION"
-        case .log:      return "LOG"
-        case .error:    return "ERROR"
-        }
     }
 }
 
