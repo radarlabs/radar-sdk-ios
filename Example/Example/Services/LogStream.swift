@@ -11,23 +11,6 @@ import CoreLocation
 import Combine
 import RadarSDK
 
-/// A single timestamped debug-log entry, surfaced via `RadarDelegate.didLog(message)`.
-///
-/// Kept temporarily for backward-compat with the current `LogsView` two-list layout.
-/// 6b folds these into `ConsoleEntry` and removes this type along with the `logs`
-/// and `events` arrays on `LogStream`.
-struct LogEntry: Identifiable, Hashable {
-    let id: UUID
-    let timestamp: Date
-    let message: String
-    
-    init(timestamp: Date = Date(), message: String) {
-        self.id = UUID()
-        self.timestamp = timestamp
-        self.message = message
-    }
-}
-
 /// One row in the unified console timeline.
 ///
 /// `summary` is the one-line representation shown in a compact row. `detail` is the
@@ -77,16 +60,10 @@ struct ConsoleEntry: Identifiable {
 /// or its `PassthroughSubject` publishers (for non-UI consumers like the Live Activity
 /// manager).
 ///
-/// As of step 6a, the unified `entries` timeline is the canonical feed. The legacy
-/// `logs` / `events` arrays remain temporarily so `LogsView` keeps working until 6b
-/// rewrites it.
+/// The unified `entries` timeline is the canonical feed. UI consumers (LogsView,
+/// the Tests-tab recent-activity preview in 6e) read it directly; non-UI consumers
+/// like `TripLiveActivityManager` subscribe to the dedicated PassthroughSubjects.
 final class LogStream: NSObject, ObservableObject {
-    
-    /// Cap on retained log entries. Older entries are dropped FIFO.
-    static let maxLogs = 1000
-    
-    /// Cap on retained events. Older events are dropped FIFO.
-    static let maxEvents = 500
     
     /// Cap on retained timeline entries. Older entries are dropped FIFO.
     static let maxEntries = 2000
@@ -94,9 +71,6 @@ final class LogStream: NSObject, ObservableObject {
     // MARK: - Published state (for UI consumers)
     
     @Published private(set) var entries: [ConsoleEntry] = []
-    
-    @Published private(set) var logs: [LogEntry] = []
-    @Published private(set) var events: [RadarEvent] = []
     
     @Published private(set) var lastSyncedLocation: CLLocation?
     @Published private(set) var lastSyncedUser: RadarUser?
@@ -133,18 +107,7 @@ final class LogStream: NSObject, ObservableObject {
         append(ConsoleEntry(kind: .error, summary: title, detail: detail))
     }
     
-    // MARK: - Mutation
-    
-    func clearLogs() {
-        logs.removeAll()
-    }
-    
-    func clearEvents() {
-        events.removeAll()
-    }
-    
-    /// Clear the unified timeline. The legacy `logs` and `events` arrays are
-    /// untouched — they have their own clear methods until 6b removes them.
+    /// Clear the unified timeline.
     func clearEntries() {
         entries.removeAll()
     }
@@ -204,24 +167,12 @@ final class LogStream: NSObject, ObservableObject {
 extension LogStream: RadarDelegate {
     
     func didLog(message: String) {
-        let entry = LogEntry(message: message)
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.logs.append(entry)
-            if self.logs.count > Self.maxLogs {
-                self.logs.removeFirst(self.logs.count - Self.maxLogs)
-            }
-        }
         append(ConsoleEntry(kind: .log, summary: message))
     }
     
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.events.append(contentsOf: events)
-            if self.events.count > Self.maxEvents {
-                self.events.removeFirst(self.events.count - Self.maxEvents)
-            }
             if let user = user {
                 self.lastSyncedUser = user
             }
