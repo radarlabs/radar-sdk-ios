@@ -11,8 +11,6 @@ import Foundation
 import SystemConfiguration
 import UIKit
 
-let SDK_VERSION = "3.32.0"
-
 enum RadarConnectionType: String {
     case unknown = "unknown"
     case wifi = "wifi"
@@ -48,7 +46,7 @@ class RadarUtils: NSObject {
 
     static let country = Locale.current.regionCode
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
-    static let sdkVersion = SDK_VERSION
+    static let sdkVersion = "3.32.0"
 
     @available(iOS 13.0, *)
     static var deviceId: String? {

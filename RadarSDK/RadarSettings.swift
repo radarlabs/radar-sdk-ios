@@ -248,11 +248,6 @@ internal class RadarSettings: NSObject {
         return RadarUserDefaults.string(forKey: .Host) ?? DefaultHost
     }
 
-    public static func updateLastTrackedTime() {
-        let timeStamp: Date = Date()
-        RadarUserDefaults.set(timeStamp, forKey: .LastTrackedTime)
-    }
-
     public static var lastTrackedTime: Date {
         let lastTrackedTime: Date? = RadarUserDefaults.object(forKey: .LastTrackedTime) as? Date
         return lastTrackedTime ?? Date(timeIntervalSince1970: 0)
@@ -269,11 +264,6 @@ internal class RadarSettings: NSObject {
         set {
             RadarUserDefaults.set(newValue, forKey: .UserDebug)
         }
-    }
-
-    public static func updateLastAppOpenTime() {
-        let timeStamp: Date = Date()
-        RadarUserDefaults.set(timeStamp, forKey: .LastAppOpenTime)
     }
 
     public static var lastAppOpenTime: Date {
@@ -316,6 +306,27 @@ internal class RadarSettings: NSObject {
         set { RadarUserDefaults.set(newValue, forKey: .InSurveyMode) }
     }
 
+    public static var pushNotificationToken: String? {
+        get { return RadarUserDefaults.string(forKey: .PushNotificationToken) }
+        set { RadarUserDefaults.set(newValue, forKey: .PushNotificationToken) }
+    }
+
+    public static var locationExtensionToken: String? {
+        get { return RadarUserDefaults.string(forKey: .LocationExtensionToken) }
+        set { RadarUserDefaults.set(newValue, forKey: .LocationExtensionToken) }
+    }
+}
+
+extension RadarSettings {
+
+    public static func updateLastTrackedTime() {
+        RadarUserDefaults.set(Date(), forKey: .LastTrackedTime)
+    }
+
+    public static func updateLastAppOpenTime() {
+        RadarUserDefaults.set(Date(), forKey: .LastAppOpenTime)
+    }
+
     public static var tags: [String] {
         get { return RadarUserDefaults.array(forKey: .UserTags) as? [String] ?? [] }
         set { RadarUserDefaults.set(newValue, forKey: .UserTags) }
@@ -323,7 +334,6 @@ internal class RadarSettings: NSObject {
 
     public static func addTags(_ tags: [String]) {
         var existingTags: [String] = self.tags
-
         let existingTagsSet: Set<String> = Set(self.tags)
         for tag in tags {
             if !existingTagsSet.contains(tag) {
@@ -335,15 +345,5 @@ internal class RadarSettings: NSObject {
 
     public static func removeTags(_ tags: [String]) {
         self.tags = self.tags.filter { !tags.contains($0) }
-    }
-
-    public static var pushNotificationToken: String? {
-        get { return RadarUserDefaults.string(forKey: .PushNotificationToken) }
-        set { RadarUserDefaults.set(newValue, forKey: .PushNotificationToken) }
-    }
-
-    public static var locationExtensionToken: String? {
-        get { return RadarUserDefaults.string(forKey: .LocationExtensionToken) }
-        set { RadarUserDefaults.set(newValue, forKey: .LocationExtensionToken) }
     }
 }
