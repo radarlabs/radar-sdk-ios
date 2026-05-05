@@ -156,6 +156,7 @@
 		BA353F092F8826B500E553A1 /* RadatSyncTestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = BA353F082F8826AF00E553A1 /* RadatSyncTestHelper.m */; };
 		BA353F8D2F89A17500E553A1 /* RadarRemoteTrackingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F8C2F89A16A00E553A1 /* RadarRemoteTrackingOptions.swift */; };
 		BA353F8F2F8D4D0E00E553A1 /* RadarOfflineEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F8E2F8D4D0800E553A1 /* RadarOfflineEventManager.swift */; };
+		9DACF4A7161A400A81B6B370 /* RadarAPIHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1FACB1BB65B49969B63CEA7 /* RadarAPIHelperTests.swift */; };
 		BA3540202F8EBFBD00E553A1 /* RadarOfflineEventManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA35401F2F8EBFAD00E553A1 /* RadarOfflineEventManagerTests.swift */; };
 		BA3540222F90020F00E553A1 /* RadarOfflineEventManager.h in Headers */ = {isa = PBXBuildFile; fileRef = BA3540212F90020900E553A1 /* RadarOfflineEventManager.h */; };
 		BA3540242F9033A900E553A1 /* RadarSerializedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3540232F90339F00E553A1 /* RadarSerializedTests.swift */; };
@@ -331,6 +332,7 @@
 		BA353F082F8826AF00E553A1 /* RadatSyncTestHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadatSyncTestHelper.m; sourceTree = "<group>"; };
 		BA353F8C2F89A16A00E553A1 /* RadarRemoteTrackingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRemoteTrackingOptions.swift; sourceTree = "<group>"; };
 		BA353F8E2F8D4D0800E553A1 /* RadarOfflineEventManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineEventManager.swift; sourceTree = "<group>"; };
+		D1FACB1BB65B49969B63CEA7 /* RadarAPIHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelperTests.swift; sourceTree = "<group>"; };
 		BA35401F2F8EBFAD00E553A1 /* RadarOfflineEventManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineEventManagerTests.swift; sourceTree = "<group>"; };
 		BA3540212F90020900E553A1 /* RadarOfflineEventManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOfflineEventManager.h; sourceTree = "<group>"; };
 		BA3540232F90339F00E553A1 /* RadarSerializedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSerializedTests.swift; sourceTree = "<group>"; };
@@ -664,6 +666,7 @@
 		DD236C822308797B00EB88F9 /* RadarSDKTests */ = {
 			isa = PBXGroup;
 			children = (
+				D1FACB1BB65B49969B63CEA7 /* RadarAPIHelperTests.swift */,
 				BA3540232F90339F00E553A1 /* RadarSerializedTests.swift */,
 				BA35401F2F8EBFAD00E553A1 /* RadarOfflineEventManagerTests.swift */,
 				BA353F082F8826AF00E553A1 /* RadatSyncTestHelper.m */,
@@ -1111,6 +1114,7 @@
 				DD8E2F7D24018C54002D51AB /* CLVisitMock.m in Sources */,
 				DD8E2F7A24018C37002D51AB /* CLLocationManagerMock.m in Sources */,
 				BA3540242F9033A900E553A1 /* RadarSerializedTests.swift in Sources */,
+				9DACF4A7161A400A81B6B370 /* RadarAPIHelperTests.swift in Sources */,
 				BA353F092F8826B500E553A1 /* RadatSyncTestHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
