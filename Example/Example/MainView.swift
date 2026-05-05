@@ -11,7 +11,7 @@ import RadarSDK
 
 struct MainView: View {
     
-    enum TabIdentifier {
+    enum TabIdentifier: String, CaseIterable {
         case Map
         case Logs
         case Tests
@@ -29,7 +29,7 @@ struct MainView: View {
                 Text("Debug")
             }.tag(TabIdentifier.Logs)
 
-            TestsView().tabItem {
+            TestsView(selectedTab: $selectedTab).tabItem {
                 Text("Tests")
             }.tag(TabIdentifier.Tests)
         }
