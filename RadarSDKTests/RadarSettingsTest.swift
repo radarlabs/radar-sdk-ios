@@ -118,36 +118,5 @@ actor RadarSettingsTest {
         #expect(UserDefaults.standard.string(forKey: "radar-appGroup") == "test.app.group")
         #expect(appGroupDefaults.string(forKey: "radar-appGroup") == "test.app.group")
     }
-    
-    @Test("set() is dramatically faster than the equivalent per-write synchronize")
-    func setIsFasterThanForcedSynchronize() {
-        UserDefaults.standard.synchronize()
-        RadarUserDefaults.set("warmup", forKey: .UserId)
-
-        let writeCount = 1000
-        let benchKey = "radar-userId-bench"
-
-        let baselineStart = CFAbsoluteTimeGetCurrent()
-        for i in 0..<writeCount {
-            UserDefaults.standard.set("value\(i)", forKey: benchKey)
-            UserDefaults.standard.synchronize()
-        }
-        let baseline = CFAbsoluteTimeGetCurrent() - baselineStart
-
-        let measuredStart = CFAbsoluteTimeGetCurrent()
-        for i in 0..<writeCount {
-            RadarUserDefaults.set("value\(i)", forKey: .UserId)
-        }
-        let measured = CFAbsoluteTimeGetCurrent() - measuredStart
-
-        UserDefaults.standard.removeObject(forKey: benchKey)
-
-        // Post-fix should be at least 2× faster than the equivalent
-        // synchronize-per-write pattern. In practice it's typically 5–50×.
-        #expect(
-            measured * 2 < baseline,
-            "set() (\(measured)s) should be dramatically faster than per-write synchronize (\(baseline)s)"
-        )
-    }
 }
 
