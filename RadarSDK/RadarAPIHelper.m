@@ -11,6 +11,29 @@
 #import "RadarSettings.h"
 #import "RadarUtils.h"
 
+#import <math.h>
+
+static NSTimeInterval RadarAPIHelperStandardNetworkTimeoutInterval(void) {
+    RadarInitializeOptions *opts = [RadarSettings initializeOptions];
+    NSTimeInterval interval = opts ? opts.networkTimeoutInterval : 10;
+
+    // Validate
+    if (interval <= 0 || isnan(interval) || isinf(interval)) {
+        interval = 10;
+    }
+
+    // Clamp to reasonable range
+    if (interval < 1) {
+        interval = 1;
+    } else if (interval > 300) {
+        interval = 300;
+    }
+
+    return interval;
+}
+
+static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterval standard) { return standard * 2.5; }
+
 @interface RadarAPIHelper ()
 
 @property (strong, nonatomic) dispatch_queue_t queue;
@@ -29,14 +52,17 @@
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
         _semaphore = dispatch_semaphore_create(1);
 
+        NSTimeInterval standardTimeout = RadarAPIHelperStandardNetworkTimeoutInterval();
+        NSTimeInterval extendedTimeout = RadarAPIHelperExtendedNetworkTimeoutInterval(standardTimeout);
+
         NSURLSessionConfiguration *standardConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-        standardConfig.timeoutIntervalForRequest = 10;
-        standardConfig.timeoutIntervalForResource = 10;
+        standardConfig.timeoutIntervalForRequest = standardTimeout;
+        standardConfig.timeoutIntervalForResource = standardTimeout;
         _standardSession = [NSURLSession sessionWithConfiguration:standardConfig];
 
         NSURLSessionConfiguration *extendedConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-        extendedConfig.timeoutIntervalForRequest = 25;
-        extendedConfig.timeoutIntervalForResource = 25;
+        extendedConfig.timeoutIntervalForRequest = extendedTimeout;
+        extendedConfig.timeoutIntervalForResource = extendedTimeout;
         _extendedTimeoutSession = [NSURLSession sessionWithConfiguration:extendedConfig];
     }
     return self;
@@ -58,17 +84,16 @@
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
-        NSString * paramJsonStr = [RadarUtils dictionaryToJson:params];
-        NSString * headersJsonStr = [RadarUtils dictionaryToJson:headers];
+        NSString *paramJsonStr = [RadarUtils dictionaryToJson:params];
+        NSString *headersJsonStr = [RadarUtils dictionaryToJson:headers];
 
         if (logPayload) {
             [[RadarLogger sharedInstance]
                 logWithLevel:RadarLogLevelDebug
                      message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@; params = %@", method, url, headersJsonStr, paramJsonStr]];
         } else {
-            [[RadarLogger sharedInstance]
-                logWithLevel:RadarLogLevelDebug
-                     message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@", method, url, headersJsonStr]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:[NSString stringWithFormat:@"📍 Radar API request | method = %@; url = %@; headers = %@", method, url, headersJsonStr]];
         }
 
         @try {
@@ -118,11 +143,14 @@
                 NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
 
                 if (error) {
+                    long elapsedMs = (long)(latency * 1000);
+                    NSString *host = req.URL.host ?: @"unknown";
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelError
                                     type:RadarLogTypeSDKError
-                                 message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
+                                 message:[NSString stringWithFormat:@"Network error | host = %@; errorDomain = %@; errorCode = %ld; errorDescription = %@; elapsedMs = %ld",
+                                          host, error.domain, (long)error.code, error.localizedDescription, elapsedMs]];
                         completionHandler(RadarStatusErrorNetwork, nil);
                     });
 
@@ -173,7 +201,7 @@
                     }
 
                     res = (NSDictionary *)resObj;
-                    NSString * resJsonStr = [RadarUtils dictionaryToJson:res];
+                    NSString *resJsonStr = [RadarUtils dictionaryToJson:res];
 
                     if (params && [params objectForKey:@"replays"]) {
                         NSArray *replays = [params objectForKey:@"replays"];
@@ -184,8 +212,8 @@
                     } else {
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelDebug
-                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; res = %@",
-                                                                    method, url, (long)statusCode, latency, resJsonStr]];
+                                 message:[NSString stringWithFormat:@"📍 Radar API response | method = %@; url = %@; statusCode = %ld; latency = %f; res = %@", method, url,
+                                                                    (long)statusCode, latency, resJsonStr]];
                     }
                 }
 
@@ -201,9 +229,8 @@
 
             void (^dataTaskRetryHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
                 if (error && [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNetworkConnectionLost) {
-                    [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelDebug
-                             message:[NSString stringWithFormat:@"📍 Radar API retrying after lost connection | url = %@", url]];
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                       message:[NSString stringWithFormat:@"📍 Radar API retrying after lost connection | url = %@", url]];
                     NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
                     [retryTask resume];
                 } else {
