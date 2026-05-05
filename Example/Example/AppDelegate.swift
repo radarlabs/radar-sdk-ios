@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     let logStream = LogStream()
     let settingsStore = SettingsStore()
     let permissionsStore = PermissionsStore()
+    let mapOverlayRegistry = MapOverlayRegistry()
     private var cancellables = Set<AnyCancellable>()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -45,8 +46,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setVerifiedDelegate(self)
         Radar.setInAppMessageDelegate(MyIAMDelegate())
         settingsStore.loadFromSDK()
+        mapOverlayRegistry.register(MonitoredRegionsSource())
 
-        
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in
                 print("Extension Token", data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
@@ -72,6 +73,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 .environmentObject(logStream)
                 .environmentObject(settingsStore)
                 .environmentObject(permissionsStore)
+                .environmentObject(mapOverlayRegistry)
         )
         controller.view.frame = UIScreen.main.bounds
         window.addSubview(controller.view)

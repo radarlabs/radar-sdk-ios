@@ -28,6 +28,9 @@
 		BA7793362FAA997300E197CA /* ConsoleEntry+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793352FAA996800E197CA /* ConsoleEntry+UI.swift */; };
 		BA7793392FAAA12000E197CA /* PermissionsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793382FAAA11C00E197CA /* PermissionsStore.swift */; };
 		BA77933B2FAAA46A00E197CA /* TestsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */; };
+		BA77933E2FAAA7A700E197CA /* MapOverlaySource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77933D2FAAA79D00E197CA /* MapOverlaySource.swift */; };
+		BA7793402FAAA7C200E197CA /* MapOverlayRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77933F2FAAA7BC00E197CA /* MapOverlayRegistry.swift */; };
+		BA7793422FAAA81800E197CA /* MonitoredRegionsSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793412FAAA81100E197CA /* MonitoredRegionsSource.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
@@ -175,6 +178,9 @@
 		BA7793352FAA996800E197CA /* ConsoleEntry+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConsoleEntry+UI.swift"; sourceTree = "<group>"; };
 		BA7793382FAAA11C00E197CA /* PermissionsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsStore.swift; sourceTree = "<group>"; };
 		BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsSettingsView.swift; sourceTree = "<group>"; };
+		BA77933D2FAAA79D00E197CA /* MapOverlaySource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapOverlaySource.swift; sourceTree = "<group>"; };
+		BA77933F2FAAA7BC00E197CA /* MapOverlayRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapOverlayRegistry.swift; sourceTree = "<group>"; };
+		BA7793412FAAA81100E197CA /* MonitoredRegionsSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitoredRegionsSource.swift; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -300,6 +306,16 @@
 			path = Panels;
 			sourceTree = "<group>";
 		};
+		BA77933C2FAAA79400E197CA /* MapOverlays */ = {
+			isa = PBXGroup;
+			children = (
+				BA7793412FAAA81100E197CA /* MonitoredRegionsSource.swift */,
+				BA77933F2FAAA7BC00E197CA /* MapOverlayRegistry.swift */,
+				BA77933D2FAAA79D00E197CA /* MapOverlaySource.swift */,
+			);
+			path = MapOverlays;
+			sourceTree = "<group>";
+		};
 		DD236D1A230A006700EB88F9 = {
 			isa = PBXGroup;
 			children = (
@@ -327,6 +343,7 @@
 		DD236D25230A006700EB88F9 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				BA77933C2FAAA79400E197CA /* MapOverlays */,
 				BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */,
 				BA7792F22FA907E600E197CA /* Components */,
 				BA7792E72FA3D1D200E197CA /* Services */,
@@ -597,6 +614,7 @@
 				F61886C52EA7DC820072E87C /* MapView.swift in Sources */,
 				BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */,
 				BA7792FC2FA92DF100E197CA /* TestPreset.swift in Sources */,
+				BA77933E2FAAA7A700E197CA /* MapOverlaySource.swift in Sources */,
 				BA77932A2FAA62E700E197CA /* TrackingPanel.swift in Sources */,
 				BA7793302FAA6A7300E197CA /* SearchPanel.swift in Sources */,
 				BA7792F82FA9087200E197CA /* TogglePanel.swift in Sources */,
@@ -613,8 +631,10 @@
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
 				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
 				BA7793392FAAA12000E197CA /* PermissionsStore.swift in Sources */,
+				BA7793402FAAA7C200E197CA /* MapOverlayRegistry.swift in Sources */,
 				BA7792F42FA907EE00E197CA /* ControlRow.swift in Sources */,
 				BA77932E2FAA695B00E197CA /* VerifiedPanel.swift in Sources */,
+				BA7793422FAAA81800E197CA /* MonitoredRegionsSource.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
 				BA7792FA2FA9088F00E197CA /* ActionButton.swift in Sources */,
