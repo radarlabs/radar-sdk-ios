@@ -36,7 +36,7 @@ struct NotificationsPanel: View {
                     @unknown default:
                         outputText.append("alert unknown")
                     }
-                    outputText.append("")
+                    outputText.append("\n")
                     switch settings.badgeSetting {
                     case .notSupported:
                         outputText.append("badge unsupported")
@@ -47,7 +47,7 @@ struct NotificationsPanel: View {
                     @unknown default:
                         outputText.append("badge unknown")
                     }
-                    outputText.append("")
+                    outputText.append("\n")
                     switch settings.lockScreenSetting {
                     case .notSupported:
                         outputText.append("lockscreen unsupported")
@@ -58,7 +58,7 @@ struct NotificationsPanel: View {
                     @unknown default:
                         outputText.append("lockscreen unknown")
                     }
-                    outputText.append("")
+                    outputText.append("\n")
                     switch settings.soundSetting {
                     case .notSupported:
                         outputText.append("sound unsupported")
@@ -69,7 +69,7 @@ struct NotificationsPanel: View {
                     @unknown default:
                         outputText.append("sound unknown")
                     }
-                    outputText.append("")
+                    outputText.append("\n")
                     switch settings.notificationCenterSetting {
                     case .notSupported:
                         outputText.append("notifcenter unsupported")
@@ -80,7 +80,7 @@ struct NotificationsPanel: View {
                     @unknown default:
                         outputText.append("notifcenter unknown")
                     }
-                    outputText.append("")
+                    outputText.append("\n")
                     switch settings.authorizationStatus {
                     case .notDetermined:
                         outputText.append("User has not been asked for notification permission")
