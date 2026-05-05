@@ -10,6 +10,8 @@ import SwiftUI
 import RadarSDK
 
 struct VerifiedPanel: View {
+    @EnvironmentObject var logStream: LogStream
+    
     var body: some View {
         TogglePanel("Verified", initiallyExpanded: false) {
             ActionButton("startTrackingVerified", style: .primary) {
@@ -20,14 +22,22 @@ struct VerifiedPanel: View {
             }
             ActionButton("getVerifiedLocationToken") {
                 Radar.getVerifiedLocationToken() { (status, token) in
-                    let tokenDesc = token?.dictionaryValue().description ?? "unable to get token"
-                    print("getVerifiedLocationToken: status = \(status); token = \(tokenDesc)")
+                    let tokenDesc = token?.dictionaryValue().description ?? "no token"
+                    logStream.write(
+                        status,
+                        summary: "getVerifiedLocationToken: \(Radar.stringForStatus(status))",
+                        detail: tokenDesc
+                    )
                 }
             }
             ActionButton("trackVerified") {
                 Radar.trackVerified() { (status, token) in
-                    let tokenDesc = token?.dictionaryValue().description ?? "unable to get token"
-                    print("TrackVerified: status = \(status); token = \(tokenDesc)")
+                    let tokenDesc = token?.dictionaryValue().description ?? "no token"
+                    logStream.write(
+                        status,
+                        summary: "trackVerified: \(Radar.stringForStatus(status))",
+                        detail: tokenDesc
+                    )
                 }
             }
         }
@@ -38,4 +48,5 @@ struct VerifiedPanel: View {
     ScrollView {
         VerifiedPanel().padding()
     }
+    .environmentObject(LogStream())
 }

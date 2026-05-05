@@ -122,4 +122,5 @@ struct NotificationsPanel: View {
         NotificationsPanel(outputText: .constant(""))
             .padding()
     }
+    .environmentObject(LogStream())
 }

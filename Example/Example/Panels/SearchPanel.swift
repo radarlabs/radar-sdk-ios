@@ -10,6 +10,8 @@ import SwiftUI
 import RadarSDK
 
 struct SearchPanel: View {
+    @EnvironmentObject var logStream: LogStream
+    
     var body: some View {
         TogglePanel("Search & Geocoding", initiallyExpanded: false) {
             ActionButton("searchPlaces") {
@@ -24,39 +26,90 @@ struct SearchPanel: View {
                     countryCodes: ["US"],
                     limit: 10
                 ) { (status, location, places) in
-                    print("Search places: status = \(Radar.stringForStatus(status)); places = \(String(describing: places))")
+                    logStream.write(
+                        status,
+                        summary: "searchPlaces: \(Radar.stringForStatus(status))",
+                        detail: "places = \(String(describing: places))"
+                    )
                 }
             }
             ActionButton("searchGeofences") {
                 Radar.searchGeofences() { (status, location, geofences) in
-                    print("Search geofences: status = \(Radar.stringForStatus(status)); geofences = \(String(describing: geofences))")
+                    logStream.write(
+                        status,
+                        summary: "searchGeofences: \(Radar.stringForStatus(status))",
+                        detail: "geofences = \(String(describing: geofences))"
+                    )
                 }
             }
             ActionButton("geocode") {
                 Radar.geocode(address: "20 jay st brooklyn") { (status, addresses) in
-                    print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
+                    logStream.write(
+                        status,
+                        summary: "geocode: \(Radar.stringForStatus(status))",
+                        detail: "coordinate = \(String(describing: addresses?.first?.coordinate))"
+                    )
                 }
-                Radar.geocode(address: "20 jay st brooklyn", layers: ["place", "locality"], countries: ["US", "CA"]) { (status, addresses) in
-                    print("Geocode: status = \(Radar.stringForStatus(status)); coordinate = \(String(describing: addresses?.first?.coordinate))")
+                Radar.geocode(
+                    address: "20 jay st brooklyn",
+                    layers: ["place", "locality"],
+                    countries: ["US", "CA"]
+                ) { (status, addresses) in
+                    logStream.write(
+                        status,
+                        summary: "geocode (layered): \(Radar.stringForStatus(status))",
+                        detail: "coordinate = \(String(describing: addresses?.first?.coordinate))"
+                    )
                 }
             }
             ActionButton("reverseGeocode") {
                 Radar.reverseGeocode { (status, addresses) in
-                    print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+                    logStream.write(
+                        status,
+                        summary: "reverseGeocode: \(Radar.stringForStatus(status))",
+                        detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
+                    )
                 }
                 Radar.reverseGeocode(layers: ["locality", "state"]) { (status, addresses) in
-                    print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+                    logStream.write(
+                        status,
+                        summary: "reverseGeocode (layered): \(Radar.stringForStatus(status))",
+                        detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
+                    )
                 }
-                Radar.reverseGeocode(location: CLLocation(latitude: 40.70390, longitude: -73.98670)) { (status, addresses) in
-                    print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+                Radar.reverseGeocode(
+                    location: CLLocation(latitude: 40.70390, longitude: -73.98670)
+                ) { (status, addresses) in
+                    logStream.write(
+                        status,
+                        summary: "reverseGeocode (location): \(Radar.stringForStatus(status))",
+                        detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
+                    )
                 }
-                Radar.reverseGeocode(location: CLLocation(latitude: 40.70390, longitude: -73.98670), layers: ["locality", "state"]) { (status, addresses) in
-                    print("Reverse geocode: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+                Radar.reverseGeocode(
+                    location: CLLocation(latitude: 40.70390, longitude: -73.98670),
+                    layers: ["locality", "state"]
+                ) { (status, addresses) in
+                    logStream.write(
+                        status,
+                        summary: "reverseGeocode (location, layered): \(Radar.stringForStatus(status))",
+                        detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
+                    )
                 }
             }
             ActionButton("ipGeocode") {
                 Radar.ipGeocode { (status, address, proxy) in
-                    print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy); full address: \(String(describing: address?.dictionaryValue()))")
+                    let detail = """
+                        country: \(String(describing: address?.countryCode))
+                        city: \(String(describing: address?.city))
+                        proxy: \(proxy)
+                        full: \(String(describing: address?.dictionaryValue()))
+                        """
+                    logStream.write(
+                        status,
+                        summary: "ipGeocode: \(Radar.stringForStatus(status))",
+                        detail: detail
+                    )
                 }
             }
             ActionButton("validateAddress") {
@@ -71,7 +124,16 @@ struct SearchPanel: View {
                     "number": "841",
                 ])!
                 Radar.validateAddress(address: address) { (status, address, verificationStatus) in
-                    print("Validate address with street + number: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
+                    let detail = """
+                        country: \(String(describing: address?.countryCode))
+                        city: \(String(describing: address?.city))
+                        verificationStatus: \(Radar.stringForVerificationStatus(verificationStatus))
+                        """
+                    logStream.write(
+                        status,
+                        summary: "validateAddress (street + number): \(Radar.stringForStatus(status))",
+                        detail: detail
+                    )
                 }
                 let addressLabel: RadarAddress = RadarAddress(from: [
                     "latitude": 0,
@@ -83,7 +145,16 @@ struct SearchPanel: View {
                     "addressLabel": "Broadway 841",
                 ])!
                 Radar.validateAddress(address: addressLabel) { (status, address, verificationStatus) in
-                    print("Validate address with address label: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
+                    let detail = """
+                        country: \(String(describing: address?.countryCode))
+                        city: \(String(describing: address?.city))
+                        verificationStatus: \(Radar.stringForVerificationStatus(verificationStatus))
+                        """
+                    logStream.write(
+                        status,
+                        summary: "validateAddress (label): \(Radar.stringForStatus(status))",
+                        detail: detail
+                    )
                 }
             }
             ActionButton("autocomplete") {
@@ -95,10 +166,18 @@ struct SearchPanel: View {
                     limit: 10,
                     country: "US"
                 ) { (status, addresses) in
-                    print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+                    logStream.write(
+                        status,
+                        summary: "autocomplete: \(Radar.stringForStatus(status))",
+                        detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
+                    )
                     if let address = addresses?.first {
                         Radar.validateAddress(address: address) { (status, address, verificationStatus) in
-                            print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
+                            logStream.write(
+                                status,
+                                summary: "validateAddress (from autocomplete): \(Radar.stringForStatus(status))",
+                                detail: "address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))"
+                            )
                         }
                     }
                 }
@@ -110,10 +189,18 @@ struct SearchPanel: View {
                     country: "US",
                     mailable: true
                 ) { (status, addresses) in
-                    print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+                    logStream.write(
+                        status,
+                        summary: "autocomplete (mailable): \(Radar.stringForStatus(status))",
+                        detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
+                    )
                     if let address = addresses?.first {
                         Radar.validateAddress(address: address) { (status, address, verificationStatus) in
-                            print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
+                            logStream.write(
+                                status,
+                                summary: "validateAddress (from autocomplete): \(Radar.stringForStatus(status))",
+                                detail: "address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))"
+                            )
                         }
                     }
                 }
@@ -124,7 +211,11 @@ struct SearchPanel: View {
                     limit: 10,
                     country: "US"
                 ) { (status, addresses) in
-                    print("Autocomplete: status = \(Radar.stringForStatus(status)); formattedAddress = \(String(describing: addresses?.first?.formattedAddress))")
+                    logStream.write(
+                        status,
+                        summary: "autocomplete (no validate): \(Radar.stringForStatus(status))",
+                        detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
+                    )
                 }
             }
             ActionButton("getDistance") {
@@ -136,7 +227,17 @@ struct SearchPanel: View {
                     modes: [.foot, .car],
                     units: .imperial
                 ) { (status, routes) in
-                    print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
+                    let detail = """
+                        car distance: \(String(describing: routes?.car?.distance.text))
+                        car duration: \(String(describing: routes?.car?.duration.text))
+                        foot distance: \(String(describing: routes?.foot?.distance.text))
+                        foot duration: \(String(describing: routes?.foot?.duration.text))
+                        """
+                    logStream.write(
+                        status,
+                        summary: "getDistance: \(Radar.stringForStatus(status))",
+                        detail: detail
+                    )
                 }
             }
             ActionButton("getMatrix") {
@@ -148,8 +249,23 @@ struct SearchPanel: View {
                     CLLocation(latitude: 40.64189, longitude: -73.78779),
                     CLLocation(latitude: 35.99801, longitude: -78.94294)
                 ]
-                Radar.getMatrix(origins: origins, destinations: destinations, mode: .car, units: .imperial) { (status, matrix) in
-                    print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
+                Radar.getMatrix(
+                    origins: origins,
+                    destinations: destinations,
+                    mode: .car,
+                    units: .imperial
+                ) { (status, matrix) in
+                    let detail = """
+                        [0][0]: \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text))
+                        [0][1]: \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text))
+                        [1][0]: \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text))
+                        [1][1]: \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))
+                        """
+                    logStream.write(
+                        status,
+                        summary: "getMatrix: \(Radar.stringForStatus(status))",
+                        detail: detail
+                    )
                 }
             }
         }
@@ -160,4 +276,5 @@ struct SearchPanel: View {
     ScrollView {
         SearchPanel().padding()
     }
+    .environmentObject(LogStream())
 }

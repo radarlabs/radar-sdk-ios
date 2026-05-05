@@ -10,6 +10,8 @@ import SwiftUI
 import RadarSDK
 
 struct MessagingPanel: View {
+    @EnvironmentObject var logStream: LogStream
+    
     var body: some View {
         TogglePanel("IAM & Conversions", initiallyExpanded: false) {
             ActionButton("iam") {
@@ -38,10 +40,16 @@ struct MessagingPanel: View {
             }
             ActionButton("logConversion") {
                 Radar.logConversion(name: "conversion_event", metadata: ["data": "test"]) { (status, event) in
-                    if let conversionEvent = event, conversionEvent.type == .conversion {
-                        print("Conversion name: \(conversionEvent.conversionName!)")
-                    }
-                    print("Log Conversion: status = \(Radar.stringForStatus(status)); event = \(String(describing: event))")
+                    let conversionName = (event?.type == .conversion) ? event?.conversionName : nil
+                    let detail = """
+                        conversionName: \(conversionName ?? "—")
+                        event: \(String(describing: event))
+                        """
+                    logStream.write(
+                        status,
+                        summary: "logConversion: \(Radar.stringForStatus(status))",
+                        detail: detail
+                    )
                 }
             }
         }
@@ -52,4 +60,5 @@ struct MessagingPanel: View {
     ScrollView {
         MessagingPanel().padding()
     }
+    .environmentObject(LogStream())
 }

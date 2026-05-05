@@ -10,6 +10,8 @@ import SwiftUI
 import RadarSDK
 
 struct TrackingPanel: View {
+    @EnvironmentObject var logStream: LogStream
+    
     var body: some View {
         TogglePanel("Tracking") {
             ActionButton("trackOnce") {
@@ -26,7 +28,17 @@ struct TrackingPanel: View {
             }
             ActionButton("getContext") {
                 Radar.getContext { (status, location, context) in
-                    print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
+                    let detail = """
+                        location: \(String(describing: location))
+                        geofences: \(String(describing: context?.geofences))
+                        place: \(String(describing: context?.place))
+                        country: \(String(describing: context?.country))
+                        """
+                    logStream.write(
+                        status,
+                        summary: "getContext: \(Radar.stringForStatus(status))",
+                        detail: detail
+                    )
                 }
             }
             ActionButton("mockTracking") {
@@ -40,7 +52,16 @@ struct TrackingPanel: View {
                     steps: 3,
                     interval: 3
                 ) { (status, location, events, user) in
-                    print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+                    let detail = """
+                        location: \(String(describing: location))
+                        events: \(String(describing: events))
+                        user: \(String(describing: user))
+                        """
+                    logStream.write(
+                        status,
+                        summary: "mockTracking: \(Radar.stringForStatus(status))",
+                        detail: detail
+                    )
                     if i == 2 {
                         Radar.completeTrip()
                     }
@@ -58,4 +79,5 @@ struct TrackingPanel: View {
     ScrollView {
         TrackingPanel().padding()
     }
+    .environmentObject(LogStream())
 }

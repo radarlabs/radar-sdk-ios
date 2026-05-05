@@ -52,4 +52,5 @@ struct TripsPanel: View {
     ScrollView {
         TripsPanel().padding()
     }
+    .environmentObject(LogStream())
 }

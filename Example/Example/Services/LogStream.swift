@@ -224,3 +224,17 @@ extension LogStream: RadarDelegate {
         ))
     }
 }
+
+// MARK: - Status-driven convenience
+
+extension LogStream {
+    /// Convenience: write a `.result` entry on `.success`, `.error` otherwise.
+    /// Used by panels that surface SDK-call completion handlers to the console.
+    func write(_ status: RadarStatus, summary: String, detail: String? = nil) {
+        if status == .success {
+            write(result: summary, detail: detail)
+        } else {
+            write(error: summary, detail: detail)
+        }
+    }
+}
