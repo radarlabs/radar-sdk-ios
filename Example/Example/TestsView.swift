@@ -19,12 +19,7 @@ struct TestsView: View {
                 presetSection
                 trackingSection
                 Divider().padding(.vertical, 4)
-                Text(outputText)
-                    .font(.system(.body, design: .monospaced))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
+                consoleSection
                 TrackingPanel()
                 TripsPanel()
                 VerifiedPanel()
@@ -39,25 +34,37 @@ struct TestsView: View {
     // MARK: - Sections
     private var presetSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Preset").font(.headline)
-            ForEach(TestPreset.all) { preset in
-                Button {
-                    apply(preset)
-                } label: {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(preset.name).font(.body.weight(.medium))
-                        Text(preset.summary)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+            Text("Presets").font(.headline)
+            LazyVGrid(
+                columns: [GridItem(.adaptive(minimum: 110), spacing: 8)],
+                alignment: .leading,
+                spacing: 8
+            ) {
+                ForEach(TestPreset.all) { preset in
+                    Button {
+                        apply(preset)
+                    } label: {
+                        Text(preset.name)
+                            .font(.subheadline.weight(.medium))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(isActive(preset) ? Color.accentColor : Color(.tertiarySystemFill))
+                            .foregroundColor(isActive(preset) ? .white : .primary)
+                            .cornerRadius(20)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                    .background(Color(.tertiarySystemFill))
-                    .cornerRadius(8)
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+            }
+            if let active = TestPreset.all.first(where: { $0.id == settingsStore.activePresetId }) {
+                Text(active.summary)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
+    }
+    
+    private func isActive(_ preset: TestPreset) -> Bool {
+        preset.id == settingsStore.activePresetId
     }
     
     private var trackingSection: some View {
@@ -75,9 +82,41 @@ struct TestsView: View {
                 Text(settingsStore.isTracking ? "On" : "Off")
                     .foregroundColor(settingsStore.isTracking ? .green : .secondary)
             }
+            ControlRow("Source") {
+                Text(settingsStore.isUsingRemoteOptions ? "Remote (server)" : "Local")
+                    .foregroundColor(settingsStore.isUsingRemoteOptions ? .blue : .secondary)
+            }
             ControlRow("Configured") {
                 Text(settingsStore.trackingOptionsSummary)
             }
+        }
+    }
+    
+    private var consoleSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Console").font(.headline)
+                Spacer()
+                if !outputText.isEmpty {
+                    Button("Clear") { outputText = "" }
+                        .font(.caption)
+                        .buttonStyle(.borderless)
+                }
+            }
+            Group {
+                if outputText.isEmpty {
+                    Text("Output from notification-permission and pending-request actions appears here. (Step 6 wires every action to a real in-app console.)")
+                        .font(.callout)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text(outputText)
+                        .font(.system(.body, design: .monospaced))
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(8)
         }
     }
     

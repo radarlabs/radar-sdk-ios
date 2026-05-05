@@ -94,7 +94,7 @@ extension TestPreset {
     /// Continuous tracking — updates every ~30s. Highest battery cost.
     static let continuous = TestPreset(
         id: "continuous",
-        name: "Continuous Tracking",
+        name: "Continuous",
         summary: "Updates every ~30s. Highest battery cost.",
         userId: "test-continuous",
         metadata: ["preset": "continuous"],
@@ -104,7 +104,7 @@ extension TestPreset {
     /// Responsive tracking — wakes on movement. Moderate battery cost.
     static let responsive = TestPreset(
         id: "responsive",
-        name: "Responsive Tracking",
+        name: "Responsive",
         summary: "Wakes on movement. Moderate battery cost.",
         userId: "test-responsive",
         metadata: ["preset": "responsive"],
@@ -114,7 +114,7 @@ extension TestPreset {
     /// Efficient tracking — visit-monitoring only. Lowest battery cost.
     static let efficient = TestPreset(
         id: "efficient",
-        name: "Efficient Tracking",
+        name: "Efficient",
         summary: "Visit-monitoring only. Lowest battery cost.",
         userId: "test-efficient",
         metadata: ["preset": "efficient"],
@@ -132,7 +132,7 @@ extension SettingsStore {
         userId = preset.userId
         userDescription = preset.userDescription
         metadata = preset.metadata
-
+        
         switch preset.trackingAction {
         case .leaveUnchanged:
             break
@@ -141,7 +141,8 @@ extension SettingsStore {
         case .stop:
             Radar.stopTracking()
         }
-
+        
+        activePresetId = preset.id
         refresh()
     }
 }

@@ -75,7 +75,13 @@ final class SettingsStore: ObservableObject {
     // MARK: - SDK-backed (read-only snapshots; call refresh() to update)
     
     @Published private(set) var isTracking: Bool = false
+    @Published private(set) var isUsingRemoteOptions: Bool = false
     @Published private(set) var trackingOptionsSummary: String = "—"
+    
+    /// Last preset applied via `apply(_: TestPreset)`. Set by the preset machinery,
+    /// read by the Tests view to highlight the active chip. Not auto-invalidated when
+    /// other code paths mutate state — re-tapping a preset re-establishes the truth.
+    @Published var activePresetId: String? = nil
     
     
     // MARK: - App-only (UserDefaults)
@@ -131,7 +137,8 @@ final class SettingsStore: ObservableObject {
     
     func refresh() {
         isTracking = Radar.isTracking()
-        trackingOptionsSummary = Self.summarize(Radar.getTrackingOptions())
+        isUsingRemoteOptions = Radar.isUsingRemoteTrackingOptions()
+        trackingOptionsSummary = Self.summarize(Radar.getTrackingOptions(), remote: isUsingRemoteOptions)
     }
     
     
@@ -154,16 +161,23 @@ final class SettingsStore: ObservableObject {
         }
     }
     
-    private static let presetContinuousDict = RadarTrackingOptions.presetContinuous.dictionaryValue() as NSDictionary
-    private static let presetResponsiveDict = RadarTrackingOptions.presetResponsive.dictionaryValue() as NSDictionary
-    private static let presetEfficientDict = RadarTrackingOptions.presetEfficient.dictionaryValue() as NSDictionary
-    
-    private static func summarize(_ options: RadarTrackingOptions) -> String {
-        let dict = options.dictionaryValue() as NSDictionary
-        if dict.isEqual(presetContinuousDict) { return "Continuous" }
-        if dict.isEqual(presetResponsiveDict) { return "Responsive" }
-        if dict.isEqual(presetEfficientDict) { return "Efficient" }
-        return "Custom"
+    /// Match against the SDK's hand-rolled `-isEqual:` on RadarTrackingOptions, which
+    /// compares fields directly (handling enum casing, optional Date interval, etc).
+    /// Dict round-tripping was unreliable because the SDK's persisted representation
+    /// reboxes some fields and ignores `type` in equality.
+    private static func summarize(_ options: RadarTrackingOptions, remote: Bool) -> String {
+        let moving = Int(options.desiredMovingUpdateInterval)
+        let sync = Int(options.desiredSyncInterval)
+        if remote {
+            // Server-driven options take precedence over anything we pass to
+            // Radar.startTracking(...). Don't try to preset-match — show concrete
+            // intervals so the discrepancy with the highlighted chip is legible.
+            return "Server (\(moving)s/\(sync)s)"
+        }
+        if options.isEqual(RadarTrackingOptions.presetContinuous) { return "Continuous" }
+        if options.isEqual(RadarTrackingOptions.presetResponsive) { return "Responsive" }
+        if options.isEqual(RadarTrackingOptions.presetEfficient) { return "Efficient" }
+        return "Custom (\(moving)s/\(sync)s)"
     }
 }
 
