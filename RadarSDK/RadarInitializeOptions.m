@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <math.h>
 #import "RadarInitializeOptions.h"
 
 
@@ -19,6 +20,7 @@
         _autoHandleNotificationDeepLinks = NO;
         _silentPush = NO;
         _trackVerifiedAutoFailover = NO;
+        _networkTimeoutInterval = 10;
     }
     return self;
 }
@@ -29,6 +31,7 @@
     dict[@"autoHandleNotificationDeepLinks"] = @(_autoHandleNotificationDeepLinks);
     dict[@"silentPush"] = @(_silentPush);
     dict[@"trackVerifiedAutoFailover"] = @(_trackVerifiedAutoFailover);
+    dict[@"networkTimeoutInterval"] = @(_networkTimeoutInterval);
     return dict;
 }
 
@@ -39,6 +42,11 @@
         _autoHandleNotificationDeepLinks = [dict[@"autoHandleNotificationDeepLinks"] boolValue];
         _silentPush = [dict[@"silentPush"] boolValue];
         _trackVerifiedAutoFailover = [dict[@"trackVerifiedAutoFailover"] boolValue];
+        NSNumber *networkTimeout = dict[@"networkTimeoutInterval"];
+        _networkTimeoutInterval = networkTimeout ? [networkTimeout doubleValue] : 10;
+        if (_networkTimeoutInterval <= 0 || isnan(_networkTimeoutInterval) || isinf(_networkTimeoutInterval)) {
+            _networkTimeoutInterval = 10;
+        }
     }
     return self;
 }
