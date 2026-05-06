@@ -216,3 +216,86 @@ final class SettingsStore: ObservableObject {
         return "Custom (\(moving)s/\(sync)s)"
     }
 }
+
+// MARK: - Tracking options field rendering
+
+/// One row of the live tracking-options breakdown shown below the preset chips.
+/// `kind` lets the view tint booleans (true=green, false=secondary) without
+/// re-parsing the value string.
+struct TrackingField: Identifiable {
+    let label: String
+    let value: String
+    let kind: Kind
+    
+    var id: String { label }
+    
+    enum Kind {
+        case bool(Bool)
+        case other
+    }
+    
+    static func bool(_ label: String, _ value: Bool) -> TrackingField {
+        TrackingField(label: label, value: value ? "true" : "false", kind: .bool(value))
+    }
+    static func interval(_ label: String, _ secs: Int32) -> TrackingField {
+        TrackingField(label: label, value: "\(secs)s", kind: .other)
+    }
+    static func meters(_ label: String, _ m: Int32) -> TrackingField {
+        TrackingField(label: label, value: "\(m)m", kind: .other)
+    }
+    static func text(_ label: String, _ value: String) -> TrackingField {
+        TrackingField(label: label, value: value, kind: .other)
+    }
+}
+
+extension SettingsStore {
+    /// Ordered field/value pairs for the currently-effective tracking options.
+    /// Re-evaluated on each access; view re-renders triggered by `refresh()`
+    /// (which mutates `trackingOptionsSummary`) pick up new values.
+    var currentTrackingFields: [TrackingField] {
+        Self.fields(from: Radar.getTrackingOptions())
+    }
+    
+    private static func fields(from o: RadarTrackingOptions) -> [TrackingField] {
+        var fields: [TrackingField] = [
+            // Intervals
+            .interval("desiredStoppedUpdateInterval", o.desiredStoppedUpdateInterval),
+            .interval("desiredMovingUpdateInterval", o.desiredMovingUpdateInterval),
+            .interval("desiredSyncInterval", o.desiredSyncInterval),
+            // Accuracy & sync
+            .text("desiredAccuracy", RadarTrackingOptions.string(for: o.desiredAccuracy)),
+            .text("syncLocations", RadarTrackingOptions.string(for: o.syncLocations)),
+            .text("replay", RadarTrackingOptions.string(for: o.replay)),
+            // Stop detection
+            .interval("stopDuration", o.stopDuration),
+            .meters("stopDistance", o.stopDistance),
+            // Geofence-based detection
+            .bool("useStoppedGeofence", o.useStoppedGeofence),
+            .meters("stoppedGeofenceRadius", o.stoppedGeofenceRadius),
+            .bool("useMovingGeofence", o.useMovingGeofence),
+            .meters("movingGeofenceRadius", o.movingGeofenceRadius),
+            .bool("syncGeofences", o.syncGeofences),
+            // Sensors
+            .bool("beacons", o.beacons),
+            .bool("useVisits", o.useVisits),
+            .bool("useSignificantLocationChanges", o.useSignificantLocationChanges),
+            .bool("useMotion", o.useMotion),
+            .bool("useIndoorScan", o.useIndoorScan),
+            .bool("usePressure", o.usePressure),
+            // Misc
+            .bool("showBlueBar", o.showBlueBar),
+            .interval("batchInterval", o.batchInterval),
+            .text("batchSize", "\(o.batchSize)"),
+            .text("type", RadarTrackingOptions.string(for: o.type)),
+        ]
+        if let start = o.startTrackingAfter {
+            fields.append(.text("startTrackingAfter", isoFormatter.string(from: start)))
+        }
+        if let stop = o.stopTrackingAfter {
+            fields.append(.text("stopTrackingAfter", isoFormatter.string(from: stop)))
+        }
+        return fields
+    }
+    
+    private static let isoFormatter = ISO8601DateFormatter()
+}

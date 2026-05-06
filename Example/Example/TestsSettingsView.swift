@@ -21,7 +21,8 @@ struct TestsSettingsView: View {
     @EnvironmentObject var settingsStore: SettingsStore
     @EnvironmentObject var permissionsStore: PermissionsStore
     @Environment(\.presentationMode) private var presentationMode
-    
+    @State private var isOptionsExpanded: Bool = false
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -73,7 +74,35 @@ struct TestsSettingsView: View {
             Text(presetStatusText)
                 .font(.caption)
                 .foregroundColor(.secondary)
+            
+            DisclosureGroup(isExpanded: $isOptionsExpanded) {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(settingsStore.currentTrackingFields) { field in
+                        HStack(alignment: .firstTextBaseline) {
+                            Text(field.label)
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundColor(.secondary)
+                            Spacer(minLength: 8)
+                            Text(field.value)
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundColor(color(for: field))
+                                .multilineTextAlignment(.trailing)
+                        }
+                    }
+                }
+                .padding(.top, 4)
+            } label: {
+                Text("Active tracking options")
+                    .font(.subheadline.weight(.medium))
+            }
         }
+    }
+    
+    private func color(for field: TrackingField) -> Color {
+        if case .bool(let v) = field.kind {
+            return v ? .green : .secondary
+        }
+        return .primary
     }
     
     private var presetStatusText: String {
