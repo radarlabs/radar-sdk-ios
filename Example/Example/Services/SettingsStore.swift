@@ -298,4 +298,62 @@ extension SettingsStore {
     }
     
     private static let isoFormatter = ISO8601DateFormatter()
+    
+    /// Ordered field/value pairs for the live SDK configuration (server-driven
+    /// settings). Returns a single placeholder row if no config has been fetched
+    /// yet. Re-evaluated on each access; refresh via `settingsStore.refresh()`.
+    var currentSdkConfigFields: [TrackingField] {
+        guard let c = RadarSdkConfiguration.current() else {
+            return [.text("status", "No SDK config fetched yet")]
+        }
+        return Self.fields(from: c)
+    }
+    
+    private static func fields(from c: RadarSdkConfiguration) -> [TrackingField] {
+        var fields: [TrackingField] = [
+            // Logging
+            .text("logLevel", logLevelString(c.logLevel())),
+            // Lifecycle
+            .bool("startTrackingOnInitialize", c.startTrackingOnInitialize()),
+            .bool("trackOnceOnAppOpen", c.trackOnceOnAppOpen()),
+            // Sync mode
+            .bool("useSyncRegion", c.useSyncRegion()),
+            .bool("syncAfterSetUser", c.syncAfterSetUser()),
+            // Geofence behavior
+            .bool("bufferGeofenceEntries", c.bufferGeofenceEntries()),
+            .bool("bufferGeofenceExits", c.bufferGeofenceExits()),
+            .text("defaultGeofenceDwellThreshold", "\(c.defaultGeofenceDwellThreshold())"),
+            .bool("stopDetection", c.stopDetection()),
+            // Persistence / logging
+            .bool("usePersistence", c.usePersistence()),
+            .bool("useLogPersistence", c.useLogPersistence()),
+            .bool("extendFlushReplays", c.extendFlushReplays()),
+            // Misc / less-common
+            .bool("useRadarModifiedBeacon", c.useRadarModifiedBeacon()),
+            .bool("useOpenedAppConversion", c.useOpenedAppConversion()),
+            .bool("useNotificationDiff", c.useNotificationDiff()),
+            .bool("useNotificationDiffV2", c.useNotificationDiffV2()),
+            .bool("useForegroundLocationUpdatedAtMsDiff", c.useForegroundLocationUpdatedAtMsDiff()),
+            .bool("useOfflineRTOUpdates", c.useOfflineRTOUpdates()),
+            .bool("offlineEventGenerationEnabled", c.offlineEventGenerationEnabled()),
+            .bool("skipForegroundCheck", c.skipForegroundCheck()),
+        ]
+        let rtoCount = c.remoteTrackingOptions()?.count ?? 0
+        fields.append(.text("remoteTrackingOptions", "\(rtoCount) preset(s)"))
+        return fields
+    }
+    
+    /// `RadarLogLevel.toString()` is internal in the SDK module, so duplicate
+    /// the mapping here. If the SDK ever exposes it publicly (or adds
+    /// `+stringForLogLevel:` like the other tracking-options enums), drop this.
+    private static func logLevelString(_ level: RadarLogLevel) -> String {
+        switch level {
+        case .none:    return "none"
+        case .error:   return "error"
+        case .warning: return "warning"
+        case .info:    return "info"
+        case .debug:   return "debug"
+        @unknown default: return "unknown"
+        }
+    }
 }

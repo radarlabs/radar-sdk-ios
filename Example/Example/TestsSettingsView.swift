@@ -22,6 +22,7 @@ struct TestsSettingsView: View {
     @EnvironmentObject var permissionsStore: PermissionsStore
     @Environment(\.presentationMode) private var presentationMode
     @State private var isOptionsExpanded: Bool = false
+    @State private var isSdkConfigExpanded: Bool = false
 
     var body: some View {
         NavigationView {
@@ -93,6 +94,27 @@ struct TestsSettingsView: View {
                 .padding(.top, 4)
             } label: {
                 Text("Active tracking options")
+                    .font(.subheadline.weight(.medium))
+            }
+            
+            DisclosureGroup(isExpanded: $isSdkConfigExpanded) {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(settingsStore.currentSdkConfigFields) { field in
+                        HStack(alignment: .firstTextBaseline) {
+                            Text(field.label)
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundColor(.secondary)
+                            Spacer(minLength: 8)
+                            Text(field.value)
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundColor(color(for: field))
+                                .multilineTextAlignment(.trailing)
+                        }
+                    }
+                }
+                .padding(.top, 4)
+            } label: {
+                Text("SDK configuration")
                     .font(.subheadline.weight(.medium))
             }
         }
