@@ -34,10 +34,14 @@ struct MapOverlayBundle {
 ///
 /// Examples:
 /// - `MonitoredRegionsSource` — `CLLocationManager.monitoredRegions`
-/// - `NearbyGeofencesSource` — `Radar.searchGeofences(...)` (step 10b)
-/// - `NearbyBeaconsSource` — `Radar.searchBeacons(...)` (step 10c)
-/// - `NearbyPlacesSource` — `Radar.searchPlaces(...)` (step 10c)
-/// - `TripDestinationSource` — destination of active trip (step 10d)
+/// - `NearbyGeofencesSource` — `Radar.searchGeofences(...)`
+/// - `NearbyPlacesSource` — `Radar.searchPlaces(...)`
+/// - `SyncedRegionSource` — SDK-cached sync region + entities
+/// - `TripDestinationSource` — active trip's destination(s)
+///
+/// Note: there is no public `Radar.searchBeacons(...)` API. Synced beacons
+/// surface via `SyncedRegionSource`; live-ranged beacons would require a
+/// separate source subscribing to `RadarUser.beacons` updates.
 protocol MapOverlaySource: AnyObject {
     /// Stable identifier; persisted to UserDefaults for enabled-state.
     var id: String { get }

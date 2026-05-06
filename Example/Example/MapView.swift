@@ -21,22 +21,32 @@ struct MapView: View {
             MapViewRepresentable(registry: registry)
                 .ignoresSafeArea()
             
-            Button {
-                isShowingPicker = true
-            } label: {
-                Image(systemName: "square.stack.3d.up.fill")
-                    .font(.title2)
-                    .foregroundColor(.primary)
-                    .frame(width: 44, height: 44)
-                    .background(Color(.systemBackground))
-                    .clipShape(Circle())
-                    .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+            VStack(spacing: 12) {
+                floatingButton(systemImage: "arrow.clockwise") {
+                    Task { await registry.refreshAll() }
+                }
+                floatingButton(systemImage: "square.stack.3d.up.fill") {
+                    isShowingPicker = true
+                }
             }
             .padding()
         }
         .sheet(isPresented: $isShowingPicker) {
             OverlayPickerSheet()
                 .environmentObject(registry)
+        }
+    }
+    
+    @ViewBuilder
+    private func floatingButton(systemImage: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.title2)
+                .foregroundColor(.primary)
+                .frame(width: 44, height: 44)
+                .background(Color(.systemBackground))
+                .clipShape(Circle())
+                .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
         }
     }
 }
@@ -58,7 +68,11 @@ struct MapViewRepresentable: UIViewRepresentable {
         let map = MKMapView()
         map.delegate = context.coordinator
         map.showsUserLocation = true
-        map.userTrackingMode = .follow
+        if let saved = Coordinator.loadRegion() {
+            map.setRegion(saved, animated: false)
+        } else {
+            map.userTrackingMode = .follow
+        }
         return map
     }
     
@@ -106,7 +120,8 @@ struct MapViewRepresentable: UIViewRepresentable {
         }
         
         func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-            // Debounce: cancel any pending refresh and schedule a new one.
+            Self.saveRegion(mapView.region)
+
             refreshTask?.cancel()
             let center = CLLocation(
                 latitude: mapView.region.center.latitude,
@@ -114,10 +129,36 @@ struct MapViewRepresentable: UIViewRepresentable {
             )
             let span = mapView.region.span
             refreshTask = Task { [registry] in
-                try? await Task.sleep(nanoseconds: 300_000_000) // 300ms debounce
+                try? await Task.sleep(nanoseconds: 300_000_000)
                 if Task.isCancelled { return }
                 await registry.refresh(near: center, span: span)
             }
+        }
+        
+        // MARK: - Region persistence
+        
+        private static let regionDefaultsKey = "mapView.lastRegion"
+        
+        static func saveRegion(_ region: MKCoordinateRegion) {
+            let dict: [String: Double] = [
+                "lat": region.center.latitude,
+                "lng": region.center.longitude,
+                "latDelta": region.span.latitudeDelta,
+                "lngDelta": region.span.longitudeDelta
+            ]
+            UserDefaults.standard.set(dict, forKey: regionDefaultsKey)
+        }
+        
+        static func loadRegion() -> MKCoordinateRegion? {
+            guard let dict = UserDefaults.standard.dictionary(forKey: regionDefaultsKey) as? [String: Double],
+                  let lat = dict["lat"], let lng = dict["lng"],
+                  let latDelta = dict["latDelta"], let lngDelta = dict["lngDelta"] else {
+                return nil
+            }
+            return MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: lat, longitude: lng),
+                span: MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lngDelta)
+            )
         }
     }
 }

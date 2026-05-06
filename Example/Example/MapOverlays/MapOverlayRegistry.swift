@@ -63,14 +63,25 @@ final class MapOverlayRegistry: ObservableObject {
     
     // MARK: - Refresh
     
+    private(set) var lastKnownLocation: CLLocation?
+    private(set) var lastKnownSpan: MKCoordinateSpan?
+
+    func refreshAll() async {
+        guard let location = lastKnownLocation, let span = lastKnownSpan else { return }
+        await refresh(near: location, span: span)
+    }
+    
     /// Reload bundles for all enabled sources. Sequential; sources are usually
     /// fast enough that parallelism isn't worth the complexity.
     func refresh(near location: CLLocation, span: MKCoordinateSpan) async {
+        lastKnownLocation = location
+        lastKnownSpan = span
         for source in sources where enabledSourceIds.contains(source.id) {
             let bundle = await source.loadOverlays(near: location, span: span)
             bundlesById[source.id] = bundle
         }
     }
+
     
     // MARK: - Aggregated content
     

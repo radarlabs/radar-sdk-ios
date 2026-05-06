@@ -49,7 +49,7 @@ public final class RadarSyncManager: NSObject {
         RadarLogger.shared.debug("SyncManager: Stopped sync region polling")
     }
     
-    // MARK: - API 
+    // MARK: - API
     
     @objc public static func fetchSyncRegion() {
         guard let location = RadarSwift.bridge?.lastLocation() else {
@@ -72,8 +72,8 @@ public final class RadarSyncManager: NSObject {
                             
                             RadarLogger.shared.info("SyncManager: Initial sync region set | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
                         } else if currentState?.syncedRegionCenter?.latitude != center.latitude ||
-                                  currentState?.syncedRegionCenter?.longitude != center.longitude ||
-                                  currentState?.syncedRegionRadius != radius {
+                                    currentState?.syncedRegionCenter?.longitude != center.longitude ||
+                                    currentState?.syncedRegionRadius != radius {
                             
                             RadarLogger.shared.info("SyncManager: Sync region changed | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
                         }
@@ -153,7 +153,7 @@ public final class RadarSyncManager: NSObject {
         
         return distanceFromEdge >= 0 && distanceFromEdge <= (radius * boundaryThresholdFraction)
     }
-
+    
     @objc public static func isOutsideSyncedRegion(location: CLLocation) -> Bool {
         guard let state = syncStore.read(),
               let center = state.syncedRegionCenter,
@@ -166,7 +166,7 @@ public final class RadarSyncManager: NSObject {
     }
     
     // MARK: - Geometry Helpers
-
+    
     @objc public static func isPoint(_ point: CLLocation, insideCircleWithCenter center: CLLocationCoordinate2D, radius: Double) -> Bool {
         let centerLocation = CLLocation(latitude: center.latitude, longitude: center.longitude)
         let distance = centerLocation.distance(from: point)
@@ -240,9 +240,9 @@ public final class RadarSyncManager: NSObject {
         // fractionAlongSegment = 0.0 means closest to segmentStart
         // 1.0 means closest to segmentEnd
         let fractionAlongSegment = max(0, min(1,
-            (distanceToStart * distanceToStart - distanceToEnd * distanceToEnd + segmentLength * segmentLength)
-            / (2 * segmentLength * segmentLength)
-        ))
+                                              (distanceToStart * distanceToStart - distanceToEnd * distanceToEnd + segmentLength * segmentLength)
+                                              / (2 * segmentLength * segmentLength)
+                                             ))
         
         let closestPointOnSegment = greatCircleInterpolate(from: segmentStart, to: segmentEnd, fraction: fractionAlongSegment)
         let closestLocation = CLLocation(latitude: closestPointOnSegment.latitude, longitude: closestPointOnSegment.longitude)
@@ -262,7 +262,7 @@ public final class RadarSyncManager: NSObject {
         let sinHalfDLon = sin(deltaLon / 2)
         let h = sinHalfDLat * sinHalfDLat + cos(lat1) * cos(lat2) * sinHalfDLon * sinHalfDLon
         let angularDistance = 2.0 * atan2(sqrt(h), sqrt(1 - h))
-
+        
         guard angularDistance > 1e-12 else { return a }
         
         let sinD = sin(angularDistance)
@@ -289,8 +289,8 @@ public final class RadarSyncManager: NSObject {
         sdkConfig: RadarSdkConfiguration?
     ) -> Bool {
         let shouldBuffer = checkingForExit
-            ? (sdkConfig?.bufferGeofenceExits ?? true)
-            : (sdkConfig?.bufferGeofenceEntries ?? true)
+        ? (sdkConfig?.bufferGeofenceExits ?? true)
+        : (sdkConfig?.bufferGeofenceEntries ?? true)
         
         switch geofence.geometry {
         case .circle(let center, let radius):
@@ -341,7 +341,7 @@ public final class RadarSyncManager: NSObject {
         }
         let isStopped = RadarSwift.bridge?.isStopped() ?? false
         if !isStopped { return [] }
-
+        
         let closest = places
             .compactMap { place -> (RadarPlaceSwift, Double)? in
                 let radius = (place.geometryRadius ?? 0.0) + placeDetectionRadius
@@ -351,7 +351,7 @@ public final class RadarSyncManager: NSObject {
             }
             .min { $0.1 < $1.1 }
             .map { $0.0 }
-
+        
         if let matched = closest {
             RadarLogger.shared.debug("SyncManager: getPlaces matched \(matched.id) (geoR=\(String(describing: matched.geometryRadius)))")
             return [matched]
@@ -405,7 +405,7 @@ public final class RadarSyncManager: NSObject {
     
     @objc public static func hasPlaceStateChanged(location: CLLocation) -> Bool {
         lastPlaceCheckLocation = location
-
+        
         if let rejectedLocation = rejectedAtLocation, !rejectedPlaceIds.isEmpty {
             let moved = location.distance(from: rejectedLocation) > max(rejectedLocation.horizontalAccuracy, 15.0)
             let accuracyImproved = rejectedLocation.horizontalAccuracy > 100.0 && location.horizontalAccuracy < 50.0
@@ -415,11 +415,11 @@ public final class RadarSyncManager: NSObject {
                 rejectedAtLocation = nil
             }
         }
-
+        
         let state = syncStore.read() ?? RadarSyncState()
         let lastKnownPlaceIds = Set(state.lastSyncedPlaceIds)
         let allPlaces = state.syncedPlaces ?? []
-
+        
         // Check for exits — user moved beyond geometryRadius + 50m
         if !lastKnownPlaceIds.isEmpty {
             if let lastPlace = allPlaces.first(where: { lastKnownPlaceIds.contains($0.id) }) {
@@ -431,12 +431,12 @@ public final class RadarSyncManager: NSObject {
                 }
             }
         }
-
+        
         // Check for entries — stopped + within geometryRadius + 75m, excluding rejected places
         let currentPlaces = getPlaces(for: location)
         let currentIds = Set(currentPlaces.compactMap { $0.id })
         let enteredPlaceIds = currentIds.subtracting(lastKnownPlaceIds).subtracting(rejectedPlaceIds)
-
+        
         if !enteredPlaceIds.isEmpty {
             if !lastKnownPlaceIds.isEmpty {
                 if let lastPlace = allPlaces.first(where: { lastKnownPlaceIds.contains($0.id) }) {
@@ -451,7 +451,7 @@ public final class RadarSyncManager: NSObject {
             RadarLogger.shared.info("SyncManager: Detected place entry: \(enteredPlaceIds)")
             return true
         }
-
+        
         return false
     }
     private static func checkForGeofenceEntries(
@@ -568,7 +568,7 @@ public final class RadarSyncManager: NSObject {
         let timestamps = syncStore.read()?.geofenceEntryTimestamps ?? [:]
         let acceptedGeofenceIds = Array(timestamps.keys)
         let currentPlaceIds = getPlaces(for: location).map { $0.id }.filter { !rejectedPlaceIds.contains($0) }
-
+        
         RadarLogger.shared.info(
             "SyncManager: Optimistic update | " +
             "geofences=\(acceptedGeofenceIds) " +
@@ -710,7 +710,7 @@ public final class RadarSyncManager: NSObject {
         previousSyncedBeaconIds = syncStore.read()?.lastSyncedBeaconIds
         
         RadarLogger.shared.info("SyncManager: Saving beacon state | previous=\(previousSyncedBeaconIds?.count ?? 0) new=\(beaconIds.count)")
-
+        
         syncStore.modify { state in
             if state == nil { state = RadarSyncState() }
             state?.lastSyncedBeaconIds = beaconIds
@@ -719,7 +719,7 @@ public final class RadarSyncManager: NSObject {
     
     @objc public static func rollbackSyncState() {
         guard previousSyncedGeofenceIds != nil || previousSyncedPlaceIds != nil || previousSyncedBeaconIds != nil else { return }
-
+        
         RadarLogger.shared.info("SyncManager: Track failed, rolling back to previous sync state")
         
         syncStore.modify { state in
@@ -767,4 +767,124 @@ public final class RadarSyncManager: NSObject {
             )
         }
     }
+    
+    // MARK: - QA map display surface
+    //
+    // Read-only snapshot accessors over the locally-cached synced data, exposed
+    // for the example app's MapView.
+    
+    public static func getSyncedRegion() -> CLCircularRegion? {
+        guard let state = syncStore.read(),
+              let center = state.syncedRegionCenter,
+              let radius = state.syncedRegionRadius, radius > 0 else { return nil }
+        return CLCircularRegion(
+            center: CLLocationCoordinate2D(latitude: center.latitude, longitude: center.longitude),
+            radius: radius,
+            identifier: "\(syncRegionIdentifierPrefix)region"
+        )
+    }
+    
+    public static func getSyncedGeofences() -> [RadarSyncedGeofenceSnapshot] {
+        syncStore.read()?.syncedGeofences?.map(RadarSyncedGeofenceSnapshot.init(from:)) ?? []
+    }
+    
+    public static func getSyncedPlaces() -> [RadarSyncedPlaceSnapshot] {
+        syncStore.read()?.syncedPlaces?.map(RadarSyncedPlaceSnapshot.init(from:)) ?? []
+    }
+    
+    public static func getSyncedBeacons() -> [RadarSyncedBeaconSnapshot] {
+        syncStore.read()?.syncedBeacons?.map(RadarSyncedBeaconSnapshot.init(from:)) ?? []
+    }
 }
+
+    // MARK: - Snapshot types
+
+    public struct RadarSyncedGeofenceSnapshot {
+        public let id: String
+        public let description: String
+        public let tag: String?
+        public let externalId: String?
+        public let geometry: Geometry
+        
+        public enum Geometry {
+            case circle(center: CLLocationCoordinate2D, radius: Double)
+            case polygon(
+                coordinates: [CLLocationCoordinate2D],
+                center: CLLocationCoordinate2D,
+                radius: Double
+            )
+            
+            public var center: CLLocationCoordinate2D {
+                switch self {
+                case .circle(let c, _): return c
+                case .polygon(_, let c, _): return c
+                }
+            }
+        }
+        
+        init(from swift: RadarGeofenceSwift) {
+            self.id = swift.id
+            self.description = swift.description
+            self.tag = swift.tag
+            self.externalId = swift.externalId
+            switch swift.geometry {
+            case .circle(let c, let r):
+                self.geometry = .circle(
+                    center: CLLocationCoordinate2D(latitude: c.latitude, longitude: c.longitude),
+                    radius: r
+                )
+            case .polygon(let coords, let c, let r):
+                self.geometry = .polygon(
+                    coordinates: coords.map {
+                        CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+                    },
+                    center: CLLocationCoordinate2D(latitude: c.latitude, longitude: c.longitude),
+                    radius: r
+                )
+            }
+        }
+    }
+
+    public struct RadarSyncedPlaceSnapshot {
+        public let id: String
+        public let name: String
+        public let categories: [String]
+        public let group: String?
+        public let location: CLLocationCoordinate2D
+        
+        init(from swift: RadarPlaceSwift) {
+            self.id = swift.id
+            self.name = swift.name
+            self.categories = swift.categories
+            self.group = swift.group
+            self.location = CLLocationCoordinate2D(
+                latitude: swift.location.latitude,
+                longitude: swift.location.longitude
+            )
+        }
+    }
+
+    public struct RadarSyncedBeaconSnapshot {
+        public let id: String
+        public let description: String?
+        public let tag: String?
+        public let uuid: String
+        public let major: String
+        public let minor: String
+        public let location: CLLocationCoordinate2D?
+        
+        init(from swift: RadarBeaconSwift) {
+            self.id = swift.id
+            self.description = swift.description
+            self.tag = swift.tag
+            self.uuid = swift.uuid
+            self.major = swift.major
+            self.minor = swift.minor
+            if let geom = swift.geometry {
+                self.location = CLLocationCoordinate2D(latitude: geom.latitude, longitude: geom.longitude)
+            } else {
+                self.location = nil
+            }
+        }
+    }
+

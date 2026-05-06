@@ -47,6 +47,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setInAppMessageDelegate(MyIAMDelegate())
         settingsStore.loadFromSDK()
         mapOverlayRegistry.register(MonitoredRegionsSource())
+        mapOverlayRegistry.register(NearbyGeofencesSource())
+        mapOverlayRegistry.register(SyncedRegionSource())
+        mapOverlayRegistry.register(NearbyPlacesSource())
+        mapOverlayRegistry.register(TripDestinationSource())
 
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in
@@ -66,14 +70,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
+        
+        let appDelegate = (UIApplication.shared.delegate as? AppDelegate) ?? self
+        
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .white
         let controller = UIHostingController(
             rootView: MainView()
-                .environmentObject(logStream)
-                .environmentObject(settingsStore)
-                .environmentObject(permissionsStore)
-                .environmentObject(mapOverlayRegistry)
+                .environmentObject(appDelegate.logStream)
+                .environmentObject(appDelegate.settingsStore)
+                .environmentObject(appDelegate.permissionsStore)
+                .environmentObject(appDelegate.mapOverlayRegistry)
         )
         controller.view.frame = UIScreen.main.bounds
         window.addSubview(controller.view)
