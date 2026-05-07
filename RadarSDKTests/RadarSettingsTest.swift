@@ -117,4 +117,3 @@ actor RadarSettingsTest {
         #expect(appGroupDefaults.string(forKey: "radar-appGroup") == "test.app.group")
     }
 }
-

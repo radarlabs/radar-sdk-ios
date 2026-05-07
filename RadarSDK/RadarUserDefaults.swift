@@ -74,12 +74,12 @@ class RadarUserDefaults: NSObject {
             return UserDefaults.standard
         }
     }()
-    
+
     private static let flushQueue = DispatchQueue(
         label: "io.radar.userdefaults.flush",
         qos: .utility
     )
-    
+
     private static let flushLock = NSLock()
     nonisolated(unsafe)
     private static var pendingFlushTargets: [ObjectIdentifier: UserDefaults] = [:]
@@ -96,21 +96,21 @@ class RadarUserDefaults: NSObject {
         target.set(value, forKey: key.rawValue)
         scheduleFlush(for: target)
     }
-    
+
     private static func scheduleFlush(for target: UserDefaults) {
         let id = ObjectIdentifier(target)
-        
+
         flushLock.lock()
         let alreadyScheduled = pendingFlushTargets[id] != nil
         pendingFlushTargets[id] = target
         flushLock.unlock()
-        
+
         guard !alreadyScheduled else { return }
         flushQueue.async {
             flushLock.lock()
             let captured = pendingFlushTargets.removeValue(forKey: id)
             flushLock.unlock()
-            
+
             captured?.synchronize()
         }
     }
