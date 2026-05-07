@@ -6,12 +6,10 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
-import UIKit
-import SystemConfiguration
 import CoreTelephony
-
-let SDK_VERSION = "3.32.0"
+import Foundation
+import SystemConfiguration
+import UIKit
 
 enum RadarConnectionType: String {
     case unknown = "unknown"
@@ -25,7 +23,7 @@ enum RadarConnectionType: String {
 
 @objc(RadarUtils) @objcMembers
 class RadarUtils: NSObject {
-    
+
     static let deviceModel = {
         var systemInfo = utsname()
         uname(&systemInfo)
@@ -36,7 +34,7 @@ class RadarUtils: NSObject {
         }
         return identifier
     }()
-    
+
     @available(iOS 13.0, *)
     static var deviceOS: String {
         get async {
@@ -45,11 +43,11 @@ class RadarUtils: NSObject {
             }
         }
     }
-    
+
     static let country = Locale.current.regionCode
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
-    static let sdkVersion = SDK_VERSION
-    
+    static let sdkVersion = "3.32.0"
+
     @available(iOS 13.0, *)
     static var deviceId: String? {
         get async {
@@ -58,7 +56,7 @@ class RadarUtils: NSObject {
             }
         }
     }
-    
+
     static let deviceType: String = "iOS"
     static let deviceMake: String = "Apple"
     static var networkType: RadarConnectionType {
@@ -73,17 +71,18 @@ class RadarUtils: NSObject {
         if !isReachable {
             return .unknown
         }
-        
+
         let isWWAN = flags.contains(.isWWAN)
         if !isWWAN {
             return .wifi
         }
-        
+
         guard let carrierTypes = CTTelephonyNetworkInfo().serviceCurrentRadioAccessTechnology,
-              !carrierTypes.isEmpty else {
+            !carrierTypes.isEmpty
+        else {
             return .unknown
         }
-        
+
         let networkInfo = CTTelephonyNetworkInfo()
         if let technology = networkInfo.serviceCurrentRadioAccessTechnology?.values.first {
             if technology == "CTRadioAccessTechnologyNR" {
@@ -102,35 +101,36 @@ class RadarUtils: NSObject {
     static var networkTypeString: String {
         return networkType.rawValue
     }
-    
+
     static var appInfo: [String: String] {
-        get {
-            var info = Bundle.main.infoDictionary ?? [:]
-            info.merge(Bundle.main.localizedInfoDictionary ?? [:]) { (_, new) in new }
-            
-            return info.isEmpty ? [:] : [
+        var info = Bundle.main.infoDictionary ?? [:]
+        info.merge(Bundle.main.localizedInfoDictionary ?? [:]) { (_, new) in new }
+
+        return info.isEmpty
+            ? [:]
+            : [
                 "name": info["CFBundleDisplayName"] as? String ?? "",
                 "version": info["CFBundleShortVersionString"] as? String ?? "",
                 "build": info["CFBundleVersion"] as? String ?? "",
-                "namespace": Bundle.main.bundleIdentifier ?? ""
+                "namespace": Bundle.main.bundleIdentifier ?? "",
             ]
-        }
     }
-    
-#if targetEnvironment(simulator)
-    static let isSimulator: Bool = true
-#else
-    static let isSimulator: Bool = false
-#endif
-    
+
+    #if targetEnvironment(simulator)
+        static let isSimulator: Bool = true
+    #else
+        static let isSimulator: Bool = false
+    #endif
+
     static let locationBackgroundMode: Bool = {
         guard let info = Bundle.main.infoDictionary,
-            let backgroundModes = info["UIBackgroundModes"] as? [String] else {
+            let backgroundModes = info["UIBackgroundModes"] as? [String]
+        else {
             return false
         }
-        return backgroundModes.contains("location");
+        return backgroundModes.contains("location")
     }()
-    
+
     static var locationAuthorization: String {
         let status: CLAuthorizationStatus
         if #available(iOS 14.0, *) {
@@ -141,39 +141,37 @@ class RadarUtils: NSObject {
         }
         switch status {
         case .authorizedWhenInUse:
-            return "GRANTED_FOREGROUND";
+            return "GRANTED_FOREGROUND"
         case .authorizedAlways:
-            return "GRANTED_BACKGROUND";
+            return "GRANTED_BACKGROUND"
         case .denied:
-            return "DENIED";
+            return "DENIED"
         case .restricted:
-            return "DENIED";
+            return "DENIED"
         case .notDetermined:
-            return "NOT_DETERMINED";
+            return "NOT_DETERMINED"
         @unknown default:
-            return "NOT_DETERMINED";
+            return "NOT_DETERMINED"
         }
     }
-    
+
     static var locationAccuracyAuthorization: String {
-        get {
-            if #available(iOS 14.0, *) {
-                let locationManager = CLLocationManager()
-                let accuracy = locationManager.accuracyAuthorization
-                switch accuracy {
-                case .reducedAccuracy:
-                    return "REDUCED"
-                case .fullAccuracy:
-                    return "FULL"
-                @unknown default:
-                    return "FULL"
-                }
-            } else {
+        if #available(iOS 14.0, *) {
+            let locationManager = CLLocationManager()
+            let accuracy = locationManager.accuracyAuthorization
+            switch accuracy {
+            case .reducedAccuracy:
+                return "REDUCED"
+            case .fullAccuracy:
+                return "FULL"
+            @unknown default:
                 return "FULL"
             }
+        } else {
+            return "FULL"
         }
     }
-    
+
     @available(iOS 13.0, *)
     static var foreground: Bool {
         get async {
@@ -182,7 +180,7 @@ class RadarUtils: NSObject {
             }
         }
     }
-    
+
     @available(iOS 13.0, *)
     static var backgroundTimeRemaining: TimeInterval {
         get async {
@@ -192,10 +190,10 @@ class RadarUtils: NSObject {
             }
         }
     }
-    
+
     static func dictionaryToJson(_ dict: [String: Any]?) -> String {
         guard let dict = dict else { return "{}" }
-        
+
         do {
             let data = try JSONSerialization.data(withJSONObject: dict)
             guard let string = String(data: data, encoding: .utf8) else {
@@ -209,11 +207,11 @@ class RadarUtils: NSObject {
             return "{}"
         }
     }
-    
+
     static func dictionaryForLocation(_ location: CLLocation) -> [String: Any] {
         return location.toDict()
     }
-    
+
     static func locationForDictionary(_ dict: [String: Any]?) -> CLLocation {
         if let dict {
             return CLLocation.from(dict: dict) ?? CLLocation(latitude: 0, longitude: 0)
@@ -221,7 +219,7 @@ class RadarUtils: NSObject {
             return CLLocation(latitude: 0, longitude: 0)
         }
     }
-    
+
     static let isoDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -247,19 +245,20 @@ internal extension CLLocation {
         }
         return dict
     }
-    
+
     static func from(dict: [String: Any]) -> CLLocation? {
         guard let latitude = dict["latitude"] as? CLLocationDegrees,
-              let longitude = dict["longitude"] as? CLLocationDegrees else {
+            let longitude = dict["longitude"] as? CLLocationDegrees
+        else {
             return nil
         }
         let horizontalAccuracy = dict["horizontalAccuracy"] as? CLLocationAccuracy ?? 0
         let verticalAccuracy = dict["verticalAccuracy"] as? CLLocationAccuracy ?? 0
         let timestamp = dict["timestamp"] as? Date ?? Date()
-        
+
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let location = CLLocation(coordinate: coordinate, altitude: 0, horizontalAccuracy: horizontalAccuracy, verticalAccuracy: verticalAccuracy, timestamp: timestamp)
-        
+
         return location
     }
 }
