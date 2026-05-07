@@ -212,11 +212,8 @@ internal class RadarSettings: NSObject {
         set {
             RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .SdkConfiguration)
             
-            if let newValue = newValue {
+            if let newValue {
                 logLevel = newValue.logLevel;
-                RadarSwift.bridge?.setLogBufferPersistantLog(newValue.useLogPersistence)
-            } else {
-                RadarSwift.bridge?.setLogBufferPersistantLog(false)
             }
         }
     }

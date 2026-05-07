@@ -10,9 +10,24 @@ import Foundation
 @available(iOS 13.0, *)
 public final class RadarAPIClient: Sendable {
     
+    struct APIError: Error {
+        let data: Data
+        let response: URLResponse
+        let message: String
+    }
+    
+    
     public static let shared = RadarAPIClient()
     
-    let apiHelper = RadarApiHelper()
+    let apiHelper: RadarAPIHelper
+    
+    init(apiHelper: RadarAPIHelper? = nil) {
+        if let apiHelper {
+            self.apiHelper = apiHelper
+        } else {
+            self.apiHelper = RadarAPIHelper()
+        }
+    }
     
     func getAsset(url: String) async throws -> Data {
         let (data, _) = if (url.starts(with: "http")) {
@@ -24,7 +39,7 @@ public final class RadarAPIClient: Sendable {
     }
     
     func fetchSyncRegion(latitude: Double, longitude: Double) async throws -> SyncRegionResponse {
-        var body: [String: Any] = [
+        var body: [String: Any?] = [
             "latitude": latitude,
             "longitude": longitude
         ]
@@ -81,6 +96,24 @@ public final class RadarAPIClient: Sendable {
             regionCenter: regionCenter,
             regionRadius: regionRadius
         )
+    }
+    
+    func sendLogs(logs: [RadarLog]) async throws {
+        let body: [String: Any?] = [
+            "id": RadarSettings.id ?? "",
+            "installId": RadarSettings.installId,
+            "deviceId": await RadarUtils.deviceId,
+            "sessionId": RadarSettings.sessionId,
+            "logs": logs.map(\.dict)
+        ]
+        
+        let (data, response) = try await apiHelper.radarRequest(method: "POST", url: "logs", body: body)
+        
+        if response.statusCode >= 200 && response.statusCode < 300 {
+            return
+        } else {
+            throw APIError(data: data, response: response, message: "Failed to send logs")
+        }
     }
     
     

@@ -18,14 +18,6 @@
 
 @implementation RadarSwiftBridge
 
-- (void)setLogBufferPersistantLog:(BOOL)value {
-    [[RadarLogBuffer sharedInstance] setPersistentLogFeatureFlag:value];
-}
-
-- (void)writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString * _Nonnull)message forcePersist:(BOOL)forcePersist {
-    [[RadarLogBuffer sharedInstance] write:level type:type message:message forcePersist:forcePersist];
-}
-
 - (void)flushReplays {
     [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
 }
