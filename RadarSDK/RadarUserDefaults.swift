@@ -45,6 +45,7 @@ class RadarUserDefaults: NSObject {
         case LocationExtensionToken = "radar-locationExtensionToken"
         case InSurveyMode = "radar-inSurveyMode"
         case AppGroup = "radar-appGroup"
+        case LocationManagerSwiftMigrationEnabled = "radar-locationManagerSwiftMigrationEnabled"
         
         // RadarState
         case LastLocation = "radar-lastLocation"

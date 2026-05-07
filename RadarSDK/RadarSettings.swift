@@ -144,6 +144,11 @@ internal class RadarSettings: NSObject {
         get { return RadarUserDefaults.bool(forKey: .Tracking) }
         set { RadarUserDefaults.set(newValue, forKey: .Tracking) }
     }
+
+    static var locationManagerSwiftMigrationEnabled: Bool {
+        get { RadarUserDefaults.bool(forKey: .LocationManagerSwiftMigrationEnabled) }
+        set { RadarUserDefaults.set(newValue, forKey: .LocationManagerSwiftMigrationEnabled) }
+    }
     
     public static var trackingOptions: RadarTrackingOptions! {
         get {
