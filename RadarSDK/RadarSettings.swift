@@ -315,9 +315,6 @@ internal class RadarSettings: NSObject {
         get { return RadarUserDefaults.string(forKey: .LocationExtensionToken) }
         set { RadarUserDefaults.set(newValue, forKey: .LocationExtensionToken) }
     }
-}
-
-extension RadarSettings {
 
     public static func updateLastTrackedTime() {
         RadarUserDefaults.set(Date(), forKey: .LastTrackedTime)
