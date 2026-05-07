@@ -26,7 +26,7 @@ extension RadarLogLevel: Codable {
             return "none"
         }
     }
-    
+
     public static func from(string: String) -> RadarLogLevel {
         switch string {
         case "none":
@@ -43,12 +43,12 @@ extension RadarLogLevel: Codable {
             return .none
         }
     }
-    
+
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.toString())
     }
-    
+
     public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
@@ -75,7 +75,7 @@ extension RadarLogType: Codable {
             return "NONE"
         }
     }
-    
+
     public static func from(string: String) -> RadarLogType {
         switch string {
         case "NONE":
@@ -94,12 +94,12 @@ extension RadarLogType: Codable {
             return .none
         }
     }
-    
+
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.toString())
     }
-    
+
     public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
@@ -113,14 +113,14 @@ struct RadarLog: Codable, CustomStringConvertible {
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return formatter
     }()
-    
+
     let level: RadarLogLevel
     let message: String
     let type: RadarLogType
     let createdAt: Date
     let includeDate: Bool
     let battery: Float?
-    
+
     var description: String {
         var str = message
         if includeDate {
@@ -133,7 +133,7 @@ struct RadarLog: Codable, CustomStringConvertible {
         }
         return str
     }
-    
+
     var osLogType: OSLogType {
         switch level {
         case .none:
@@ -150,13 +150,13 @@ struct RadarLog: Codable, CustomStringConvertible {
             return .default
         }
     }
-    
+
     var dict: [String: Any] {
         return [
             "message": description,
             "level": level.toString(),
             "type": type.toString(),
-            "createdAt": RadarUtils.isoDateFormatter.string(from: createdAt),
+            "createdAt": RadarUtils.isoDateFormatter.string(from: createdAt)
         ]
     }
 }

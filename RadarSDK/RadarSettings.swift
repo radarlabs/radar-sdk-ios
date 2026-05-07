@@ -211,9 +211,9 @@ internal class RadarSettings: NSObject {
         }
         set {
             RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .SdkConfiguration)
-            
+
             if let newValue {
-                logLevel = newValue.logLevel;
+                logLevel = newValue.logLevel
             }
         }
     }

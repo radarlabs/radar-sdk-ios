@@ -9,18 +9,17 @@ import Foundation
 
 @available(iOS 13.0, *)
 public final class RadarAPIClient: Sendable {
-    
+
     struct APIError: Error {
         let data: Data
         let response: URLResponse
         let message: String
     }
-    
-    
+
     public static let shared = RadarAPIClient()
-    
+
     let apiHelper: RadarAPIHelper
-    
+
     init(apiHelper: RadarAPIHelper? = nil) {
         if let apiHelper {
             self.apiHelper = apiHelper
@@ -28,7 +27,7 @@ public final class RadarAPIClient: Sendable {
             self.apiHelper = RadarAPIHelper()
         }
     }
-    
+
     func getAsset(url: String) async throws -> Data {
         let (data, _) =
             if url.starts(with: "http") {
@@ -42,7 +41,7 @@ public final class RadarAPIClient: Sendable {
     func fetchSyncRegion(latitude: Double, longitude: Double) async throws -> SyncRegionResponse {
         var body: [String: Any?] = [
             "latitude": latitude,
-            "longitude": longitude,
+            "longitude": longitude
         ]
 
         if let userId = RadarSettings.userId {
@@ -63,22 +62,19 @@ public final class RadarAPIClient: Sendable {
 
         var geofences: [RadarGeofenceSwift]?
         if let arr = res["geofences"] as? [[String: Any]],
-            let jsonData = try? JSONSerialization.data(withJSONObject: arr)
-        {
+            let jsonData = try? JSONSerialization.data(withJSONObject: arr) {
             geofences = try? decoder.decode([RadarGeofenceSwift].self, from: jsonData)
         }
 
         var places: [RadarPlaceSwift]?
         if let arr = res["places"] as? [[String: Any]],
-            let jsonData = try? JSONSerialization.data(withJSONObject: arr)
-        {
+            let jsonData = try? JSONSerialization.data(withJSONObject: arr) {
             places = try? decoder.decode([RadarPlaceSwift].self, from: jsonData)
         }
 
         var beacons: [RadarBeaconSwift]?
         if let arr = res["beacons"] as? [[String: Any]],
-            let jsonData = try? JSONSerialization.data(withJSONObject: arr)
-        {
+            let jsonData = try? JSONSerialization.data(withJSONObject: arr) {
             beacons = try? decoder.decode([RadarBeaconSwift].self, from: jsonData)
         }
 
@@ -88,8 +84,7 @@ public final class RadarAPIClient: Sendable {
             let lat = regionDict["latitude"] as? Double,
             let lng = regionDict["longitude"] as? Double,
             let radius = regionDict["radius"] as? Double,
-            radius > 0
-        {
+            radius > 0 {
             regionCenter = RadarCoordinateSwift(latitude: lat, longitude: lng)
             regionRadius = radius
         }
@@ -102,7 +97,7 @@ public final class RadarAPIClient: Sendable {
             regionRadius: regionRadius
         )
     }
-    
+
     func sendLogs(logs: [RadarLog]) async throws {
         let body: [String: Any?] = [
             "id": RadarSettings.id ?? "",
@@ -111,16 +106,15 @@ public final class RadarAPIClient: Sendable {
             "sessionId": RadarSettings.sessionId,
             "logs": logs.map(\.dict)
         ]
-        
+
         let (data, response) = try await apiHelper.radarRequest(method: "POST", url: "logs", body: body)
-        
+
         if response.statusCode >= 200 && response.statusCode < 300 {
             return
         } else {
             throw APIError(data: data, response: response, message: "Failed to send logs")
         }
     }
-    
-    
+
     // TODO: implement rest of RadarAPIClient
 }

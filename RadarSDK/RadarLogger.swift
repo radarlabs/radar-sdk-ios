@@ -9,8 +9,8 @@ import Foundation
 import OSLog
 
 @objc(RadarLogger)
-final class RadarLogger : NSObject, @unchecked Sendable {
-    
+final class RadarLogger: NSObject, @unchecked Sendable {
+
     @objc(sharedInstance)
     static let shared = RadarLogger()
 
@@ -19,9 +19,9 @@ final class RadarLogger : NSObject, @unchecked Sendable {
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return formatter
     }()
-    
+
     // in testing mode, allow changing logLevel directly
-    var logLevelOverride: RadarLogLevel? = nil
+    var logLevelOverride: RadarLogLevel?
     var logLevel: RadarLogLevel {
         get { logLevelOverride ?? RadarSettings.logLevel }
     }
@@ -34,7 +34,7 @@ final class RadarLogger : NSObject, @unchecked Sendable {
 
     // TODO: implement RadarDelegateHolder in Swift, temp implementation to hold delegate here so delegate.didLog can be called
     @MainActor
-    weak var delegate: RadarDelegate? = nil
+    weak var delegate: RadarDelegate?
 
     @MainActor
     @objc public func setDelegate(_ delegate: RadarDelegate?) {
@@ -55,13 +55,13 @@ final class RadarLogger : NSObject, @unchecked Sendable {
     func warning(_ message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
         log(level: .warning, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
     }
-    
+
     func error(_ message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
         log(level: .error, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
     }
-    
+
     func log(level: RadarLogLevel, message: String, type: RadarLogType = .none, includeDate: Bool = false, includeBattery: Bool = false, append: Bool = false) {
-        if (level.rawValue > logLevel.rawValue) {
+        if level.rawValue > logLevel.rawValue {
             return
         }
         // if you're still on iOS 13.0, that's your problem, you won't get proper logs.
@@ -72,15 +72,15 @@ final class RadarLogger : NSObject, @unchecked Sendable {
             }
             return
         }
-        
+
         Task {
             let log = RadarLog(level: level, message: message, type: type, createdAt: Date(), includeDate: includeDate, battery: includeBattery ? await self.device.batteryLevel : nil)
-            
+
             await RadarLogBuffer.shared.log(log)
-            
+
             let backgroundTime = await RadarUtils.backgroundTimeRemaining
             let logMessage = "\(log) | backgroundTimeRemaining = \(backgroundTime)"
-            
+
             if #available(iOS 14.0, *),
                logLevelOverride == nil { // if logLevelOverride != nil, we are in test mode, don't output to console
                 RadarLogger.logger.log("\(logMessage)")
@@ -90,7 +90,7 @@ final class RadarLogger : NSObject, @unchecked Sendable {
             }
         }
     }
-    
+
     // ObjC interface, which will be deprecated
     @objc
     func log(level: RadarLogLevel, message: String) {

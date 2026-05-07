@@ -11,7 +11,7 @@ import Foundation
 class RadarFileStorage {
     let file: URL
     let handle: FileHandle
-    
+
     init?(fileName: String, directory: FileManager.SearchPathDirectory = .applicationSupportDirectory) {
         guard let documents = FileManager.default.urls(for: directory, in: .userDomainMask).first else {
             // failed to find directory
@@ -19,7 +19,7 @@ class RadarFileStorage {
         }
         let root = documents.appendingPathComponent("RadarSDK", isDirectory: true)
         var file = root.appendingPathComponent(fileName, isDirectory: false)
-        
+
         if !FileManager.default.fileExists(atPath: file.path) {
             let dir = file.deletingLastPathComponent()
             do {
@@ -28,7 +28,7 @@ class RadarFileStorage {
                 // fail to create intermediate file
                 return nil
             }
-            
+
             FileManager.default.createFile(atPath: file.path, contents: nil)
             var resourceValues = URLResourceValues()
             resourceValues.isExcludedFromBackup = true
@@ -41,21 +41,21 @@ class RadarFileStorage {
         }
         self.handle = handle
     }
-    
+
     func append(data: Data) {
         // TODO: replace with iOS 13.4 api handle?.seekToEnd()
         handle.seekToEndOfFile()
         handle.write(data)
     }
-    
+
     func write(data: Data, options: Data.WritingOptions = []) {
         do {
             try data.write(to: file, options: options)
         } catch {
-            
+
         }
     }
-    
+
     func read() -> Data? {
         do {
             let data = try Data(contentsOf: file)
@@ -65,14 +65,14 @@ class RadarFileStorage {
             return nil
         }
     }
-    
+
     func delete() {
         try? FileManager.default.removeItem(at: file)
     }
 }
 
 final class RadarFileStorageObject<T: Codable & Sendable>: @unchecked Sendable {
-    
+
     private let fileURL: URL
     private let queue: DispatchQueue
     private var cache: T?

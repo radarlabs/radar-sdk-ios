@@ -16,9 +16,9 @@ extension URLSession: RadarURLSessionProtocol {}
 
 @available(iOS 13.0, *)
 final class RadarAPIHelper: Sendable {
-    
+
     let session: RadarURLSessionProtocol
-    
+
     init(session: RadarURLSessionProtocol? = nil) {
         if let session {
             self.session = session
@@ -29,7 +29,7 @@ final class RadarAPIHelper: Sendable {
             self.session = URLSession(configuration: config)
         }
     }
-    
+
     func retryingRequest(for request: URLRequest) async throws -> (Data, URLResponse) {
         do {
             let (data, response) = try await session.data(for: request)
@@ -40,11 +40,11 @@ final class RadarAPIHelper: Sendable {
                 let (data, response) = try await session.data(for: request)
                 return (data, response)
             }
-            
+
             throw error
         }
     }
-    
+
     func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
         let queryString = query.isEmpty ? "" : ("?" + query.compactMap { key, value in
             key + "=" + value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
@@ -106,7 +106,7 @@ final class RadarAPIHelper: Sendable {
         headers["X-Radar-App-Info"] = RadarUtils.dictionaryToJson(RadarUtils.appInfo)
 
         let url = "\(RadarSettings.host)/v1/\(url)"
-        
+
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
 
         return (data, response)

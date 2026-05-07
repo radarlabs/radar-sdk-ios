@@ -11,7 +11,7 @@ import Foundation
 
 @objc(RadarSyncManager)
 public final class RadarSyncManager: NSObject {
-    
+
     static let syncStore = RadarFileStorageObject<RadarSyncState>(fileName: "radar_sync_state.json")
 
     private static let placeDetectionRadius: Double = 75.0
@@ -72,8 +72,7 @@ public final class RadarSyncManager: NSObject {
 
                             RadarLogger.shared.info("SyncManager: Initial sync region set | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
                         } else if currentState?.syncedRegionCenter?.latitude != center.latitude || currentState?.syncedRegionCenter?.longitude != center.longitude
-                            || currentState?.syncedRegionRadius != radius
-                        {
+                            || currentState?.syncedRegionRadius != radius {
 
                             RadarLogger.shared.info("SyncManager: Sync region changed | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
                         }
