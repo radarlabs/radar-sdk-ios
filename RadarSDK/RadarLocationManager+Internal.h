@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)locationManager:(CLLocationManager *)manager didVisit:(CLVisit *)visit;
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error;
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading;
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager;
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
 
 @end

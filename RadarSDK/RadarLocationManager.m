@@ -42,6 +42,7 @@ typedef NS_OPTIONS(NSUInteger, RadarLocationManagerCapability) {
     RadarLocationManagerCapabilitySendPipeline = 1 << 4,
     RadarLocationManagerCapabilityDelegateForegroundLocation = 1 << 5,
     RadarLocationManagerCapabilityDelegateFailure = 1 << 6,
+    RadarLocationManagerCapabilityAuthorization = 1 << 7,
 };
 
 @interface RadarLocationManager ()
@@ -98,6 +99,7 @@ typedef NS_OPTIONS(NSUInteger, RadarLocationManagerCapability) {
 - (void)legacy_locationManager:(CLLocationManager *)manager didVisit:(CLVisit *)visit;
 - (void)legacy_locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error;
 - (void)legacy_locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading;
+- (void)legacy_locationManagerDidChangeAuthorization:(CLLocationManager *)manager;
 - (void)legacy_locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
 
 @end
@@ -194,6 +196,10 @@ typedef NS_OPTIONS(NSUInteger, RadarLocationManagerCapability) {
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     [self.owner legacy_locationManager:manager didUpdateHeading:newHeading];
+}
+
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager {
+    [self.owner legacy_locationManagerDidChangeAuthorization:manager];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
@@ -311,6 +317,10 @@ typedef NS_OPTIONS(NSUInteger, RadarLocationManagerCapability) {
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+    [self failFastForSelector:_cmd];
+}
+
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager {
     [self failFastForSelector:_cmd];
 }
 
@@ -1838,8 +1848,16 @@ static const RadarLocationManagerCapability kRadarLocationManagerImplementedCapa
     }];
 }
 
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager {
+    [[self implementationForCapability:RadarLocationManagerCapabilityAuthorization] locationManagerDidChangeAuthorization:manager];
+}
+
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-    [self.legacyImplementation locationManager:manager didChangeAuthorizationStatus:status];
+    [[self implementationForCapability:RadarLocationManagerCapabilityAuthorization] locationManager:manager didChangeAuthorizationStatus:status];
+}
+
+- (void)legacy_locationManagerDidChangeAuthorization:(CLLocationManager *)manager {
+    [self legacy_locationManager:manager didChangeAuthorizationStatus:manager.authorizationStatus];
 }
 
 - (void)legacy_locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {

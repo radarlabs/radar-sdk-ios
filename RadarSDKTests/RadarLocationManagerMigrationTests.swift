@@ -40,6 +40,14 @@ actor RadarLocationManagerMigrationTests {
 
         #expect(implementation.locationUpdateSourceKind == .coreLocationManager)
         #expect(implementation.locationUpdateSource is RadarCoreLocationUpdateSource)
+        #expect(implementation.locationMonitoringKind == .locationManager)
+        #expect(implementation.locationMonitoring is RadarLocationManagerMonitoring)
+        #expect(implementation.locationAuthorizationKind == .locationManager)
+        #expect(implementation.locationAuthorizationController is RadarLocationManagerAuthorizationController)
+        #expect(implementation.locationBackgroundSessionKind == .none)
+        #expect(implementation.locationBackgroundSessionController is RadarNoopLocationBackgroundSessionController)
+        #expect(implementation.locationDiagnosticsKind == .legacy)
+        #expect(implementation.locationDiagnosticsProvider is RadarLegacyLocationDiagnosticsProvider)
     }
 
     @Test("Location manager implementation can select a live updates source")
@@ -59,6 +67,52 @@ actor RadarLocationManagerMigrationTests {
         } else {
             #expect(implementation.locationUpdateSource is RadarCoreLocationUpdateSource)
         }
+    }
+
+    @Test("Location manager implementation can select future location platform collaborators")
+    func implementationCanSelectFutureLocationPlatformCollaborators() {
+        let implementation = RadarLocationManagerImplementation()
+        let locationManager = CLLocationManager()
+        let lowPowerLocationManager = CLLocationManager()
+
+        implementation.configure(
+            locationManager: locationManager,
+            lowPowerLocationManager: lowPowerLocationManager
+        )
+        implementation.setLocationMonitoringKind(.conditionMonitoring)
+        implementation.setLocationAuthorizationKind(.serviceSession)
+        implementation.setLocationBackgroundSessionKind(.backgroundActivitySession)
+        implementation.setLocationDiagnosticsKind(.serviceSession)
+
+        if #available(iOS 17.0, *) {
+            #expect(implementation.locationMonitoring is RadarConditionMonitoring)
+            #expect(implementation.locationAuthorizationController is RadarServiceSessionAuthorizationController)
+            #expect(implementation.locationBackgroundSessionController is RadarBackgroundActivitySessionController)
+            #expect(implementation.locationDiagnosticsProvider is RadarServiceSessionDiagnosticsProvider)
+        } else {
+            #expect(implementation.locationMonitoring is RadarLocationManagerMonitoring)
+            #expect(implementation.locationAuthorizationController is RadarLocationManagerAuthorizationController)
+            #expect(implementation.locationBackgroundSessionController is RadarNoopLocationBackgroundSessionController)
+            #expect(implementation.locationDiagnosticsProvider is RadarLegacyLocationDiagnosticsProvider)
+        }
+    }
+
+    @Test("Location manager legacy diagnostics snapshot reflects current authorization state")
+    func legacyDiagnosticsSnapshotDefaults() {
+        let implementation = RadarLocationManagerImplementation()
+        let locationManager = CLLocationManager()
+        let lowPowerLocationManager = CLLocationManager()
+
+        implementation.configure(
+            locationManager: locationManager,
+            lowPowerLocationManager: lowPowerLocationManager
+        )
+
+        let snapshot = implementation.locationDiagnosticsProvider?.diagnosticsSnapshot()
+
+        #expect(snapshot != nil)
+        #expect(snapshot?.insufficientlyInUse == false)
+        #expect(snapshot?.serviceSessionRequired == false)
     }
 
     @Test("Location manager facade owns both injected CLLocationManager delegates")
