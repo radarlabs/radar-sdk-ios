@@ -7,12 +7,14 @@
 
 import Foundation
 
+@objc(RadarLocationManagerImplementation)
 @objcMembers
-final class RadarLocationManagerSwiftBackend: NSObject {
-    func didUpdateInjectedDependencies() {
+public final class RadarLocationManagerImplementation: NSObject {
+    public func didUpdateInjectedDependencies() {
     }
 
-    func failFast(withMethod method: String) -> Never {
-        preconditionFailure("RadarLocationManager Swift backend is not implemented for \(method)")
+    @objc(failFastWithMethod:)
+    public func failFast(withMethod method: String) {
+        preconditionFailure("RadarLocationManager implementation is not implemented for \(method)")
     }
 }

@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol RadarLocationManagerBackend <NSObject>
+@protocol RadarLocationManagerRouting <NSObject>
 
 @property (nullable, nonatomic, weak) RadarLocationManager *owner;
 

@@ -84,6 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setTags:(NSArray<NSString *> * _Nullable)tags;
 + (void)addTags:(NSArray<NSString *> * _Nonnull)tags;
 + (void)removeTags:(NSArray<NSString *> * _Nonnull)tags;
++ (BOOL)locationManagerSwiftMigrationEnabled;
++ (void)setLocationManagerSwiftMigrationEnabled:(BOOL)locationManagerSwiftMigrationEnabled;
 
 @end
 
