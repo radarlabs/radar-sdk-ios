@@ -8,13 +8,11 @@
 import Foundation
 import SwiftUI
 
-@available(iOS 13.0, *)
 @objc(RadarInAppMessageDelegate_Swift)
 @objcMembers
 @MainActor
 open class RadarInAppMessageDelegate: NSObject, RadarInAppMessageProtocol {
 
-    @available(iOS 13.0, *)
     public static func loadImage(_ url: String) async -> UIImage? {
         if url.isEmpty {
             return nil
