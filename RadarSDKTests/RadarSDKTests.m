@@ -2336,10 +2336,28 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         @"skipForegroundCheck": @(NO)
     }];
     XCTAssertFalse(explicitFalse.skipForegroundCheck);
-    
+
     RadarSdkConfiguration *explicitTrue = [[RadarSdkConfiguration alloc] initWithDict:@{
         @"skipForegroundCheck": @(YES)
     }];
     XCTAssertTrue(explicitTrue.skipForegroundCheck);
+}
+
+- (void)test_RadarSdkConfiguration_useSwiftLocationManagerDefault {
+    RadarSdkConfiguration *defaults = [[RadarSdkConfiguration alloc] initWithDict:@{}];
+    XCTAssertFalse(defaults.useSwiftLocationManager, @"useSwiftLocationManager should default to false");
+
+    RadarSdkConfiguration *explicitTrue = [[RadarSdkConfiguration alloc] initWithDict:@{
+        @"useSwiftLocationManager": @(YES)
+    }];
+    XCTAssertTrue(explicitTrue.useSwiftLocationManager);
+
+    RadarSdkConfiguration *explicitFalse = [[RadarSdkConfiguration alloc] initWithDict:@{
+        @"useSwiftLocationManager": @(NO)
+    }];
+    XCTAssertFalse(explicitFalse.useSwiftLocationManager);
+
+    NSDictionary *roundTrip = [explicitTrue dictionaryValue];
+    XCTAssertEqualObjects(roundTrip[@"useSwiftLocationManager"], @(YES), @"flag should round-trip through dictionaryValue");
 }
 @end
