@@ -72,8 +72,7 @@ public final class RadarSyncManager: NSObject {
 
                             RadarLogger.shared.info("SyncManager: Initial sync region set | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
                         } else if currentState?.syncedRegionCenter?.latitude != center.latitude || currentState?.syncedRegionCenter?.longitude != center.longitude
-                            || currentState?.syncedRegionRadius != radius
-                        {
+                            || currentState?.syncedRegionRadius != radius {
 
                             RadarLogger.shared.info("SyncManager: Sync region changed | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
                         }

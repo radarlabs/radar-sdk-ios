@@ -110,7 +110,7 @@ struct RadarLogBufferTests {
             [
                 try! JSONEncoder().encode(simpleLog("persist1")),
                 try! JSONEncoder().encode(simpleLog("persist2")),
-                try! JSONEncoder().encode(simpleLog("persist3")),
+                try! JSONEncoder().encode(simpleLog("persist3"))
             ].map { $0 + "\n".data(using: .utf8)! }.joined())
 
         file?.write(data: logs)

@@ -156,7 +156,7 @@ struct RadarLog: Codable, CustomStringConvertible {
             "message": description,
             "level": level.toString(),
             "type": type.toString(),
-            "createdAt": RadarUtils.isoDateFormatter.string(from: createdAt),
+            "createdAt": RadarUtils.isoDateFormatter.string(from: createdAt)
         ]
     }
 }
