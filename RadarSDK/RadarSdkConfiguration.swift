@@ -10,7 +10,7 @@ import Foundation
 @objc(RadarSdkConfiguration) @objcMembers
 class RadarSdkConfiguration: NSObject {
     private let originalDict: [String: Any]?
-    
+
     let logLevel: RadarLogLevel
     let startTrackingOnInitialize: Bool
     let trackOnceOnAppOpen: Bool
@@ -32,7 +32,7 @@ class RadarSdkConfiguration: NSObject {
     let useOfflineRTOUpdates: Bool
     let offlineEventGenerationEnabled: Bool
     let remoteTrackingOptions: [RadarRemoteTrackingOptions]?
-    
+
     public init(dict: [String: Any]?) {
         originalDict = dict
         logLevel = RadarLogLevel.from(string: dict?["logLevel"] as? String ?? "none")
@@ -57,7 +57,7 @@ class RadarSdkConfiguration: NSObject {
         offlineEventGenerationEnabled = dict?["offlineEventGenerationEnabled"] as? Bool ?? false
         remoteTrackingOptions = RadarRemoteTrackingOptions.from(array: dict?["remoteTrackingOptions"] as? [[String: Any]])
     }
-    
+
     public func dictionaryValue() -> [String: Any] {
         if let originalDict {
             return originalDict
@@ -83,7 +83,7 @@ class RadarSdkConfiguration: NSObject {
             "skipForegroundCheck": skipForegroundCheck,
             "useOfflineRTOUpdates": useOfflineRTOUpdates,
             "offlineEventGenerationEnabled": offlineEventGenerationEnabled,
-            "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any
+            "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any,
         ]
     }
 }

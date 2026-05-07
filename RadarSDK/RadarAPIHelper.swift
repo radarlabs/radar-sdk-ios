@@ -61,10 +61,10 @@ final class RadarAPIHelper: Sendable {
             request.addValue(value, forHTTPHeaderField: key)
         }
 
-        if (!body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH")) {
+        if !body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH") {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
-        
+
         let startTime = Date()
         let data: Data
         let response: URLResponse
@@ -91,7 +91,7 @@ final class RadarAPIHelper: Sendable {
         guard let publishableKey = RadarSettings.publishableKey else {
             throw URLError(.userAuthenticationRequired)
         }
-        
+
         var headers = headers
         headers["Authorization"] = publishableKey
         headers["Content-Type"] = "application/json"
@@ -104,7 +104,7 @@ final class RadarAPIHelper: Sendable {
         headers["X-Radar-Mobile-Origin"] = Bundle.main.bundleIdentifier
         headers["X-Radar-Network-Type"] = RadarUtils.networkType.rawValue
         headers["X-Radar-App-Info"] = RadarUtils.dictionaryToJson(RadarUtils.appInfo)
-        
+
         let url = "\(RadarSettings.host)/v1/\(url)"
         
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)

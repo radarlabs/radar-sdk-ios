@@ -4,6 +4,7 @@ PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
 SCHEME_EXAMPLE := Example
+SWIFTLINT := $(firstword $(wildcard .tools/swiftlint) swiftlint)
 XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 XC_EXAMPLE_ARGS := -sdk $(SDK) -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
@@ -31,10 +32,35 @@ lint:
 		if [ "$$spec" != "RadarSDKIndoors.podspec" ]; then \
 			pod lib lint "$$spec" || exit 1; \
 		fi; \
-	done 
+	done
+
+FORMAT_BASE ?= origin/master
+
+lint-swift:
+	@if ! command -v $(SWIFTLINT) >/dev/null 2>&1 && [ ! -f "$(SWIFTLINT)" ]; then \
+		echo "swiftlint not installed; run 'make bootstrap'"; \
+		exit 1; \
+	fi
+	$(SWIFTLINT) lint --strict --baseline .swiftlint-baseline.json
+
+format-check:
+	@if ! command -v swift-format >/dev/null; then \
+		echo "swift-format not installed; run 'make bootstrap' or 'brew install swift-format'"; \
+		exit 1; \
+	fi
+	@SWIFT_FILES=$$(git diff --diff-filter=ACM --name-only $(FORMAT_BASE)...HEAD -- '*.swift' 2>/dev/null); \
+	if [ -z "$$SWIFT_FILES" ]; then \
+		echo "No Swift files changed; skipping format check."; \
+		exit 0; \
+	fi; \
+	echo "Checking format of changed Swift files:"; \
+	echo "$$SWIFT_FILES" | tr '\n' ' '; echo; \
+	echo "$$SWIFT_FILES" | xargs swift-format format -i --parallel; \
+	git diff --exit-code -- $$SWIFT_FILES
 
 format:
 	./clang_format.sh
+	swift-format format -i -r --parallel RadarSDK RadarSDKTests
 
 clean-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) clean | xcpretty
@@ -66,4 +92,4 @@ docs:
 
 dist: clean-pretty test-pretty build-pretty lint docs
 
-.PHONY: bootstrap clean test build lint format docs dist
+.PHONY: bootstrap clean test build lint lint-swift format format-check docs dist

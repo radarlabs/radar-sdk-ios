@@ -21,6 +21,21 @@ jobs:
       - name: Use Xcode 26.3
         run: sudo xcode-select -switch /Applications/Xcode_26.3.app
 
+      - name: Lint Swift
+        run: |
+          if ! command -v swiftlint >/dev/null; then
+            brew install swiftlint
+          fi
+          swiftlint lint --strict --baseline .swiftlint-baseline.json
+
+      - name: Format Swift
+        run: |
+          git fetch origin master --depth=1
+          if ! command -v swift-format >/dev/null; then
+            brew install swift-format
+          fi
+          make format-check
+
       - name: Pick an available iPhone simulator
         id: pick_sim
         run: |
