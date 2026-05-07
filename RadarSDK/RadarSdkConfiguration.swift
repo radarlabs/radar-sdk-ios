@@ -83,7 +83,7 @@ class RadarSdkConfiguration: NSObject {
             "skipForegroundCheck": skipForegroundCheck,
             "useOfflineRTOUpdates": useOfflineRTOUpdates,
             "offlineEventGenerationEnabled": offlineEventGenerationEnabled,
-            "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any
+            "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any,
         ]
     }
 }

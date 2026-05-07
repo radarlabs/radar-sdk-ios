@@ -36,7 +36,8 @@ final class RadarAPIHelper: Sendable {
             return (data, response)
         } catch {
             if let error = error as? URLError,
-                error.code == .networkConnectionLost {
+                error.code == .networkConnectionLost
+            {
                 let (data, response) = try await session.data(for: request)
                 return (data, response)
             }
