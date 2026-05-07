@@ -109,7 +109,7 @@ struct RadarLogBufferTests {
         let buffer = RadarLogBuffer(logsFile: logsFile, maxLogs: 10, keep: 5, logPersistence: true)
         
         // buffer initialization is async, wait for logs to be loaded
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
         #expect(await buffer.logs.count == 3)
         
         file?.delete()
