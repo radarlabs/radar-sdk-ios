@@ -41,7 +41,28 @@ lint-swift:
 		echo "swiftlint not installed; run 'make bootstrap'"; \
 		exit 1; \
 	fi
-	$(SWIFTLINT) lint --strict --baseline .swiftlint-baseline.json
+	@SWIFT_FILES=$$(git diff --diff-filter=ACM --name-only $(FORMAT_BASE)...HEAD -- '*.swift' 2>/dev/null); \
+	if [ -z "$$SWIFT_FILES" ]; then \
+		echo "No Swift files changed; skipping lint."; \
+		exit 0; \
+	fi; \
+	echo "Linting changed Swift files:"; \
+	echo "$$SWIFT_FILES" | tr '\n' ' '; echo; \
+	echo "$$SWIFT_FILES" | xargs $(SWIFTLINT) lint --strict --baseline .swiftlint-baseline.json
+
+lint-swift-fix:
+	@if ! command -v $(SWIFTLINT) >/dev/null 2>&1 && [ ! -f "$(SWIFTLINT)" ]; then \
+		echo "swiftlint not installed; run 'make bootstrap'"; \
+		exit 1; \
+	fi
+	@SWIFT_FILES=$$(git diff --diff-filter=ACM --name-only $(FORMAT_BASE)...HEAD -- '*.swift' 2>/dev/null); \
+	if [ -z "$$SWIFT_FILES" ]; then \
+		echo "No Swift files changed; skipping lint."; \
+		exit 0; \
+	fi; \
+	echo "Fixing lint in changed Swift files:"; \
+	echo "$$SWIFT_FILES" | tr '\n' ' '; echo; \
+	echo "$$SWIFT_FILES" | xargs $(SWIFTLINT) lint --strict --fix --baseline .swiftlint-baseline.json
 
 format-check:
 	@if ! command -v swift-format >/dev/null; then \
