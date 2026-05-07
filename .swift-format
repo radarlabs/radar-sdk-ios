@@ -1,0 +1,30 @@
+{
+  "indentation": { "spaces": 4 },
+  "lineLength": 200,
+  "respectsExistingLineBreaks": true,
+  "lineBreakBeforeControlFlowKeywords": false,
+  "lineBreakBeforeEachArgument": false,
+  "lineBreakBeforeEachGenericRequirement": false,
+  "lineBreakBetweenDeclarationAttributes": false,
+  "maximumBlankLines": 1,
+  "prioritizeKeepingFunctionOutputTogether": false,
+  "indentSwitchCaseLabels": false,
+  "indentConditionalCompilationBlocks": true,
+  "fileScopedDeclarationPrivacy": { "accessLevel": "private" },
+  "rules": {
+    "AlwaysUseLowerCamelCase": false,
+    "FileScopedDeclarationPrivacy": false,
+    "NoBlockComments": false,
+    "NeverUseImplicitlyUnwrappedOptionals": false,
+    "OrderedImports": true,
+    "DoNotUseSemicolons": true,
+    "NoEmptyTrailingClosureParentheses": true,
+    "NoLabelsInCasePatterns": true,
+    "NoParensAroundConditions": true,
+    "ReturnVoidInsteadOfEmptyTuple": true,
+    "UseShorthandTypeNames": true,
+    "UseSingleLinePropertyGetter": true,
+    "UseTripleSlashForDocumentationComments": true,
+    "UseWhereClausesInForLoops": false
+  }
+}

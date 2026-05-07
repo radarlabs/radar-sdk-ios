@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 
 struct RadarBeaconSwift: Codable, Sendable {
     let id: String
@@ -18,7 +18,7 @@ struct RadarBeaconSwift: Codable, Sendable {
     let major: String
     let minor: String
     let geometry: RadarCoordinateSwift?
-    
+
     enum CodingKeys: String, CodingKey {
         case id = "_id"
         case description
@@ -29,8 +29,8 @@ struct RadarBeaconSwift: Codable, Sendable {
         case minor
         case geometry
     }
-    
-   init(from decoder: Decoder) throws {
+
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decodeIfPresent(String.self, forKey: .id) ?? ""
         description = try container.decodeIfPresent(String.self, forKey: .description)
@@ -39,16 +39,18 @@ struct RadarBeaconSwift: Codable, Sendable {
         uuid = try container.decode(String.self, forKey: .uuid)
         major = try container.decode(String.self, forKey: .major)
         minor = try container.decode(String.self, forKey: .minor)
-        
+
         if let geoJSON = try container.decodeIfPresent(GeoJSONPoint.self, forKey: .geometry) {
             geometry = RadarCoordinateSwift(latitude: geoJSON.coordinates[1], longitude: geoJSON.coordinates[0])
         } else {
             geometry = nil
         }
     }
-    
-    init(id: String, description: String?, tag: String?, externalId: String?,
-         uuid: String, major: String, minor: String, geometry: RadarCoordinateSwift?) {
+
+    init(
+        id: String, description: String?, tag: String?, externalId: String?,
+        uuid: String, major: String, minor: String, geometry: RadarCoordinateSwift?
+    ) {
         self.id = id
         self.description = description
         self.tag = tag
@@ -58,8 +60,8 @@ struct RadarBeaconSwift: Codable, Sendable {
         self.minor = minor
         self.geometry = geometry
     }
-    
-   func encode(to encoder: Encoder) throws {
+
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encodeIfPresent(description, forKey: .description)
