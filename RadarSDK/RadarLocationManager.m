@@ -220,6 +220,10 @@ typedef NS_OPTIONS(NSUInteger, RadarLocationManagerCapability) {
 }
 
 - (void)didUpdateInjectedDependencies {
+    if (self.owner) {
+        [self.implementation configureWithLocationManager:self.owner.locationManager
+                                 lowPowerLocationManager:self.owner.lowPowerLocationManager];
+    }
     [self.implementation didUpdateInjectedDependencies];
 }
 
@@ -379,6 +383,7 @@ static const RadarLocationManagerCapability kRadarLocationManagerImplementedCapa
 
 - (void)didUpdateInjectedDependencies {
     self.locationManager.delegate = self;
+    self.lowPowerLocationManager.delegate = self;
     [self.legacyImplementation didUpdateInjectedDependencies];
     [self.implementation didUpdateInjectedDependencies];
 }
