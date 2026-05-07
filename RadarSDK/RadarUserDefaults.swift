@@ -65,15 +65,16 @@ class RadarUserDefaults: NSObject {
 
     // should be set once and then readonly
     nonisolated(unsafe)
-    static var userDefaults: UserDefaults = {
-        // initialized with the appGroup value of UserDefaults.standard
-        if let appGroup = UserDefaults.standard.string(forKey: Key.AppGroup.rawValue),
-           let appGroupSuite = UserDefaults(suiteName: appGroup) {
-            return appGroupSuite
-        } else {
-            return UserDefaults.standard
-        }
-    }()
+        static var userDefaults: UserDefaults = {
+            // initialized with the appGroup value of UserDefaults.standard
+            if let appGroup = UserDefaults.standard.string(forKey: Key.AppGroup.rawValue),
+                let appGroupSuite = UserDefaults(suiteName: appGroup)
+            {
+                return appGroupSuite
+            } else {
+                return UserDefaults.standard
+            }
+        }()
 
     private static let flushQueue = DispatchQueue(
         label: "io.radar.userdefaults.flush",
@@ -82,7 +83,7 @@ class RadarUserDefaults: NSObject {
 
     private static let flushLock = NSLock()
     nonisolated(unsafe)
-    private static var pendingFlushTargets: [ObjectIdentifier: UserDefaults] = [:]
+        private static var pendingFlushTargets: [ObjectIdentifier: UserDefaults] = [:]
 
     public static func clone(from: UserDefaults, to: UserDefaults) {
         for key in Key.allCases {
