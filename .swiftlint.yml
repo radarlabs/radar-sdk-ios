@@ -12,6 +12,8 @@ excluded:
 
 disabled_rules:
   - todo
+  - trailing_comma  # swift-format adds trailing commas; conflict with swiftlint --fix
+  - opening_brace   # swift-format puts braces on new lines for long signatures
 
 line_length:
   warning: 200

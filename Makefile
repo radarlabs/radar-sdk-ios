@@ -62,8 +62,7 @@ lint-swift-fix:
 	fi; \
 	echo "Fixing lint in changed Swift files:"; \
 	echo "$$SWIFT_FILES" | tr '\n' ' '; echo; \
-	echo "$$SWIFT_FILES" | xargs $(SWIFTLINT) lint --strict --fix --baseline .swiftlint-baseline.json; \
-	echo "$$SWIFT_FILES" | xargs swift-format format -i --parallel
+	echo "$$SWIFT_FILES" | xargs $(SWIFTLINT) lint --strict --fix --baseline .swiftlint-baseline.json
 
 format-check:
 	@if ! command -v swift-format >/dev/null; then \
