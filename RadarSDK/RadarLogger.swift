@@ -106,6 +106,7 @@ final class RadarLogger: NSObject, @unchecked Sendable {
         log(level: level, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: false)
     }
     @objc
+    // swiftlint:disable:next function_parameter_count
     func log(level: RadarLogLevel, type: RadarLogType, message: String, includeDate: Bool, includeBattery: Bool, append: Bool) {
         log(level: level, message: message, type: type, includeDate: includeDate, includeBattery: includeBattery, append: append)
     }

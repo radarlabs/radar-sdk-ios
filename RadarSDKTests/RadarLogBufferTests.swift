@@ -108,10 +108,10 @@ struct RadarLogBufferTests {
 
         let logs = Data(
             [
-                try! JSONEncoder().encode(simpleLog("persist1")),
-                try! JSONEncoder().encode(simpleLog("persist2")),
-                try! JSONEncoder().encode(simpleLog("persist3")),
-            ].map { $0 + "\n".data(using: .utf8)! }.joined())
+                try! JSONEncoder().encode(simpleLog("persist1")),  // swiftlint:disable:this force_try
+                try! JSONEncoder().encode(simpleLog("persist2")),  // swiftlint:disable:this force_try
+                try! JSONEncoder().encode(simpleLog("persist3")),  // swiftlint:disable:this force_try
+            ].map { $0 + "\n".data(using: .utf8)! }.joined())  // swiftlint:disable:this non_optional_string_data_conversion
 
         file?.write(data: logs)
 

@@ -17,10 +17,10 @@ actor RadarLogBuffer {
     // the logs file is a full reflection of the logs
     let logsFile: RadarFileStorage?
 
-    let MAX_LOGS: Int
+    let MAX_LOGS: Int  // swiftlint:disable:this identifier_name
     let KEEP: Int
 
-    let NEW_LINE = "\n".data(using: .utf8)!
+    let NEW_LINE = "\n".data(using: .utf8)!  // swiftlint:disable:this identifier_name non_optional_string_data_conversion
 
     // in testing mode, allow overriding useLogPersistence
     var useLogPersistenceOverride: Bool?

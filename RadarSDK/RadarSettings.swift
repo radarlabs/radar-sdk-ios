@@ -8,7 +8,7 @@
 import Foundation
 
 @objc(RadarSettings) @objcMembers
-internal class RadarSettings: NSObject {
+internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_length
 
     static let DefaultHost = "https://api.radar.io"
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
