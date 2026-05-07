@@ -25,9 +25,7 @@ actor RadarLogBuffer {
     // in testing mode, allow overriding useLogPersistence
     var useLogPersistenceOverride: Bool?
     var useLogPersistence: Bool {
-        get {
-            useLogPersistenceOverride ?? RadarSettings.sdkConfiguration?.useLogPersistence ?? false
-        }
+        useLogPersistenceOverride ?? RadarSettings.sdkConfiguration?.useLogPersistence ?? false
     }
 
     let apiClient: RadarAPIClient

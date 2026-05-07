@@ -41,7 +41,7 @@ public final class RadarAPIClient: Sendable {
     func fetchSyncRegion(latitude: Double, longitude: Double) async throws -> SyncRegionResponse {
         var body: [String: Any?] = [
             "latitude": latitude,
-            "longitude": longitude
+            "longitude": longitude,
         ]
 
         if let userId = RadarSettings.userId {
@@ -62,19 +62,22 @@ public final class RadarAPIClient: Sendable {
 
         var geofences: [RadarGeofenceSwift]?
         if let arr = res["geofences"] as? [[String: Any]],
-            let jsonData = try? JSONSerialization.data(withJSONObject: arr) {
+            let jsonData = try? JSONSerialization.data(withJSONObject: arr)
+        {
             geofences = try? decoder.decode([RadarGeofenceSwift].self, from: jsonData)
         }
 
         var places: [RadarPlaceSwift]?
         if let arr = res["places"] as? [[String: Any]],
-            let jsonData = try? JSONSerialization.data(withJSONObject: arr) {
+            let jsonData = try? JSONSerialization.data(withJSONObject: arr)
+        {
             places = try? decoder.decode([RadarPlaceSwift].self, from: jsonData)
         }
 
         var beacons: [RadarBeaconSwift]?
         if let arr = res["beacons"] as? [[String: Any]],
-            let jsonData = try? JSONSerialization.data(withJSONObject: arr) {
+            let jsonData = try? JSONSerialization.data(withJSONObject: arr)
+        {
             beacons = try? decoder.decode([RadarBeaconSwift].self, from: jsonData)
         }
 
@@ -84,7 +87,8 @@ public final class RadarAPIClient: Sendable {
             let lat = regionDict["latitude"] as? Double,
             let lng = regionDict["longitude"] as? Double,
             let radius = regionDict["radius"] as? Double,
-            radius > 0 {
+            radius > 0
+        {
             regionCenter = RadarCoordinateSwift(latitude: lat, longitude: lng)
             regionRadius = radius
         }
@@ -104,7 +108,7 @@ public final class RadarAPIClient: Sendable {
             "installId": RadarSettings.installId,
             "deviceId": await RadarUtils.deviceId,
             "sessionId": RadarSettings.sessionId,
-            "logs": logs.map(\.dict)
+            "logs": logs.map(\.dict),
         ]
 
         let (data, response) = try await apiHelper.radarRequest(method: "POST", url: "logs", body: body)

@@ -6,6 +6,7 @@
 //
 
 import Testing
+
 @testable import RadarSDK
 
 private func waitUntil(timeout: TimeInterval = 5.0, _ check: () async -> Bool) async {
@@ -107,7 +108,8 @@ struct RadarLoggerTests {
         #expect(delegate.messages.count == 1)
     }
 
-    @Test func objectiveCInterfaceWorks() async throws {let logger = RadarLogger()
+    @Test func objectiveCInterfaceWorks() async throws {
+        let logger = RadarLogger()
         let delegate = MockRadarDelegate()
 
         await logger.setDelegate(delegate)

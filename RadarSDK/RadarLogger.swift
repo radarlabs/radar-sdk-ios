@@ -23,7 +23,7 @@ final class RadarLogger: NSObject, @unchecked Sendable {
     // in testing mode, allow changing logLevel directly
     var logLevelOverride: RadarLogLevel?
     var logLevel: RadarLogLevel {
-        get { logLevelOverride ?? RadarSettings.logLevel }
+        logLevelOverride ?? RadarSettings.logLevel
     }
 
     @MainActor
@@ -82,7 +82,8 @@ final class RadarLogger: NSObject, @unchecked Sendable {
             let logMessage = "\(log) | backgroundTimeRemaining = \(backgroundTime)"
 
             if #available(iOS 14.0, *),
-               logLevelOverride == nil { // if logLevelOverride != nil, we are in test mode, don't output to console
+                logLevelOverride == nil
+            {  // if logLevelOverride != nil, we are in test mode, don't output to console
                 RadarLogger.logger.log("\(logMessage)")
             }
             await MainActor.run {

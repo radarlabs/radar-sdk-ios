@@ -36,7 +36,8 @@ final class RadarAPIHelper: Sendable {
             return (data, response)
         } catch {
             if let error = error as? URLError,
-               error.code == .networkConnectionLost {
+                error.code == .networkConnectionLost
+            {
                 let (data, response) = try await session.data(for: request)
                 return (data, response)
             }
@@ -46,9 +47,13 @@ final class RadarAPIHelper: Sendable {
     }
 
     func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
-        let queryString = query.isEmpty ? "" : ("?" + query.compactMap { key, value in
-            key + "=" + value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-        }.joined(separator: "&"))
+        let queryString =
+            query.isEmpty
+            ? ""
+            : ("?"
+                + query.compactMap { key, value in
+                    key + "=" + value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+                }.joined(separator: "&"))
 
         guard let urlObject = URL(string: "\(url)\(queryString)") else {
             throw URLError(.badURL)

@@ -6,6 +6,7 @@
 //
 
 import Testing
+
 @testable import RadarSDK
 
 private func waitUntil(timeout: TimeInterval = 5.0, _ check: () async -> Bool) async {
@@ -105,11 +106,12 @@ struct RadarLogBufferTests {
         let logsFile = "test/logs3.txt"
         let file = RadarFileStorage(fileName: "\(logsFile)")
 
-        let logs = Data([
-            try! JSONEncoder().encode(simpleLog("persist1")),
-            try! JSONEncoder().encode(simpleLog("persist2")),
-            try! JSONEncoder().encode(simpleLog("persist3"))
-        ].map { $0 + "\n".data(using: .utf8)! }.joined())
+        let logs = Data(
+            [
+                try! JSONEncoder().encode(simpleLog("persist1")),
+                try! JSONEncoder().encode(simpleLog("persist2")),
+                try! JSONEncoder().encode(simpleLog("persist3")),
+            ].map { $0 + "\n".data(using: .utf8)! }.joined())
 
         file?.write(data: logs)
 

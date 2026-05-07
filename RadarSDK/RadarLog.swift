@@ -19,7 +19,7 @@ extension RadarLogLevel: Codable {
         case .warning:
             return "warning"
         case .info:
-            return"info"
+            return "info"
         case .debug:
             return "debug"
         @unknown default:
@@ -156,7 +156,7 @@ struct RadarLog: Codable, CustomStringConvertible {
             "message": description,
             "level": level.toString(),
             "type": type.toString(),
-            "createdAt": RadarUtils.isoDateFormatter.string(from: createdAt)
+            "createdAt": RadarUtils.isoDateFormatter.string(from: createdAt),
         ]
     }
 }
