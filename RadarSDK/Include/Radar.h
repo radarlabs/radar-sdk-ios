@@ -52,7 +52,7 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorLocation,
     /// Beacon ranging error or timeout (5 seconds)
     RadarStatusErrorBluetooth,
-    /// Network error or timeout (10 seconds)
+    /// Network error or timeout (default 10 seconds; override with `RadarInitializeOptions.networkTimeoutInterval`)
     RadarStatusErrorNetwork,
     /// Bad request (missing or invalid params)
     RadarStatusErrorBadRequest,
