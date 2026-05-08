@@ -27,12 +27,10 @@ test-swift:
 build-example:
 	xcodebuild $(XC_EXAMPLE_ARGS)
 
-# Allow warnings for deprecated Beacons API calls in RadarSDK.podspec.
-# TODO: update deprecated Beacons API calls and remove --allow-warnings.
 lint:
 	@for spec in *.podspec; do \
 		if [ "$$spec" != "RadarSDKIndoors.podspec" ]; then \
-			pod lib lint "$$spec" --allow-warnings || exit 1; \
+			pod lib lint "$$spec" || exit 1; \
 		fi; \
 	done
 
