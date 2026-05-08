@@ -9,6 +9,7 @@ import CoreLocation
 import Foundation
 import UserNotifications
 
+@available(iOS 13.0, *)
 protocol NotificationCenterProtocol {
     nonisolated(nonsending) func add(_ request: UNNotificationRequest) async throws
     nonisolated(nonsending) func pendingNotificationRequests() async -> [UNNotificationRequest]
@@ -18,6 +19,7 @@ protocol NotificationCenterProtocol {
 }
 
 extension UNUserNotificationCenter: NotificationCenterProtocol {
+    @available(iOS 13.0, *)
     nonisolated(nonsending) func radarNotificationPermissions() async -> NotificationPermissions {
         let settings = await notificationSettings()
         let permissions = NotificationPermissions(from: settings)
@@ -26,6 +28,7 @@ extension UNUserNotificationCenter: NotificationCenterProtocol {
 
 }
 
+@available(iOS 13.0, *)
 @objc(RadarNotificationHelper_Swift) @objcMembers
 actor RadarNotificationHelper: NSObject {
 

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(iOS 13.0, *)
 struct RadarIAMView: View {
     var message: RadarInAppMessage_Swift
     var image: UIImage?
@@ -79,6 +80,7 @@ struct RadarIAMView: View {
     }
 }
 
+@available(iOS 13.0, *)
 #Preview {
     ZStack {
         Color.blue

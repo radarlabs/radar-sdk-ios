@@ -386,12 +386,15 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
         return;
     }
     
-    if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
-        [[RadarNotificationHelper_Swift shared] getDeliveredNotificationsWithCompletionHandler:^(NSArray* notificationsDelivered) {
-            completionHandler(notificationsDelivered, @[]);
-        }];
-        return;
+    if (@available(iOS 13.0, *)) {
+        if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
+            [[RadarNotificationHelper_Swift shared] getDeliveredNotificationsWithCompletionHandler:^(NSArray* notificationsDelivered) {
+                completionHandler(notificationsDelivered, @[]);
+            }];
+            return;
+        }
     }
+    
     
     UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
     NSArray *registeredNotifications = [RadarState registeredNotifications];
