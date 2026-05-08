@@ -7,7 +7,6 @@
 
 import OSLog
 
-@available(iOS 13.0, *)
 actor RadarLogBuffer {
 
     static let shared = RadarLogBuffer()

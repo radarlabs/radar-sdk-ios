@@ -7,7 +7,6 @@
 
 import Foundation
 
-@available(iOS 13.0, *)
 public final class RadarAPIClient: Sendable {
 
     struct APIError: Error {

@@ -8,13 +8,10 @@
 import Foundation
 
 protocol RadarURLSessionProtocol: Sendable {
-    @available(iOS 13.0, *)
     func data(for request: URLRequest) async throws -> (Data, URLResponse)
 }
-
 extension URLSession: RadarURLSessionProtocol {}
 
-@available(iOS 13.0, *)
 final class RadarAPIHelper: Sendable {
 
     let session: RadarURLSessionProtocol

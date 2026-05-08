@@ -587,16 +587,11 @@
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
 
-                                    if (@available(iOS 13.0, *)) {
-                                        if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
-                                            [[RadarNotificationHelper_Swift shared]
-                                             removeRegisteredNotificationsWithNotifications:params[@"notificationDiff"]
-                                             completionHandler:^() {}
-                                            ];
-                                        } else {
-                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
-                                            [RadarState setRegisteredNotifications:notificationsRemaining];
-                                        }
+                                    if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
+                                        [[RadarNotificationHelper_Swift shared]
+                                            removeRegisteredNotificationsWithNotifications:params[@"notificationDiff"]
+                                            completionHandler:^() {}
+                                        ];
                                     } else {
                                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
                                         [RadarState setRegisteredNotifications:notificationsRemaining];
@@ -655,11 +650,9 @@
                             NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
                             RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res];
 
-                            if (@available(iOS 13.0, *)) {
-                                NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
-                                if (inAppMessages) {
-                                    [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
-                                }
+                            NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
+                            if (inAppMessages) {
+                                [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
                             }
                                    
                             if (user) {

@@ -64,14 +64,6 @@ final class RadarLogger: NSObject, @unchecked Sendable {
         if level.rawValue > logLevel.rawValue {
             return
         }
-        // if you're still on iOS 13.0, that's your problem, you won't get proper logs.
-        guard #available(iOS 13.0, *) else {
-            DispatchQueue.main.async {
-                self.delegate?.didLog?(message: message)
-                NSLog(message)
-            }
-            return
-        }
 
         Task {
             let log = RadarLog(level: level, message: message, type: type, createdAt: Date(), includeDate: includeDate, battery: includeBattery ? await self.device.batteryLevel : nil)
@@ -122,18 +114,12 @@ final class RadarLogger: NSObject, @unchecked Sendable {
     // ObjC interface from RadarLogBuffer.h consolidated
     @objc
     static func flushLogs() {
-        guard #available(iOS 13.0, *) else {
-            return
-        }
         Task {
             await RadarLogBuffer.shared.flush()
         }
     }
     @objc
     static func write(_ level: RadarLogLevel, type: RadarLogType, message: String) {
-        guard #available(iOS 13.0, *) else {
-            return
-        }
         Task {
             let log = RadarLog(level: level, message: message, type: type, createdAt: Date(), includeDate: false, battery: nil)
             await RadarLogBuffer.shared.log(log)
