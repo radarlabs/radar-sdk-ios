@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 @MainActor
-@available(iOS 13.0, *)
 @objc
 public class RadarInAppMessageManager: NSObject {
     @objc

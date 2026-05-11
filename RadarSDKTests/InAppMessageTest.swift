@@ -11,7 +11,6 @@ import Testing
 
 @testable import RadarSDK
 
-@available(iOS 13.0, *)
 @MainActor
 class MockRadarInAppMessageDelegate: NSObject, RadarInAppMessageProtocol {
     weak var manager: RadarInAppMessageManager?
@@ -183,7 +182,6 @@ actor InAppMessageTest {
 
     @Test("if there is already an IAM, don't show another")
     @MainActor
-    @available(iOS 13.0, *)
     func InAppMessageViewAlreadyExist() async throws {
         let manager = RadarInAppMessageManager()
         let mockDelegate = MockRadarInAppMessageDelegate(manager: manager)
