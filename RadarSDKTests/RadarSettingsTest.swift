@@ -122,31 +122,16 @@ actor RadarSettingsTest {
         #expect(appGroupDefaults.string(forKey: "radar-appGroup") == "test.app.group")
     }
 
-    @Test("RadarSdkConfiguration defaults useSwiftLocationManager to false")
-    func sdkConfigurationDefaultsUseSwiftLocationManagerToFalse() {
-        let sdkConfiguration = RadarSdkConfiguration(dict: nil)
-
-        #expect(sdkConfiguration.useSwiftLocationManager == false)
-    }
-
-    @Test("RadarSdkConfiguration parses useSwiftLocationManager")
-    func sdkConfigurationParsesUseSwiftLocationManager() {
-        let sdkConfiguration = RadarSdkConfiguration(dict: [
+    @Test("RadarSdkConfiguration handles useSwiftLocationManager")
+    func sdkConfigurationHandlesUseSwiftLocationManager() {
+        let defaultConfiguration = RadarSdkConfiguration(dict: nil)
+        let enabledConfiguration = RadarSdkConfiguration(dict: [
             "useSwiftLocationManager": true
         ])
 
-        #expect(sdkConfiguration.useSwiftLocationManager == true)
-    }
-
-    @Test("RadarSdkConfiguration round-trips useSwiftLocationManager")
-    func sdkConfigurationRoundTripsUseSwiftLocationManager() {
-        let sdkConfiguration = RadarSdkConfiguration(dict: [
-            "useSwiftLocationManager": true
-        ])
-
-        let dictionary = sdkConfiguration.dictionaryValue()
-
-        #expect(dictionary["useSwiftLocationManager"] as? Bool == true)
+        #expect(defaultConfiguration.useSwiftLocationManager == false)
+        #expect(enabledConfiguration.useSwiftLocationManager == true)
+        #expect(enabledConfiguration.dictionaryValue()["useSwiftLocationManager"] as? Bool == true)
     }
 
     @Test("RadarSettings persists sdkConfiguration useSwiftLocationManager")
