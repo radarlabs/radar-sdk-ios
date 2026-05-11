@@ -1706,30 +1706,22 @@ BOOL _initialized = NO;
 }
 
 + (void)setInAppMessageDelegate:(id)delegate {
-    if (@available(iOS 13.0, *)) {
-        // Ensure Swift @MainActor methods are called on main thread
-        if ([NSThread isMainThread]) {
+    // Ensure Swift @MainActor methods are called on main thread
+    if ([NSThread isMainThread]) {
+        [[RadarInAppMessageManager shared] setDelegate:delegate];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
             [[RadarInAppMessageManager shared] setDelegate:delegate];
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[RadarInAppMessageManager shared] setDelegate:delegate];
-            });
-        }
+        });
     }
 }
 
 + (void)showInAppMessage:(RadarInAppMessage *)message  {
-    if (@available(iOS 13.0, *)) {
-        [[RadarInAppMessageManager shared] showInAppMessage:message completionHandler:^(){}];
-    }
+    [[RadarInAppMessageManager shared] showInAppMessage:message completionHandler:^(){}];
 }
 
 + (void)loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler {
-    if (@available(iOS 13.0, *)) {
-        return [RadarInAppMessageDelegate_Swift loadImage:url completionHandler:completionHandler];
-    } else {
-        completionHandler(nil);
-    }
+    return [RadarInAppMessageDelegate_Swift loadImage:url completionHandler:completionHandler];
 }
 
 + (void)requestMotionActivityPermission {

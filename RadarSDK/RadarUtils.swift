@@ -35,7 +35,6 @@ class RadarUtils: NSObject {
         return identifier
     }()
 
-    @available(iOS 13.0, *)
     static var deviceOS: String {
         get async {
             return await MainActor.run(resultType: String.self) {
@@ -48,7 +47,6 @@ class RadarUtils: NSObject {
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
     static let sdkVersion = "3.32.0"
 
-    @available(iOS 13.0, *)
     static var deviceId: String? {
         get async {
             return await MainActor.run(resultType: String?.self) {
@@ -172,7 +170,6 @@ class RadarUtils: NSObject {
         }
     }
 
-    @available(iOS 13.0, *)
     static var foreground: Bool {
         get async {
             return await MainActor.run(resultType: Bool.self) {
@@ -181,7 +178,6 @@ class RadarUtils: NSObject {
         }
     }
 
-    @available(iOS 13.0, *)
     static var backgroundTimeRemaining: TimeInterval {
         get async {
             return await MainActor.run(resultType: TimeInterval.self) {
