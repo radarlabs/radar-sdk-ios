@@ -41,7 +41,7 @@ let package = Package(
             publicHeadersPath: "Include",
             cSettings: [
                 .headerSearchPath(".")
-            ] 
+            ]
         ),
         .binaryTarget(
             name: "RadarSDKIndoors",
