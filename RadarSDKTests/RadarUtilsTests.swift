@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Testing
 import Foundation
+import Testing
 
 @testable import RadarSDK
 
