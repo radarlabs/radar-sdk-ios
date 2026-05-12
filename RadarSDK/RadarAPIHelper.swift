@@ -7,11 +7,43 @@
 
 import Foundation
 
-final class RadarApiHelper: Sendable {
-    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+protocol RadarURLSessionProtocol: Sendable {
+    func data(for request: URLRequest) async throws -> (Data, URLResponse)
+}
+extension URLSession: RadarURLSessionProtocol {}
 
-        // transform URL
-        // turn query into a string of format: "?key=value&key2=value2" or "" if there are no queries
+final class RadarAPIHelper: Sendable {
+
+    let session: RadarURLSessionProtocol
+
+    init(session: RadarURLSessionProtocol? = nil) {
+        if let session {
+            self.session = session
+        } else {
+            let config = URLSessionConfiguration.default
+            config.timeoutIntervalForRequest = 10
+            config.timeoutIntervalForResource = 10
+            self.session = URLSession(configuration: config)
+        }
+    }
+
+    func retryingRequest(for request: URLRequest) async throws -> (Data, URLResponse) {
+        do {
+            let (data, response) = try await session.data(for: request)
+            return (data, response)
+        } catch {
+            if let error = error as? URLError,
+                error.code == .networkConnectionLost
+            {
+                let (data, response) = try await session.data(for: request)
+                return (data, response)
+            }
+
+            throw error
+        }
+    }
+
+    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
         let queryString =
             query.isEmpty
             ? ""
@@ -21,14 +53,12 @@ final class RadarApiHelper: Sendable {
                 }.joined(separator: "&"))
 
         guard let urlObject = URL(string: "\(url)\(queryString)") else {
-            // could not turn url into an URL object
             throw URLError(.badURL)
         }
 
         var request = URLRequest(url: urlObject)
         request.httpMethod = method
 
-        // add headers to the request
         headers.forEach { key, value in
             request.addValue(value, forHTTPHeaderField: key)
         }
@@ -41,12 +71,12 @@ final class RadarApiHelper: Sendable {
         let data: Data
         let response: URLResponse
         do {
-            (data, response) = try await URLSession.shared.data(for: request)
+            (data, response) = try await retryingRequest(for: request)
         } catch {
             let elapsedMs = Int(Date().timeIntervalSince(startTime) * 1000)
             RadarLogger.shared.log(
                 level: .error,
-                message: RadarApiHelper.networkErrorMessage(host: urlObject.host, error: error, elapsedMs: elapsedMs),
+                message: RadarAPIHelper.networkErrorMessage(host: urlObject.host, error: error, elapsedMs: elapsedMs),
                 type: .sdkError
             )
             throw error
@@ -59,7 +89,7 @@ final class RadarApiHelper: Sendable {
         return (data, httpResponse)
     }
 
-    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any] = [:]) async throws -> (Data, HTTPURLResponse) {
+    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
         guard let publishableKey = RadarSettings.publishableKey else {
             throw URLError(.userAuthenticationRequired)
         }

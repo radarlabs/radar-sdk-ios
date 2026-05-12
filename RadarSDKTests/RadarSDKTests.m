@@ -13,7 +13,7 @@
 #import "../RadarSDK/RadarLocationManager.h"
 #import "../RadarSDK/RadarSettings.h"
 #import "../RadarSDK/RadarState.h"
-#import "../RadarSDK/RadarLogBuffer.h"
+#import "../RadarSDK/RadarLogger.h"
 #import "../RadarSDK/RadarState.h"
 #import "../RadarSDK/RadarGeofence+Internal.h"
 #import "../RadarSDK/RadarCircleGeometry+Internal.h"
@@ -27,7 +27,6 @@
 #import "RadarPermissionsHelperMock.h"
 #import "RadarTestUtils.h"
 #import "RadarTripOptions.h"
-#import "RadarFileStorage.h"
 #import "RadarReplayBuffer.h"
 #import "../RadarSDK/RadarTrip+Internal.h"
 #import "../RadarSDK/Include/RadarTripLeg.h"
@@ -44,9 +43,6 @@
 @property (nonnull, strong, nonatomic) RadarAPIHelperMock *apiHelperMock;
 @property (nonnull, strong, nonatomic) CLLocationManagerMock *locationManagerMock;
 @property (nonnull, strong, nonatomic) RadarPermissionsHelperMock *permissionsHelperMock;
-@property (nonatomic, strong) RadarFileStorage *fileSystem;
-@property (nonatomic, strong) NSString *testFilePath;
-@property (nonatomic, strong) RadarLogBuffer *logBuffer;
 @property (nonatomic, strong) RadarReplayBuffer *replayBuffer;
 @end
 
@@ -305,10 +301,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     self.locationManagerMock.delegate = [RadarLocationManager sharedInstance];
     [RadarLocationManager sharedInstance].lowPowerLocationManager = self.locationManagerMock;
     [RadarLocationManager sharedInstance].permissionsHelper = self.permissionsHelperMock;
-    self.fileSystem = [[RadarFileStorage alloc] init];
-    self.testFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"testfile"];
-    [[RadarLogBuffer sharedInstance]clearBuffer];
-    [[RadarLogBuffer sharedInstance]setPersistentLogFeatureFlag:YES];
     [[RadarReplayBuffer sharedInstance]clearBuffer];
     [[RadarReplayBuffer sharedInstance] cancelBatchTimer];
     
@@ -322,8 +314,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)tearDown {
-    [[NSFileManager defaultManager] removeItemAtPath:self.testFilePath error:nil];
-    [[RadarLogBuffer sharedInstance]clearBuffer];
     [super tearDown];
 }
 
@@ -2116,15 +2106,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqual(RadarTrackingOptions.presetEfficient.batchSize, 0);
 }
 
-- (void)test_RadarFileStorage_writeAndRead {
-    NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
-    NSData *originalData2 = [@"Newer Test data" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.fileSystem writeData:originalData2 toFileAtPath:self.testFilePath];
-    NSData *readData = [self.fileSystem readFileAtPath:self.testFilePath];
-    XCTAssertEqualObjects(originalData2, readData, @"Data read from file should be equal to original data");
-}
-
 - (void)test_RadarReplayBuffer_addToBatchIncrementsCount {
     RadarTrackingOptions *options = RadarTrackingOptions.presetResponsive;
     options.batchInterval = 0;
@@ -2176,79 +2157,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         [buffer addToBatch:params options:options];
     }
     XCTAssertFalse([buffer shouldFlushBatchWithOptions:options], @"batchSize=0 means no size-based flush");
-}
-
-- (void)test_RadarFileStorage_allFilesInDirectory {
-    NSString *testDir = [NSTemporaryDirectory() stringByAppendingPathComponent:@"newDir"];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:testDir isDirectory:nil]) {
-        [[NSFileManager defaultManager] removeItemAtPath:testDir error:nil];
-    }
-    [[NSFileManager defaultManager] createDirectoryAtPath:testDir withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    NSArray<NSString *> *files = [self.fileSystem sortedFilesInDirectory: testDir];
-    XCTAssertEqual(files.count, 0);
-    NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.fileSystem writeData:originalData toFileAtPath: [testDir stringByAppendingPathComponent: @"file1"]];
-    [self.fileSystem writeData:originalData toFileAtPath: [testDir stringByAppendingPathComponent: @"file2"]];
-    NSArray<NSString *> *newFiles = [self.fileSystem sortedFilesInDirectory: testDir];
-    XCTAssertEqual(newFiles.count, 2);
-    
-}
-
-- (void)test_RadarFileStorage_deleteFile {
-    NSData *originalData = [@"Test data" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.fileSystem writeData:originalData toFileAtPath:self.testFilePath];
-    [self.fileSystem deleteFileAtPath:self.testFilePath];
-    NSData *readData = [self.fileSystem readFileAtPath:self.testFilePath];
-    XCTAssertNil(readData, @"Data read from file should be nil after file is deleted");
-}
-
-- (void)test_RadarLogBuffer_writeAndFlushableLogs {
-    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
-    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"]; 
-    [[RadarLogBuffer sharedInstance]persistLogs];
-    NSArray<RadarLog *> *logs = [[RadarLogBuffer sharedInstance]flushableLogs];
-    XCTAssertEqual(logs.count, 2);
-    XCTAssertEqualObjects(logs.firstObject.message, @"Test message 1");
-    XCTAssertEqualObjects(logs.lastObject.message, @"Test message 2");
-    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 3"];
-    NSArray<RadarLog *> *newLogs = [[RadarLogBuffer sharedInstance]flushableLogs];
-    XCTAssertEqual(newLogs.count, 1);
-    XCTAssertEqualObjects(newLogs.firstObject.message, @"Test message 3");
-}
-
-- (void)test_RadarLogBuffer_flush {
-    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1"];
-    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2"];
-    [[RadarLogBuffer sharedInstance]persistLogs];
-    NSArray<RadarLog *> *logs = [[RadarLogBuffer sharedInstance]flushableLogs];
-    [[RadarLogBuffer sharedInstance] onFlush:NO logs:logs];
-    logs = [[RadarLogBuffer sharedInstance]flushableLogs];
-    XCTAssertEqual(logs.count, 2);
-    [[RadarLogBuffer sharedInstance] onFlush:YES logs:logs];
-    logs = [[RadarLogBuffer sharedInstance]flushableLogs];
-    XCTAssertEqual(logs.count, 0);
-}
-
-- (void)test_RadarLogBuffer_append {
-    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 1" forcePersist:YES];
-    [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:@"Test message 2" forcePersist:YES];
-    NSArray<RadarLog *> *logs = [[RadarLogBuffer sharedInstance]flushableLogs];
-    XCTAssertEqual(logs.count, 2);
-    XCTAssertEqualObjects(logs.firstObject.message, @"Test message 1");
-    XCTAssertEqualObjects(logs.lastObject.message, @"Test message 2");
-}
-
-- (void)test_RadarLogBuffer_purge {
-    [[RadarLogBuffer sharedInstance]clearBuffer];
-    for (NSUInteger i = 0; i < 600; i++) {
-        [[RadarLogBuffer sharedInstance]write:RadarLogLevelDebug type:RadarLogTypeNone message:[NSString stringWithFormat:@"message_%d", i]];
-    }
-    NSArray<RadarLog *> *logs = [[RadarLogBuffer sharedInstance]flushableLogs];
-    XCTAssertEqual(logs.count, 351);
-    XCTAssertEqualObjects(logs.firstObject.message, @"message_250");
-    XCTAssertEqualObjects(logs.lastObject.message, @"----- purged oldest logs -----");
-    [[RadarLogBuffer sharedInstance]clearBuffer];
 }
 
 - (void)test_RadarReplayBuffer_writeAndRead {
@@ -2321,8 +2229,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     
     [Radar setLogLevel:RadarLogLevelDebug];
     NSDictionary *clientSdkConfigurationDict = [RadarSettings clientSdkConfiguration];
-    XCTAssertEqual([RadarLog levelFromString:(NSString *)clientSdkConfigurationDict[@"logLevel"]], RadarLogLevelDebug);
-    
+    XCTAssertEqual([RadarLogger levelFromString:(NSString *)clientSdkConfigurationDict[@"logLevel"]], RadarLogLevelDebug);
+
     RadarSdkConfiguration *savedSdkConfiguration = [RadarSettings sdkConfiguration];
     XCTAssertEqual(savedSdkConfiguration.trackOnceOnAppOpen, YES);
     XCTAssertEqual(savedSdkConfiguration.startTrackingOnInitialize, YES);

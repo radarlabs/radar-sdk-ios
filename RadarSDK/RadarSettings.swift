@@ -8,7 +8,7 @@
 import Foundation
 
 @objc(RadarSettings) @objcMembers
-internal class RadarSettings: NSObject {
+internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_length
 
     static let DefaultHost = "https://api.radar.io"
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
@@ -212,11 +212,8 @@ internal class RadarSettings: NSObject {
         set {
             RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .SdkConfiguration)
 
-            if let newValue = newValue {
+            if let newValue {
                 logLevel = newValue.logLevel
-                RadarSwift.bridge?.setLogBufferPersistantLog(newValue.useLogPersistence)
-            } else {
-                RadarSwift.bridge?.setLogBufferPersistantLog(false)
             }
         }
     }

@@ -7,43 +7,6 @@
 
 import Foundation
 
-extension RadarLogLevel: Codable {
-    static func from(string: String) -> RadarLogLevel {
-        switch string {
-        case "none": return .none
-        case "error": return .error
-        case "warning": return .warning
-        case "info": return .info
-        case "debug": return .debug
-        default: return .none
-        }
-    }
-
-    func toString() -> String {
-        switch self {
-        case .none: return "none"
-        case .error: return "error"
-        case .warning: return "warning"
-        case .info: return "info"
-        case .debug: return "debug"
-        @unknown default:
-            return "none"
-        }
-    }
-
-    public func encode(to encoder: any Encoder) throws {
-        let string = toString()
-        var container = encoder.singleValueContainer()
-        try container.encode(string)
-    }
-
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let string = try container.decode(String.self)
-        self = RadarLogLevel.from(string: string)
-    }
-}
-
 @objc(RadarSdkConfiguration) @objcMembers
 class RadarSdkConfiguration: NSObject {
     private let originalDict: [String: Any]?

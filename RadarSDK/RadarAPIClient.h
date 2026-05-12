@@ -14,7 +14,6 @@
 #import "RadarConfig.h"
 #import "RadarContext.h"
 #import "RadarEvent.h"
-#import "RadarLog.h"
 #import "RadarRegion.h"
 #import "RadarRouteMatrix.h"
 #import "RadarRoutes.h"
@@ -207,7 +206,6 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
      withCampaign:(NSString *_Nullable)campaign
 completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
 @end
 
 NS_ASSUME_NONNULL_END

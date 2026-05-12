@@ -12,7 +12,7 @@ import Foundation
 @objc(RadarSyncManager)
 public final class RadarSyncManager: NSObject {
 
-    static let syncStore = RadarFileStorage<RadarSyncState>(fileName: "radar_sync_state.json")
+    static let syncStore = RadarFileStorageObject<RadarSyncState>(fileName: "radar_sync_state.json")
 
     private static let placeDetectionRadius: Double = 75.0
     private static let beaconRange: Double = 100.0
@@ -57,43 +57,41 @@ public final class RadarSyncManager: NSObject {
             return
         }
 
-        if #available(iOS 13.0, *) {
-            Task {
-                do {
-                    let response = try await RadarAPIClient.shared.fetchSyncRegion(
-                        latitude: location.coordinate.latitude,
-                        longitude: location.coordinate.longitude
-                    )
+        Task {
+            do {
+                let response = try await RadarAPIClient.shared.fetchSyncRegion(
+                    latitude: location.coordinate.latitude,
+                    longitude: location.coordinate.longitude
+                )
 
-                    let currentState = syncStore.read()
+                let currentState = syncStore.read()
 
-                    if let center = response.regionCenter, let radius = response.regionRadius {
-                        if currentState?.syncedRegionCenter == nil {
+                if let center = response.regionCenter, let radius = response.regionRadius {
+                    if currentState?.syncedRegionCenter == nil {
 
-                            RadarLogger.shared.info("SyncManager: Initial sync region set | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
-                        } else if currentState?.syncedRegionCenter?.latitude != center.latitude || currentState?.syncedRegionCenter?.longitude != center.longitude
-                            || currentState?.syncedRegionRadius != radius
-                        {
+                        RadarLogger.shared.info("SyncManager: Initial sync region set | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
+                    } else if currentState?.syncedRegionCenter?.latitude != center.latitude || currentState?.syncedRegionCenter?.longitude != center.longitude
+                        || currentState?.syncedRegionRadius != radius
+                    {
 
-                            RadarLogger.shared.info("SyncManager: Sync region changed | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
-                        }
-                    } else {
-                        if currentState?.syncedRegionCenter != nil {
-                            RadarLogger.shared.info("SyncManager: Sync region cleared")
-                        }
+                        RadarLogger.shared.info("SyncManager: Sync region changed | lat = \(center.latitude); lng = \(center.longitude); radius = \(radius)")
                     }
-
-                    syncStore.modify { state in
-                        if state == nil { state = RadarSyncState() }
-                        state?.syncedGeofences = response.geofences
-                        state?.syncedPlaces = response.places
-                        state?.syncedBeacons = response.beacons
-                        state?.syncedRegionCenter = response.regionCenter
-                        state?.syncedRegionRadius = response.regionRadius
+                } else {
+                    if currentState?.syncedRegionCenter != nil {
+                        RadarLogger.shared.info("SyncManager: Sync region cleared")
                     }
-                } catch {
-                    RadarLogger.shared.warning("SyncManager: Sync region request failed")
                 }
+
+                syncStore.modify { state in
+                    if state == nil { state = RadarSyncState() }
+                    state?.syncedGeofences = response.geofences
+                    state?.syncedPlaces = response.places
+                    state?.syncedBeacons = response.beacons
+                    state?.syncedRegionCenter = response.regionCenter
+                    state?.syncedRegionRadius = response.regionRadius
+                }
+            } catch {
+                RadarLogger.shared.warning("SyncManager: Sync region request failed")
             }
         }
     }
