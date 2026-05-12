@@ -190,6 +190,13 @@ class RadarUtils: NSObject {
     static func dictionaryToJson(_ dict: [String: Any]?) -> String {
         guard let dict = dict else { return "{}" }
 
+        // Defends against NSJSONSerialization's NSException path (NaN, non-string keys,
+        // unsupported types), which Swift's do/catch below doesn't catch.
+        guard JSONSerialization.isValidJSONObject(dict) else {
+            RadarLogger.shared.warning("RadarUtils.dictionaryToJson: input is not a valid JSON object, returning empty")
+            return "{}"
+        }
+
         do {
             let data = try JSONSerialization.data(withJSONObject: dict)
             guard let string = String(data: data, encoding: .utf8) else {
