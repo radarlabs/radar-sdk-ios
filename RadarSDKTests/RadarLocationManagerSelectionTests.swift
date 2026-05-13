@@ -13,21 +13,17 @@ import Testing
 @Suite(.serialized)
 actor RadarLocationManagerSelectionTests {
 
-    private func clearSelectionAndConfiguration() {
-        let manager = RadarLocationManager.sharedInstance()
-        manager.clearImplementationSelectionForTesting()
-        RadarSettings.sdkConfiguration = nil
+    private func clearImplementationSelection() {
+        RadarLocationManager.sharedInstance().clearImplementationSelectionForTesting()
     }
 
     @Test("default flag selects ObjC implementation")
     func defaultFlagSelectsObjCImplementation() {
-        clearSelectionAndConfiguration()
-        defer {
-            clearSelectionAndConfiguration()
-        }
+        clearImplementationSelection()
+        defer { clearImplementationSelection() }
 
         let manager = RadarLocationManager.sharedInstance()
-        _ = manager.locationManager
+        manager.forceImplementationSelection(forTestingUseSwift: false)
 
         #expect(
             manager.selectedImplementationClassNameForTesting()
@@ -37,17 +33,11 @@ actor RadarLocationManagerSelectionTests {
 
     @Test("useSwiftLocationManager selects Swift shell implementation")
     func useSwiftFlagSelectsSwiftImplementation() {
-        clearSelectionAndConfiguration()
-        defer {
-            clearSelectionAndConfiguration()
-        }
-
-        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-            "useSwiftLocationManager": true
-        ])
+        clearImplementationSelection()
+        defer { clearImplementationSelection() }
 
         let manager = RadarLocationManager.sharedInstance()
-        _ = manager.locationManager
+        manager.forceImplementationSelection(forTestingUseSwift: true)
 
         #expect(
             manager.selectedImplementationClassNameForTesting()
@@ -57,24 +47,20 @@ actor RadarLocationManagerSelectionTests {
 
     @Test("implementation selection is sticky after first access")
     func implementationSelectionIsSticky() {
-        clearSelectionAndConfiguration()
-        defer {
-            clearSelectionAndConfiguration()
-        }
+        clearImplementationSelection()
+        defer { clearImplementationSelection() }
 
         let manager = RadarLocationManager.sharedInstance()
-        _ = manager.locationManager
+        manager.forceImplementationSelection(forTestingUseSwift: false)
 
         #expect(
             manager.selectedImplementationClassNameForTesting()
                 == "RadarLocationManagerObjCImplementation"
         )
 
-        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-            "useSwiftLocationManager": true
-        ])
-
+        // Property accesses on the facade must not disturb the cached selection.
         _ = manager.lowPowerLocationManager
+        _ = manager.permissionsHelper
 
         #expect(
             manager.selectedImplementationClassNameForTesting()
@@ -84,16 +70,12 @@ actor RadarLocationManagerSelectionTests {
 
     @Test("forwarded dependency properties round-trip through Swift shell")
     func forwardedDependencyPropertiesRoundTripThroughSwiftShell() {
-        clearSelectionAndConfiguration()
-        defer {
-            clearSelectionAndConfiguration()
-        }
-
-        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-            "useSwiftLocationManager": true
-        ])
+        clearImplementationSelection()
+        defer { clearImplementationSelection() }
 
         let manager = RadarLocationManager.sharedInstance()
+        manager.forceImplementationSelection(forTestingUseSwift: true)
+
         let locationManager = CLLocationManager()
         let lowPowerLocationManager = CLLocationManager()
         let permissionsHelper = RadarPermissionsHelper()
