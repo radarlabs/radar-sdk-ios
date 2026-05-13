@@ -26,6 +26,9 @@
 #import "RadarIndoorsProtocol.h"
 #import "RadarPlace+Internal.h"
 #import "RadarBeacon+Internal.h"
+#import "RadarLocationManager+Internal.h"
+#import "RadarLocationManagerImplementation.h"
+#import "RadarLocationManagerSwiftImplementation.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -34,6 +37,22 @@
 #endif
 
 @interface RadarLocationManager ()
+
+@property (nullable, strong, nonatomic) id<RadarLocationManagerImplementation> selectedImplementation;
+@property (nullable, strong, nonatomic) NSNumber *forcedUseSwiftImplementation;
+
+- (id<RadarLocationManagerImplementation>)implementation;
+- (id<RadarLocationManagerImplementation>)newImplementationUsingSwift:(BOOL)useSwift;
+
+@end
+
+@interface RadarLocationManagerObjCImplementation : NSObject <RadarLocationManagerImplementation>
+
+@property (nonnull, strong, nonatomic) CLLocationManager *locationManager;
+@property (nonnull, strong, nonatomic) CLLocationManager *lowPowerLocationManager;
+@property (nonnull, strong, nonatomic) RadarPermissionsHelper *permissionsHelper;
+@property (nullable, strong, nonatomic) RadarActivityManager *activityManager;
+@property (weak, nonatomic) RadarLocationManager *delegateProxy;
 
 /**
  `YES` if `startUpdates()` has started the `timer` for location updates.
@@ -62,15 +81,17 @@
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
 
-@end
+- (instancetype)initWithDelegateProxy:(RadarLocationManager *)delegateProxy;
 
-@implementation RadarLocationManager
+@end
 
 static NSString *const kIdentifierPrefix = @"radar_";
 static NSString *const kBubbleGeofenceIdentifierPrefix = @"radar_bubble_";
 static NSString *const kSyncGeofenceIdentifierPrefix = @"radar_geofence_";
 static NSString *const kSyncBeaconIdentifierPrefix = @"radar_beacon_";
 static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
+
+@implementation RadarLocationManager
 
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
@@ -89,16 +110,184 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     return sharedInstance;
 }
 
-- (instancetype)init {
+- (id<RadarLocationManagerImplementation>)implementation {
+    @synchronized(self) {
+        if (!_selectedImplementation) {
+            BOOL useSwift = self.forcedUseSwiftImplementation ? self.forcedUseSwiftImplementation.boolValue : [RadarSettings sdkConfiguration].useSwiftLocationManager;
+            _selectedImplementation = [self newImplementationUsingSwift:useSwift];
+        }
+
+        return _selectedImplementation;
+    }
+}
+
+- (id<RadarLocationManagerImplementation>)newImplementationUsingSwift:(BOOL)useSwift {
+    RadarLocationManagerObjCImplementation *objcImplementation = [[RadarLocationManagerObjCImplementation alloc] initWithDelegateProxy:self];
+    if (useSwift) {
+        return [[RadarLocationManagerSwiftImplementation alloc] initWithImplementation:objcImplementation];
+    }
+
+    return objcImplementation;
+}
+
+- (void)clearImplementationSelectionForTesting {
+    @synchronized(self) {
+        self.forcedUseSwiftImplementation = nil;
+        self.selectedImplementation = nil;
+    }
+}
+
+- (void)forceImplementationSelectionForTestingUseSwift:(BOOL)useSwift {
+    @synchronized(self) {
+        self.forcedUseSwiftImplementation = @(useSwift);
+        self.selectedImplementation = [self newImplementationUsingSwift:useSwift];
+    }
+}
+
+- (NSString *_Nullable)selectedImplementationClassNameForTesting {
+    @synchronized(self) {
+        if (!_selectedImplementation) {
+            return nil;
+        }
+
+        return NSStringFromClass([(NSObject *)_selectedImplementation class]);
+    }
+}
+
+- (CLLocationManager *)locationManager {
+    return self.implementation.locationManager;
+}
+
+- (void)setLocationManager:(CLLocationManager *)locationManager {
+    self.implementation.locationManager = locationManager;
+}
+
+- (CLLocationManager *)lowPowerLocationManager {
+    return self.implementation.lowPowerLocationManager;
+}
+
+- (void)setLowPowerLocationManager:(CLLocationManager *)lowPowerLocationManager {
+    self.implementation.lowPowerLocationManager = lowPowerLocationManager;
+}
+
+- (RadarPermissionsHelper *)permissionsHelper {
+    return self.implementation.permissionsHelper;
+}
+
+- (void)setPermissionsHelper:(RadarPermissionsHelper *)permissionsHelper {
+    self.implementation.permissionsHelper = permissionsHelper;
+}
+
+- (RadarActivityManager *)activityManager {
+    return self.implementation.activityManager;
+}
+
+- (void)setActivityManager:(RadarActivityManager *)activityManager {
+    self.implementation.activityManager = activityManager;
+}
+
+- (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
+    [self.implementation getLocationWithCompletionHandler:completionHandler];
+}
+
+- (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler {
+    [self.implementation getLocationWithDesiredAccuracy:desiredAccuracy completionHandler:completionHandler];
+}
+
+- (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions {
+    [self.implementation startTrackingWithOptions:trackingOptions];
+}
+
+- (void)stopTracking {
+    [self.implementation stopTracking];
+}
+
+- (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
+    [self.implementation replaceSyncedGeofences:geofences];
+}
+
+- (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
+    [self.implementation replaceSyncedBeacons:beacons];
+}
+
+- (void)replaceSyncedBeaconUUIDs:(NSArray<NSString *> *)uuids {
+    [self.implementation replaceSyncedBeaconUUIDs:uuids];
+}
+
+- (void)updateTracking {
+    [self.implementation updateTracking];
+}
+
+- (void)updateTrackingFromMeta:(RadarMeta *)meta {
+    [self.implementation updateTrackingFromMeta:meta];
+}
+
+- (void)updateTrackingFromInitialize {
+    [self.implementation updateTrackingFromInitialize];
+}
+
+- (void)performIndoorScanIfConfigured:(CLLocation *)location
+                               beacons:(NSArray<RadarBeacon *> *)beacons
+                     completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable))completionHandler {
+    [self.implementation performIndoorScanIfConfigured:location beacons:beacons completionHandler:completionHandler];
+}
+
+- (void)restartPreviousTrackingOptions {
+    [self.implementation restartPreviousTrackingOptions];
+}
+
+- (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *)location {
+    [self.implementation callCompletionHandlersWithStatus:status location:location];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
+    [self.implementation locationManager:manager didUpdateLocations:locations];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
+    [self.implementation locationManager:manager didEnterRegion:region];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
+    [self.implementation locationManager:manager didExitRegion:region];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
+    [self.implementation locationManager:manager didDetermineState:state forRegion:region];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didVisit:(CLVisit *)visit {
+    [self.implementation locationManager:manager didVisit:visit];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    [self.implementation locationManager:manager didFailWithError:error];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+    [self.implementation locationManager:manager didUpdateHeading:newHeading];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+    [self.implementation locationManager:manager didChangeAuthorizationStatus:status];
+}
+
+@end
+
+@implementation RadarLocationManagerObjCImplementation
+
+- (instancetype)initWithDelegateProxy:(RadarLocationManager *)delegateProxy {
     self = [super init];
     if (self) {
+        _delegateProxy = delegateProxy;
         _completionHandlers = [NSMutableArray new];
 
         _locationManager = [CLLocationManager new];
-        _locationManager.delegate = self;
+        _locationManager.delegate = delegateProxy;
         _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         _locationManager.distanceFilter = kCLDistanceFilterNone;
-        _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
+        _locationManager.allowsBackgroundLocationUpdates =
+            [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
 
         _lowPowerLocationManager = [CLLocationManager new];
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
@@ -108,6 +297,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _permissionsHelper = [RadarPermissionsHelper new];
     }
     return self;
+}
+
+- (void)setLocationManager:(CLLocationManager *)locationManager {
+    _locationManager = locationManager;
+    _locationManager.delegate = self.delegateProxy;
 }
 
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
