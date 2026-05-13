@@ -35,6 +35,7 @@
 		BA7793462FAAAE7F00E197CA /* SyncedRegionSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793452FAAAE7900E197CA /* SyncedRegionSource.swift */; };
 		BA7793482FAB9B6700E197CA /* NearbyPlacesSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793472FAB9B5E00E197CA /* NearbyPlacesSource.swift */; };
 		BA77934A2FAB9B9700E197CA /* TripDestinationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793492FAB9B9000E197CA /* TripDestinationSource.swift */; };
+		BA77934C2FABB54400E197CA /* AGENTS.md in Resources */ = {isa = PBXBuildFile; fileRef = BA77934B2FABB53A00E197CA /* AGENTS.md */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
@@ -189,6 +190,7 @@
 		BA7793452FAAAE7900E197CA /* SyncedRegionSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncedRegionSource.swift; sourceTree = "<group>"; };
 		BA7793472FAB9B5E00E197CA /* NearbyPlacesSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyPlacesSource.swift; sourceTree = "<group>"; };
 		BA7793492FAB9B9000E197CA /* TripDestinationSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDestinationSource.swift; sourceTree = "<group>"; };
+		BA77934B2FABB53A00E197CA /* AGENTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AGENTS.md; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -355,6 +357,7 @@
 		DD236D25230A006700EB88F9 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				BA77934B2FABB53A00E197CA /* AGENTS.md */,
 				BA77933C2FAAA79400E197CA /* MapOverlays */,
 				BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */,
 				BA7792F22FA907E600E197CA /* Components */,
@@ -597,6 +600,7 @@
 			files = (
 				F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */,
 				BA5198C92EDE3B8C004A3B35 /* Assets.xcassets in Resources */,
+				BA77934C2FABB54400E197CA /* AGENTS.md in Resources */,
 				DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

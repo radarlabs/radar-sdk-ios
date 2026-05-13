@@ -769,10 +769,9 @@ public final class RadarSyncManager: NSObject {
     }
     
     // MARK: - QA map display surface
-    //
     // Read-only snapshot accessors over the locally-cached synced data, exposed
     // for the example app's MapView.
-    
+
     public static func getSyncedRegion() -> CLCircularRegion? {
         guard let state = syncStore.read(),
               let center = state.syncedRegionCenter,
@@ -783,15 +782,15 @@ public final class RadarSyncManager: NSObject {
             identifier: "\(syncRegionIdentifierPrefix)region"
         )
     }
-    
+
     public static func getSyncedGeofences() -> [RadarSyncedGeofenceSnapshot] {
         syncStore.read()?.syncedGeofences?.map(RadarSyncedGeofenceSnapshot.init(from:)) ?? []
     }
-    
+
     public static func getSyncedPlaces() -> [RadarSyncedPlaceSnapshot] {
         syncStore.read()?.syncedPlaces?.map(RadarSyncedPlaceSnapshot.init(from:)) ?? []
     }
-    
+
     public static func getSyncedBeacons() -> [RadarSyncedBeaconSnapshot] {
         syncStore.read()?.syncedBeacons?.map(RadarSyncedBeaconSnapshot.init(from:)) ?? []
     }
@@ -805,7 +804,7 @@ public final class RadarSyncManager: NSObject {
         public let tag: String?
         public let externalId: String?
         public let geometry: Geometry
-        
+
         public enum Geometry {
             case circle(center: CLLocationCoordinate2D, radius: Double)
             case polygon(
@@ -813,7 +812,7 @@ public final class RadarSyncManager: NSObject {
                 center: CLLocationCoordinate2D,
                 radius: Double
             )
-            
+
             public var center: CLLocationCoordinate2D {
                 switch self {
                 case .circle(let c, _): return c
@@ -821,7 +820,7 @@ public final class RadarSyncManager: NSObject {
                 }
             }
         }
-        
+
         init(from swift: RadarGeofenceSwift) {
             self.id = swift.id
             self.description = swift.description
@@ -872,7 +871,7 @@ public final class RadarSyncManager: NSObject {
         public let major: String
         public let minor: String
         public let location: CLLocationCoordinate2D?
-        
+
         init(from swift: RadarBeaconSwift) {
             self.id = swift.id
             self.description = swift.description
@@ -887,4 +886,3 @@ public final class RadarSyncManager: NSObject {
             }
         }
     }
-
