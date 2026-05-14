@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import UIKit
 import RadarSDK
 
 struct LogsView: View {
     @EnvironmentObject var logStream: LogStream
     @State private var filter: Filter = .all
     @State private var expandedIds: Set<UUID> = []
+    @State private var isShowingShareSheet = false
+    @State private var didJustCopy = false
     
     enum Filter: String, CaseIterable, Identifiable {
         case all = "All"
@@ -40,17 +43,37 @@ struct LogsView: View {
             Divider()
             content
         }
+        .sheet(isPresented: $isShowingShareSheet) {
+            ActivityShareSheet(activityItems: [ConsoleEntry.formatForExport(filtered)])
+        }
     }
     
     // MARK: - Subviews
     
     private var header: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 12) {
             Text("Console").font(.title2.weight(.semibold))
             Text("\(filtered.count)")
                 .font(.caption)
                 .foregroundColor(.secondary)
             Spacer()
+
+            Button(action: copyToPasteboard) {
+                Image(systemName: didJustCopy ? "checkmark" : "doc.on.doc")
+            }
+            .font(.callout)
+            .buttonStyle(.borderless)
+            .disabled(filtered.isEmpty)
+            .accessibilityLabel(didJustCopy ? "Copied" : "Copy logs")
+
+            Button(action: { isShowingShareSheet = true }) {
+                Image(systemName: "square.and.arrow.up")
+            }
+            .font(.callout)
+            .buttonStyle(.borderless)
+            .disabled(filtered.isEmpty)
+            .accessibilityLabel("Share logs")
+
             Button("Clear") {
                 logStream.clearEntries()
                 expandedIds.removeAll()
@@ -62,6 +85,18 @@ struct LogsView: View {
         .padding(.horizontal)
         .padding(.top, 12)
         .padding(.bottom, 8)
+    }
+
+    private func copyToPasteboard() {
+        UIPasteboard.general.string = ConsoleEntry.formatForExport(filtered)
+        withAnimation {
+            didJustCopy = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            withAnimation {
+                didJustCopy = false
+            }
+        }
     }
     
     private var filterRow: some View {

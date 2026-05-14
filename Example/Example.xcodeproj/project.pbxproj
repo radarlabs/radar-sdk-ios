@@ -41,6 +41,8 @@
 		BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSrouce.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSrouce.swift */; };
 		BAB2ACB12FB53A8F00560332 /* TripEventsSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB02FB53A8600560332 /* TripEventsSource.swift */; };
 		BAB2ACB32FB53C0600560332 /* TripGeofenceSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB22FB53C0000560332 /* TripGeofenceSource.swift */; };
+		BAB2ACB52FB6486000560332 /* ConsoleEntry+Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB42FB6485500560332 /* ConsoleEntry+Export.swift */; };
+		BAB2ACB72FB6487700560332 /* ActivityShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB62FB6486E00560332 /* ActivityShareSheet.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
@@ -201,6 +203,8 @@
 		BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSrouce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripBreadcrumbsSrouce.swift; sourceTree = "<group>"; };
 		BAB2ACB02FB53A8600560332 /* TripEventsSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripEventsSource.swift; sourceTree = "<group>"; };
 		BAB2ACB22FB53C0000560332 /* TripGeofenceSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripGeofenceSource.swift; sourceTree = "<group>"; };
+		BAB2ACB42FB6485500560332 /* ConsoleEntry+Export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConsoleEntry+Export.swift"; sourceTree = "<group>"; };
+		BAB2ACB62FB6486E00560332 /* ActivityShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityShareSheet.swift; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -305,6 +309,8 @@
 		BA7792F22FA907E600E197CA /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				BAB2ACB62FB6486E00560332 /* ActivityShareSheet.swift */,
+				BAB2ACB42FB6485500560332 /* ConsoleEntry+Export.swift */,
 				BA7793352FAA996800E197CA /* ConsoleEntry+UI.swift */,
 				BA7792F92FA9088D00E197CA /* ActionButton.swift */,
 				BA7792F72FA9086B00E197CA /* TogglePanel.swift */,
@@ -658,7 +664,9 @@
 				BA7793342FAA70F100E197CA /* MessagingPanel.swift in Sources */,
 				BA7792F62FA9081A00E197CA /* FieldEditor.swift in Sources */,
 				BA7793362FAA997300E197CA /* ConsoleEntry+UI.swift in Sources */,
+				BAB2ACB72FB6487700560332 /* ActivityShareSheet.swift in Sources */,
 				BA77933B2FAAA46A00E197CA /* TestsSettingsView.swift in Sources */,
+				BAB2ACB52FB6486000560332 /* ConsoleEntry+Export.swift in Sources */,
 				BA7792EF2FA3D1DD00E197CA /* LogStream.swift in Sources */,
 				BA77934A2FAB9B9700E197CA /* TripDestinationSource.swift in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
