@@ -8,7 +8,6 @@
 
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
-#import "RadarLogBuffer.h"
 #import "RadarTrackingOptions.h"
 #import "RadarState.h"
 #import "RadarBeacon+Internal.h"
@@ -17,8 +16,6 @@
 #import <CoreLocation/CoreLocation.h>
 
 @protocol RadarSwiftBridgeProtocol
-- (void)writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString * _Nonnull)message forcePersist:(BOOL)forcePersist;
-- (void)setLogBufferPersistantLog:(BOOL)value;
 - (void)flushReplays;
 - (void)logOpenedAppConversion;
 

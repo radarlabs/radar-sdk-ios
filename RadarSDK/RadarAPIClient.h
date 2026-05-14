@@ -14,7 +14,6 @@
 #import "RadarConfig.h"
 #import "RadarContext.h"
 #import "RadarEvent.h"
-#import "RadarLog.h"
 #import "RadarRegion.h"
 #import "RadarRouteMatrix.h"
 #import "RadarRoutes.h"
@@ -75,6 +74,11 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
 
+- (void)getConfigForUsage:(NSString *_Nullable)usage
+                 verified:(BOOL)verified
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+        completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler;
+
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
@@ -99,6 +103,22 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
         expectedStateCode:(NSString *_Nullable)expectedStateCode
                    reason:(NSString *_Nullable)reason
             transactionId:(NSString *_Nullable)transactionId
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
+                  stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+             indoorScan:(NSString *_Nullable)indoorScan
+                 verified:(BOOL)verified
+            fraudPayload:(NSString *_Nullable)fraudPayload
+      expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+        expectedStateCode:(NSString *_Nullable)expectedStateCode
+                   reason:(NSString *_Nullable)reason
+            transactionId:(NSString *_Nullable)transactionId
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler;
@@ -186,7 +206,6 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
      withCampaign:(NSString *_Nullable)campaign
 completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler _Nonnull)completionHandler;
 @end
 
 NS_ASSUME_NONNULL_END

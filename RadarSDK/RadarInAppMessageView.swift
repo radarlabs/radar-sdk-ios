@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@available(iOS 13.0, *)
 struct RadarIAMView: View {
     var message: RadarInAppMessage_Swift
     var image: UIImage?
@@ -44,7 +43,7 @@ struct RadarIAMView: View {
                         .font(Font.system(size: 17, weight: .regular))
 
                     // Button
-                    if (message.button != nil) {
+                    if message.button != nil {
                         Button(action: {
                             onInAppMessageClicked()
                         }) {
@@ -58,38 +57,41 @@ struct RadarIAMView: View {
                     }
                 }.padding(.bottom, 20)
             }.background(Color.white).cornerRadius(20)
-            
+
             // Close button
-            Button(action: {
-                onDismiss()
-            }, label: {
-                ZStack {
-                    Image(systemName: "circle.fill")
-                        .foregroundColor(.gray.opacity(0.5))
-                        .font(.system(size: 30))
-                    Image(systemName: "xmark")
-                        .foregroundColor(.white)
-                        .font(.system(size: 15, weight: .bold))
+            Button(
+                action: {
+                    onDismiss()
+                },
+                label: {
+                    ZStack {
+                        Image(systemName: "circle.fill")
+                            .foregroundColor(.gray.opacity(0.5))
+                            .font(.system(size: 30))
+                        Image(systemName: "xmark")
+                            .foregroundColor(.white)
+                            .font(.system(size: 15, weight: .bold))
+                    }
                 }
-            })
+            )
             .padding(10)
         }
     }
 }
 
-@available(iOS 13.0, *)
 #Preview {
     ZStack {
         Color.blue
-        RadarIAMView(message: RadarInAppMessage.fromDictionary([
+        RadarIAMView(
+            message: RadarInAppMessage.fromDictionary([
                 "type": "banner",
                 "title": [
                     "text": "This is the title",
-                    "color": "#000000"
+                    "color": "#000000",
                 ],
                 "body": [
                     "text": "This is a demo message",
-                    "color": "#666666"
+                    "color": "#666666",
                 ],
                 "button": [
                     "text": "Send it",
@@ -98,12 +100,12 @@ struct RadarIAMView: View {
                 ],
                 "image": [
                     "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
-                    "name": "image.jpeg"
-                ]
-        ]) as! RadarInAppMessage_Swift,
-//             image: UIImage(named: "background"),
-             onDismiss: { print("Dismissed") },
-             onInAppMessageClicked: { print("Button tapped") }
+                    "name": "image.jpeg",
+                ],
+            ]) as! RadarInAppMessage_Swift,
+            //             image: UIImage(named: "background"),
+            onDismiss: { print("Dismissed") },
+            onInAppMessageClicked: { print("Button tapped") }
         )
     }
 }

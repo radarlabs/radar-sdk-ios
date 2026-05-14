@@ -38,6 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
         radarInitializeOptions.silentPush = true
+        radarInitializeOptions.trackVerifiedAutoFailover = true
 
         Radar.setAppGroup("group.waypoint.data")
         Radar.initialize(publishableKey: settingsStore.resolvedPublishableKey, options: radarInitializeOptions)

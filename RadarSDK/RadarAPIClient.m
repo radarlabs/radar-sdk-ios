@@ -102,6 +102,13 @@
 }
 
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
+    [self getConfigForUsage:usage verified:verified useSecondaryVerifiedHost:NO completionHandler:completionHandler];
+}
+
+- (void)getConfigForUsage:(NSString *_Nullable)usage
+                 verified:(BOOL)verified
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+        completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil);
@@ -127,7 +134,7 @@
     [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
     [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]];
 
-    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
+    NSString *host = verified ? (useSecondaryVerifiedHost ? [RadarSettings defaultVerifiedHostSecondary] : [RadarSettings verifiedHost]) : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
@@ -228,6 +235,38 @@
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
             transactionId:(NSString * _Nullable)transactionId
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [self trackWithLocation:location
+                    stopped:stopped
+                 foreground:foreground
+                     source:source
+                   replayed:replayed
+                    beacons:beacons
+                 indoorScan:indoorScan
+                   verified:verified
+               fraudPayload:fraudPayload
+        expectedCountryCode:expectedCountryCode
+          expectedStateCode:expectedStateCode
+                     reason:reason
+              transactionId:transactionId
+  useSecondaryVerifiedHost:NO
+          completionHandler:completionHandler];
+}
+
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
+                  stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+             indoorScan:(NSString *_Nullable)indoorScan
+                 verified:(BOOL)verified
+            fraudPayload:(NSString * _Nullable)fraudPayload
+      expectedCountryCode:(NSString * _Nullable)expectedCountryCode
+        expectedStateCode:(NSString * _Nullable)expectedStateCode
+                   reason:(NSString * _Nullable)reason
+            transactionId:(NSString * _Nullable)transactionId
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -443,6 +482,7 @@
                                                             location:location
                                                                 source:source
                                                             verified:verified
+                                              useSecondaryVerifiedHost:useSecondaryVerifiedHost
                                                         publishableKey:publishableKey
                                                 notificationsRemaining:notificationsRemaining
                                                 locationMetadata:locationMetadata
@@ -455,6 +495,7 @@
                                                         location:location
                                                             source:source
                                                         verified:verified
+                                          useSecondaryVerifiedHost:useSecondaryVerifiedHost
                                                     publishableKey:publishableKey
                                             notificationsRemaining:@[]
                                             locationMetadata:locationMetadata
@@ -468,6 +509,7 @@
                         location:(CLLocation *)location
                         source:(RadarLocationSource)source
                         verified:(BOOL)verified
+        useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                 publishableKey:(NSString *)publishableKey
                 notificationsRemaining:(NSArray *)notificationsRemaining
                 locationMetadata:(NSDictionary *)locationMetadata
@@ -492,7 +534,7 @@
         return;
     }
 
-    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
+    NSString *host = verified ? (useSecondaryVerifiedHost ? [RadarSettings defaultVerifiedHostSecondary] : [RadarSettings verifiedHost]) : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
@@ -545,16 +587,11 @@
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
 
-                                    if (@available(iOS 13.0, *)) {
-                                        if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
-                                            [[RadarNotificationHelper_Swift shared]
-                                             removeRegisteredNotificationsWithNotifications:params[@"notificationDiff"]
-                                             completionHandler:^() {}
-                                            ];
-                                        } else {
-                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
-                                            [RadarState setRegisteredNotifications:notificationsRemaining];
-                                        }
+                                    if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
+                                        [[RadarNotificationHelper_Swift shared]
+                                            removeRegisteredNotificationsWithNotifications:params[@"notificationDiff"]
+                                            completionHandler:^() {}
+                                        ];
                                     } else {
                                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
                                         [RadarState setRegisteredNotifications:notificationsRemaining];
@@ -613,11 +650,9 @@
                             NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
                             RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res];
 
-                            if (@available(iOS 13.0, *)) {
-                                NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
-                                if (inAppMessages) {
-                                    [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
-                                }
+                            NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
+                            if (inAppMessages) {
+                                [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
                             }
                                    
                             if (user) {
@@ -1766,41 +1801,6 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                         }
 
                         return completionHandler(RadarStatusSuccess, res, customEvent);
-                    }];
-}
-
-- (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler)completionHandler {
-    NSString *publishableKey = [RadarSettings publishableKey];
-    if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey);
-    }
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/logs", host];
-
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
-
-    NSMutableDictionary *params = [NSMutableDictionary new];
-
-    params[@"id"] = [RadarSettings _id];
-    params[@"installId"] = [RadarSettings installId];
-    params[@"deviceId"] = [RadarUtilsDeprecated deviceId];
-    NSString *sessionId = [RadarSettings sessionId];
-    if (sessionId) {
-        params[@"sessionId"] = sessionId;
-    }
-    NSArray *logsArray = [RadarLog arrayForLogs:logs];
-    [params setValue:logsArray forKey:@"logs"];
-
-    [self.apiHelper requestWithMethod:@"POST"
-                                  url:url
-                              headers:headers
-                               params:params
-                                sleep:NO
-                           logPayload:NO // avoid logging the logging call
-                      extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        return completionHandler(status);
                     }];
 }
 @end
