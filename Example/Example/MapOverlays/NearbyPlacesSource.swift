@@ -25,14 +25,14 @@ final class NearbyPlacesSource: MapOverlaySource {
     let id = "nearbyPlaces"
     let name = "Nearby places"
     let icon = "mappin.circle"
-    
+
     private static let maxRadiusMeters: Double = 10_000
     private static let limit = 100
-    
+
     func loadOverlays(near location: CLLocation, span: MKCoordinateSpan) async -> MapOverlayBundle {
         let radius = Self.searchRadius(for: span)
         let places = await Self.fetchPlaces(near: location, radius: radius)
-        
+
         let annotations: [MKAnnotation] = places.map { place in
             let pin = NearbyPlaceAnnotation()
             pin.coordinate = place.location.coordinate
@@ -43,9 +43,9 @@ final class NearbyPlacesSource: MapOverlaySource {
         }
         return MapOverlayBundle(annotations: annotations, overlays: [])
     }
-    
+
     func renderer(for overlay: MKOverlay) -> MKOverlayRenderer? { nil }
-    
+
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView? {
         guard annotation is NearbyPlaceAnnotation else { return nil }
         let identifier = "NearbyPlaceAnnotation"
@@ -57,15 +57,15 @@ final class NearbyPlacesSource: MapOverlaySource {
         view.canShowCallout = true
         return view
     }
-    
+
     // MARK: - Helpers
-    
+
     private static func searchRadius(for span: MKCoordinateSpan) -> Int {
         let latMeters = span.latitudeDelta * 111_000
         let halfDiag = latMeters / 2
         return Int(min(maxRadiusMeters, max(100, halfDiag)))
     }
-    
+
     private static func fetchPlaces(near location: CLLocation, radius: Int) async -> [RadarPlace] {
         await withCheckedContinuation { continuation in
             Radar.searchPlaces(

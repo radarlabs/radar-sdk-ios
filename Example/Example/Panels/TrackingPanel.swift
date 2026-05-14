@@ -11,7 +11,7 @@ import RadarSDK
 
 struct TrackingPanel: View {
     @EnvironmentObject var logStream: LogStream
-    
+
     var body: some View {
         TogglePanel("Tracking") {
             ActionButton("trackOnce") {

@@ -10,7 +10,7 @@ import RadarSDK
 
 class MyIAMDelegate: RadarInAppMessageDelegate {
     private let logStream: LogStream
-    
+
     init(logStream: LogStream) {
         self.logStream = logStream
         super.init()
@@ -23,7 +23,7 @@ class MyIAMDelegate: RadarInAppMessageDelegate {
         message.body.text = message.body.text + " {Loyal User}!"
         super.createInAppMessageView(message, onDismiss: onDismiss, onInAppMessageClicked: onInAppMessageClicked, completionHandler: completionHandler)
     }
-    
+
     override func onInAppMessageButtonClicked(_ message: RadarInAppMessage) {
         logStream.write(result: "IAM clicked")
     }

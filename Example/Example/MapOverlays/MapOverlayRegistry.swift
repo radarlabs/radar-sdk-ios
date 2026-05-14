@@ -19,19 +19,19 @@ import CoreLocation
 /// survive app restarts.
 @MainActor
 final class MapOverlayRegistry: ObservableObject {
-    
+
     @Published private(set) var sources: [MapOverlaySource] = []
     @Published var enabledSourceIds: Set<String>
     @Published private(set) var bundlesById: [String: MapOverlayBundle] = [:]
     @Published var isInTripMode: Bool = false
-    
+
     private static let defaultsKey = "mapOverlayRegistry.enabledSourceIds"
     private var cancellables = Set<AnyCancellable>()
-    
+
     init() {
         let raw = UserDefaults.standard.stringArray(forKey: Self.defaultsKey) ?? []
         self.enabledSourceIds = Set(raw)
-        
+
         $enabledSourceIds
             .dropFirst()
             .sink { ids in
@@ -39,20 +39,20 @@ final class MapOverlayRegistry: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     // MARK: - Source registration
-    
+
     func register(_ source: MapOverlaySource) {
         guard !sources.contains(where: { $0.id == source.id }) else { return }
         sources.append(source)
     }
-    
+
     // MARK: - Enable/disable
-    
+
     func isEnabled(_ source: MapOverlaySource) -> Bool {
         enabledSourceIds.contains(source.id)
     }
-    
+
     func toggle(_ source: MapOverlaySource) {
         if enabledSourceIds.contains(source.id) {
             enabledSourceIds.remove(source.id)
@@ -61,7 +61,7 @@ final class MapOverlayRegistry: ObservableObject {
             enabledSourceIds.insert(source.id)
         }
     }
-    
+
     /// Whether a source should render right now, taking trip-mode override into account.
     private func isActuallyEnabled(_ source: MapOverlaySource) -> Bool {
         if isInTripMode {
@@ -69,9 +69,9 @@ final class MapOverlayRegistry: ObservableObject {
         }
         return enabledSourceIds.contains(source.id)
     }
-    
+
     // MARK: - Refresh
-    
+
     private(set) var lastKnownLocation: CLLocation?
     private(set) var lastKnownSpan: MKCoordinateSpan?
 
@@ -79,7 +79,7 @@ final class MapOverlayRegistry: ObservableObject {
         guard let location = lastKnownLocation, let span = lastKnownSpan else { return }
         await refresh(near: location, span: span)
     }
-    
+
     func refresh(near location: CLLocation, span: MKCoordinateSpan) async {
         lastKnownLocation = location
         lastKnownSpan = span
@@ -88,7 +88,7 @@ final class MapOverlayRegistry: ObservableObject {
             bundlesById[source.id] = bundle
         }
     }
-    
+
     func refreshSource(_ id: String) async {
         guard let source = sources.first(where: { $0.id == id }),
               isActuallyEnabled(source),
@@ -97,7 +97,7 @@ final class MapOverlayRegistry: ObservableObject {
         let bundle = await source.loadOverlays(near: location, span: span)
         bundlesById[id] = bundle
     }
-    
+
     // MARK: - Aggregated content
 
     var allAnnotations: [MKAnnotation] {
@@ -133,7 +133,7 @@ final class MapOverlayRegistry: ObservableObject {
         }
         return nil
     }
-    
+
     /// Drop any cached bundle for a source. Used when a data-driven source's
     /// state is reset (e.g., trip ends and visualization arrays are cleared).
     func clearBundle(for id: String) {

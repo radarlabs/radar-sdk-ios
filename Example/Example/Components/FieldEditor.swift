@@ -34,7 +34,7 @@ struct FieldEditor: View {
     private let placeholder: String
     private let labelWidth: CGFloat?
     private let commitOnSubmit: Bool
-    
+
     /// Local draft used in commit-on-submit mode. In live mode, the TextField binds
     /// directly to `text` and this stays unused.
     @State private var draft: String = ""
@@ -73,7 +73,7 @@ struct FieldEditor: View {
         }
         .padding(.vertical, 4)
     }
-    
+
     @ViewBuilder
     private var field: some View {
         if commitOnSubmit {
@@ -90,13 +90,13 @@ struct FieldEditor: View {
                 .autocorrectionDisabled()
         }
     }
-    
+
     /// What the user actually sees in the field — the draft when committing on
     /// submit, the live source binding otherwise. Used to gate the clear button.
     private var displayedText: String {
         commitOnSubmit ? draft : text
     }
-    
+
     private func commit() {
         guard commitOnSubmit else { return }
         if text != draft {

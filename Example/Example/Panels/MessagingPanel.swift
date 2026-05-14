@@ -11,7 +11,7 @@ import RadarSDK
 
 struct MessagingPanel: View {
     @EnvironmentObject var logStream: LogStream
-    
+
     var body: some View {
         TogglePanel("IAM & Conversions", initiallyExpanded: false) {
             ActionButton("iam") {

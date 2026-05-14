@@ -14,9 +14,9 @@ import CoreLocation
 struct MapOverlayBundle {
     var annotations: [MKAnnotation]
     var overlays: [MKOverlay]
-    
+
     static let empty = MapOverlayBundle(annotations: [], overlays: [])
-    
+
     var isEmpty: Bool { annotations.isEmpty && overlays.isEmpty }
 }
 
@@ -45,19 +45,19 @@ struct MapOverlayBundle {
 protocol MapOverlaySource: AnyObject {
     /// Stable identifier; persisted to UserDefaults for enabled-state.
     var id: String { get }
-    
+
     /// User-facing label for the layer-toggle UI.
     var name: String { get }
-    
+
     /// SF Symbol name for the layer-toggle UI.
     var icon: String { get }
-    
+
     /// Whether this source should keep rendering while a trip is active.
     /// When true, the source is always loaded and rendered during trip mode
     /// regardless of user toggle state. When false (default), trip mode
     /// suppresses this source entirely.
     var isTripModeWhitelisted: Bool { get }
-    
+
     /// Fetch overlays for the given visible region.
     ///
     /// Synchronous sources (CLLocationManager state) return immediately;
@@ -65,12 +65,12 @@ protocol MapOverlaySource: AnyObject {
     /// `withCheckedContinuation`. Errors are handled internally — return
     /// `.empty` on failure and surface to the console via LogStream if useful.
     func loadOverlays(near location: CLLocation, span: MKCoordinateSpan) async -> MapOverlayBundle
-    
+
     /// Provide a renderer for an overlay this source produced. Return nil if
     /// the overlay was not produced by this source — the registry will try
     /// the next source.
     func renderer(for overlay: MKOverlay) -> MKOverlayRenderer?
-    
+
     /// Provide a view for an annotation this source produced. Return nil if
     /// the annotation was not produced by this source.
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView?

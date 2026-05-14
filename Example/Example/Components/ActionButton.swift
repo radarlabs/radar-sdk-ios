@@ -53,7 +53,7 @@ struct ActionButton: View {
         }
         .buttonStyle(.plain)
     }
-    
+
     private var backgroundColor: Color {
         switch style {
         case .primary: return .blue

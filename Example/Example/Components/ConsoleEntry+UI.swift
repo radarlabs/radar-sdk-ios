@@ -23,7 +23,7 @@ extension ConsoleEntry.Kind {
         case .error:    return "exclamationmark.triangle.fill"
         }
     }
-    
+
     var tintColor: Color {
         switch self {
         case .action:   return .blue
@@ -34,7 +34,7 @@ extension ConsoleEntry.Kind {
         case .error:    return .red
         }
     }
-    
+
     var label: String {
         switch self {
         case .action:   return "ACTION"

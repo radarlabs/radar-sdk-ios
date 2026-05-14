@@ -34,11 +34,11 @@ final class TripBuilderStore: ObservableObject {
     func move(from offsets: IndexSet, to destination: Int) {
         selectedDestinations.move(fromOffsets: offsets, toOffset: destination)
     }
-    
+
     func remove(at offsets: IndexSet) {
         selectedDestinations.remove(atOffsets: offsets)
     }
-    
+
     func clear() {
         selectedDestinations.removeAll()
     }
@@ -69,7 +69,7 @@ final class TripBuilderStore: ObservableObject {
 
     @Published private(set) var activeTrip: RadarTrip?
     @Published private(set) var tripBreadcrumbs: [CLLocationCoordinate2D] = []
-    
+
     var hasActiveTrip: Bool { activeTrip != nil }
 
     private var cancellables = Set<AnyCancellable>()
@@ -114,7 +114,7 @@ final class TripBuilderStore: ObservableObject {
             await registry?.refreshSource("tripDestination")
         }
     }
-    
+
     private static let tripEventTypes: Set<RadarEventType> = [
         .userStartedTrip,
         .userApproachingTripDestination,
@@ -290,7 +290,7 @@ final class TripBuilderStore: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Trip visualization state
     @Published private(set) var tripEventMarkers: [TripEventMarker] = []
 
@@ -354,4 +354,3 @@ final class TripBuilderStore: ObservableObject {
         return lines.joined(separator: "\n")
     }
 }
-

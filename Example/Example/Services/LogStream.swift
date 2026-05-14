@@ -31,13 +31,13 @@ struct ConsoleEntry: Identifiable {
         /// SDK failure (`didFail`).
         case error
     }
-    
+
     let id: UUID
     let timestamp: Date
     let kind: Kind
     let summary: String
     let detail: String?
-    
+
     init(
         kind: Kind,
         summary: String,
@@ -64,56 +64,56 @@ struct ConsoleEntry: Identifiable {
 /// the Tests-tab recent-activity preview in 6e) read it directly; non-UI consumers
 /// like `TripLiveActivityManager` subscribe to the dedicated PassthroughSubjects.
 final class LogStream: NSObject, ObservableObject {
-    
+
     /// Cap on retained timeline entries. Older entries are dropped FIFO.
     static let maxEntries = 2000
-    
+
     // MARK: - Published state (for UI consumers)
-    
+
     @Published private(set) var entries: [ConsoleEntry] = []
-    
+
     @Published private(set) var lastSyncedLocation: CLLocation?
     @Published private(set) var lastSyncedUser: RadarUser?
-    
+
     @Published private(set) var lastClientLocation: CLLocation?
     @Published private(set) var lastClientStopped: Bool = false
     @Published private(set) var lastClientSource: RadarLocationSource = .unknown
-    
+
     @Published private(set) var lastFailure: RadarStatus?
-    
+
     // MARK: - Event publishers (for non-UI consumers, e.g. TripLiveActivityManager)
-    
+
     /// Fires once per `didReceiveEvents` callback from the SDK. Subscribers see only
     /// the new batch, not the full historical `events` array.
     let didReceiveEventsPublisher = PassthroughSubject<(events: [RadarEvent], user: RadarUser?), Never>()
-    
+
     /// Fires once per `didUpdateLocation` callback from the SDK (server-synced updates).
-    let didUpdateLocationPublisher = PassthroughSubject<(location:CLLocation, user: RadarUser), Never>()
-    
+    let didUpdateLocationPublisher = PassthroughSubject<(location: CLLocation, user: RadarUser), Never>()
+
     // MARK: - Public write API (for action / result logging from views)
-    
+
     /// Log a user-initiated action (typically from `ActionButton` taps in 6c+).
     func write(action title: String, detail: String? = nil) {
         append(ConsoleEntry(kind: .action, summary: title, detail: detail))
     }
-    
+
     /// Log the result of an SDK call returning to its completion handler.
     func write(result title: String, detail: String? = nil) {
         append(ConsoleEntry(kind: .result, summary: title, detail: detail))
     }
-    
+
     /// Log a failure path (callback returned an error status, etc.).
     func write(error title: String, detail: String? = nil) {
         append(ConsoleEntry(kind: .error, summary: title, detail: detail))
     }
-    
+
     /// Clear the unified timeline.
     func clearEntries() {
         entries.removeAll()
     }
-    
+
     // MARK: - Private
-    
+
     /// Main-queue-safe append with FIFO trimming.
     private func append(_ entry: ConsoleEntry) {
         DispatchQueue.main.async { [weak self] in
@@ -124,9 +124,9 @@ final class LogStream: NSObject, ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Formatting helpers (used by RadarDelegate callbacks below)
-    
+
     fileprivate static func summarize(_ event: RadarEvent) -> String {
         let type = RadarEvent.string(for: event.type) ?? "unknown"
         if let externalId = event.geofence?.externalId, !externalId.isEmpty {
@@ -140,18 +140,18 @@ final class LogStream: NSObject, ObservableObject {
         }
         return type
     }
-    
+
     fileprivate static func detail(_ event: RadarEvent) -> String? {
         return prettyJSON(event.dictionaryValue())
     }
-    
+
     fileprivate static func summarize(_ location: CLLocation) -> String {
         let lat = String(format: "%.5f", location.coordinate.latitude)
         let lng = String(format: "%.5f", location.coordinate.longitude)
         let acc = Int(location.horizontalAccuracy)
         return "\(lat), \(lng)  ±\(acc)m"
     }
-    
+
     fileprivate static func prettyJSON(_ raw: [AnyHashable: Any]?) -> String? {
         guard let raw = raw, JSONSerialization.isValidJSONObject(raw) else { return nil }
         let data = try? JSONSerialization.data(
@@ -165,11 +165,11 @@ final class LogStream: NSObject, ObservableObject {
 // MARK: - RadarDelegate
 
 extension LogStream: RadarDelegate {
-    
+
     func didLog(message: String) {
         append(ConsoleEntry(kind: .log, summary: message))
     }
-    
+
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -186,7 +186,7 @@ extension LogStream: RadarDelegate {
             ))
         }
     }
-    
+
     func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -199,7 +199,7 @@ extension LogStream: RadarDelegate {
             summary: "synced  " + Self.summarize(location)
         ))
     }
-    
+
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -213,7 +213,7 @@ extension LogStream: RadarDelegate {
             summary: "\(stoppedTag)  " + Self.summarize(location)
         ))
     }
-    
+
     func didFail(status: RadarStatus) {
         DispatchQueue.main.async { [weak self] in
             self?.lastFailure = status

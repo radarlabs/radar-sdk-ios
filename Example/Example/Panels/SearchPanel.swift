@@ -11,7 +11,7 @@ import RadarSDK
 
 struct SearchPanel: View {
     @EnvironmentObject var logStream: LogStream
-    
+
     var body: some View {
         TogglePanel("Search & Geocoding", initiallyExpanded: false) {
             ActionButton("searchPlaces") {
@@ -25,7 +25,7 @@ struct SearchPanel: View {
                     groups: nil,
                     countryCodes: ["US"],
                     limit: 10
-                ) { (status, location, places) in
+                ) { (status, _, places) in
                     logStream.write(
                         status,
                         summary: "searchPlaces: \(Radar.stringForStatus(status))",
@@ -34,7 +34,7 @@ struct SearchPanel: View {
                 }
             }
             ActionButton("searchGeofences") {
-                Radar.searchGeofences() { (status, location, geofences) in
+                Radar.searchGeofences { (status, _, geofences) in
                     logStream.write(
                         status,
                         summary: "searchGeofences: \(Radar.stringForStatus(status))",

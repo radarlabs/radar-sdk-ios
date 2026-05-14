@@ -26,18 +26,18 @@ final class SyncedRegionSource: MapOverlaySource {
     let id = "syncedRegion"
     let name = "Synced region & entities"
     let icon = "circle.dotted"
-    
+
     private static let accent = UIColor.systemPurple
-    
+
     func loadOverlays(near location: CLLocation, span: MKCoordinateSpan) async -> MapOverlayBundle {
         var annotations: [MKAnnotation] = []
         var overlays: [MKOverlay] = []
-        
+
         // Region boundary
         if let region = RadarSyncManager.getSyncedRegion() {
             overlays.append(SyncedRegionBoundaryCircle(center: region.center, radius: region.radius))
         }
-        
+
         // Synced geofences (circles + polygons)
         for geofence in RadarSyncManager.getSyncedGeofences() {
             let displayName = geofence.description
@@ -61,7 +61,7 @@ final class SyncedRegionSource: MapOverlaySource {
                 overlays.append(polygon)
             }
         }
-        
+
         // Synced places
         for place in RadarSyncManager.getSyncedPlaces() {
             let pin = SyncedPlaceAnnotation()
@@ -71,7 +71,7 @@ final class SyncedRegionSource: MapOverlaySource {
             pin.placeId = place.id
             annotations.append(pin)
         }
-        
+
         // Synced beacons (skip those without a location — nothing to plot)
         for beacon in RadarSyncManager.getSyncedBeacons() {
             guard let coordinate = beacon.location else { continue }
@@ -82,10 +82,10 @@ final class SyncedRegionSource: MapOverlaySource {
             pin.beaconId = beacon.id
             annotations.append(pin)
         }
-        
+
         return MapOverlayBundle(annotations: annotations, overlays: overlays)
     }
-    
+
     func renderer(for overlay: MKOverlay) -> MKOverlayRenderer? {
         if let boundary = overlay as? SyncedRegionBoundaryCircle {
             let renderer = MKCircleRenderer(circle: boundary)
@@ -103,7 +103,7 @@ final class SyncedRegionSource: MapOverlaySource {
         }
         return nil
     }
-    
+
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView? {
         if annotation is SyncedGeofenceAnnotation {
             return makeMarker(for: annotation, in: mapView,
@@ -119,9 +119,9 @@ final class SyncedRegionSource: MapOverlaySource {
         }
         return nil
     }
-    
+
     // MARK: - Helpers
-    
+
     private func makeGeofencePin(
         at coordinate: CLLocationCoordinate2D,
         geofence: RadarSyncedGeofenceSnapshot
@@ -133,14 +133,14 @@ final class SyncedRegionSource: MapOverlaySource {
         pin.geofenceId = geofence.id
         return pin
     }
-    
+
     private func tinted<R: MKOverlayPathRenderer>(_ renderer: R) -> R {
         renderer.fillColor = Self.accent.withAlphaComponent(0.15)
         renderer.strokeColor = Self.accent
         renderer.lineWidth = 2
         return renderer
     }
-    
+
     private func makeMarker(
         for annotation: MKAnnotation,
         in mapView: MKMapView,

@@ -17,24 +17,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     let locationManager = CLLocationManager()
     var window: UIWindow? // required for UIWindowSceneDelegate
-    
+
     let logStream = LogStream()
     let settingsStore = SettingsStore()
     let permissionsStore = PermissionsStore()
     let mapOverlayRegistry = MapOverlayRegistry()
     let tripBuilderStore = TripBuilderStore()
     private var cancellables = Set<AnyCancellable>()
-    
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
         UNUserNotificationCenter.current().delegate = self
-        
+
         locationManager.delegate = self
         self.requestLocationPermissions()
-        
+
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
-        
+
         // Uncomment to enable automatic setup for notification conversions or deep linking
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
@@ -59,33 +59,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
         tripBuilderStore.bind(logStream: logStream, registry: mapOverlayRegistry)
         tripBuilderStore.refreshActiveTrip()
-        
+
         if #available(iOS 16.2, *) {
             TripLiveActivityManager.shared.logStream = logStream
         }
 
         if #available(iOS 15.0, *) {
-            locationManager.startMonitoringLocationPushes() { data, error in
+            locationManager.startMonitoringLocationPushes { data, _ in
                 let token = data?.map { String(format: "%02x", $0) }.joined() ?? "no token"
                 self.logStream.write(result: "extension push token registered", detail: "token: \(token)")
                 Radar.setLocationExtensionToken(token)
             }
         }
-        
+
         return true
     }
-    
+
     func application(_ app: UIApplication, open url: URL,
-                     options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+                     options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         // Handle opening via standard URL
         return true
     }
-    
+
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
+
         let appDelegate = (UIApplication.shared.delegate as? AppDelegate) ?? self
-        
+
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .white
         let controller = UIHostingController(
@@ -101,7 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         window.makeKeyAndVisible()
         self.window = window
     }
-    
+
     func requestLocationPermissions() {
         var status: CLAuthorizationStatus = .notDetermined
         if #available(iOS 14.0, *) {
@@ -133,16 +133,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         logStream.write(result: "willPresent notification")
         completionHandler([.list, .banner, .sound])
     }
-    
+
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         // Uncomment for manual setup for notification conversions and URLs
         // Radar.logConversion(response: response)
         // Radar.openURLFromNotification(response.notification)
         logStream.write(result: "didReceive notification response", detail: "\(response)")
     }
-    
+
     // this function is called ONLY for silent-pushes
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) async -> UIBackgroundFetchResult {
         logStream.write(result: "silent push received", detail: "\(userInfo)")
 
         return .newData
@@ -150,9 +150,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
     func notify(_ body: String) {
     }
-    
+
     // MARK: - Live Activity (subscribes to LogStream)
-    
+
     private func wireLiveActivitySubscriptions() {
         logStream.didReceiveEventsPublisher
             .sink { [weak self] events, _ in
@@ -165,7 +165,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
             .store(in: &cancellables)
     }
-    
+
     private func handleEventsForLiveActivity(_ events: [RadarEvent]) {
         if #available(iOS 16.2, *) {
             for event in events where event.type == .userStoppedTrip {
@@ -173,7 +173,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
     }
-    
+
     private func handleLocationUpdateForLiveActivity(user: RadarUser) {
         if #available(iOS 16.2, *) {
             if user.trip != nil {
@@ -181,7 +181,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
     }
-    
+
     // MARK: - Live Activity Handling
     @available(iOS 16.2, *)
     private func handleTripLiveActivity(user: RadarUser?) {
@@ -189,9 +189,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             TripLiveActivityManager.shared.endActivity(status: "completed")
             return
         }
-        
+
         let hasActivity = TripLiveActivityManager.shared.hasActiveActivity
-        
+
         switch trip.status {
         case .started, .approaching, .arrived:
             if !hasActivity {
@@ -201,7 +201,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 let statusOverride = (trip.status == .started) ? "in_progress" : nil
                 TripLiveActivityManager.shared.updateActivity(trip: trip, statusOverride: statusOverride)
             }
-            
+
         case .completed:
             TripLiveActivityManager.shared.endActivity(status: "completed")
         case .canceled:

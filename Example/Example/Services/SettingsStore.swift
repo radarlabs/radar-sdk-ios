@@ -39,17 +39,17 @@ import RadarSDK
 
 final class SettingsStore: ObservableObject {
     // MARK: - Defaults
-    
+
     /// Hardcoded publishable key used when no override is set.
-    static let defaultPublishableKey = "prj_test_pk_0000000000000000000000000000000000000000"
-    
+    static let defaultPublishableKey = "prj_test_pk_7b46891aa0a8278b5acc6bbc9f227aa5c3319483"
+
     private enum Keys {
         static let publishableKeyOverride = "settings.publishableKeyOverride"
         static let defaultTabRaw = "settings.defaultTabRaw"
     }
-    
+
     // MARK: - SDK-backed (read/write)
-    
+
     @Published var userId: String? {
         didSet {
             guard !isLoadingFromSDK else { return }
@@ -57,7 +57,7 @@ final class SettingsStore: ObservableObject {
             if !isApplyingPreset { activePresetId = nil }
         }
     }
-    
+
     /// Maps to Radar's `description` (renamed to avoid clashing with `NSObject.description`).
     @Published var userDescription: String? {
         didSet {
@@ -66,7 +66,7 @@ final class SettingsStore: ObservableObject {
             if !isApplyingPreset { activePresetId = nil }
         }
     }
-    
+
     @Published var metadata: [String: String] {
         didSet {
             guard !isLoadingFromSDK else { return }
@@ -78,80 +78,79 @@ final class SettingsStore: ObservableObject {
             if !isApplyingPreset { activePresetId = nil }
         }
     }
-    
+
     // MARK: - SDK-backed (read-only snapshots; call refresh() to update)
-    
+
     @Published private(set) var isTracking: Bool = false
     @Published private(set) var isUsingRemoteOptions: Bool = false
     @Published private(set) var trackingOptionsSummary: String = "—"
-    
+
     /// Last preset applied via `apply(_: TestPreset)`. Set by the preset machinery,
     /// cleared automatically when any identity field is mutated outside of `apply(_:)`.
     /// Read by the Tests view to highlight the active chip.
-    @Published var activePresetId: String? = nil
-    
-    
+    @Published var activePresetId: String?
+
     // MARK: - App-only (UserDefaults)
-    
+
     @Published var publishableKeyOverride: String {
         didSet {
             UserDefaults.standard.set(publishableKeyOverride, forKey: Keys.publishableKeyOverride)
         }
     }
-    
+
     @Published var defaultTabRaw: String {
         didSet {
             UserDefaults.standard.set(defaultTabRaw, forKey: Keys.defaultTabRaw)
         }
     }
-    
+
     // MARK: - Private
-    
+
     /// Suppresses `didSet` writebacks to the SDK during `loadFromSDK()`.
     private var isLoadingFromSDK = false
-    
+
     /// Suppresses `activePresetId` clearing during `apply(_:)`. The didSet on each
     /// identity field would otherwise nil out the chip mid-application.
     private var isApplyingPreset = false
-    
+
     init() {
         // UserDefaults — safe to read before Radar is initialized.
         let defaults = UserDefaults.standard
         self.publishableKeyOverride = defaults.string(forKey: Keys.publishableKeyOverride) ?? ""
         self.defaultTabRaw = defaults.string(forKey: Keys.defaultTabRaw) ?? ""
-        
+
         // SDK-backed properties get neutral defaults; loadFromSDK() will populate them.
         self.userId = nil
         self.userDescription = nil
         self.metadata = [:]
     }
-    
+
     // MARK: - Public API
-    
+
     /// The publishable key to pass to `Radar.initialize`. Returns the override if set,
     /// otherwise the hardcoded default.
     var resolvedPublishableKey: String {
         publishableKeyOverride.isEmpty ? Self.defaultPublishableKey : publishableKeyOverride
     }
-    
+
     /// Reads SDK-backed settings into the store. Call once after `Radar.initialize`.
     func loadFromSDK() {
         isLoadingFromSDK = true
         defer { isLoadingFromSDK = false }
-        
+
         self.userId = Radar.getUserId()
         self.userDescription = Radar.getDescription()
         self.metadata = Self.normalizeMetadata(Radar.getMetadata())
-        
+
         refresh()
     }
-    
+
     func refresh() {
         isTracking = Radar.isTracking()
         isUsingRemoteOptions = Radar.isUsingRemoteTrackingOptions()
         trackingOptionsSummary = Self.summarize(Radar.getTrackingOptions(), remote: isUsingRemoteOptions)
     }
-    
+
     /// Apply a preset: write identity through to the SDK, perform the requested
     /// tracking action, and refresh tracking snapshots. The `isApplyingPreset` flag
     /// prevents the identity didSets from clearing `activePresetId` while we set it.
@@ -159,11 +158,11 @@ final class SettingsStore: ObservableObject {
     func apply(_ preset: TestPreset) {
         isApplyingPreset = true
         defer { isApplyingPreset = false }
-        
+
         userId = preset.userId
         userDescription = preset.userDescription
         metadata = preset.metadata
-        
+
         switch preset.trackingAction {
         case .leaveUnchanged:
             break
@@ -172,14 +171,13 @@ final class SettingsStore: ObservableObject {
         case .stop:
             Radar.stopTracking()
         }
-        
+
         activePresetId = preset.id
         refresh()
     }
-    
-    
+
     // MARK: - Helpers
-    
+
     private static func normalizeMetadata(_ raw: [AnyHashable: Any]?) -> [String: String] {
         guard let raw = raw as? [String: Any] else { return [:] }
         return raw.compactMapValues { value in
@@ -196,7 +194,7 @@ final class SettingsStore: ObservableObject {
             }
         }
     }
-    
+
     /// Match against the SDK's hand-rolled `-isEqual:` on RadarTrackingOptions, which
     /// compares fields directly (handling enum casing, optional Date interval, etc).
     /// Dict round-tripping was unreliable because the SDK's persisted representation
@@ -226,14 +224,14 @@ struct TrackingField: Identifiable {
     let label: String
     let value: String
     let kind: Kind
-    
+
     var id: String { label }
-    
+
     enum Kind {
         case bool(Bool)
         case other
     }
-    
+
     static func bool(_ label: String, _ value: Bool) -> TrackingField {
         TrackingField(label: label, value: value ? "true" : "false", kind: .bool(value))
     }
@@ -255,7 +253,7 @@ extension SettingsStore {
     var currentTrackingFields: [TrackingField] {
         Self.fields(from: Radar.getTrackingOptions())
     }
-    
+
     private static func fields(from o: RadarTrackingOptions) -> [TrackingField] {
         var fields: [TrackingField] = [
             // Intervals
@@ -296,9 +294,9 @@ extension SettingsStore {
         }
         return fields
     }
-    
+
     private static let isoFormatter = ISO8601DateFormatter()
-    
+
     /// Ordered field/value pairs for the live SDK configuration (server-driven
     /// settings). Returns a single placeholder row if no config has been fetched
     /// yet. Re-evaluated on each access; refresh via `settingsStore.refresh()`.
@@ -308,7 +306,7 @@ extension SettingsStore {
         }
         return Self.fields(from: c)
     }
-    
+
     private static func fields(from c: RadarSdkConfiguration) -> [TrackingField] {
         var fields: [TrackingField] = [
             // Logging
@@ -342,7 +340,7 @@ extension SettingsStore {
         fields.append(.text("remoteTrackingOptions", "\(rtoCount) preset(s)"))
         return fields
     }
-    
+
     /// `RadarLogLevel.toString()` is internal in the SDK module, so duplicate
     /// the mapping here. If the SDK ever exposes it publicly (or adds
     /// `+stringForLogLevel:` like the other tracking-options enums), drop this.

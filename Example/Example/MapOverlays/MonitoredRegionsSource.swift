@@ -23,9 +23,9 @@ final class MonitoredRegionsSource: MapOverlaySource {
     let id = "monitoredRegions"
     let name = "Monitored regions"
     let icon = "circle.dashed"
-    
+
     private let locationManager = CLLocationManager()
-    
+
     func loadOverlays(near location: CLLocation, span: MKCoordinateSpan) async -> MapOverlayBundle {
         let regions = locationManager.monitoredRegions.compactMap { $0 as? CLCircularRegion }
         let circles: [MKOverlay] = regions.map { region in
@@ -35,7 +35,7 @@ final class MonitoredRegionsSource: MapOverlaySource {
         }
         return MapOverlayBundle(annotations: [], overlays: circles)
     }
-    
+
     func renderer(for overlay: MKOverlay) -> MKOverlayRenderer? {
         guard let circle = overlay as? MonitoredRegionCircle else { return nil }
         let renderer = MKCircleRenderer(circle: circle)

@@ -25,7 +25,7 @@ import CoreMotion
 /// and the launch-time auto-prompt. PermissionsStore runs a parallel manager purely
 /// for status observation. Both see the same OS state; the duplication is benign.
 final class PermissionsStore: NSObject, ObservableObject {
-    
+
     @Published private(set) var locationStatus: CLAuthorizationStatus = .notDetermined
     @Published private(set) var notificationStatus: UNAuthorizationStatus = .notDetermined
     @Published private(set) var motionStatus: CMAuthorizationStatus = .notDetermined
@@ -33,7 +33,7 @@ final class PermissionsStore: NSObject, ObservableObject {
 
     private let locationManager = CLLocationManager()
     private var cancellables = Set<AnyCancellable>()
-    
+
     override init() {
         super.init()
         locationManager.delegate = self
@@ -43,9 +43,9 @@ final class PermissionsStore: NSObject, ObservableObject {
         refreshPendingRadarNotifications()
         observeAppForeground()
     }
-    
+
     // MARK: - Location
-    
+
     /// Request whichever next-step location authorization is appropriate from the
     /// current state:
     /// - `.notDetermined` → when-in-use prompt
@@ -65,15 +65,15 @@ final class PermissionsStore: NSObject, ObservableObject {
             break
         }
     }
-    
+
     // MARK: - Notifications
-    
+
     func requestNotifications() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { [weak self] _, _ in
             self?.refreshNotificationStatus()
         }
     }
-    
+
     /// Re-poll the notification authorization status. Called automatically on app
     /// foreground and after `requestNotifications()` completes; can be invoked
     /// manually from the Permissions section's Refresh button.
@@ -84,7 +84,7 @@ final class PermissionsStore: NSObject, ObservableObject {
             }
         }
     }
-    
+
     /// Count of OS-level pending notifications scheduled by the SDK. These are
     /// `UNNotificationRequest`s registered via `RadarNotificationHelper`
     /// (geofence, beacon, and event notifications) — they share the `radar_`
@@ -125,9 +125,9 @@ final class PermissionsStore: NSObject, ObservableObject {
             self?.refreshMotionStatus()
         }
     }
-    
+
     // MARK: - Settings deep link
-    
+
     /// Open the app's page in the system Settings app. Useful for re-enabling
     /// permissions the user has previously denied (the OS will not show a fresh
     /// in-app prompt for denied permissions).
@@ -136,9 +136,9 @@ final class PermissionsStore: NSObject, ObservableObject {
             UIApplication.shared.open(url)
         }
     }
-    
+
     // MARK: - App lifecycle
-    
+
     private func observeAppForeground() {
         NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
             .sink { [weak self] _ in

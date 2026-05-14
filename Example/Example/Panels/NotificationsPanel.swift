@@ -12,7 +12,7 @@ import UserNotifications
 
 struct NotificationsPanel: View {
     @EnvironmentObject var logStream: LogStream
-    
+
     var body: some View {
         TogglePanel("Notifications", initiallyExpanded: false) {
             ActionButton("test notification") {
@@ -61,9 +61,9 @@ struct NotificationsPanel: View {
             }
         }
     }
-    
+
     // MARK: - String formatting helpers
-    
+
     private func string(for setting: UNNotificationSetting) -> String {
         switch setting {
         case .notSupported: return "unsupported"
@@ -72,7 +72,7 @@ struct NotificationsPanel: View {
         @unknown default:   return "unknown"
         }
     }
-    
+
     private func string(for status: UNAuthorizationStatus) -> String {
         switch status {
         case .notDetermined: return "not determined"

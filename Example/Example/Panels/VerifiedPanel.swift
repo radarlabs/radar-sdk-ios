@@ -11,7 +11,7 @@ import RadarSDK
 
 struct VerifiedPanel: View {
     @EnvironmentObject var logStream: LogStream
-    
+
     var body: some View {
         TogglePanel("Verified", initiallyExpanded: false) {
             ActionButton("startTrackingVerified", style: .primary) {
@@ -21,7 +21,7 @@ struct VerifiedPanel: View {
                 Radar.stopTrackingVerified()
             }
             ActionButton("getVerifiedLocationToken") {
-                Radar.getVerifiedLocationToken() { (status, token) in
+                Radar.getVerifiedLocationToken { (status, token) in
                     let tokenDesc = token?.dictionaryValue().description ?? "no token"
                     logStream.write(
                         status,
@@ -31,7 +31,7 @@ struct VerifiedPanel: View {
                 }
             }
             ActionButton("trackVerified") {
-                Radar.trackVerified() { (status, token) in
+                Radar.trackVerified { (status, token) in
                     let tokenDesc = token?.dictionaryValue().description ?? "no token"
                     logStream.write(
                         status,

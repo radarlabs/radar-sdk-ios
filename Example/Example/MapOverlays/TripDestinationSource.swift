@@ -33,9 +33,9 @@ final class TripDestinationSource: MapOverlaySource {
 
     func loadOverlays(near location: CLLocation, span: MKCoordinateSpan) async -> MapOverlayBundle {
         guard let trip = Radar.getTrip() else { return .empty }
-        
+
         var annotations: [MKAnnotation] = []
-        
+
         if let legs = trip.legs, !legs.isEmpty {
             // Multi-destination trip — one pin per leg with a known destination.
             // Today, only coordinate-based legs expose a known location at the
@@ -60,12 +60,12 @@ final class TripDestinationSource: MapOverlaySource {
             pin.isActive = true
             annotations.append(pin)
         }
-        
+
         return MapOverlayBundle(annotations: annotations, overlays: [])
     }
-    
+
     func renderer(for overlay: MKOverlay) -> MKOverlayRenderer? { nil }
-    
+
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView? {
         guard let pin = annotation as? TripDestinationAnnotation else { return nil }
         let identifier = "TripDestinationAnnotation"
@@ -77,9 +77,9 @@ final class TripDestinationSource: MapOverlaySource {
         view.canShowCallout = true
         return view
     }
-    
+
     // MARK: - Helpers
-    
+
     private func legSubtitle(for leg: RadarTripLeg) -> String {
         let statusName = RadarTripLeg.string(for: leg.status)
         if let geofenceTag = leg.destinationGeofenceTag {

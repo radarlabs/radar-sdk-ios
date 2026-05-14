@@ -71,7 +71,7 @@ extension CMAuthorizationStatus {
         @unknown default:           return "Unknown"
         }
     }
-    
+
     var displayColor: Color {
         switch self {
         case .authorized:           return .green

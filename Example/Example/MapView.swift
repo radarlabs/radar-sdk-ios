@@ -18,7 +18,7 @@ struct MapView: View {
     @EnvironmentObject var tripBuilder: TripBuilderStore
     @EnvironmentObject var logStream: LogStream
     @State private var isShowingPicker = false
-    
+
     var body: some View {
         ZStack {
             MapViewRepresentable(registry: registry, tripBuilder: tripBuilder)
@@ -54,7 +54,7 @@ struct MapView: View {
                 .environmentObject(registry)
         }
     }
-    
+
     @ViewBuilder
     private func floatingButton(systemImage: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -67,7 +67,7 @@ struct MapView: View {
                 .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
         }
     }
-    
+
     private var startTripButton: some View {
         Button {
             tripBuilder.startTrip()
@@ -83,15 +83,15 @@ struct MapView: View {
         .buttonStyle(.plain)
         .padding(12)
     }
-    
+
     private var startButtonLabel: String {
         let count = tripBuilder.selectedDestinations.count
         if count <= 1 { return "Start trip" }
         return "Start multi-leg trip (\(count) legs)"
     }
-    
+
     // MARK: - Builder tray
-    
+
     private var builderTray: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
@@ -151,7 +151,7 @@ struct MapView: View {
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 2)
     }
-    
+
     private func subtitle(for dest: TripDestination) -> String? {
         if case .geofence(_, let tag, let externalId, _, _) = dest {
             var parts: [String] = []
@@ -159,10 +159,10 @@ struct MapView: View {
             if let extId = externalId, !extId.isEmpty { parts.append("id: \(extId)") }
             return parts.isEmpty ? nil : parts.joined(separator: " · ")
         }
-        
+
         return nil
     }
-    
+
     // MARK: - Pending hit overlay
 
     private func pendingHitOverlay(for dest: TripDestination) -> some View {
@@ -241,7 +241,7 @@ struct MapView: View {
         }
         return nil
     }
-    
+
     // MARK: - Active trip bar
 
     private func activeTripBar(for trip: RadarTrip) -> some View {
@@ -390,7 +390,7 @@ struct MapView: View {
         @unknown default: return .secondary
         }
     }
-    
+
     // MARK: - Legs disclosure
 
     @ViewBuilder
@@ -498,7 +498,7 @@ struct MapViewRepresentable: UIViewRepresentable {
                                          action: #selector(Coordinator.handleMapTap(_:)))
         tap.delegate = context.coordinator
         map.addGestureRecognizer(tap)
-        
+
         return map
     }
 
