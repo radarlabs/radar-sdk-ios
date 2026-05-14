@@ -14,6 +14,12 @@ final class TripLiveActivityManager {
     static let shared = TripLiveActivityManager()
     private init() {}
     
+
+    /// Set by AppDelegate at launch so lifecycle messages flow into the Debug
+    /// tab's unified console. Optional so the singleton can construct itself
+    /// before AppDelegate is ready.
+    var logStream: LogStream?
+    
     private var currentActivity: Activity<TripActivityExtensionAttributes>?
     
     /// Duration (in seconds) to keep the activity visible after ending
@@ -38,7 +44,7 @@ final class TripLiveActivityManager {
     
     func updateActivity(trip: RadarTrip, statusOverride: String? = nil) {
         guard let activity = currentActivity else {
-            print("No active Live Activity to update")
+            logStream?.write(error: "Live Activity update skipped", detail: "no active activity")
             return
         }
         
@@ -50,7 +56,7 @@ final class TripLiveActivityManager {
     
     func endActivity(status: String = "completed") {
         guard let activity = currentActivity else {
-            print("No active Live Activity to end")
+            logStream?.write(error: "Live Activity end skipped", detail: "no active activity")
             return
         }
         
@@ -68,7 +74,7 @@ final class TripLiveActivityManager {
                 dismissalPolicy: .after(.now + dismissalDelay)
             )
             currentActivity = nil
-            print("Live Activity ended: \(status)")
+            logStream?.write(result: "Live Activity ended", detail: "status: \(status)")
         }
     }
     
@@ -77,7 +83,7 @@ final class TripLiveActivityManager {
         let authInfo = ActivityAuthorizationInfo()
 
         guard authInfo.areActivitiesEnabled else {
-            print("Live Activities are not enabled - check Settings")
+            logStream?.write(error: "Live Activities not enabled", detail: "Check Settings → Notifications")
             return false
         }
         return true
@@ -91,9 +97,9 @@ final class TripLiveActivityManager {
                 pushType: nil
             )
             currentActivity = activity
-            print("Live Activity started")
+            logStream?.write(result: "Live Activity started")
         } catch {
-            print("Error starting Live Activity: \(error.localizedDescription)")
+            logStream?.write(error: "Live Activity start failed", detail: error.localizedDescription)
         }
     }
     

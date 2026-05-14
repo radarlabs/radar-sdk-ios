@@ -36,7 +36,6 @@
 		BA7793482FAB9B6700E197CA /* NearbyPlacesSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793472FAB9B5E00E197CA /* NearbyPlacesSource.swift */; };
 		BA77934A2FAB9B9700E197CA /* TripDestinationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793492FAB9B9000E197CA /* TripDestinationSource.swift */; };
 		BA77934C2FABB54400E197CA /* AGENTS.md in Resources */ = {isa = PBXBuildFile; fileRef = BA77934B2FABB53A00E197CA /* AGENTS.md */; };
-		BAB2ACA72FB4EEFF00560332 /* MultiLegTripsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACA62FB4EEF600560332 /* MultiLegTripsPanel.swift */; };
 		BAB2ACAB2FB50FA100560332 /* TripBuilderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAA2FB50F9D00560332 /* TripBuilderStore.swift */; };
 		BAB2ACAD2FB5102B00560332 /* GeofenceOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAC2FB5102600560332 /* GeofenceOverlay.swift */; };
 		BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSrouce.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSrouce.swift */; };
@@ -197,7 +196,6 @@
 		BA7793472FAB9B5E00E197CA /* NearbyPlacesSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyPlacesSource.swift; sourceTree = "<group>"; };
 		BA7793492FAB9B9000E197CA /* TripDestinationSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDestinationSource.swift; sourceTree = "<group>"; };
 		BA77934B2FABB53A00E197CA /* AGENTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AGENTS.md; sourceTree = "<group>"; };
-		BAB2ACA62FB4EEF600560332 /* MultiLegTripsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLegTripsPanel.swift; sourceTree = "<group>"; };
 		BAB2ACAA2FB50F9D00560332 /* TripBuilderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripBuilderStore.swift; sourceTree = "<group>"; };
 		BAB2ACAC2FB5102600560332 /* GeofenceOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceOverlay.swift; sourceTree = "<group>"; };
 		BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSrouce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripBreadcrumbsSrouce.swift; sourceTree = "<group>"; };
@@ -319,7 +317,6 @@
 		BA7793282FAA62CC00E197CA /* Panels */ = {
 			isa = PBXGroup;
 			children = (
-				BAB2ACA62FB4EEF600560332 /* MultiLegTripsPanel.swift */,
 				BA7793332FAA70EC00E197CA /* MessagingPanel.swift */,
 				BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */,
 				BA77932F2FAA6A6E00E197CA /* SearchPanel.swift */,
@@ -679,7 +676,6 @@
 				BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSrouce.swift in Sources */,
 				BA7793422FAAA81800E197CA /* MonitoredRegionsSource.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
-				BAB2ACA72FB4EEFF00560332 /* MultiLegTripsPanel.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
 				BA7792FA2FA9088F00E197CA /* ActionButton.swift in Sources */,
 			);

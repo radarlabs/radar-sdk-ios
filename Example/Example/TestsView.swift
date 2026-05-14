@@ -22,7 +22,6 @@ struct TestsView: View {
                 recentActivitySection
                 TrackingPanel()
                 TripsPanel()
-                MultiLegTripsPanel()
                 VerifiedPanel()
                 SearchPanel()
                 NotificationsPanel()

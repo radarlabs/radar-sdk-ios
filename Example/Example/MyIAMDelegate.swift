@@ -9,6 +9,13 @@
 import RadarSDK
 
 class MyIAMDelegate: RadarInAppMessageDelegate {
+    private let logStream: LogStream
+    
+    init(logStream: LogStream) {
+        self.logStream = logStream
+        super.init()
+    }
+
     override func createInAppMessageView(_ message: RadarInAppMessage, onDismiss: @escaping () -> Void, onInAppMessageClicked: @escaping () -> Void, completionHandler: @escaping (UIViewController) -> Void) {
         guard let message = message as? RadarInAppMessage_Swift else {
             return
@@ -18,10 +25,10 @@ class MyIAMDelegate: RadarInAppMessageDelegate {
     }
     
     override func onInAppMessageButtonClicked(_ message: RadarInAppMessage) {
-        print("IAM CLICKED")
+        logStream.write(result: "IAM clicked")
     }
 
     override func onInAppMessageDismissed(_ message: RadarInAppMessage) {
-        print("IAM DISMISSED")
+        logStream.write(result: "IAM dismissed")
     }
 }

@@ -46,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         Radar.setDelegate(logStream)
         wireLiveActivitySubscriptions()
         Radar.setVerifiedDelegate(self)
-        Radar.setInAppMessageDelegate(MyIAMDelegate())
+        Radar.setInAppMessageDelegate(MyIAMDelegate(logStream: logStream))
         settingsStore.loadFromSDK()
         mapOverlayRegistry.register(MonitoredRegionsSource())
         mapOverlayRegistry.register(NearbyGeofencesSource())
@@ -59,11 +59,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
         tripBuilderStore.bind(logStream: logStream, registry: mapOverlayRegistry)
         tripBuilderStore.refreshActiveTrip()
+        
+        if #available(iOS 16.2, *) {
+            TripLiveActivityManager.shared.logStream = logStream
+        }
 
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in
-                print("Extension Token", data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
-                Radar.setLocationExtensionToken(data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
+                let token = data?.map { String(format: "%02x", $0) }.joined() ?? "no token"
+                self.logStream.write(result: "extension push token registered", detail: "token: \(token)")
+                Radar.setLocationExtensionToken(token)
             }
         }
         
@@ -125,7 +130,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        print("will present notification!")
+        logStream.write(result: "willPresent notification")
         completionHandler([.list, .banner, .sound])
     }
     
@@ -133,13 +138,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment for manual setup for notification conversions and URLs
         // Radar.logConversion(response: response)
         // Radar.openURLFromNotification(response.notification)
-        print(response)
+        logStream.write(result: "didReceive notification response", detail: "\(response)")
     }
     
     // this function is called ONLY for silent-pushes
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
-        print(userInfo)
-        
+        logStream.write(result: "silent push received", detail: "\(userInfo)")
+
         return .newData
     }
 
