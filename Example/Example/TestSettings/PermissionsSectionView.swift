@@ -9,6 +9,7 @@
 import SwiftUI
 import CoreLocation
 import UserNotifications
+import CoreMotion
 
 /// Location / notifications / motion permission states with inline request
 /// actions and a pending-Radar-notifications counter.
@@ -33,6 +34,7 @@ struct PermissionsSectionView: View {
             Spacer()
             Button("Refresh") {
                 permissionsStore.refreshNotificationStatus()
+                permissionsStore.refreshMotionStatus()
                 permissionsStore.refreshPendingRadarNotifications()
             }
             .font(.caption)
@@ -71,15 +73,26 @@ struct PermissionsSectionView: View {
     private var motionRow: some View {
         ControlRow("Motion") {
             HStack(spacing: 8) {
-                Text("Status not exposed by OS")
-                    .foregroundColor(.secondary)
-                    .font(.caption)
-                Button("Request") {
-                    permissionsStore.requestMotionActivity()
-                }
-                .font(.caption)
-                .buttonStyle(.borderless)
+                Text(permissionsStore.motionStatus.displayName)
+                    .foregroundColor(permissionsStore.motionStatus.displayColor)
+                motionActionButton
             }
+        }
+    }
+
+    @ViewBuilder
+    private var motionActionButton: some View {
+        switch permissionsStore.motionStatus {
+        case .notDetermined:
+            Button("Request") { permissionsStore.requestMotionActivity() }
+                .font(.caption).buttonStyle(.borderless)
+        case .denied, .restricted:
+            Button("Open Settings") { permissionsStore.openSystemSettings() }
+                .font(.caption).buttonStyle(.borderless)
+        case .authorized:
+            EmptyView()
+        @unknown default:
+            EmptyView()
         }
     }
 

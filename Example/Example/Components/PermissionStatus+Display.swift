@@ -14,6 +14,7 @@
 import SwiftUI
 import CoreLocation
 import UserNotifications
+import CoreMotion
 
 extension CLAuthorizationStatus {
     var displayName: String {
@@ -56,6 +57,27 @@ extension UNAuthorizationStatus {
         case .notDetermined:                        return .secondary
         case .denied:                               return .red
         @unknown default:                           return .secondary
+        }
+    }
+}
+
+extension CMAuthorizationStatus {
+    var displayName: String {
+        switch self {
+        case .notDetermined:        return "Not determined"
+        case .restricted:           return "Restricted"
+        case .denied:               return "Denied"
+        case .authorized:           return "Authorized"
+        @unknown default:           return "Unknown"
+        }
+    }
+    
+    var displayColor: Color {
+        switch self {
+        case .authorized:           return .green
+        case .notDetermined:        return .secondary
+        case .denied, .restricted:  return .red
+        @unknown default:           return .secondary
         }
     }
 }

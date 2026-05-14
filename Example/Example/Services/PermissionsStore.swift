@@ -12,16 +12,14 @@ import CoreLocation
 import UserNotifications
 import UIKit
 import RadarSDK
+import CoreMotion
 
 /// Observable mirror of the app's permission states.
 ///
-/// Surfaces location and notification authorization status to UI consumers (the
-/// Permissions section in TestsView), and provides request actions that don't
-/// require leaving the app.
-///
-/// Motion-activity status is not exposed by the OS — `CMMotionActivityManager`
-/// has no public `authorizationStatus` getter. The store provides only a request
-/// action via `Radar.requestMotionActivityPermission()`; UI surfaces no status.
+/// Surfaces location, notification, and motion-activity authorization status,
+/// plus the count of pending SDK-scheduled local notifications, to UI consumers
+/// (the Permissions section in TestsSettingsView). Also provides request
+/// actions that don't require leaving the app.
 ///
 /// AppDelegate retains its own `CLLocationManager` for `startMonitoringLocationPushes`
 /// and the launch-time auto-prompt. PermissionsStore runs a parallel manager purely
@@ -30,6 +28,7 @@ final class PermissionsStore: NSObject, ObservableObject {
     
     @Published private(set) var locationStatus: CLAuthorizationStatus = .notDetermined
     @Published private(set) var notificationStatus: UNAuthorizationStatus = .notDetermined
+    @Published private(set) var motionStatus: CMAuthorizationStatus = .notDetermined
     @Published private(set) var pendingRadarNotificationCount: Int = 0
 
     private let locationManager = CLLocationManager()
@@ -40,6 +39,7 @@ final class PermissionsStore: NSObject, ObservableObject {
         locationManager.delegate = self
         locationStatus = locationManager.authorizationStatus
         refreshNotificationStatus()
+        refreshMotionStatus()
         refreshPendingRadarNotifications()
         observeAppForeground()
     }
@@ -102,11 +102,28 @@ final class PermissionsStore: NSObject, ObservableObject {
     }
 
     // MARK: - Motion Activity
-    
-    /// Triggers the OS prompt via the SDK. The OS does not expose a status getter,
-    /// so this is fire-and-check-CMPedometer/Activity-data-later.
+
+    /// Re-poll the motion-activity authorization status from CoreMotion.
+    /// Called automatically on init and on app foreground; can be invoked
+    /// from the Permissions section's Refresh button. After a freshly-
+    /// triggered prompt, `requestMotionActivity()` also schedules a delayed
+    /// refresh since CoreMotion has no completion handler for the prompt
+    /// response.
+    func refreshMotionStatus() {
+        let status = CMMotionActivityManager.authorizationStatus()
+        DispatchQueue.main.async { [weak self] in
+            self?.motionStatus = status
+        }
+    }
+
+    /// Triggers the OS prompt via the SDK, then polls authorization a moment
+    /// later. CoreMotion exposes no callback for the prompt response, so a
+    /// brief delay is the simplest way to catch the user's answer.
     func requestMotionActivity() {
         Radar.requestMotionActivityPermission()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            self?.refreshMotionStatus()
+        }
     }
     
     // MARK: - Settings deep link
@@ -126,6 +143,7 @@ final class PermissionsStore: NSObject, ObservableObject {
         NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
             .sink { [weak self] _ in
                 self?.refreshNotificationStatus()
+                self?.refreshMotionStatus()
                 self?.refreshPendingRadarNotifications()
             }
             .store(in: &cancellables)

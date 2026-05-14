@@ -38,7 +38,7 @@
 		BA77934C2FABB54400E197CA /* AGENTS.md in Resources */ = {isa = PBXBuildFile; fileRef = BA77934B2FABB53A00E197CA /* AGENTS.md */; };
 		BAB2ACAB2FB50FA100560332 /* TripBuilderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAA2FB50F9D00560332 /* TripBuilderStore.swift */; };
 		BAB2ACAD2FB5102B00560332 /* GeofenceOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAC2FB5102600560332 /* GeofenceOverlay.swift */; };
-		BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSrouce.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSrouce.swift */; };
+		BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSource.swift */; };
 		BAB2ACB12FB53A8F00560332 /* TripEventsSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB02FB53A8600560332 /* TripEventsSource.swift */; };
 		BAB2ACB32FB53C0600560332 /* TripGeofenceSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB22FB53C0000560332 /* TripGeofenceSource.swift */; };
 		BAB2ACB52FB6486000560332 /* ConsoleEntry+Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB42FB6485500560332 /* ConsoleEntry+Export.swift */; };
@@ -214,7 +214,7 @@
 		BA77934B2FABB53A00E197CA /* AGENTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AGENTS.md; sourceTree = "<group>"; };
 		BAB2ACAA2FB50F9D00560332 /* TripBuilderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripBuilderStore.swift; sourceTree = "<group>"; };
 		BAB2ACAC2FB5102600560332 /* GeofenceOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceOverlay.swift; sourceTree = "<group>"; };
-		BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSrouce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripBreadcrumbsSrouce.swift; sourceTree = "<group>"; };
+		BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripBreadcrumbsSource.swift; sourceTree = "<group>"; };
 		BAB2ACB02FB53A8600560332 /* TripEventsSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripEventsSource.swift; sourceTree = "<group>"; };
 		BAB2ACB22FB53C0000560332 /* TripGeofenceSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripGeofenceSource.swift; sourceTree = "<group>"; };
 		BAB2ACB42FB6485500560332 /* ConsoleEntry+Export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConsoleEntry+Export.swift"; sourceTree = "<group>"; };
@@ -369,7 +369,7 @@
 			children = (
 				BAB2ACB22FB53C0000560332 /* TripGeofenceSource.swift */,
 				BAB2ACB02FB53A8600560332 /* TripEventsSource.swift */,
-				BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSrouce.swift */,
+				BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSource.swift */,
 				BAB2ACAC2FB5102600560332 /* GeofenceOverlay.swift */,
 				BA7793492FAB9B9000E197CA /* TripDestinationSource.swift */,
 				BA7793472FAB9B5E00E197CA /* NearbyPlacesSource.swift */,
@@ -766,7 +766,7 @@
 				BAB2ACD72FB66E3800560332 /* RecentActivityStream.swift in Sources */,
 				BAB2ACD42FB66DD300560332 /* ConsoleEntryRow.swift in Sources */,
 				BAB2ACBA2FB66A4D00560332 /* MapView.swift in Sources */,
-				BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSrouce.swift in Sources */,
+				BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSource.swift in Sources */,
 				BAB2ACCF2FB66C9D00560332 /* TrackingSectionView.swift in Sources */,
 				BAB2ACCB2FB66C5B00560332 /* IdentitySectionView.swift in Sources */,
 				BA7793422FAAA81800E197CA /* MonitoredRegionsSource.swift in Sources */,

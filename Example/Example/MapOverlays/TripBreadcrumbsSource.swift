@@ -1,5 +1,5 @@
 //
-//  TripBreadcrumbsSrouce.swift
+//  TripBreadcrumbsSource.swift
 //  Example
 //
 //  Created by Alan Charles on 5/13/26.
