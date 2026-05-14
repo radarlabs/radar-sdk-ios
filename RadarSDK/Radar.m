@@ -438,6 +438,10 @@ BOOL _initialized = NO;
     return [[RadarVerificationManager sharedInstance] isSharing];
 }
 
++ (void)clearSharing {
+    [[RadarVerificationManager sharedInstance] clearSharing];
+}
+
 + (void)getVerifiedLocationTokenWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"getVerifiedLocationToken()"];
     [[RadarVerificationManager sharedInstance]

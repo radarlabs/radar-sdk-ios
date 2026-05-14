@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)clearVerifiedLocationToken;
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode;
 - (BOOL)isSharing;
+- (void)clearSharing;
 
 @end
 

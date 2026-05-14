@@ -635,6 +635,13 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (BOOL)isSharing;
 
 /**
+ Clears the latched screen sharing state.
+
+ @see https://radar.com/documentation/sdk/fraud
+ */
++ (void)clearSharing;
+
+/**
  Returns the user's last verified location token if still valid, or requests a fresh token if not.
 
  @warning Note that you must configure SSL pinning before calling this method.

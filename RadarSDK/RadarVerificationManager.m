@@ -417,6 +417,23 @@
     return result;
 }
 
+- (void)clearSharing {
+    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+    if (!RadarSDKFraud) {
+        return;
+    }
+    id sharedInstance = [RadarSDKFraud sharedInstance];
+    SEL selector = @selector(clearSharing);
+    if (![sharedInstance respondsToSelector:selector]) {
+        return;
+    }
+    NSMethodSignature *signature = [sharedInstance methodSignatureForSelector:selector];
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+    invocation.selector = selector;
+    invocation.target = sharedInstance;
+    [invocation invoke];
+}
+
 - (void)startIPMonitoring {
     if (!_monitor) {
         _monitor = nw_path_monitor_create();
