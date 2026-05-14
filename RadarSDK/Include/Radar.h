@@ -635,7 +635,7 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (BOOL)isSharing;
 
 /**
- Clears the latched screen sharing state.
+ Clears the last screen sharing state.
 
  @see https://radar.com/documentation/sdk/fraud
  */
