@@ -54,6 +54,10 @@
 		BAB2ACCD2FB66C7100560332 /* PermissionsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACCC2FB66C6B00560332 /* PermissionsSectionView.swift */; };
 		BAB2ACCF2FB66C9D00560332 /* TrackingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACCE2FB66C9700560332 /* TrackingSectionView.swift */; };
 		BAB2ACD12FB66CC700560332 /* PermissionStatus+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACD02FB66CBC00560332 /* PermissionStatus+Display.swift */; };
+		BAB2ACD42FB66DD300560332 /* ConsoleEntryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACD32FB66DCD00560332 /* ConsoleEntryRow.swift */; };
+		BAB2ACD72FB66E3800560332 /* RecentActivityStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACD62FB66E3000560332 /* RecentActivityStream.swift */; };
+		BAB2ACD92FB66E6D00560332 /* TripDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACD82FB66E6900560332 /* TripDestination.swift */; };
+		BAB2ACDB2FB66E8500560332 /* TripEventMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACDA2FB66E8200560332 /* TripEventMarker.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
@@ -226,6 +230,10 @@
 		BAB2ACCC2FB66C6B00560332 /* PermissionsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsSectionView.swift; sourceTree = "<group>"; };
 		BAB2ACCE2FB66C9700560332 /* TrackingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingSectionView.swift; sourceTree = "<group>"; };
 		BAB2ACD02FB66CBC00560332 /* PermissionStatus+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PermissionStatus+Display.swift"; sourceTree = "<group>"; };
+		BAB2ACD32FB66DCD00560332 /* ConsoleEntryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleEntryRow.swift; sourceTree = "<group>"; };
+		BAB2ACD62FB66E3000560332 /* RecentActivityStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentActivityStream.swift; sourceTree = "<group>"; };
+		BAB2ACD82FB66E6900560332 /* TripDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDestination.swift; sourceTree = "<group>"; };
+		BAB2ACDA2FB66E8200560332 /* TripEventMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripEventMarker.swift; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -317,6 +325,8 @@
 		BA7792E72FA3D1D200E197CA /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				BAB2ACDA2FB66E8200560332 /* TripEventMarker.swift */,
+				BAB2ACD82FB66E6900560332 /* TripDestination.swift */,
 				BAB2ACAA2FB50F9D00560332 /* TripBuilderStore.swift */,
 				BA7793382FAAA11C00E197CA /* PermissionsStore.swift */,
 				BA7792FB2FA92DEF00E197CA /* TestPreset.swift */,
@@ -388,12 +398,31 @@
 		BAB2ACC72FB66C2A00560332 /* TestSettings */ = {
 			isa = PBXGroup;
 			children = (
+				BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */,
 				BAB2ACCE2FB66C9700560332 /* TrackingSectionView.swift */,
 				BAB2ACCC2FB66C6B00560332 /* PermissionsSectionView.swift */,
 				BAB2ACCA2FB66C5500560332 /* IdentitySectionView.swift */,
 				BAB2ACC82FB66C3800560332 /* PresetSectionView.swift */,
 			);
 			path = TestSettings;
+			sourceTree = "<group>";
+		};
+		BAB2ACD22FB66DC700560332 /* Logs */ = {
+			isa = PBXGroup;
+			children = (
+				F61886C22EA7DB5C0072E87C /* LogsView.swift */,
+				BAB2ACD32FB66DCD00560332 /* ConsoleEntryRow.swift */,
+			);
+			path = Logs;
+			sourceTree = "<group>";
+		};
+		BAB2ACD52FB66E2900560332 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F61886B92EA7DB180072E87C /* TestsView.swift */,
+				BAB2ACD62FB66E3000560332 /* RecentActivityStream.swift */,
+			);
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		DD236D1A230A006700EB88F9 = {
@@ -423,11 +452,12 @@
 		DD236D25230A006700EB88F9 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				BAB2ACD52FB66E2900560332 /* Tests */,
+				BAB2ACD22FB66DC700560332 /* Logs */,
 				BAB2ACC72FB66C2A00560332 /* TestSettings */,
 				BAB2ACB82FB66A4600560332 /* Map */,
 				BA77934B2FABB53A00E197CA /* AGENTS.md */,
 				BA77933C2FAAA79400E197CA /* MapOverlays */,
-				BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */,
 				BA7792F22FA907E600E197CA /* Components */,
 				BA7792E72FA3D1D200E197CA /* Services */,
 				BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */,
@@ -439,8 +469,6 @@
 				F6513F5F2E6B736200523472 /* MainView.swift */,
 				F65F79382EF458E000399E84 /* MyIAMDelegate.swift */,
 				BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */,
-				F61886B92EA7DB180072E87C /* TestsView.swift */,
-				F61886C22EA7DB5C0072E87C /* LogsView.swift */,
 				F66DAD642E707F0300896773 /* waypoints.gpx */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
 				F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */,
@@ -698,6 +726,7 @@
 				BA7793482FAB9B6700E197CA /* NearbyPlacesSource.swift in Sources */,
 				BA7792FC2FA92DF100E197CA /* TestPreset.swift in Sources */,
 				BA77933E2FAAA7A700E197CA /* MapOverlaySource.swift in Sources */,
+				BAB2ACD92FB66E6D00560332 /* TripDestination.swift in Sources */,
 				BAB2ACC62FB66ADD00560332 /* ActiveTripBarView.swift in Sources */,
 				BAB2ACC92FB66C3F00560332 /* PresetSectionView.swift in Sources */,
 				BAB2ACB12FB53A8F00560332 /* TripEventsSource.swift in Sources */,
@@ -725,6 +754,7 @@
 				BAB2ACB32FB53C0600560332 /* TripGeofenceSource.swift in Sources */,
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
 				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
+				BAB2ACDB2FB66E8500560332 /* TripEventMarker.swift in Sources */,
 				BA7793392FAAA12000E197CA /* PermissionsStore.swift in Sources */,
 				BA7793442FAAA9E800E197CA /* NearbyGeofencesSource.swift in Sources */,
 				BA7793402FAAA7C200E197CA /* MapOverlayRegistry.swift in Sources */,
@@ -733,6 +763,8 @@
 				BA77932E2FAA695B00E197CA /* VerifiedPanel.swift in Sources */,
 				BAB2ACC42FB66ABD00560332 /* PendingHitOverlayView.swift in Sources */,
 				BAB2ACD12FB66CC700560332 /* PermissionStatus+Display.swift in Sources */,
+				BAB2ACD72FB66E3800560332 /* RecentActivityStream.swift in Sources */,
+				BAB2ACD42FB66DD300560332 /* ConsoleEntryRow.swift in Sources */,
 				BAB2ACBA2FB66A4D00560332 /* MapView.swift in Sources */,
 				BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSrouce.swift in Sources */,
 				BAB2ACCF2FB66C9D00560332 /* TrackingSectionView.swift in Sources */,
