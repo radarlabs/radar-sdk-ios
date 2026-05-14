@@ -626,6 +626,15 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (BOOL)isTrackingVerified;
 
 /**
+ Returns the current screen sharing state.
+
+ @return A boolean indicating the current screen sharing state.
+
+ @see https://radar.com/documentation/sdk/fraud
+ */
++ (BOOL)isSharing;
+
+/**
  Returns the user's last verified location token if still valid, or requests a fresh token if not.
 
  @warning Note that you must configure SSL pinning before calling this method.

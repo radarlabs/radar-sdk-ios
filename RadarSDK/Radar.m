@@ -433,6 +433,10 @@ BOOL _initialized = NO;
     return [RadarVerificationManager sharedInstance].started;
 }
 
++ (BOOL)isSharing {
+    return UIScreen.mainScreen.isCaptured;
+}
+
 + (void)getVerifiedLocationToken:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [self getVerifiedLocationTokenWithBeacons:NO desiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
 }
