@@ -23,6 +23,7 @@ final class MapOverlayRegistry: ObservableObject {
     @Published private(set) var sources: [MapOverlaySource] = []
     @Published var enabledSourceIds: Set<String>
     @Published private(set) var bundlesById: [String: MapOverlayBundle] = [:]
+    @Published var isInTripMode: Bool = false
     
     private static let defaultsKey = "mapOverlayRegistry.enabledSourceIds"
     private var cancellables = Set<AnyCancellable>()
@@ -61,6 +62,14 @@ final class MapOverlayRegistry: ObservableObject {
         }
     }
     
+    /// Whether a source should render right now, taking trip-mode override into account.
+    private func isActuallyEnabled(_ source: MapOverlaySource) -> Bool {
+        if isInTripMode {
+            return source.isTripModeWhitelisted
+        }
+        return enabledSourceIds.contains(source.id)
+    }
+    
     // MARK: - Refresh
     
     private(set) var lastKnownLocation: CLLocation?
@@ -71,51 +80,63 @@ final class MapOverlayRegistry: ObservableObject {
         await refresh(near: location, span: span)
     }
     
-    /// Reload bundles for all enabled sources. Sequential; sources are usually
-    /// fast enough that parallelism isn't worth the complexity.
     func refresh(near location: CLLocation, span: MKCoordinateSpan) async {
         lastKnownLocation = location
         lastKnownSpan = span
-        for source in sources where enabledSourceIds.contains(source.id) {
+        for source in sources where isActuallyEnabled(source) {
             let bundle = await source.loadOverlays(near: location, span: span)
             bundlesById[source.id] = bundle
         }
     }
-
+    
+    func refreshSource(_ id: String) async {
+        guard let source = sources.first(where: { $0.id == id }),
+              isActuallyEnabled(source),
+              let location = lastKnownLocation,
+              let span = lastKnownSpan else { return }
+        let bundle = await source.loadOverlays(near: location, span: span)
+        bundlesById[id] = bundle
+    }
     
     // MARK: - Aggregated content
-    
+
     var allAnnotations: [MKAnnotation] {
         sources.flatMap { source -> [MKAnnotation] in
-            guard enabledSourceIds.contains(source.id) else { return [] }
+            guard isActuallyEnabled(source) else { return [] }
             return bundlesById[source.id]?.annotations ?? []
         }
     }
-    
+
     var allOverlays: [MKOverlay] {
         sources.flatMap { source -> [MKOverlay] in
-            guard enabledSourceIds.contains(source.id) else { return [] }
+            guard isActuallyEnabled(source) else { return [] }
             return bundlesById[source.id]?.overlays ?? []
         }
     }
-    
+
     // MARK: - Rendering dispatch (called by MapView's delegate)
-    
+
     func renderer(for overlay: MKOverlay) -> MKOverlayRenderer? {
-        for source in sources where enabledSourceIds.contains(source.id) {
+        for source in sources where isActuallyEnabled(source) {
             if let renderer = source.renderer(for: overlay) {
                 return renderer
             }
         }
         return nil
     }
-    
+
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView? {
-        for source in sources where enabledSourceIds.contains(source.id) {
+        for source in sources where isActuallyEnabled(source) {
             if let view = source.view(for: annotation, in: mapView) {
                 return view
             }
         }
         return nil
+    }
+    
+    /// Drop any cached bundle for a source. Used when a data-driven source's
+    /// state is reset (e.g., trip ends and visualization arrays are cleared).
+    func clearBundle(for id: String) {
+        bundlesById[id] = nil
     }
 }

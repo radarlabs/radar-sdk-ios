@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     let settingsStore = SettingsStore()
     let permissionsStore = PermissionsStore()
     let mapOverlayRegistry = MapOverlayRegistry()
+    let tripBuilderStore = TripBuilderStore()
     private var cancellables = Set<AnyCancellable>()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -51,7 +52,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         mapOverlayRegistry.register(NearbyGeofencesSource())
         mapOverlayRegistry.register(SyncedRegionSource())
         mapOverlayRegistry.register(NearbyPlacesSource())
+        mapOverlayRegistry.register(TripGeofencesSource(store: tripBuilderStore))
         mapOverlayRegistry.register(TripDestinationSource())
+        mapOverlayRegistry.register(TripBreadcrumbsSource(store: tripBuilderStore))
+        mapOverlayRegistry.register(TripEventsSource(store: tripBuilderStore))
+
+        tripBuilderStore.bind(logStream: logStream, registry: mapOverlayRegistry)
+        tripBuilderStore.refreshActiveTrip()
 
         if #available(iOS 15.0, *) {
             locationManager.startMonitoringLocationPushes() { data, error in
@@ -82,6 +89,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 .environmentObject(appDelegate.settingsStore)
                 .environmentObject(appDelegate.permissionsStore)
                 .environmentObject(appDelegate.mapOverlayRegistry)
+                .environmentObject(appDelegate.tripBuilderStore)
         )
         controller.view.frame = UIScreen.main.bounds
         window.addSubview(controller.view)

@@ -36,6 +36,12 @@
 		BA7793482FAB9B6700E197CA /* NearbyPlacesSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793472FAB9B5E00E197CA /* NearbyPlacesSource.swift */; };
 		BA77934A2FAB9B9700E197CA /* TripDestinationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793492FAB9B9000E197CA /* TripDestinationSource.swift */; };
 		BA77934C2FABB54400E197CA /* AGENTS.md in Resources */ = {isa = PBXBuildFile; fileRef = BA77934B2FABB53A00E197CA /* AGENTS.md */; };
+		BAB2ACA72FB4EEFF00560332 /* MultiLegTripsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACA62FB4EEF600560332 /* MultiLegTripsPanel.swift */; };
+		BAB2ACAB2FB50FA100560332 /* TripBuilderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAA2FB50F9D00560332 /* TripBuilderStore.swift */; };
+		BAB2ACAD2FB5102B00560332 /* GeofenceOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAC2FB5102600560332 /* GeofenceOverlay.swift */; };
+		BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSrouce.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSrouce.swift */; };
+		BAB2ACB12FB53A8F00560332 /* TripEventsSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB02FB53A8600560332 /* TripEventsSource.swift */; };
+		BAB2ACB32FB53C0600560332 /* TripGeofenceSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB22FB53C0000560332 /* TripGeofenceSource.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
@@ -191,6 +197,12 @@
 		BA7793472FAB9B5E00E197CA /* NearbyPlacesSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyPlacesSource.swift; sourceTree = "<group>"; };
 		BA7793492FAB9B9000E197CA /* TripDestinationSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDestinationSource.swift; sourceTree = "<group>"; };
 		BA77934B2FABB53A00E197CA /* AGENTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AGENTS.md; sourceTree = "<group>"; };
+		BAB2ACA62FB4EEF600560332 /* MultiLegTripsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLegTripsPanel.swift; sourceTree = "<group>"; };
+		BAB2ACAA2FB50F9D00560332 /* TripBuilderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripBuilderStore.swift; sourceTree = "<group>"; };
+		BAB2ACAC2FB5102600560332 /* GeofenceOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceOverlay.swift; sourceTree = "<group>"; };
+		BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSrouce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripBreadcrumbsSrouce.swift; sourceTree = "<group>"; };
+		BAB2ACB02FB53A8600560332 /* TripEventsSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripEventsSource.swift; sourceTree = "<group>"; };
+		BAB2ACB22FB53C0000560332 /* TripGeofenceSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripGeofenceSource.swift; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -283,6 +295,7 @@
 		BA7792E72FA3D1D200E197CA /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				BAB2ACAA2FB50F9D00560332 /* TripBuilderStore.swift */,
 				BA7793382FAAA11C00E197CA /* PermissionsStore.swift */,
 				BA7792FB2FA92DEF00E197CA /* TestPreset.swift */,
 				BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */,
@@ -306,6 +319,7 @@
 		BA7793282FAA62CC00E197CA /* Panels */ = {
 			isa = PBXGroup;
 			children = (
+				BAB2ACA62FB4EEF600560332 /* MultiLegTripsPanel.swift */,
 				BA7793332FAA70EC00E197CA /* MessagingPanel.swift */,
 				BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */,
 				BA77932F2FAA6A6E00E197CA /* SearchPanel.swift */,
@@ -319,6 +333,10 @@
 		BA77933C2FAAA79400E197CA /* MapOverlays */ = {
 			isa = PBXGroup;
 			children = (
+				BAB2ACB22FB53C0000560332 /* TripGeofenceSource.swift */,
+				BAB2ACB02FB53A8600560332 /* TripEventsSource.swift */,
+				BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSrouce.swift */,
+				BAB2ACAC2FB5102600560332 /* GeofenceOverlay.swift */,
 				BA7793492FAB9B9000E197CA /* TripDestinationSource.swift */,
 				BA7793472FAB9B5E00E197CA /* NearbyPlacesSource.swift */,
 				BA7793452FAAAE7900E197CA /* SyncedRegionSource.swift */,
@@ -632,6 +650,8 @@
 				BA7793482FAB9B6700E197CA /* NearbyPlacesSource.swift in Sources */,
 				BA7792FC2FA92DF100E197CA /* TestPreset.swift in Sources */,
 				BA77933E2FAAA7A700E197CA /* MapOverlaySource.swift in Sources */,
+				BAB2ACB12FB53A8F00560332 /* TripEventsSource.swift in Sources */,
+				BAB2ACAD2FB5102B00560332 /* GeofenceOverlay.swift in Sources */,
 				BA77932A2FAA62E700E197CA /* TrackingPanel.swift in Sources */,
 				BA7793302FAA6A7300E197CA /* SearchPanel.swift in Sources */,
 				BA7792F82FA9087200E197CA /* TogglePanel.swift in Sources */,
@@ -647,15 +667,19 @@
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
 				BA77932C2FAA663C00E197CA /* TripsPanel.swift in Sources */,
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,
+				BAB2ACB32FB53C0600560332 /* TripGeofenceSource.swift in Sources */,
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
 				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
 				BA7793392FAAA12000E197CA /* PermissionsStore.swift in Sources */,
 				BA7793442FAAA9E800E197CA /* NearbyGeofencesSource.swift in Sources */,
 				BA7793402FAAA7C200E197CA /* MapOverlayRegistry.swift in Sources */,
+				BAB2ACAB2FB50FA100560332 /* TripBuilderStore.swift in Sources */,
 				BA7792F42FA907EE00E197CA /* ControlRow.swift in Sources */,
 				BA77932E2FAA695B00E197CA /* VerifiedPanel.swift in Sources */,
+				BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSrouce.swift in Sources */,
 				BA7793422FAAA81800E197CA /* MonitoredRegionsSource.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
+				BAB2ACA72FB4EEFF00560332 /* MultiLegTripsPanel.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
 				BA7792FA2FA9088F00E197CA /* ActionButton.swift in Sources */,
 			);

@@ -52,6 +52,12 @@ protocol MapOverlaySource: AnyObject {
     /// SF Symbol name for the layer-toggle UI.
     var icon: String { get }
     
+    /// Whether this source should keep rendering while a trip is active.
+    /// When true, the source is always loaded and rendered during trip mode
+    /// regardless of user toggle state. When false (default), trip mode
+    /// suppresses this source entirely.
+    var isTripModeWhitelisted: Bool { get }
+    
     /// Fetch overlays for the given visible region.
     ///
     /// Synchronous sources (CLLocationManager state) return immediately;
@@ -73,4 +79,5 @@ protocol MapOverlaySource: AnyObject {
 extension MapOverlaySource {
     /// Default: source produces no annotations.
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView? { nil }
+    var isTripModeWhitelisted: Bool { false }
 }

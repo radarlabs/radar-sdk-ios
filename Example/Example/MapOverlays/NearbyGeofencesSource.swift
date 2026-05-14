@@ -48,20 +48,23 @@ final class NearbyGeofencesSource: MapOverlaySource {
                     radius: circle.radius
                 )
                 mkCircle.geofenceId = geofence._id
+                mkCircle.tag = geofence.tag
+                mkCircle.externalId = geofence.externalId
+                mkCircle.displayName = geofence.__description
+                mkCircle.centerCoord = circle.center.coordinate
                 overlays.append(mkCircle)
-                annotations.append(makePin(at: circle.center.coordinate, geofence: geofence))
-                
             case let polygon as RadarPolygonGeometry:
                 if let coords = polygon._coordinates, !coords.isEmpty {
                     let mapCoords = coords.map { $0.coordinate }
                     let mkPoly = NearbyGeofencePolygon(coordinates: mapCoords, count: mapCoords.count)
                     mkPoly.geofenceId = geofence._id
+                    mkPoly.tag = geofence.tag
+                    mkPoly.externalId = geofence.externalId
+                    mkPoly.displayName = geofence.__description
+                    mkPoly.centerCoord = polygon.center.coordinate
                     overlays.append(mkPoly)
-                    annotations.append(makePin(at: polygon.center.coordinate, geofence: geofence))
                 }
-                
             default:
-                // Unknown geometry subtype — skip rather than crash.
                 break
             }
         }
@@ -141,13 +144,22 @@ final class NearbyGeofencesSource: MapOverlaySource {
 // MARK: - Tagging subclasses
 
 /// MKCircle subclass that identifies overlays produced by NearbyGeofencesSource.
-final class NearbyGeofenceCircle: MKCircle {
+final class NearbyGeofenceCircle: MKCircle, GeofenceOverlay {
     var geofenceId: String?
+    var tag: String?
+    var externalId: String?
+    var displayName: String?
+    var centerCoord: CLLocationCoordinate2D = kCLLocationCoordinate2DInvalid
 }
 
+
 /// MKPolygon subclass that identifies overlays produced by NearbyGeofencesSource.
-final class NearbyGeofencePolygon: MKPolygon {
+final class NearbyGeofencePolygon: MKPolygon, GeofenceOverlay {
     var geofenceId: String?
+    var tag: String?
+    var externalId: String?
+    var displayName: String?
+    var centerCoord: CLLocationCoordinate2D = kCLLocationCoordinate2DInvalid
 }
 
 /// MKPointAnnotation subclass for callout marker pins.

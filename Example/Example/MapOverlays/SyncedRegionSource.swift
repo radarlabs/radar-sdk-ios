@@ -38,21 +38,27 @@ final class SyncedRegionSource: MapOverlaySource {
             overlays.append(SyncedRegionBoundaryCircle(center: region.center, radius: region.radius))
         }
         
-        // Synced geofences (circles + polygons + center pins)
+        // Synced geofences (circles + polygons)
         for geofence in RadarSyncManager.getSyncedGeofences() {
+            let displayName = geofence.description
             switch geofence.geometry {
             case .circle(let center, let radius):
                 let circle = SyncedGeofenceCircle(center: center, radius: radius)
                 circle.geofenceId = geofence.id
+                circle.tag = geofence.tag
+                circle.externalId = geofence.externalId
+                circle.displayName = displayName
+                circle.centerCoord = center
                 overlays.append(circle)
-                annotations.append(makeGeofencePin(at: center, geofence: geofence))
-                
             case .polygon(let coords, let center, _):
                 guard !coords.isEmpty else { continue }
                 let polygon = SyncedGeofencePolygon(coordinates: coords, count: coords.count)
                 polygon.geofenceId = geofence.id
+                polygon.tag = geofence.tag
+                polygon.externalId = geofence.externalId
+                polygon.displayName = displayName
+                polygon.centerCoord = center
                 overlays.append(polygon)
-                annotations.append(makeGeofencePin(at: center, geofence: geofence))
             }
         }
         
@@ -156,12 +162,20 @@ final class SyncedRegionSource: MapOverlaySource {
 /// The big dashed-gray boundary circle for the synced region itself.
 final class SyncedRegionBoundaryCircle: MKCircle {}
 
-final class SyncedGeofenceCircle: MKCircle {
+final class SyncedGeofenceCircle: MKCircle, GeofenceOverlay {
     var geofenceId: String?
+    var tag: String?
+    var externalId: String?
+    var displayName: String?
+    var centerCoord: CLLocationCoordinate2D = kCLLocationCoordinate2DInvalid
 }
 
-final class SyncedGeofencePolygon: MKPolygon {
+final class SyncedGeofencePolygon: MKPolygon, GeofenceOverlay {
     var geofenceId: String?
+    var tag: String?
+    var externalId: String?
+    var displayName: String?
+    var centerCoord: CLLocationCoordinate2D = kCLLocationCoordinate2DInvalid
 }
 
 final class SyncedGeofenceAnnotation: MKPointAnnotation {

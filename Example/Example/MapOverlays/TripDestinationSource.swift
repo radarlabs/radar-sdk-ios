@@ -28,7 +28,9 @@ final class TripDestinationSource: MapOverlaySource {
     let id = "tripDestination"
     let name = "Active trip"
     let icon = "flag.fill"
-    
+
+    var isTripModeWhitelisted: Bool { true }
+
     func loadOverlays(near location: CLLocation, span: MKCoordinateSpan) async -> MapOverlayBundle {
         guard let trip = Radar.getTrip() else { return .empty }
         
