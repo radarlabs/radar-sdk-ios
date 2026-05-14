@@ -26,6 +26,7 @@
 #import "RadarIndoorsProtocol.h"
 #import "RadarPlace+Internal.h"
 #import "RadarBeacon+Internal.h"
+#import "RadarLocationManagerSwift.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -528,6 +529,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)restartPreviousTrackingOptions {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift restartPreviousTrackingOptions];
+        return;
+    }
+
     RadarTrackingOptions *previousTrackingOptions = [RadarSettings previousTrackingOptions];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Restarting previous tracking options"];
 
