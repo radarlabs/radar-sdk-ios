@@ -199,6 +199,7 @@ struct TestsSettingsView: View {
                 Spacer()
                 Button("Refresh") {
                     permissionsStore.refreshNotificationStatus()
+                    permissionsStore.refreshPendingRadarNotifications()
                 }
                 .font(.caption)
                 .buttonStyle(.borderless)
@@ -216,6 +217,11 @@ struct TestsSettingsView: View {
                         .foregroundColor(permissionsStore.notificationStatus.displayColor)
                     notificationActionButton
                 }
+            }
+            ControlRow("Pending Radar notifications") {
+                Text("\(permissionsStore.pendingRadarNotificationCount)")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(permissionsStore.pendingRadarNotificationCount > 0 ? .primary : .secondary)
             }
             ControlRow("Motion") {
                 HStack(spacing: 8) {

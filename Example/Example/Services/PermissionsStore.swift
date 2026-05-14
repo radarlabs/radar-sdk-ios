@@ -30,7 +30,8 @@ final class PermissionsStore: NSObject, ObservableObject {
     
     @Published private(set) var locationStatus: CLAuthorizationStatus = .notDetermined
     @Published private(set) var notificationStatus: UNAuthorizationStatus = .notDetermined
-    
+    @Published private(set) var pendingRadarNotificationCount: Int = 0
+
     private let locationManager = CLLocationManager()
     private var cancellables = Set<AnyCancellable>()
     
@@ -39,6 +40,7 @@ final class PermissionsStore: NSObject, ObservableObject {
         locationManager.delegate = self
         locationStatus = locationManager.authorizationStatus
         refreshNotificationStatus()
+        refreshPendingRadarNotifications()
         observeAppForeground()
     }
     
@@ -83,6 +85,22 @@ final class PermissionsStore: NSObject, ObservableObject {
         }
     }
     
+    /// Count of OS-level pending notifications scheduled by the SDK. These are
+    /// `UNNotificationRequest`s registered via `RadarNotificationHelper`
+    /// (geofence, beacon, and event notifications) — they share the `radar_`
+    /// identifier prefix.
+    ///
+    /// Refreshes on app foreground and from the Permissions section's Refresh
+    /// button.
+    func refreshPendingRadarNotifications() {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { [weak self] requests in
+            let count = requests.filter { $0.identifier.hasPrefix("radar_") }.count
+            DispatchQueue.main.async {
+                self?.pendingRadarNotificationCount = count
+            }
+        }
+    }
+
     // MARK: - Motion Activity
     
     /// Triggers the OS prompt via the SDK. The OS does not expose a status getter,
@@ -108,6 +126,7 @@ final class PermissionsStore: NSObject, ObservableObject {
         NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
             .sink { [weak self] _ in
                 self?.refreshNotificationStatus()
+                self?.refreshPendingRadarNotifications()
             }
             .store(in: &cancellables)
     }
