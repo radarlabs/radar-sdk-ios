@@ -6,30 +6,30 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
 import RadarSDK
+import SwiftUI
 
 struct MainView: View {
-    
-    enum TabIdentifier {
+
+    enum TabIdentifier: String, CaseIterable {
         case Map
         case Logs
         case Tests
     }
-    
-    @State private var selectedTab: TabIdentifier = .Tests;
-    
+
+    @State private var selectedTab: TabIdentifier = .Tests
+
     var body: some View {
         TabView(selection: $selectedTab) {
             MapView().tabItem {
                 Text("Map")
             }.tag(TabIdentifier.Map)
-            
+
             LogsView().tabItem {
                 Text("Debug")
             }.tag(TabIdentifier.Logs)
 
-            TestsView().tabItem {
+            TestsView(selectedTab: $selectedTab).tabItem {
                 Text("Tests")
             }.tag(TabIdentifier.Tests)
         }

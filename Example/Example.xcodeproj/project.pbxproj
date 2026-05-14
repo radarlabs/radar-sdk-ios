@@ -12,16 +12,58 @@
 		BA51988D2ED10AEB004A3B35 /* TripActivityExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BA51987A2ED10AEA004A3B35 /* TripActivityExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */; };
 		BA5198C92EDE3B8C004A3B35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */; };
+		BA7792EF2FA3D1DD00E197CA /* LogStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792EE2FA3D1D800E197CA /* LogStream.swift */; };
+		BA7792F12FA8FF0600E197CA /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */; };
+		BA7792F42FA907EE00E197CA /* ControlRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F32FA907EB00E197CA /* ControlRow.swift */; };
+		BA7792F62FA9081A00E197CA /* FieldEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F52FA9081700E197CA /* FieldEditor.swift */; };
+		BA7792F82FA9087200E197CA /* TogglePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F72FA9086B00E197CA /* TogglePanel.swift */; };
+		BA7792FA2FA9088F00E197CA /* ActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F92FA9088D00E197CA /* ActionButton.swift */; };
+		BA7792FC2FA92DF100E197CA /* TestPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792FB2FA92DEF00E197CA /* TestPreset.swift */; };
+		BA77932A2FAA62E700E197CA /* TrackingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793292FAA62E300E197CA /* TrackingPanel.swift */; };
+		BA77932C2FAA663C00E197CA /* TripsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77932B2FAA663800E197CA /* TripsPanel.swift */; };
+		BA77932E2FAA695B00E197CA /* VerifiedPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77932D2FAA695700E197CA /* VerifiedPanel.swift */; };
+		BA7793302FAA6A7300E197CA /* SearchPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77932F2FAA6A6E00E197CA /* SearchPanel.swift */; };
+		BA7793322FAA6FE600E197CA /* NotificationsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */; };
+		BA7793342FAA70F100E197CA /* MessagingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793332FAA70EC00E197CA /* MessagingPanel.swift */; };
+		BA7793362FAA997300E197CA /* ConsoleEntry+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793352FAA996800E197CA /* ConsoleEntry+UI.swift */; };
+		BA7793392FAAA12000E197CA /* PermissionsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793382FAAA11C00E197CA /* PermissionsStore.swift */; };
+		BA77933B2FAAA46A00E197CA /* TestsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */; };
+		BA77933E2FAAA7A700E197CA /* MapOverlaySource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77933D2FAAA79D00E197CA /* MapOverlaySource.swift */; };
+		BA7793402FAAA7C200E197CA /* MapOverlayRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77933F2FAAA7BC00E197CA /* MapOverlayRegistry.swift */; };
+		BA7793422FAAA81800E197CA /* MonitoredRegionsSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793412FAAA81100E197CA /* MonitoredRegionsSource.swift */; };
+		BA7793442FAAA9E800E197CA /* NearbyGeofencesSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793432FAAA9E000E197CA /* NearbyGeofencesSource.swift */; };
+		BA7793462FAAAE7F00E197CA /* SyncedRegionSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793452FAAAE7900E197CA /* SyncedRegionSource.swift */; };
+		BA7793482FAB9B6700E197CA /* NearbyPlacesSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793472FAB9B5E00E197CA /* NearbyPlacesSource.swift */; };
+		BA77934A2FAB9B9700E197CA /* TripDestinationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793492FAB9B9000E197CA /* TripDestinationSource.swift */; };
+		BA77934C2FABB54400E197CA /* AGENTS.md in Resources */ = {isa = PBXBuildFile; fileRef = BA77934B2FABB53A00E197CA /* AGENTS.md */; };
+		BAB2ACAB2FB50FA100560332 /* TripBuilderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAA2FB50F9D00560332 /* TripBuilderStore.swift */; };
+		BAB2ACAD2FB5102B00560332 /* GeofenceOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAC2FB5102600560332 /* GeofenceOverlay.swift */; };
+		BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSource.swift */; };
+		BAB2ACB12FB53A8F00560332 /* TripEventsSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB02FB53A8600560332 /* TripEventsSource.swift */; };
+		BAB2ACB32FB53C0600560332 /* TripGeofenceSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB22FB53C0000560332 /* TripGeofenceSource.swift */; };
+		BAB2ACB52FB6486000560332 /* ConsoleEntry+Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB42FB6485500560332 /* ConsoleEntry+Export.swift */; };
+		BAB2ACB72FB6487700560332 /* ActivityShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB62FB6486E00560332 /* ActivityShareSheet.swift */; };
+		BAB2ACBA2FB66A4D00560332 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACB92FB66A4A00560332 /* MapView.swift */; };
+		BAB2ACBE2FB66A7700560332 /* MapViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACBD2FB66A7300560332 /* MapViewRepresentable.swift */; };
+		BAB2ACC02FB66A9500560332 /* OverlayPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACBF2FB66A8F00560332 /* OverlayPickerSheet.swift */; };
+		BAB2ACC22FB66AA800560332 /* BuilderTrayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACC12FB66AA300560332 /* BuilderTrayView.swift */; };
+		BAB2ACC42FB66ABD00560332 /* PendingHitOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACC32FB66AB700560332 /* PendingHitOverlayView.swift */; };
+		BAB2ACC62FB66ADD00560332 /* ActiveTripBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACC52FB66AD500560332 /* ActiveTripBarView.swift */; };
+		BAB2ACC92FB66C3F00560332 /* PresetSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACC82FB66C3800560332 /* PresetSectionView.swift */; };
+		BAB2ACCB2FB66C5B00560332 /* IdentitySectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACCA2FB66C5500560332 /* IdentitySectionView.swift */; };
+		BAB2ACCD2FB66C7100560332 /* PermissionsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACCC2FB66C6B00560332 /* PermissionsSectionView.swift */; };
+		BAB2ACCF2FB66C9D00560332 /* TrackingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACCE2FB66C9700560332 /* TrackingSectionView.swift */; };
+		BAB2ACD12FB66CC700560332 /* PermissionStatus+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACD02FB66CBC00560332 /* PermissionStatus+Display.swift */; };
+		BAB2ACD42FB66DD300560332 /* ConsoleEntryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACD32FB66DCD00560332 /* ConsoleEntryRow.swift */; };
+		BAB2ACD72FB66E3800560332 /* RecentActivityStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACD62FB66E3000560332 /* RecentActivityStream.swift */; };
+		BAB2ACD92FB66E6D00560332 /* TripDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACD82FB66E6900560332 /* TripDestination.swift */; };
+		BAB2ACDB2FB66E8500560332 /* TripEventMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACDA2FB66E8200560332 /* TripEventMarker.swift */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
 		F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886B92EA7DB180072E87C /* TestsView.swift */; };
-		F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */; };
 		F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C22EA7DB5C0072E87C /* LogsView.swift */; };
-		F61886C52EA7DC820072E87C /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C42EA7DC800072E87C /* MapView.swift */; };
-		F618871C2EAFC1EE0072E87C /* Test.mm in Sources */ = {isa = PBXBuildFile; fileRef = F61887162EAFC1E80072E87C /* Test.mm */; };
 		F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */; };
-		F63DDAD52E746BB0006991F5 /* StyledButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63DDAD42E746BB0006991F5 /* StyledButton.swift */; };
 		F64C7F412F64568E00943B7A /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F0B2F64564F00943B7A /* RadarSDK.framework */; };
 		F64C7F422F64568E00943B7A /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F0B2F64564F00943B7A /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F64C7F432F64568E00943B7A /* RadarSDKMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F112F64564F00943B7A /* RadarSDKMotion.framework */; };
@@ -146,6 +188,52 @@
 		BA51987D2ED10AEA004A3B35 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripLiveActivityManager.swift; sourceTree = "<group>"; };
 		BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BA7792EE2FA3D1D800E197CA /* LogStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogStream.swift; sourceTree = "<group>"; };
+		BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		BA7792F32FA907EB00E197CA /* ControlRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlRow.swift; sourceTree = "<group>"; };
+		BA7792F52FA9081700E197CA /* FieldEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldEditor.swift; sourceTree = "<group>"; };
+		BA7792F72FA9086B00E197CA /* TogglePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglePanel.swift; sourceTree = "<group>"; };
+		BA7792F92FA9088D00E197CA /* ActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButton.swift; sourceTree = "<group>"; };
+		BA7792FB2FA92DEF00E197CA /* TestPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPreset.swift; sourceTree = "<group>"; };
+		BA7793292FAA62E300E197CA /* TrackingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingPanel.swift; sourceTree = "<group>"; };
+		BA77932B2FAA663800E197CA /* TripsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripsPanel.swift; sourceTree = "<group>"; };
+		BA77932D2FAA695700E197CA /* VerifiedPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedPanel.swift; sourceTree = "<group>"; };
+		BA77932F2FAA6A6E00E197CA /* SearchPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPanel.swift; sourceTree = "<group>"; };
+		BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsPanel.swift; sourceTree = "<group>"; };
+		BA7793332FAA70EC00E197CA /* MessagingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingPanel.swift; sourceTree = "<group>"; };
+		BA7793352FAA996800E197CA /* ConsoleEntry+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConsoleEntry+UI.swift"; sourceTree = "<group>"; };
+		BA7793382FAAA11C00E197CA /* PermissionsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsStore.swift; sourceTree = "<group>"; };
+		BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsSettingsView.swift; sourceTree = "<group>"; };
+		BA77933D2FAAA79D00E197CA /* MapOverlaySource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapOverlaySource.swift; sourceTree = "<group>"; };
+		BA77933F2FAAA7BC00E197CA /* MapOverlayRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapOverlayRegistry.swift; sourceTree = "<group>"; };
+		BA7793412FAAA81100E197CA /* MonitoredRegionsSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitoredRegionsSource.swift; sourceTree = "<group>"; };
+		BA7793432FAAA9E000E197CA /* NearbyGeofencesSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyGeofencesSource.swift; sourceTree = "<group>"; };
+		BA7793452FAAAE7900E197CA /* SyncedRegionSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncedRegionSource.swift; sourceTree = "<group>"; };
+		BA7793472FAB9B5E00E197CA /* NearbyPlacesSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyPlacesSource.swift; sourceTree = "<group>"; };
+		BA7793492FAB9B9000E197CA /* TripDestinationSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDestinationSource.swift; sourceTree = "<group>"; };
+		BA77934B2FABB53A00E197CA /* AGENTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AGENTS.md; sourceTree = "<group>"; };
+		BAB2ACAA2FB50F9D00560332 /* TripBuilderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripBuilderStore.swift; sourceTree = "<group>"; };
+		BAB2ACAC2FB5102600560332 /* GeofenceOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceOverlay.swift; sourceTree = "<group>"; };
+		BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripBreadcrumbsSource.swift; sourceTree = "<group>"; };
+		BAB2ACB02FB53A8600560332 /* TripEventsSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripEventsSource.swift; sourceTree = "<group>"; };
+		BAB2ACB22FB53C0000560332 /* TripGeofenceSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripGeofenceSource.swift; sourceTree = "<group>"; };
+		BAB2ACB42FB6485500560332 /* ConsoleEntry+Export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConsoleEntry+Export.swift"; sourceTree = "<group>"; };
+		BAB2ACB62FB6486E00560332 /* ActivityShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityShareSheet.swift; sourceTree = "<group>"; };
+		BAB2ACB92FB66A4A00560332 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		BAB2ACBD2FB66A7300560332 /* MapViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewRepresentable.swift; sourceTree = "<group>"; };
+		BAB2ACBF2FB66A8F00560332 /* OverlayPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayPickerSheet.swift; sourceTree = "<group>"; };
+		BAB2ACC12FB66AA300560332 /* BuilderTrayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuilderTrayView.swift; sourceTree = "<group>"; };
+		BAB2ACC32FB66AB700560332 /* PendingHitOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingHitOverlayView.swift; sourceTree = "<group>"; };
+		BAB2ACC52FB66AD500560332 /* ActiveTripBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveTripBarView.swift; sourceTree = "<group>"; };
+		BAB2ACC82FB66C3800560332 /* PresetSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetSectionView.swift; sourceTree = "<group>"; };
+		BAB2ACCA2FB66C5500560332 /* IdentitySectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentitySectionView.swift; sourceTree = "<group>"; };
+		BAB2ACCC2FB66C6B00560332 /* PermissionsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsSectionView.swift; sourceTree = "<group>"; };
+		BAB2ACCE2FB66C9700560332 /* TrackingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingSectionView.swift; sourceTree = "<group>"; };
+		BAB2ACD02FB66CBC00560332 /* PermissionStatus+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PermissionStatus+Display.swift"; sourceTree = "<group>"; };
+		BAB2ACD32FB66DCD00560332 /* ConsoleEntryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleEntryRow.swift; sourceTree = "<group>"; };
+		BAB2ACD62FB66E3000560332 /* RecentActivityStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentActivityStream.swift; sourceTree = "<group>"; };
+		BAB2ACD82FB66E6900560332 /* TripDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDestination.swift; sourceTree = "<group>"; };
+		BAB2ACDA2FB66E8200560332 /* TripEventMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripEventMarker.swift; sourceTree = "<group>"; };
 		DD236D23230A006700EB88F9 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -156,12 +244,8 @@
 		E632FA1C2CAC366C00E86C85 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKMotion.xcodeproj; path = ../RadarSDKMotion/RadarSDKMotion.xcodeproj; sourceTree = "<group>"; };
 		F61886B92EA7DB180072E87C /* TestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsView.swift; sourceTree = "<group>"; };
-		F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyRadarDelegate.swift; sourceTree = "<group>"; };
 		F61886C22EA7DB5C0072E87C /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
-		F61886C42EA7DC800072E87C /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
-		F61887162EAFC1E80072E87C /* Test.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Test.mm; sourceTree = "<group>"; };
 		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		F63DDAD42E746BB0006991F5 /* StyledButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledButton.swift; sourceTree = "<group>"; };
 		F64C7FB22F645A9F00943B7A /* RadarSDKFraud.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKFraud.xcodeproj; path = ../RadarSDKFraud/RadarSDKFraud.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKFraud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513E722E60A5F600523472 /* LocationPushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LocationPushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -238,6 +322,109 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BA7792E72FA3D1D200E197CA /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				BAB2ACDA2FB66E8200560332 /* TripEventMarker.swift */,
+				BAB2ACD82FB66E6900560332 /* TripDestination.swift */,
+				BAB2ACAA2FB50F9D00560332 /* TripBuilderStore.swift */,
+				BA7793382FAAA11C00E197CA /* PermissionsStore.swift */,
+				BA7792FB2FA92DEF00E197CA /* TestPreset.swift */,
+				BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */,
+				BA7792EE2FA3D1D800E197CA /* LogStream.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		BA7792F22FA907E600E197CA /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				BAB2ACD02FB66CBC00560332 /* PermissionStatus+Display.swift */,
+				BAB2ACB62FB6486E00560332 /* ActivityShareSheet.swift */,
+				BAB2ACB42FB6485500560332 /* ConsoleEntry+Export.swift */,
+				BA7793352FAA996800E197CA /* ConsoleEntry+UI.swift */,
+				BA7792F92FA9088D00E197CA /* ActionButton.swift */,
+				BA7792F72FA9086B00E197CA /* TogglePanel.swift */,
+				BA7792F52FA9081700E197CA /* FieldEditor.swift */,
+				BA7792F32FA907EB00E197CA /* ControlRow.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		BA7793282FAA62CC00E197CA /* Panels */ = {
+			isa = PBXGroup;
+			children = (
+				BA7793332FAA70EC00E197CA /* MessagingPanel.swift */,
+				BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */,
+				BA77932F2FAA6A6E00E197CA /* SearchPanel.swift */,
+				BA77932D2FAA695700E197CA /* VerifiedPanel.swift */,
+				BA77932B2FAA663800E197CA /* TripsPanel.swift */,
+				BA7793292FAA62E300E197CA /* TrackingPanel.swift */,
+			);
+			path = Panels;
+			sourceTree = "<group>";
+		};
+		BA77933C2FAAA79400E197CA /* MapOverlays */ = {
+			isa = PBXGroup;
+			children = (
+				BAB2ACB22FB53C0000560332 /* TripGeofenceSource.swift */,
+				BAB2ACB02FB53A8600560332 /* TripEventsSource.swift */,
+				BAB2ACAE2FB538E300560332 /* TripBreadcrumbsSource.swift */,
+				BAB2ACAC2FB5102600560332 /* GeofenceOverlay.swift */,
+				BA7793492FAB9B9000E197CA /* TripDestinationSource.swift */,
+				BA7793472FAB9B5E00E197CA /* NearbyPlacesSource.swift */,
+				BA7793452FAAAE7900E197CA /* SyncedRegionSource.swift */,
+				BA7793432FAAA9E000E197CA /* NearbyGeofencesSource.swift */,
+				BA7793412FAAA81100E197CA /* MonitoredRegionsSource.swift */,
+				BA77933F2FAAA7BC00E197CA /* MapOverlayRegistry.swift */,
+				BA77933D2FAAA79D00E197CA /* MapOverlaySource.swift */,
+			);
+			path = MapOverlays;
+			sourceTree = "<group>";
+		};
+		BAB2ACB82FB66A4600560332 /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				BAB2ACC52FB66AD500560332 /* ActiveTripBarView.swift */,
+				BAB2ACC32FB66AB700560332 /* PendingHitOverlayView.swift */,
+				BAB2ACC12FB66AA300560332 /* BuilderTrayView.swift */,
+				BAB2ACBF2FB66A8F00560332 /* OverlayPickerSheet.swift */,
+				BAB2ACBD2FB66A7300560332 /* MapViewRepresentable.swift */,
+				BAB2ACB92FB66A4A00560332 /* MapView.swift */,
+			);
+			path = Map;
+			sourceTree = "<group>";
+		};
+		BAB2ACC72FB66C2A00560332 /* TestSettings */ = {
+			isa = PBXGroup;
+			children = (
+				BA77933A2FAAA46400E197CA /* TestsSettingsView.swift */,
+				BAB2ACCE2FB66C9700560332 /* TrackingSectionView.swift */,
+				BAB2ACCC2FB66C6B00560332 /* PermissionsSectionView.swift */,
+				BAB2ACCA2FB66C5500560332 /* IdentitySectionView.swift */,
+				BAB2ACC82FB66C3800560332 /* PresetSectionView.swift */,
+			);
+			path = TestSettings;
+			sourceTree = "<group>";
+		};
+		BAB2ACD22FB66DC700560332 /* Logs */ = {
+			isa = PBXGroup;
+			children = (
+				F61886C22EA7DB5C0072E87C /* LogsView.swift */,
+				BAB2ACD32FB66DCD00560332 /* ConsoleEntryRow.swift */,
+			);
+			path = Logs;
+			sourceTree = "<group>";
+		};
+		BAB2ACD52FB66E2900560332 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F61886B92EA7DB180072E87C /* TestsView.swift */,
+				BAB2ACD62FB66E3000560332 /* RecentActivityStream.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		DD236D1A230A006700EB88F9 = {
 			isa = PBXGroup;
 			children = (
@@ -265,6 +452,14 @@
 		DD236D25230A006700EB88F9 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				BAB2ACD52FB66E2900560332 /* Tests */,
+				BAB2ACD22FB66DC700560332 /* Logs */,
+				BAB2ACC72FB66C2A00560332 /* TestSettings */,
+				BAB2ACB82FB66A4600560332 /* Map */,
+				BA77934B2FABB53A00E197CA /* AGENTS.md */,
+				BA77933C2FAAA79400E197CA /* MapOverlays */,
+				BA7792F22FA907E600E197CA /* Components */,
+				BA7792E72FA3D1D200E197CA /* Services */,
 				BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */,
 				E632FA1C2CAC366C00E86C85 /* Example.entitlements */,
 				DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */,
@@ -272,17 +467,12 @@
 				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
 				DD236D26230A006700EB88F9 /* AppDelegate.swift */,
 				F6513F5F2E6B736200523472 /* MainView.swift */,
-				F61886C42EA7DC800072E87C /* MapView.swift */,
-				F63DDAD42E746BB0006991F5 /* StyledButton.swift */,
-				F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */,
 				F65F79382EF458E000399E84 /* MyIAMDelegate.swift */,
 				BA5198922EDE0F06004A3B35 /* TripLiveActivityManager.swift */,
-				F61886B92EA7DB180072E87C /* TestsView.swift */,
-				F61887162EAFC1E80072E87C /* Test.mm */,
-				F61886C22EA7DB5C0072E87C /* LogsView.swift */,
 				F66DAD642E707F0300896773 /* waypoints.gpx */,
 				DD291168230D0AF900049D3A /* Utils.swift */,
 				F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */,
+				BA7793282FAA62CC00E197CA /* Panels */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -505,6 +695,7 @@
 			files = (
 				F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */,
 				BA5198C92EDE3B8C004A3B35 /* Assets.xcassets in Resources */,
+				BA77934C2FABB54400E197CA /* AGENTS.md in Resources */,
 				DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -531,17 +722,58 @@
 			buildActionMask = 2147483647;
 			files = (
 				F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */,
-				F63DDAD52E746BB0006991F5 /* StyledButton.swift in Sources */,
-				F61886C52EA7DC820072E87C /* MapView.swift in Sources */,
 				BA5198932EDE0F06004A3B35 /* TripLiveActivityManager.swift in Sources */,
-				F618871C2EAFC1EE0072E87C /* Test.mm in Sources */,
+				BA7793482FAB9B6700E197CA /* NearbyPlacesSource.swift in Sources */,
+				BA7792FC2FA92DF100E197CA /* TestPreset.swift in Sources */,
+				BA77933E2FAAA7A700E197CA /* MapOverlaySource.swift in Sources */,
+				BAB2ACD92FB66E6D00560332 /* TripDestination.swift in Sources */,
+				BAB2ACC62FB66ADD00560332 /* ActiveTripBarView.swift in Sources */,
+				BAB2ACC92FB66C3F00560332 /* PresetSectionView.swift in Sources */,
+				BAB2ACB12FB53A8F00560332 /* TripEventsSource.swift in Sources */,
+				BAB2ACAD2FB5102B00560332 /* GeofenceOverlay.swift in Sources */,
+				BA77932A2FAA62E700E197CA /* TrackingPanel.swift in Sources */,
+				BA7793302FAA6A7300E197CA /* SearchPanel.swift in Sources */,
+				BA7792F82FA9087200E197CA /* TogglePanel.swift in Sources */,
+				BAB2ACBE2FB66A7700560332 /* MapViewRepresentable.swift in Sources */,
+				BA7793322FAA6FE600E197CA /* NotificationsPanel.swift in Sources */,
+				BAB2ACC02FB66A9500560332 /* OverlayPickerSheet.swift in Sources */,
+				BA7793462FAAAE7F00E197CA /* SyncedRegionSource.swift in Sources */,
+				BA7792F12FA8FF0600E197CA /* SettingsStore.swift in Sources */,
+				BA7793342FAA70F100E197CA /* MessagingPanel.swift in Sources */,
+				BA7792F62FA9081A00E197CA /* FieldEditor.swift in Sources */,
+				BA7793362FAA997300E197CA /* ConsoleEntry+UI.swift in Sources */,
+				BAB2ACC22FB66AA800560332 /* BuilderTrayView.swift in Sources */,
+				BAB2ACB72FB6487700560332 /* ActivityShareSheet.swift in Sources */,
+				BA77933B2FAAA46A00E197CA /* TestsSettingsView.swift in Sources */,
+				BAB2ACB52FB6486000560332 /* ConsoleEntry+Export.swift in Sources */,
+				BA7792EF2FA3D1DD00E197CA /* LogStream.swift in Sources */,
+				BA77934A2FAB9B9700E197CA /* TripDestinationSource.swift in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
+				BA77932C2FAA663C00E197CA /* TripsPanel.swift in Sources */,
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,
+				BAB2ACB32FB53C0600560332 /* TripGeofenceSource.swift in Sources */,
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
-				F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */,
 				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
+				BAB2ACDB2FB66E8500560332 /* TripEventMarker.swift in Sources */,
+				BA7793392FAAA12000E197CA /* PermissionsStore.swift in Sources */,
+				BA7793442FAAA9E800E197CA /* NearbyGeofencesSource.swift in Sources */,
+				BA7793402FAAA7C200E197CA /* MapOverlayRegistry.swift in Sources */,
+				BAB2ACAB2FB50FA100560332 /* TripBuilderStore.swift in Sources */,
+				BA7792F42FA907EE00E197CA /* ControlRow.swift in Sources */,
+				BA77932E2FAA695B00E197CA /* VerifiedPanel.swift in Sources */,
+				BAB2ACC42FB66ABD00560332 /* PendingHitOverlayView.swift in Sources */,
+				BAB2ACD12FB66CC700560332 /* PermissionStatus+Display.swift in Sources */,
+				BAB2ACD72FB66E3800560332 /* RecentActivityStream.swift in Sources */,
+				BAB2ACD42FB66DD300560332 /* ConsoleEntryRow.swift in Sources */,
+				BAB2ACBA2FB66A4D00560332 /* MapView.swift in Sources */,
+				BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSource.swift in Sources */,
+				BAB2ACCF2FB66C9D00560332 /* TrackingSectionView.swift in Sources */,
+				BAB2ACCB2FB66C5B00560332 /* IdentitySectionView.swift in Sources */,
+				BA7793422FAAA81800E197CA /* MonitoredRegionsSource.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
+				BAB2ACCD2FB66C7100560332 /* PermissionsSectionView.swift in Sources */,
+				BA7792FA2FA9088F00E197CA /* ActionButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
