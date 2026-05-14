@@ -397,6 +397,26 @@
     self.expectedStateCode = stateCode;
 }
 
+- (BOOL)isSharing {
+    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+    if (!RadarSDKFraud) {
+        return NO;
+    }
+    id sharedInstance = [RadarSDKFraud sharedInstance];
+    SEL selector = @selector(isSharing);
+    if (![sharedInstance respondsToSelector:selector]) {
+        return NO;
+    }
+    NSMethodSignature *signature = [sharedInstance methodSignatureForSelector:selector];
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+    invocation.selector = selector;
+    invocation.target = sharedInstance;
+    [invocation invoke];
+    BOOL result = NO;
+    [invocation getReturnValue:&result];
+    return result;
+}
+
 - (void)startIPMonitoring {
     if (!_monitor) {
         _monitor = nw_path_monitor_create();

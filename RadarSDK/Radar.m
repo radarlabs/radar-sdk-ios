@@ -435,7 +435,7 @@ BOOL _initialized = NO;
 }
 
 + (BOOL)isSharing {
-    return UIScreen.mainScreen.isCaptured;
+    return [[RadarVerificationManager sharedInstance] isSharing];
 }
 
 + (void)getVerifiedLocationTokenWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
