@@ -6,9 +6,9 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import Combine
 import CoreLocation
+import Foundation
 import RadarSDK
 
 @MainActor
@@ -119,7 +119,7 @@ final class TripBuilderStore: ObservableObject {
         .userStartedTrip,
         .userApproachingTripDestination,
         .userArrivedAtTripDestination,
-        .userStoppedTrip
+        .userStoppedTrip,
         // Note: `userUpdatedTrip` is intentionally excluded. Background location
         // updates trigger frequent `updated_trip` events which would spam the map
         // with pins. Reorder actions still get captured by passing `forced: true`
@@ -160,9 +160,10 @@ final class TripBuilderStore: ObservableObject {
         let label: String
 
         if selectedDestinations.count == 1,
-           case .geofence(_, let tag, let extId, _, _) = selectedDestinations[0],
-           let tag = tag, !tag.isEmpty,
-           let extId = extId, !extId.isEmpty {
+            case .geofence(_, let tag, let extId, _, _) = selectedDestinations[0],
+            let tag = tag, !tag.isEmpty,
+            let extId = extId, !extId.isEmpty
+        {
             options = RadarTripOptions(
                 externalId: externalId,
                 destinationGeofenceTag: tag,
@@ -177,7 +178,8 @@ final class TripBuilderStore: ObservableObject {
                 destinationGeofenceExternalId: nil
             )
             options.legs = legs
-            label = legs.count == 1
+            label =
+                legs.count == 1
                 ? "startTrip (map, 1 leg)"
                 : "startTrip (map, \(legs.count) legs)"
         }
@@ -255,8 +257,9 @@ final class TripBuilderStore: ObservableObject {
 
     func moveLeg(legId: String, direction: LegMoveDirection) {
         guard let trip = activeTrip,
-              let legs = trip.legs,
-              let currentIndex = legs.firstIndex(where: { $0._id == legId }) else { return }
+            let legs = trip.legs,
+            let currentIndex = legs.firstIndex(where: { $0._id == legId })
+        else { return }
 
         let targetIndex: Int
         switch direction {
@@ -265,7 +268,8 @@ final class TripBuilderStore: ObservableObject {
         }
 
         guard legs.indices.contains(targetIndex),
-              legs[targetIndex].status == .pending else { return }
+            legs[targetIndex].status == .pending
+        else { return }
 
         var newLegIds = legs.compactMap { $0._id }
         guard newLegIds.count == legs.count else { return }
@@ -323,7 +327,8 @@ final class TripBuilderStore: ObservableObject {
         switch destination {
         case .geofence(let id, let tag, let extId, _, _):
             if let tag = tag, !tag.isEmpty,
-               let extId = extId, !extId.isEmpty {
+                let extId = extId, !extId.isEmpty
+            {
                 return RadarTripLeg(
                     destinationGeofenceTag: tag,
                     destinationGeofenceExternalId: extId
@@ -343,7 +348,7 @@ final class TripBuilderStore: ObservableObject {
         var lines = [
             "externalId: \(trip.externalId ?? "—")",
             "trip.status: \(Radar.stringForTripStatus(trip.status))",
-            "currentLegId: \(trip.currentLegId ?? "—")"
+            "currentLegId: \(trip.currentLegId ?? "—")",
         ]
         if let legs = trip.legs {
             lines.append("legs: \(legs.count)")

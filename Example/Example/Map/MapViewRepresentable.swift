@@ -6,9 +6,9 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
-import MapKit
 import CoreLocation
+import MapKit
+import SwiftUI
 
 /// SwiftUI bridge for `MKMapView`. Syncs overlays/annotations from the
 /// `MapOverlayRegistry`'s published bundles and forwards MKMapViewDelegate
@@ -27,8 +27,9 @@ struct MapViewRepresentable: UIViewRepresentable {
         } else {
             map.userTrackingMode = .follow
         }
-        let tap = UITapGestureRecognizer(target: context.coordinator,
-                                         action: #selector(Coordinator.handleMapTap(_:)))
+        let tap = UITapGestureRecognizer(
+            target: context.coordinator,
+            action: #selector(Coordinator.handleMapTap(_:)))
         tap.delegate = context.coordinator
         map.addGestureRecognizer(tap)
 
@@ -114,8 +115,10 @@ struct MapViewRepresentable: UIViewRepresentable {
 
         /// Coexist with the map's built-in gestures (pan, zoom). Other taps
         /// (annotation taps, etc.) are not consumed.
-        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
-                               shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer) -> Bool {
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer
+        ) -> Bool {
             return true
         }
 
@@ -126,11 +129,13 @@ struct MapViewRepresentable: UIViewRepresentable {
             for overlay in mapView.overlays.reversed() {
                 guard let geo = overlay as? GeofenceOverlay else { continue }
                 if let circle = overlay as? MKCircle,
-                   Self.coordinate(coord, isInside: circle) {
+                    Self.coordinate(coord, isInside: circle)
+                {
                     return geo.tripDestination()
                 }
                 if let polygon = overlay as? MKPolygon,
-                   Self.coordinate(coord, isInside: polygon) {
+                    Self.coordinate(coord, isInside: polygon)
+                {
                     return geo.tripDestination()
                 }
             }
@@ -138,8 +143,9 @@ struct MapViewRepresentable: UIViewRepresentable {
         }
 
         private static func coordinate(_ coord: CLLocationCoordinate2D, isInside circle: MKCircle) -> Bool {
-            let center = CLLocation(latitude: circle.coordinate.latitude,
-                                    longitude: circle.coordinate.longitude)
+            let center = CLLocation(
+                latitude: circle.coordinate.latitude,
+                longitude: circle.coordinate.longitude)
             let point = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
             return point.distance(from: center) <= circle.radius
         }
@@ -160,15 +166,16 @@ struct MapViewRepresentable: UIViewRepresentable {
                 "lat": region.center.latitude,
                 "lng": region.center.longitude,
                 "latDelta": region.span.latitudeDelta,
-                "lngDelta": region.span.longitudeDelta
+                "lngDelta": region.span.longitudeDelta,
             ]
             UserDefaults.standard.set(dict, forKey: regionDefaultsKey)
         }
 
         static func loadRegion() -> MKCoordinateRegion? {
             guard let dict = UserDefaults.standard.dictionary(forKey: regionDefaultsKey) as? [String: Double],
-                  let lat = dict["lat"], let lng = dict["lng"],
-                  let latDelta = dict["latDelta"], let lngDelta = dict["lngDelta"] else {
+                let lat = dict["lat"], let lng = dict["lng"],
+                let latDelta = dict["latDelta"], let lngDelta = dict["lngDelta"]
+            else {
                 return nil
             }
             return MKCoordinateRegion(

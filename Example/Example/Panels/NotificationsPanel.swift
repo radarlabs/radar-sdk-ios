@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
 import RadarSDK
+import SwiftUI
 import UserNotifications
 
 struct NotificationsPanel: View {
@@ -42,7 +42,8 @@ struct NotificationsPanel: View {
             }
             ActionButton("list pending requests") {
                 UNUserNotificationCenter.current().getPendingNotificationRequests { notifications in
-                    let detail = notifications.isEmpty
+                    let detail =
+                        notifications.isEmpty
                         ? "(none)"
                         : notifications.map { $0.identifier }.joined(separator: "\n")
                     logStream.write(
@@ -67,20 +68,20 @@ struct NotificationsPanel: View {
     private func string(for setting: UNNotificationSetting) -> String {
         switch setting {
         case .notSupported: return "unsupported"
-        case .disabled:     return "disabled"
-        case .enabled:      return "enabled"
-        @unknown default:   return "unknown"
+        case .disabled: return "disabled"
+        case .enabled: return "enabled"
+        @unknown default: return "unknown"
         }
     }
 
     private func string(for status: UNAuthorizationStatus) -> String {
         switch status {
         case .notDetermined: return "not determined"
-        case .denied:        return "denied"
-        case .authorized:    return "authorized"
-        case .provisional:   return "provisional"
-        case .ephemeral:     return "ephemeral (App Clips)"
-        @unknown default:    return "unknown"
+        case .denied: return "denied"
+        case .authorized: return "authorized"
+        case .provisional: return "provisional"
+        case .ephemeral: return "ephemeral (App Clips)"
+        @unknown default: return "unknown"
         }
     }
 }

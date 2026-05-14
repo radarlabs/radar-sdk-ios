@@ -6,10 +6,10 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import Combine
-import MapKit
 import CoreLocation
+import Foundation
+import MapKit
 
 /// Central registry of map overlay sources. The MapView observes this object
 /// to know what to render. AppDelegate populates it at launch by calling
@@ -91,9 +91,10 @@ final class MapOverlayRegistry: ObservableObject {
 
     func refreshSource(_ id: String) async {
         guard let source = sources.first(where: { $0.id == id }),
-              isActuallyEnabled(source),
-              let location = lastKnownLocation,
-              let span = lastKnownSpan else { return }
+            isActuallyEnabled(source),
+            let location = lastKnownLocation,
+            let span = lastKnownSpan
+        else { return }
         let bundle = await source.loadOverlays(near: location, span: span)
         bundlesById[id] = bundle
     }

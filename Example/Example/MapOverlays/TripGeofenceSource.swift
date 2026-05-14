@@ -6,11 +6,11 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import MapKit
-import CoreLocation
-import UIKit
 import RadarSDK
+import UIKit
 
 /// Resolves and renders the actual geofence shapes for an active trip's legs,
 /// colored by leg status:
@@ -127,24 +127,28 @@ final class TripGeofencesSource: MapOverlaySource {
         if let legs = trip.legs, !legs.isEmpty {
             for leg in legs {
                 guard let tag = leg.destinationGeofenceTag, !tag.isEmpty,
-                      let extId = leg.destinationGeofenceExternalId, !extId.isEmpty else { continue }
+                    let extId = leg.destinationGeofenceExternalId, !extId.isEmpty
+                else { continue }
                 let isCurrent = leg._id != nil && leg._id == trip.currentLegId
-                needs.append(LegNeed(
-                    tag: tag,
-                    externalId: extId,
-                    status: leg.status,
-                    isCurrentLeg: isCurrent
-                ))
+                needs.append(
+                    LegNeed(
+                        tag: tag,
+                        externalId: extId,
+                        status: leg.status,
+                        isCurrentLeg: isCurrent
+                    ))
             }
         } else if let tag = trip.destinationGeofenceTag, !tag.isEmpty,
-                  let extId = trip.destinationGeofenceExternalId, !extId.isEmpty {
+            let extId = trip.destinationGeofenceExternalId, !extId.isEmpty
+        {
             // Single-destination trip — treat as current.
-            needs.append(LegNeed(
-                tag: tag,
-                externalId: extId,
-                status: .started,
-                isCurrentLeg: true
-            ))
+            needs.append(
+                LegNeed(
+                    tag: tag,
+                    externalId: extId,
+                    status: .started,
+                    isCurrentLeg: true
+                ))
         }
 
         return needs
@@ -153,10 +157,11 @@ final class TripGeofencesSource: MapOverlaySource {
     // MARK: - Fetching
 
     private func resolveMissing(needs: [LegNeed], near location: CLLocation) async {
-        let missingTags: Set<String> = Set(needs.compactMap { need -> String? in
-            let key = cacheKey(tag: need.tag, externalId: need.externalId)
-            return resolved[key] == nil ? need.tag : nil
-        })
+        let missingTags: Set<String> = Set(
+            needs.compactMap { need -> String? in
+                let key = cacheKey(tag: need.tag, externalId: need.externalId)
+                return resolved[key] == nil ? need.tag : nil
+            })
 
         for tag in missingTags {
             await fetchGeofences(tag: tag, near: location)

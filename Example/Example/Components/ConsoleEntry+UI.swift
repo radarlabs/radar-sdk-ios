@@ -15,34 +15,34 @@ import SwiftUI
 extension ConsoleEntry.Kind {
     var iconName: String {
         switch self {
-        case .action:   return "play.fill"
-        case .result:   return "checkmark.circle"
-        case .event:    return "bolt"
+        case .action: return "play.fill"
+        case .result: return "checkmark.circle"
+        case .event: return "bolt"
         case .location: return "location.fill"
-        case .log:      return "text.alignleft"
-        case .error:    return "exclamationmark.triangle.fill"
+        case .log: return "text.alignleft"
+        case .error: return "exclamationmark.triangle.fill"
         }
     }
 
     var tintColor: Color {
         switch self {
-        case .action:   return .blue
-        case .result:   return .green
-        case .event:    return .purple
+        case .action: return .blue
+        case .result: return .green
+        case .event: return .purple
         case .location: return Color(.systemTeal)
-        case .log:      return .gray
-        case .error:    return .red
+        case .log: return .gray
+        case .error: return .red
         }
     }
 
     var label: String {
         switch self {
-        case .action:   return "ACTION"
-        case .result:   return "RESULT"
-        case .event:    return "EVENT"
+        case .action: return "ACTION"
+        case .result: return "RESULT"
+        case .event: return "EVENT"
         case .location: return "LOCATION"
-        case .log:      return "LOG"
-        case .error:    return "ERROR"
+        case .log: return "LOG"
+        case .error: return "ERROR"
         }
     }
 }

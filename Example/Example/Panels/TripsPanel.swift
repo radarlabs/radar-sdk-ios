@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
 import RadarSDK
+import SwiftUI
 
 struct TripsPanel: View {
     var body: some View {
@@ -26,7 +26,8 @@ struct TripsPanel: View {
             }
             ActionButton("startTrip (with tracking options)") {
                 let uniqueTripId = "trip_\(Int(Date().timeIntervalSince1970))"
-                let tripOptions = RadarTripOptions(externalId: uniqueTripId, destinationGeofenceTag: "trip_activity", destinationGeofenceExternalId: "trip12345", scheduledArrivalAt: nil, startTracking: false)
+                let tripOptions = RadarTripOptions(
+                    externalId: uniqueTripId, destinationGeofenceTag: "trip_activity", destinationGeofenceExternalId: "trip12345", scheduledArrivalAt: nil, startTracking: false)
                 tripOptions.mode = .car
                 tripOptions.approachingThreshold = 9
                 let trackingOptions = RadarTrackingOptions.presetContinuous

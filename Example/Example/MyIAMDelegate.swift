@@ -16,7 +16,9 @@ class MyIAMDelegate: RadarInAppMessageDelegate {
         super.init()
     }
 
-    override func createInAppMessageView(_ message: RadarInAppMessage, onDismiss: @escaping () -> Void, onInAppMessageClicked: @escaping () -> Void, completionHandler: @escaping (UIViewController) -> Void) {
+    override func createInAppMessageView(
+        _ message: RadarInAppMessage, onDismiss: @escaping () -> Void, onInAppMessageClicked: @escaping () -> Void, completionHandler: @escaping (UIViewController) -> Void
+    ) {
         guard let message = message as? RadarInAppMessage_Swift else {
             return
         }

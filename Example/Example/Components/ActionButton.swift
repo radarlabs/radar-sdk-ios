@@ -73,9 +73,9 @@ struct ActionButton: View {
 
 #Preview {
     VStack(spacing: 12) {
-        ActionButton("trackOnce") { }
-        ActionButton("startTracking", style: .primary) { }
-        ActionButton("stopTracking", style: .destructive) { }
+        ActionButton("trackOnce") {}
+        ActionButton("startTracking", style: .primary) {}
+        ActionButton("stopTracking", style: .destructive) {}
     }
     .padding()
     .environmentObject(LogStream())

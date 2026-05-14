@@ -6,9 +6,9 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import MapKit
-import CoreLocation
 import UIKit
 
 /// Renders the OS-level monitored regions as colored circles. Replicates the

@@ -6,11 +6,11 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import MapKit
-import CoreLocation
-import UIKit
 import RadarSDK
+import UIKit
 
 /// Renders the SDK's locally-cached synced region and the entities inside it.
 ///
@@ -106,16 +106,19 @@ final class SyncedRegionSource: MapOverlaySource {
 
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView? {
         if annotation is SyncedGeofenceAnnotation {
-            return makeMarker(for: annotation, in: mapView,
-                              identifier: "SyncedGeofencePin", glyph: "mappin")
+            return makeMarker(
+                for: annotation, in: mapView,
+                identifier: "SyncedGeofencePin", glyph: "mappin")
         }
         if annotation is SyncedPlaceAnnotation {
-            return makeMarker(for: annotation, in: mapView,
-                              identifier: "SyncedPlacePin", glyph: "star.fill")
+            return makeMarker(
+                for: annotation, in: mapView,
+                identifier: "SyncedPlacePin", glyph: "star.fill")
         }
         if annotation is SyncedBeaconAnnotation {
-            return makeMarker(for: annotation, in: mapView,
-                              identifier: "SyncedBeaconPin", glyph: "wifi")
+            return makeMarker(
+                for: annotation, in: mapView,
+                identifier: "SyncedBeaconPin", glyph: "wifi")
         }
         return nil
     }
@@ -147,7 +150,8 @@ final class SyncedRegionSource: MapOverlaySource {
         identifier: String,
         glyph: String
     ) -> MKAnnotationView? {
-        let view = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
+        let view =
+            mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
             ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
         view.annotation = annotation
         view.markerTintColor = Self.accent

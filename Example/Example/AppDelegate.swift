@@ -5,18 +5,18 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-import UIKit
-import UserNotifications
-import RadarSDK
-import SwiftUI
 import ActivityKit
 import Combine
+import RadarSDK
+import SwiftUI
+import UIKit
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarVerifiedDelegate {
 
     let locationManager = CLLocationManager()
-    var window: UIWindow? // required for UIWindowSceneDelegate
+    var window: UIWindow?  // required for UIWindowSceneDelegate
 
     let logStream = LogStream()
     let settingsStore = SettingsStore()
@@ -75,8 +75,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         return true
     }
 
-    func application(_ app: UIApplication, open url: URL,
-                     options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+    func application(
+        _ app: UIApplication, open url: URL,
+        options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    ) -> Bool {
         // Handle opening via standard URL
         return true
     }
@@ -129,7 +131,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
     }
 
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
         logStream.write(result: "willPresent notification")
         completionHandler([.list, .banner, .sound])
     }

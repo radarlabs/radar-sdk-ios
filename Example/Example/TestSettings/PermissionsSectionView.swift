@@ -6,10 +6,10 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
 import CoreLocation
-import UserNotifications
 import CoreMotion
+import SwiftUI
+import UserNotifications
 
 /// Location / notifications / motion permission states with inline request
 /// actions and a pending-Radar-notifications counter.

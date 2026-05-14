@@ -17,7 +17,8 @@ extension ConsoleEntry {
                 "[\(Self.exportFormatter.string(from: entry.timestamp))] \(entry.kind.label): \(entry.summary)"
             ]
             if let detail = entry.detail, !detail.isEmpty {
-                let indented = detail
+                let indented =
+                    detail
                     .split(separator: "\n", omittingEmptySubsequences: false)
                     .map { "    \($0)" }
                     .joined(separator: "\n")

@@ -6,11 +6,11 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import MapKit
-import CoreLocation
-import UIKit
 import RadarSDK
+import UIKit
 
 final class TripBreadcrumbsSource: MapOverlaySource {
     let id = "tripBreadcrumbs"
@@ -60,7 +60,8 @@ final class TripBreadcrumbsSource: MapOverlaySource {
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView? {
         guard annotation is BreadcrumbAnnotation else { return nil }
         let identifier = BreadcrumbAnnotationView.identifier
-        let view = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? BreadcrumbAnnotationView
+        let view =
+            mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? BreadcrumbAnnotationView
             ?? BreadcrumbAnnotationView(annotation: annotation, reuseIdentifier: identifier)
         view.annotation = annotation
         return view

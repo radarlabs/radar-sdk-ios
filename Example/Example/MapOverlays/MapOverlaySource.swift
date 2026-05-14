@@ -6,9 +6,9 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import MapKit
-import CoreLocation
 
 /// A bundle of map content produced by a single overlay source.
 struct MapOverlayBundle {

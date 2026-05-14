@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 
 /// Common metadata exposed by any map overlay that represents a geofence,
 /// regardless of which source produced it or whether it renders as a circle

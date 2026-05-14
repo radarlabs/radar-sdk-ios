@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
 import RadarSDK
+import SwiftUI
 
 struct TrackingPanel: View {
     @EnvironmentObject var logStream: LogStream

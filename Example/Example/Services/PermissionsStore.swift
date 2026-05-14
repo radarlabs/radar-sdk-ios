@@ -6,13 +6,13 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import Combine
 import CoreLocation
-import UserNotifications
-import UIKit
-import RadarSDK
 import CoreMotion
+import Foundation
+import RadarSDK
+import UIKit
+import UserNotifications
 
 /// Observable mirror of the app's permission states.
 ///

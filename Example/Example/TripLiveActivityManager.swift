@@ -5,8 +5,8 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import ActivityKit
+import Foundation
 import RadarSDK
 
 @available(iOS 16.2, *)

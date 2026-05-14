@@ -6,11 +6,11 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import MapKit
-import CoreLocation
-import UIKit
 import RadarSDK
+import UIKit
 
 /// Renders geofences near the map's center via Radar.searchGeofences.
 ///
@@ -85,7 +85,8 @@ final class NearbyGeofencesSource: MapOverlaySource {
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView? {
         guard annotation is NearbyGeofenceAnnotation else { return nil }
         let identifier = "NearbyGeofenceAnnotation"
-        let view = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
+        let view =
+            mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
             ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
         view.annotation = annotation
         view.markerTintColor = .systemGreen

@@ -130,8 +130,9 @@ extension FieldEditor {
 #Preview {
     VStack(alignment: .leading) {
         FieldEditor("Name", text: .constant("alice"), placeholder: "name")
-        FieldEditor("User ID", text: .constant(""), placeholder: "—",
-                    commitOnSubmit: true)
+        FieldEditor(
+            "User ID", text: .constant(""), placeholder: "—",
+            commitOnSubmit: true)
         FieldEditor("Empty", text: .constant(""), placeholder: "type here")
     }
     .padding()

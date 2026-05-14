@@ -6,9 +6,9 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
-import CoreLocation
 import Combine
+import CoreLocation
+import Foundation
 import RadarSDK
 
 /// One row in the unified console timeline.
@@ -179,11 +179,12 @@ extension LogStream: RadarDelegate {
             self.didReceiveEventsPublisher.send((events: events, user: user))
         }
         for event in events {
-            append(ConsoleEntry(
-                kind: .event,
-                summary: Self.summarize(event),
-                detail: Self.detail(event)
-            ))
+            append(
+                ConsoleEntry(
+                    kind: .event,
+                    summary: Self.summarize(event),
+                    detail: Self.detail(event)
+                ))
         }
     }
 
@@ -194,10 +195,11 @@ extension LogStream: RadarDelegate {
             self.lastSyncedUser = user
             self.didUpdateLocationPublisher.send((location: location, user: user))
         }
-        append(ConsoleEntry(
-            kind: .location,
-            summary: "synced  " + Self.summarize(location)
-        ))
+        append(
+            ConsoleEntry(
+                kind: .location,
+                summary: "synced  " + Self.summarize(location)
+            ))
     }
 
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
@@ -208,20 +210,22 @@ extension LogStream: RadarDelegate {
             self.lastClientSource = source
         }
         let stoppedTag = stopped ? "stopped" : "moving"
-        append(ConsoleEntry(
-            kind: .location,
-            summary: "\(stoppedTag)  " + Self.summarize(location)
-        ))
+        append(
+            ConsoleEntry(
+                kind: .location,
+                summary: "\(stoppedTag)  " + Self.summarize(location)
+            ))
     }
 
     func didFail(status: RadarStatus) {
         DispatchQueue.main.async { [weak self] in
             self?.lastFailure = status
         }
-        append(ConsoleEntry(
-            kind: .error,
-            summary: "didFail: \(Radar.stringForStatus(status))"
-        ))
+        append(
+            ConsoleEntry(
+                kind: .error,
+                summary: "didFail: \(Radar.stringForStatus(status))"
+            ))
     }
 }
 

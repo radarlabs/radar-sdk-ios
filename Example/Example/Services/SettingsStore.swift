@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import Combine
+import Foundation
 import RadarSDK
 
 /// Observable bridge between the example app's UI and the Radar SDK + UserDefaults.
@@ -346,11 +346,11 @@ extension SettingsStore {
     /// `+stringForLogLevel:` like the other tracking-options enums), drop this.
     private static func logLevelString(_ level: RadarLogLevel) -> String {
         switch level {
-        case .none:    return "none"
-        case .error:   return "error"
+        case .none: return "none"
+        case .error: return "error"
         case .warning: return "warning"
-        case .info:    return "info"
-        case .debug:   return "debug"
+        case .info: return "info"
+        case .debug: return "debug"
         @unknown default: return "unknown"
         }
     }

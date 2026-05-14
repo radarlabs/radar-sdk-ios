@@ -5,10 +5,10 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
-import RadarSDK
-import MapKit
 import CoreLocation
+import MapKit
+import RadarSDK
+import SwiftUI
 
 /// User-facing map tab. Hosts the MKMapView via UIViewRepresentable, with a
 /// floating layer-toggle button at the bottom-right that presents the
@@ -263,8 +263,9 @@ struct MapView: View {
             .padding(.bottom, 8)
 
             if let leg = currentLeg(for: trip),
-               let legs = trip.legs,
-               let index = legs.firstIndex(where: { $0._id == leg._id }) {
+                let legs = trip.legs,
+                let index = legs.firstIndex(where: { $0._id == leg._id })
+            {
                 Divider()
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
@@ -350,13 +351,15 @@ struct MapView: View {
 
     private func currentLeg(for trip: RadarTrip) -> RadarTripLeg? {
         guard let currentLegId = trip.currentLegId,
-              let legs = trip.legs else { return nil }
+            let legs = trip.legs
+        else { return nil }
         return legs.first { $0._id == currentLegId }
     }
 
     private func legDescription(_ leg: RadarTripLeg) -> String {
         if let tag = leg.destinationGeofenceTag,
-           !tag.isEmpty {
+            !tag.isEmpty
+        {
             let extId = leg.destinationGeofenceExternalId ?? "?"
             return "geofence \(tag)/\(extId)"
         }
@@ -364,9 +367,10 @@ struct MapView: View {
             return "address \"\(address)\""
         }
         if leg.hasCoordinates {
-            return String(format: "coords %.5f, %.5f",
-                          leg.coordinates.latitude,
-                          leg.coordinates.longitude)
+            return String(
+                format: "coords %.5f, %.5f",
+                leg.coordinates.latitude,
+                leg.coordinates.longitude)
         }
         return "—"
     }
@@ -494,8 +498,9 @@ struct MapViewRepresentable: UIViewRepresentable {
         } else {
             map.userTrackingMode = .follow
         }
-        let tap = UITapGestureRecognizer(target: context.coordinator,
-                                         action: #selector(Coordinator.handleMapTap(_:)))
+        let tap = UITapGestureRecognizer(
+            target: context.coordinator,
+            action: #selector(Coordinator.handleMapTap(_:)))
         tap.delegate = context.coordinator
         map.addGestureRecognizer(tap)
 
@@ -591,11 +596,13 @@ struct MapViewRepresentable: UIViewRepresentable {
             for overlay in mapView.overlays.reversed() {
                 guard let geo = overlay as? GeofenceOverlay else { continue }
                 if let circle = overlay as? MKCircle,
-                   Self.coordinate(coord, isInside: circle) {
+                    Self.coordinate(coord, isInside: circle)
+                {
                     return geo.tripDestination()
                 }
                 if let polygon = overlay as? MKPolygon,
-                   Self.coordinate(coord, isInside: polygon) {
+                    Self.coordinate(coord, isInside: polygon)
+                {
                     return geo.tripDestination()
                 }
             }
@@ -603,8 +610,9 @@ struct MapViewRepresentable: UIViewRepresentable {
         }
 
         private static func coordinate(_ coord: CLLocationCoordinate2D, isInside circle: MKCircle) -> Bool {
-            let center = CLLocation(latitude: circle.coordinate.latitude,
-                                    longitude: circle.coordinate.longitude)
+            let center = CLLocation(
+                latitude: circle.coordinate.latitude,
+                longitude: circle.coordinate.longitude)
             let point = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
             return point.distance(from: center) <= circle.radius
         }
@@ -625,15 +633,16 @@ struct MapViewRepresentable: UIViewRepresentable {
                 "lat": region.center.latitude,
                 "lng": region.center.longitude,
                 "latDelta": region.span.latitudeDelta,
-                "lngDelta": region.span.longitudeDelta
+                "lngDelta": region.span.longitudeDelta,
             ]
             UserDefaults.standard.set(dict, forKey: regionDefaultsKey)
         }
 
         static func loadRegion() -> MKCoordinateRegion? {
             guard let dict = UserDefaults.standard.dictionary(forKey: regionDefaultsKey) as? [String: Double],
-                  let lat = dict["lat"], let lng = dict["lng"],
-                  let latDelta = dict["latDelta"], let lngDelta = dict["lngDelta"] else {
+                let lat = dict["lat"], let lng = dict["lng"],
+                let latDelta = dict["latDelta"], let lngDelta = dict["lngDelta"]
+            else {
                 return nil
             }
             return MKCoordinateRegion(
@@ -656,10 +665,12 @@ struct OverlayPickerSheet: View {
             List {
                 Section(header: Text("Layers"), footer: footer) {
                     ForEach(registry.sources, id: \.id) { source in
-                        Toggle(isOn: Binding(
-                            get: { registry.isEnabled(source) },
-                            set: { _ in registry.toggle(source) }
-                        )) {
+                        Toggle(
+                            isOn: Binding(
+                                get: { registry.isEnabled(source) },
+                                set: { _ in registry.toggle(source) }
+                            )
+                        ) {
                             Label(source.name, systemImage: source.icon)
                         }
                     }

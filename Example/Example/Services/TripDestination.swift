@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 
 /// A user-selected stop in the map-driven trip builder. May come from a
 /// tapped geofence (with optional tag/externalId for the SDK call path)

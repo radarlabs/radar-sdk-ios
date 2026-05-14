@@ -19,10 +19,12 @@ struct OverlayPickerSheet: View {
             List {
                 Section(header: Text("Layers"), footer: footer) {
                     ForEach(registry.sources, id: \.id) { source in
-                        Toggle(isOn: Binding(
-                            get: { registry.isEnabled(source) },
-                            set: { _ in registry.toggle(source) }
-                        )) {
+                        Toggle(
+                            isOn: Binding(
+                                get: { registry.isEnabled(source) },
+                                set: { _ in registry.toggle(source) }
+                            )
+                        ) {
                             Label(source.name, systemImage: source.icon)
                         }
                     }

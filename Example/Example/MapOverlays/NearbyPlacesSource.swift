@@ -6,11 +6,11 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import MapKit
-import CoreLocation
-import UIKit
 import RadarSDK
+import UIKit
 
 /// Renders places near the map's center via Radar.searchPlaces.
 ///
@@ -49,7 +49,8 @@ final class NearbyPlacesSource: MapOverlaySource {
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView? {
         guard annotation is NearbyPlaceAnnotation else { return nil }
         let identifier = "NearbyPlaceAnnotation"
-        let view = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
+        let view =
+            mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
             ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
         view.annotation = annotation
         view.markerTintColor = .systemTeal

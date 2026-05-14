@@ -5,9 +5,9 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
+import RadarSDK
 import SwiftUI
 import UIKit
-import RadarSDK
 
 struct LogsView: View {
     @EnvironmentObject var logStream: LogStream
@@ -91,7 +91,9 @@ struct LogsView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 ForEach(Filter.allCases) { option in
-                    Button { filter = option } label: {
+                    Button {
+                        filter = option
+                    } label: {
                         Text(option.rawValue)
                             .font(.subheadline.weight(.medium))
                             .padding(.horizontal, 12)

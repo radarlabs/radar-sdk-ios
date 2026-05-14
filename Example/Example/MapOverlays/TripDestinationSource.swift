@@ -6,11 +6,11 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import MapKit
-import CoreLocation
-import UIKit
 import RadarSDK
+import UIKit
 
 /// Renders the active trip's destination(s) as red flag pins.
 ///
@@ -69,7 +69,8 @@ final class TripDestinationSource: MapOverlaySource {
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView? {
         guard let pin = annotation as? TripDestinationAnnotation else { return nil }
         let identifier = "TripDestinationAnnotation"
-        let view = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
+        let view =
+            mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
             ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
         view.annotation = annotation
         view.markerTintColor = pin.isActive ? .systemRed : UIColor.systemRed.withAlphaComponent(0.5)

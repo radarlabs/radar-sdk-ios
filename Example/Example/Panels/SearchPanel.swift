@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
 import RadarSDK
+import SwiftUI
 
 struct SearchPanel: View {
     @EnvironmentObject var logStream: LogStream
@@ -243,11 +243,11 @@ struct SearchPanel: View {
             ActionButton("getMatrix") {
                 let origins = [
                     CLLocation(latitude: 40.78382, longitude: -73.97536),
-                    CLLocation(latitude: 40.70390, longitude: -73.98670)
+                    CLLocation(latitude: 40.70390, longitude: -73.98670),
                 ]
                 let destinations = [
                     CLLocation(latitude: 40.64189, longitude: -73.78779),
-                    CLLocation(latitude: 35.99801, longitude: -78.94294)
+                    CLLocation(latitude: 35.99801, longitude: -78.94294),
                 ]
                 Radar.getMatrix(
                     origins: origins,

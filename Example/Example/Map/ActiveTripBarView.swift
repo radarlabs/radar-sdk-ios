@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
 import RadarSDK
+import SwiftUI
 
 /// Floating control surface for an in-flight trip. Shows the trip header,
 /// the current leg with advance-status buttons, an expandable list of all
@@ -22,8 +22,9 @@ struct ActiveTripBarView: View {
             tripHeader
 
             if let leg = currentLeg,
-               let legs = trip.legs,
-               let index = legs.firstIndex(where: { $0._id == leg._id }) {
+                let legs = trip.legs,
+                let index = legs.firstIndex(where: { $0._id == leg._id })
+            {
                 Divider()
                 currentLegRow(leg: leg, index: index, total: legs.count)
                 Divider()
@@ -215,13 +216,15 @@ struct ActiveTripBarView: View {
 
     private var currentLeg: RadarTripLeg? {
         guard let currentLegId = trip.currentLegId,
-              let legs = trip.legs else { return nil }
+            let legs = trip.legs
+        else { return nil }
         return legs.first { $0._id == currentLegId }
     }
 
     private func legDescription(_ leg: RadarTripLeg) -> String {
         if let tag = leg.destinationGeofenceTag,
-           !tag.isEmpty {
+            !tag.isEmpty
+        {
             let extId = leg.destinationGeofenceExternalId ?? "?"
             return "geofence \(tag)/\(extId)"
         }
@@ -229,9 +232,10 @@ struct ActiveTripBarView: View {
             return "address \"\(address)\""
         }
         if leg.hasCoordinates {
-            return String(format: "coords %.5f, %.5f",
-                          leg.coordinates.latitude,
-                          leg.coordinates.longitude)
+            return String(
+                format: "coords %.5f, %.5f",
+                leg.coordinates.latitude,
+                leg.coordinates.longitude)
         }
         return "—"
     }

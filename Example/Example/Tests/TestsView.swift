@@ -5,8 +5,8 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
 import RadarSDK
+import SwiftUI
 
 struct TestsView: View {
     @EnvironmentObject var settingsStore: SettingsStore

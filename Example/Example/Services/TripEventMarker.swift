@@ -6,8 +6,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 import RadarSDK
 
 /// A single trip-related event captured for map-pin rendering. Populated

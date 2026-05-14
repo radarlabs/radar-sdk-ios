@@ -6,11 +6,11 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import MapKit
-import CoreLocation
-import UIKit
 import RadarSDK
+import UIKit
 
 /// Renders one map pin per captured trip event (started, approaching, arrived,
 /// stopped, updated). Tapping a pin reveals a callout with the event type and
@@ -53,7 +53,8 @@ final class TripEventsSource: MapOverlaySource {
     func view(for annotation: MKAnnotation, in mapView: MKMapView) -> MKAnnotationView? {
         guard let pin = annotation as? TripEventAnnotation else { return nil }
         let identifier = "TripEventAnnotation"
-        let view = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
+        let view =
+            mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
             ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
         view.annotation = annotation
         view.canShowCallout = true
@@ -68,7 +69,8 @@ final class TripEventsSource: MapOverlaySource {
         let raw = RadarEvent.string(for: type) ?? "event"
         // Strip the "user." prefix, replace underscores with spaces. e.g.
         // "user.started_trip" -> "started trip"
-        return raw
+        return
+            raw
             .replacingOccurrences(of: "user.", with: "")
             .replacingOccurrences(of: "_", with: " ")
     }
