@@ -5,8 +5,8 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
 import RadarSDK
+import SwiftUI
 
 struct TestsView: View {
     @State private var outputText: String = ""
@@ -132,28 +132,29 @@ struct TestsView: View {
             }
 
             StyledButton("iam") {
-                Radar.showInAppMessage(RadarInAppMessage.fromDictionary([
-                    "title": [
-                        "text": "This is the title",
-                        "color": "#ff0000"
-                    ],
-                    "body": [
-                        "text": "This is a demo message.",
-                        "color": "#00ff00"
-                    ],
-                    "button": [
-                        "text": "Buy it",
-                        "color": "#0000ff",
-                        "backgroundColor": "#EB0083",
-                    ],
-                    "image": [
-                        "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
-                        "name": "image.jpeg"
-                    ],
-                    "metadata": [
-                        "campainId": "1234"
-                    ]
-                ])!)
+                Radar.showInAppMessage(
+                    RadarInAppMessage.fromDictionary([
+                        "title": [
+                            "text": "This is the title",
+                            "color": "#ff0000",
+                        ],
+                        "body": [
+                            "text": "This is a demo message.",
+                            "color": "#00ff00",
+                        ],
+                        "button": [
+                            "text": "Buy it",
+                            "color": "#0000ff",
+                            "backgroundColor": "#EB0083",
+                        ],
+                        "image": [
+                            "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
+                            "name": "image.jpeg",
+                        ],
+                        "metadata": [
+                            "campainId": "1234"
+                        ],
+                    ])!)
             }
 
             StyledButton("request motion activity permission") {
@@ -172,7 +173,9 @@ struct TestsView: View {
 
             StyledButton("getContext") {
                 Radar.getContext { (status, location, context) in
-                    print("Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))")
+                    print(
+                        "Context: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); context?.geofences = \(String(describing: context?.geofences)); context?.place = \(String(describing: context?.place)); context?.country = \(String(describing: context?.country))"
+                    )
                 }
             }
 
@@ -257,7 +260,9 @@ struct TestsView: View {
 
             StyledButton("ipGeocode") {
                 Radar.ipGeocode { (status, address, proxy) in
-                    print("IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy); full address: \(String(describing: address?.dictionaryValue()))")
+                    print(
+                        "IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy); full address: \(String(describing: address?.dictionaryValue()))"
+                    )
                 }
             }
 
@@ -274,7 +279,9 @@ struct TestsView: View {
                 ])!
 
                 Radar.validateAddress(address: address) { (status, address, verificationStatus) in
-                    print("Validate address with street + number: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
+                    print(
+                        "Validate address with street + number: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)"
+                    )
                 }
 
                 let addressLabel: RadarAddress = RadarAddress(from: [
@@ -287,7 +294,9 @@ struct TestsView: View {
                     "addressLabel": "Broadway 841",
                 ])!
                 Radar.validateAddress(address: addressLabel) { (status, address, verificationStatus) in
-                    print("Validate address with address label: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)")
+                    print(
+                        "Validate address with address label: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); verificationStatus = \(verificationStatus)"
+                    )
                 }
             }
 
@@ -305,7 +314,9 @@ struct TestsView: View {
 
                     if let address = addresses?.first {
                         Radar.validateAddress(address: address) { (status, address, verificationStatus) in
-                            print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
+                            print(
+                                "Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))"
+                            )
                         }
                     }
                 }
@@ -322,7 +333,9 @@ struct TestsView: View {
 
                     if let address = addresses?.first {
                         Radar.validateAddress(address: address) { (status, address, verificationStatus) in
-                            print("Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))")
+                            print(
+                                "Validate address: status = \(Radar.stringForStatus(status)); address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))"
+                            )
                         }
                     }
                 }
@@ -347,7 +360,9 @@ struct TestsView: View {
                     modes: [.foot, .car],
                     units: .imperial
                 ) { (status, routes) in
-                    print("Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))")
+                    print(
+                        "Distance: status = \(Radar.stringForStatus(status)); routes.car.distance.value = \(String(describing: routes?.car?.distance.value)); routes.car.distance.text = \(String(describing: routes?.car?.distance.text)); routes.car.duration.value = \(String(describing: routes?.car?.duration.value)); routes.car.duration.text = \(String(describing: routes?.car?.duration.text))"
+                    )
                 }
             }
 
@@ -367,7 +382,8 @@ struct TestsView: View {
 
             StyledButton("startTrip with tracking options") {
                 let uniqueTripId = "trip_\(Int(Date().timeIntervalSince1970))"
-                let tripOptions = RadarTripOptions(externalId: uniqueTripId, destinationGeofenceTag: "trip_activity", destinationGeofenceExternalId: "trip12345", scheduledArrivalAt: nil, startTracking: false)
+                let tripOptions = RadarTripOptions(
+                    externalId: uniqueTripId, destinationGeofenceTag: "trip_activity", destinationGeofenceExternalId: "trip12345", scheduledArrivalAt: nil, startTracking: false)
                 tripOptions.mode = .car
                 tripOptions.approachingThreshold = 9
                 let trackingOptions = RadarTrackingOptions.presetContinuous
@@ -400,7 +416,8 @@ struct TestsView: View {
                     steps: 3,
                     interval: 3
                 ) { (status, location, events, user) in
-                    print("Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
+                    print(
+                        "Mock track: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
 
                     if i == 2 {
                         Radar.completeTrip()
@@ -413,15 +430,17 @@ struct TestsView: View {
             StyledButton("getMatrix") {
                 let origins = [
                     CLLocation(latitude: 40.78382, longitude: -73.97536),
-                    CLLocation(latitude: 40.70390, longitude: -73.98670)
+                    CLLocation(latitude: 40.70390, longitude: -73.98670),
                 ]
                 let destinations = [
                     CLLocation(latitude: 40.64189, longitude: -73.78779),
-                    CLLocation(latitude: 35.99801, longitude: -78.94294)
+                    CLLocation(latitude: 35.99801, longitude: -78.94294),
                 ]
 
                 Radar.getMatrix(origins: origins, destinations: destinations, mode: .car, units: .imperial) { (status, matrix) in
-                    print("Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))")
+                    print(
+                        "Matrix: status = \(Radar.stringForStatus(status)); matrix[0][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text)); matrix[0][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text)); matrix[1][0].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text)); matrix[1][1].duration.text = \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))"
+                    )
                 }
             }
 
