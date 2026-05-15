@@ -198,7 +198,15 @@ struct TestsView: View {
                     print("TrackVerified: status = \(status); token = \(token?.dictionaryValue())")
                 }
             }
-            
+
+            StyledButton("isSharing") {
+                print("isSharing: \(Radar.isSharing())")
+            }
+
+            StyledButton("clearSharing") {
+                Radar.clearSharing()
+            }
+
             StyledButton("searchPlaces") {
                 // In the Radar dashboard settings
                 // (https://radar.com/dashboard/settings), add this to the chain
