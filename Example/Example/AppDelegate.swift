@@ -218,6 +218,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
     }
+
+    func didChangeIP() {
+        print("RadarVerifiedDelegate: didChangeIP")
+    }
     
     // MARK: - Live Activity Handling
     @available(iOS 16.2, *)
