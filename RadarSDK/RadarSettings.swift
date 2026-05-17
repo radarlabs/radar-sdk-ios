@@ -120,8 +120,8 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
     }
 
     public static var userLanguage: String? {
-        get { return RadarUserDefaults.string(forKey: .UserLanguage) }
-        set { RadarUserDefaults.set(newValue, forKey: .UserLanguage) }
+        get { return RadarUserDefaults.string(forKey: .userLanguage) }
+        set { RadarUserDefaults.set(newValue, forKey: .userLanguage) }
     }
 
     public static var description: String? {
