@@ -16,6 +16,7 @@ class RadarUserDefaults: NSObject {
         case SessionId = "radar-sessionId"
         case Id = "radar-_id"
         case UserId = "radar-userId"
+        case UserLanguage = "radar-userLanguage"
         case Description = "radar-description"
         case Product = "radar-product"
         case Metadata = "radar-metadata"

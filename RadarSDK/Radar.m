@@ -206,6 +206,14 @@ BOOL _initialized = NO;
     return [RadarSettings userId];
 }
 
++ (void)setUserLanguage:(NSString *)userLanguage {
+    [RadarSettings setUserLanguage:userLanguage];
+}
+
++ (NSString *_Nullable)getUserLanguage {
+    return [RadarSettings userLanguage];
+}
+
 + (void)setDescription:(NSString *)description {
     [RadarSettings setDescription:description];
 }

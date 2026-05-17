@@ -98,6 +98,12 @@
             @"X-Radar-Product": product
         }];
     }
+    NSString *userLanguage = [RadarSettings userLanguage];
+    if (userLanguage) {
+        [headers addEntriesFromDictionary:@{
+            @"X-Radar-User-Language": userLanguage
+        }];
+    }
     return headers;
 }
 

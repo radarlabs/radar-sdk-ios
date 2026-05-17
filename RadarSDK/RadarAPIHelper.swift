@@ -106,6 +106,9 @@ final class RadarAPIHelper: Sendable {
         headers["X-Radar-Mobile-Origin"] = Bundle.main.bundleIdentifier
         headers["X-Radar-Network-Type"] = RadarUtils.networkType.rawValue
         headers["X-Radar-App-Info"] = RadarUtils.dictionaryToJson(RadarUtils.appInfo)
+        if let userLanguage = RadarSettings.userLanguage {
+            headers["X-Radar-User-Language"] = userLanguage
+        }
 
         let url = "\(RadarSettings.host)/v1/\(url)"
 
