@@ -426,6 +426,16 @@ BOOL _initialized = NO;
     [[RadarVerificationManager sharedInstance] stopTrackingVerified];
 }
 
++ (void)startMonitoringIPChanges {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startMonitoringIPChanges()"];
+    [[RadarVerificationManager sharedInstance] startMonitoringIPChanges];
+}
+
++ (void)stopMonitoringIPChanges {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopMonitoringIPChanges()"];
+    [[RadarVerificationManager sharedInstance] stopMonitoringIPChanges];
+}
+
 + (BOOL)isTrackingVerified {
     return [RadarVerificationManager sharedInstance].started;
 }

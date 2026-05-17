@@ -617,6 +617,22 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (void)stopTrackingVerified NS_SWIFT_NAME(stopTrackingVerified());
 
 /**
+ Starts monitoring for changes to the device's IP address. When the IP changes, `didChangeIP()` is delivered to the verified delegate. If verified tracking is started, an IP change will also trigger a `trackVerified()` call.
+
+ @note `startTrackingVerified()` automatically starts IP change monitoring, and `stopTrackingVerified()` stops it.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)startMonitoringIPChanges NS_SWIFT_NAME(startMonitoringIPChanges());
+
+/**
+ Stops monitoring for changes to the device's IP address.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)stopMonitoringIPChanges NS_SWIFT_NAME(stopMonitoringIPChanges());
+
+/**
  Returns a boolean indicating whether verified tracking has been started.
 
  @return A boolean indicating whether verified tracking has been started.
