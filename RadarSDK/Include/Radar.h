@@ -409,7 +409,7 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (NSString *_Nullable)getUserId;
 
 /**
- Sets the user's preferred language. Sent on all API requests as `X-Radar-User-Language` to localize server-returned strings such as verified token failure reason messages. Pass a BCP-47 language tag like `"en"`, `"es"`, or `"es-MX"`.
+ Sets the user's preferred language. Pass a BCP-47 language tag like `"en"`, `"es"`, or `"es-MX"`.
 
  @param userLanguage The user's preferred language. If `nil`, the previous `userLanguage` will be cleared.
  */
