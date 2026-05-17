@@ -5,33 +5,33 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-import UIKit
-import UserNotifications
+import ActivityKit
 import RadarSDK
 import SwiftUI
-import ActivityKit
+import UIKit
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
 
     let locationManager = CLLocationManager()
-    var window: UIWindow? // required for UIWindowSceneDelegate
-    
+    var window: UIWindow?  // required for UIWindowSceneDelegate
+
     var scrollView: UIScrollView?
     var demoFunctions = Array<() -> Void>()
-    
+
     var useSwiftUI = true
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
         UNUserNotificationCenter.current().delegate = self
-        
+
         locationManager.delegate = self
         self.requestLocationPermissions()
-        
+
         // Replace with a valid test publishable key
         let radarInitializeOptions = RadarInitializeOptions()
-        
+
         // Uncomment to enable automatic setup for notification conversions or deep linking
         radarInitializeOptions.autoLogNotificationConversions = true
         radarInitializeOptions.autoHandleNotificationDeepLinks = true
@@ -40,57 +40,61 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
         Radar.setAppGroup("group.waypoint.data")
         Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions)
-        Radar.setMetadata([ "foo": "bar" ])
+        Radar.setMetadata(["foo": "bar"])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
         Radar.setInAppMessageDelegate(MyIAMDelegate())
-        
+
         if #available(iOS 15.0, *) {
-            locationManager.startMonitoringLocationPushes() { data, error in
+            locationManager.startMonitoringLocationPushes { data, error in
                 print("Extension Token", data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
                 Radar.setLocationExtensionToken(data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
             }
         }
-        
+
         return true
     }
-    
-    func application(_ app: UIApplication, open url: URL,
-                     options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+
+    func application(
+        _ app: UIApplication, open url: URL,
+        options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    ) -> Bool {
         // Handle opening via standard URL
         return true
     }
-    
+
     func demoButton(text: String, function: @escaping () -> Void) {
         guard let scrollView = self.scrollView else { return }
-        
+
         let buttonHeight = 30
         scrollView.contentSize.height += CGFloat(buttonHeight)
-        
+
         let buttonFrame = CGRect(x: 0, y: demoFunctions.count * buttonHeight, width: Int(scrollView.frame.width), height: buttonHeight)
-        let button = UIButton(frame: buttonFrame, primaryAction:UIAction(handler:{ _ in
-            function()
-        }))
+        let button = UIButton(
+            frame: buttonFrame,
+            primaryAction: UIAction(handler: { _ in
+                function()
+            }))
         button.setTitleColor(.black, for: .normal)
         button.setTitleColor(.lightGray, for: .highlighted)
         button.setTitle(text, for: .normal)
-        
+
         demoFunctions.append(function)
-        
+
         scrollView.addSubview(button)
     }
-    
+
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
+
         let window = UIWindow(windowScene: windowScene)
-        
+
         window.backgroundColor = .white
-        
-        if (useSwiftUI) {
+
+        if useSwiftUI {
             let controller = UIHostingController(rootView: MainView())
             controller.view.frame = UIScreen.main.bounds
             window.addSubview(controller.view)
@@ -98,14 +102,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             scrollView = UIScrollView(frame: CGRect(x: 0, y: 100, width: window.frame.size.width, height: window.frame.size.height))
             scrollView!.contentSize.height = 0
             scrollView!.contentSize.width = window.frame.size.width
-            
+
             window.addSubview(scrollView!)
         }
-        
+
         window.makeKeyAndVisible()
-        
+
         self.window = window
-        
+
         if UIApplication.shared.applicationState != .background {
             //            Radar.getLocation { (status, location, stopped) in
             //                print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
@@ -115,30 +119,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             //                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
             //            }
         }
-        
+
         demoButton(text: "IAM") {
-            Radar.showInAppMessage(RadarInAppMessage.fromDictionary([
-                "title": [
-                    "text": "This is the titleakfjaklsjdflajsldfjalsdjflajsldkfjaslkfdjkalsjdfklajlkfdjklsjflajsd",
-                    "color": "#ff0000"
-                ],
-                "body": [
-                    "text": "This is a demo message.",
-                    "color": "#00ff00"
-                ],
-                "button": [
-                    "text": "Buy it",
-                    "color": "#0000ff",
-                    "backgroundColor": "#EB0083",
-                ],
-                "image": [
-                    "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
-                    "name": "image.jpeg"
-                ],
-                "metadata": [
-                    "campainId": "1234"
-                ]
-            ])!)
+            Radar.showInAppMessage(
+                RadarInAppMessage.fromDictionary([
+                    "title": [
+                        "text": "This is the titleakfjaklsjdflajsldfjalsdjflajsldkfjaslkfdjkalsjdfklajlkfdjklsjflajsd",
+                        "color": "#ff0000",
+                    ],
+                    "body": [
+                        "text": "This is a demo message.",
+                        "color": "#00ff00",
+                    ],
+                    "button": [
+                        "text": "Buy it",
+                        "color": "#0000ff",
+                        "backgroundColor": "#EB0083",
+                    ],
+                    "image": [
+                        "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
+                        "name": "image.jpeg",
+                    ],
+                    "metadata": [
+                        "campainId": "1234"
+                    ],
+                ])!)
         }
         demoButton(text: "get User Id") {
             print(Radar.getUserId())
@@ -147,7 +152,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             print(Radar.trackOnce())
         }
     }
-        
+
     func requestLocationPermissions() {
         var status: CLAuthorizationStatus = .notDetermined
         if #available(iOS 14.0, *) {
@@ -175,28 +180,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         self.requestLocationPermissions()
     }
 
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
         print("will present notification!")
         completionHandler([.list, .banner, .sound])
     }
-    
+
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         // Uncomment for manual setup for notification conversions and URLs
         // Radar.logConversion(response: response)
         // Radar.openURLFromNotification(response.notification)
         print(response)
     }
-    
+
     // this function is called ONLY for silent-pushes
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) async -> UIBackgroundFetchResult {
         print(userInfo)
-        
+
         return .newData
     }
 
     func notify(_ body: String) {
     }
-    
+
     // MARK: - RadarDelegate Methods (for Live Activity)
     // These delegate methods are optional and only needed if you want to update a Live Activity based on trip events and location updates.
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
@@ -209,7 +216,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             }
         }
     }
-    
+
     func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
         // Update the Live Activity with the latest trip progress
         if #available(iOS 16.2, *) {
@@ -222,7 +229,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     func didChangeIP() {
         print("RadarVerifiedDelegate: didChangeIP")
     }
-    
+
     // MARK: - Live Activity Handling
     @available(iOS 16.2, *)
     private func handleTripLiveActivity(user: RadarUser?) {
@@ -230,9 +237,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
             TripLiveActivityManager.shared.endActivity(status: "completed")
             return
         }
-        
+
         let hasActivity = TripLiveActivityManager.shared.hasActiveActivity
-        
+
         switch trip.status {
         case .started, .approaching, .arrived:
             if !hasActivity {
@@ -242,7 +249,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
                 let statusOverride = (trip.status == .started) ? "in_progress" : nil
                 TripLiveActivityManager.shared.updateActivity(trip: trip, statusOverride: statusOverride)
             }
-            
+
         case .completed:
             TripLiveActivityManager.shared.endActivity(status: "completed")
         case .canceled:
