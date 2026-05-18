@@ -14,7 +14,7 @@ class RadarOfflineEventManager: NSObject {
 
     private static let queue = DispatchQueue(label: "io.radar.offlineEventManager")
     nonisolated(unsafe) private static var _offlineGeofenceIds: Set<String>? = nil
-    nonisolated(unsafe) private static var _offlineBeaconIds: Set<String>? = nil
+    nonisolated(unsafe) private static var _offlineBeaconIds: Set<String>?
 
     private static var offlineGeofenceIds: Set<String>? {
         get { queue.sync { _offlineGeofenceIds } }
@@ -51,76 +51,17 @@ class RadarOfflineEventManager: NSObject {
         let now = Date()
         let isoString = RadarUtils.isoDateFormatter.string(from: now)
         let isLive = (RadarSettings.publishableKey ?? "").hasPrefix("prj_live")
-        let entryTimestamps = state.geofenceEntryTimestamps
-
-        var events = [RadarEvent]()
-
-        for geofence in geofenceEntries {
-            if let event = makeGeofenceEvent(
-                type: "user.entered_geofence",
-                geofence: geofence,
-                location: location,
-                isoDate: isoString,
-                live: isLive
-            ) {
-                events.append(event)
-                RadarLogger.shared.info("OfflineEventManager: Generated geofence entry for \(geofence.id)")
-            }
-        }
-
-        for geofence in geofenceExits {
-            if let event = makeGeofenceEvent(
-                type: "user.exited_geofence",
-                geofence: geofence,
-                location: location,
-                isoDate: isoString,
-                live: isLive
-            ) {
-                events.append(event)
-                RadarLogger.shared.info("OfflineEventManager: Generated geofence exit for \(geofence.id)")
-            }
-        }
-
-        for geofence in geofenceDwells {
-            let duration = entryTimestamps[geofence.id].map { now.timeIntervalSince1970 - $0 } ?? 0
-            if let event = makeGeofenceEvent(
-                type: "user.dwelled_in_geofence",
-                geofence: geofence,
-                location: location,
-                isoDate: isoString,
-                live: isLive,
-                duration: duration
-            ) {
-                events.append(event)
-                RadarLogger.shared.info("OfflineEventManager: Generated geofence dwell for \(geofence.id)")
-            }
-        }
-
-        for beacon in beaconEntries {
-            if let event = makeBeaconEvent(
-                type: "user.entered_beacon",
-                beacon: beacon,
-                location: location,
-                isoDate: isoString,
-                live: isLive
-            ) {
-                events.append(event)
-                RadarLogger.shared.info("OfflineEventManager: Generated beacon entry for \(beacon.id)")
-            }
-        }
-
-        for beacon in beaconExits {
-            if let event = makeBeaconEvent(
-                type: "user.exited_beacon",
-                beacon: beacon,
-                location: location,
-                isoDate: isoString,
-                live: isLive
-            ) {
-                events.append(event)
-                RadarLogger.shared.info("OfflineEventManager: Generated beacon exit for \(beacon.id)")
-            }
-        }
+        
+        var events = buildGeofenceEvents(
+            entries: geofenceEntries, exits: geofenceExits, dwells: geofenceDwells,
+            entryTimestamps: state.geofenceEntryTimestamps,
+            location: location, isoDate: isoString, live: isLive, now: now
+        )
+        
+        events.append(contentsOf: buildBeaconEvents(
+            entries: beaconEntries, exits: beaconExits,
+            location: location, isoDate: isoString, live: isLive
+        ))
 
         RadarSyncManager.recordGeofenceEntryTimestamps(geofenceEntries.map { $0.id })
         RadarSyncManager.clearGeofenceEntryState(geofenceExits.map { $0.id })
@@ -147,6 +88,57 @@ class RadarOfflineEventManager: NSObject {
                 }
             }
         }
+    }
+    
+    private static func buildGeofenceEvents(
+        entries: [RadarGeofenceSwift],
+        exits: [RadarGeofenceSwift],
+        dwells: [RadarGeofenceSwift],
+        entryTimestamps: [String: Double],
+        location: CLLocation,
+        isoDate: String,
+        live: Bool,
+        now: Date
+    ) -> [RadarEvent] {
+        var events = [RadarEvent]()
+        for geofence in entries {
+            guard let event = makeGeofenceEvent(type: "user.entered_geofence", geofence: geofence, location: location, isoDate: isoDate, live: live) else { continue }
+            events.append(event)
+            RadarLogger.shared.info("OfflineEventManager: Generated geofence entry for \(geofence.id)")
+        }
+        for geofence in exits {
+            guard let event = makeGeofenceEvent(type: "user.exited_geofence", geofence: geofence, location: location, isoDate: isoDate, live: live) else { continue }
+            events.append(event)
+            RadarLogger.shared.info("OfflineEventManager: Generated geofence exit for \(geofence.id)")
+        }
+        for geofence in dwells {
+            let duration = entryTimestamps[geofence.id].map { now.timeIntervalSince1970 - $0 } ?? 0
+            guard let event = makeGeofenceEvent(type: "user.dwelled_in_geofence", geofence: geofence, location: location, isoDate: isoDate, live: live, duration: duration) else { continue }
+            events.append(event)
+            RadarLogger.shared.info("OfflineEventManager: Generated geofence dwell for \(geofence.id)")
+        }
+        return events
+    }
+
+    private static func buildBeaconEvents(
+        entries: [RadarBeaconSwift],
+        exits: [RadarBeaconSwift],
+        location: CLLocation,
+        isoDate: String,
+        live: Bool
+    ) -> [RadarEvent] {
+        var events = [RadarEvent]()
+        for beacon in entries {
+            guard let event = makeBeaconEvent(type: "user.entered_beacon", beacon: beacon, location: location, isoDate: isoDate, live: live) else { continue }
+            events.append(event)
+            RadarLogger.shared.info("OfflineEventManager: Generated beacon entry for \(beacon.id)")
+        }
+        for beacon in exits {
+            guard let event = makeBeaconEvent(type: "user.exited_beacon", beacon: beacon, location: location, isoDate: isoDate, live: live) else { continue }
+            events.append(event)
+            RadarLogger.shared.info("OfflineEventManager: Generated beacon exit for \(beacon.id)")
+        }
+        return events
     }
 
     // MARK: - Tracking options ramp-up/down
