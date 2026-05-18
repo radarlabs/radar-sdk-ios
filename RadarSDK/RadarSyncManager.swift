@@ -558,6 +558,28 @@ public final class RadarSyncManager: NSObject {
             return elapsedMinutes >= thresholdMinutes
         }
     }
+    
+    // MARK: - Beacon Diff
+    
+    static func getBeaconEntries(for location: CLLocation, against lastKnownIds: Set<String>) -> [RadarBeaconSwift] {
+        let currentBeacons = getBeacons(for: location)
+        let currentBeaconIds = Set(currentBeacons.map { $0.id })
+        let enteredIds = currentBeaconIds.subtracting(lastKnownIds)
+        
+        guard !enteredIds.isEmpty else { return [] }
+        return currentBeacons.filter { enteredIds.contains($0.id) }
+    }
+    
+    static func getBeaconExits(for location: CLLocation, against lastKnownIds: Set<String>) -> [RadarBeaconSwift] {
+        let currentBeacons = getBeacons(for: location)
+        let currentIds = Set(currentBeacons.map { $0.id })
+        let exitedIds = lastKnownIds.subtracting(currentIds)
+
+        guard !exitedIds.isEmpty else { return [] }
+    
+        let allSyncedBeacons = syncStore.read()?.syncedBeacons ?? []
+        return allSyncedBeacons.filter { exitedIds.contains($0.id) }
+    }
 
     // MARK: - Geofence State Mutations
     
