@@ -206,6 +206,14 @@ BOOL _initialized = NO;
     return [RadarSettings userId];
 }
 
++ (void)setUserLanguage:(NSString *)userLanguage {
+    [RadarSettings setUserLanguage:userLanguage];
+}
+
++ (NSString *_Nullable)getUserLanguage {
+    return [RadarSettings userLanguage];
+}
+
 + (void)setDescription:(NSString *)description {
     [RadarSettings setDescription:description];
 }
@@ -424,6 +432,16 @@ BOOL _initialized = NO;
 + (void)stopTrackingVerified {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopTrackingVerified()"];
     [[RadarVerificationManager sharedInstance] stopTrackingVerified];
+}
+
++ (void)startMonitoringIPChanges {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startMonitoringIPChanges()"];
+    [[RadarVerificationManager sharedInstance] startMonitoringIPChanges];
+}
+
++ (void)stopMonitoringIPChanges {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopMonitoringIPChanges()"];
+    [[RadarVerificationManager sharedInstance] stopMonitoringIPChanges];
 }
 
 + (BOOL)isTrackingVerified {

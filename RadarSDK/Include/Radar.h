@@ -409,6 +409,20 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (NSString *_Nullable)getUserId;
 
 /**
+ Sets the user's preferred language. Pass a BCP-47 language tag like `"en"` or `"es-PR"`.
+
+ @param userLanguage The user's preferred language. If `nil`, the previous `userLanguage` will be cleared.
+ */
++ (void)setUserLanguage:(NSString *_Nullable)userLanguage;
+
+/**
+ Returns the current `userLanguage`.
+
+ @return The current `userLanguage`.
+ */
++ (NSString *_Nullable)getUserLanguage;
+
+/**
  Sets an optional description for the user, displayed in the dashboard.
 
  @param description A description for the user. If `nil`, the previous `description` will be cleared.
@@ -615,6 +629,22 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  @see https://radar.com/documentation/fraud
  */
 + (void)stopTrackingVerified NS_SWIFT_NAME(stopTrackingVerified());
+
+/**
+ Starts monitoring for changes to the device's IP address. When the IP changes, `didChangeIP()` is delivered to the verified delegate. If verified tracking is started, an IP change will also trigger a `trackVerified()` call.
+
+ @note `startTrackingVerified()` automatically starts IP change monitoring, and `stopTrackingVerified()` stops it.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)startMonitoringIPChanges NS_SWIFT_NAME(startMonitoringIPChanges());
+
+/**
+ Stops monitoring for changes to the device's IP address.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)stopMonitoringIPChanges NS_SWIFT_NAME(stopMonitoringIPChanges());
 
 /**
  Returns a boolean indicating whether verified tracking has been started.

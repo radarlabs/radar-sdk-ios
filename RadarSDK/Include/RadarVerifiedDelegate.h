@@ -26,6 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)didUpdateToken:(RadarVerifiedLocationToken *_Nonnull)token NS_SWIFT_NAME(didUpdateToken(_:));
 
+/**
+ Tells the delegate that the device's IP address changed while IP change monitoring is active.
+
+ @see https://radar.com/documentation/fraud
+ */
+- (void)didChangeIP NS_SWIFT_NAME(didChangeIP());
+
 @end
 
 NS_ASSUME_NONNULL_END
