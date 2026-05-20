@@ -35,6 +35,7 @@
 @property (assign, nonatomic) NSTimeInterval lastTokenSystemUptime;
 @property (assign, nonatomic) BOOL lastTokenBeacons;
 @property (strong, nonatomic) NSString *lastIPs;
+@property (assign, nonatomic) NSTimeInterval lastIPChangeDeliveredAt;
 @property (copy, nonatomic) NSString *expectedCountryCode;
 @property (copy, nonatomic) NSString *expectedStateCode;
 
@@ -475,7 +476,11 @@
             self.lastIPs = ips;
 
             if (changed && ipsValid) {
-                [[RadarDelegateHolder sharedInstance] didChangeIP];
+                NSTimeInterval now = [NSDate date].timeIntervalSinceReferenceDate;
+                if (now - self.lastIPChangeDeliveredAt >= 10) {
+                    self.lastIPChangeDeliveredAt = now;
+                    [[RadarDelegateHolder sharedInstance] didChangeIP];
+                }
             }
 
             if (changed && self.started) {
