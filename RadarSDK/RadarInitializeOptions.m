@@ -21,6 +21,7 @@
         _silentPush = NO;
         _trackVerifiedAutoFailover = NO;
         _networkTimeoutInterval = 10;
+        _ipChangeDebounceInterval = 10;
     }
     return self;
 }
@@ -32,6 +33,7 @@
     dict[@"silentPush"] = @(_silentPush);
     dict[@"trackVerifiedAutoFailover"] = @(_trackVerifiedAutoFailover);
     dict[@"networkTimeoutInterval"] = @(_networkTimeoutInterval);
+    dict[@"ipChangeDebounceInterval"] = @(_ipChangeDebounceInterval);
     return dict;
 }
 
@@ -46,6 +48,11 @@
         _networkTimeoutInterval = networkTimeout ? [networkTimeout doubleValue] : 10;
         if (_networkTimeoutInterval <= 0 || isnan(_networkTimeoutInterval) || isinf(_networkTimeoutInterval)) {
             _networkTimeoutInterval = 10;
+        }
+        NSNumber *ipChangeDebounce = dict[@"ipChangeDebounceInterval"];
+        _ipChangeDebounceInterval = ipChangeDebounce ? [ipChangeDebounce doubleValue] : 10;
+        if (_ipChangeDebounceInterval < 0 || isnan(_ipChangeDebounceInterval) || isinf(_ipChangeDebounceInterval)) {
+            _ipChangeDebounceInterval = 10;
         }
     }
     return self;

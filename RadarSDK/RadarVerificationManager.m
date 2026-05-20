@@ -476,8 +476,9 @@
             self.lastIPs = ips;
 
             if (changed && ipsValid) {
+                NSTimeInterval debounce = [RadarSettings initializeOptions].ipChangeDebounceInterval;
                 NSTimeInterval now = [NSDate date].timeIntervalSinceReferenceDate;
-                if (now - self.lastIPChangeDeliveredAt >= 10) {
+                if (now - self.lastIPChangeDeliveredAt >= debounce) {
                     self.lastIPChangeDeliveredAt = now;
                     [[RadarDelegateHolder sharedInstance] didChangeIP];
                 }
