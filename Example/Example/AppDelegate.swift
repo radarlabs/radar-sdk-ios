@@ -230,6 +230,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         print("RadarVerifiedDelegate: didChangeIP")
     }
 
+    func didChangeSharing(_ sharing: Bool) {
+        print("RadarVerifiedDelegate: didChangeSharing | sharing = \(sharing)")
+    }
+
     // MARK: - Live Activity Handling
     @available(iOS 16.2, *)
     private func handleTripLiveActivity(user: RadarUser?) {

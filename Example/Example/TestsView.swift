@@ -187,12 +187,12 @@ struct TestsView: View {
                 Radar.stopTrackingVerified()
             }
 
-            StyledButton("startMonitoringIPChanges") {
-                Radar.startMonitoringIPChanges()
+            StyledButton("startVerifiedChangeListeners") {
+                Radar.startVerifiedChangeListeners()
             }
 
-            StyledButton("stopMonitoringIPChanges") {
-                Radar.stopMonitoringIPChanges()
+            StyledButton("stopVerifiedChangeListeners") {
+                Radar.stopVerifiedChangeListeners()
             }
 
             StyledButton("getVerifiedLocationToken") {

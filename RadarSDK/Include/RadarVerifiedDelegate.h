@@ -33,6 +33,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)didChangeIP NS_SWIFT_NAME(didChangeIP());
 
+/**
+ Tells the delegate that the value of `Radar.isSharing()` changed.
+
+ @param sharing The current screen sharing state.
+
+ @see https://radar.com/documentation/fraud
+ */
+- (void)didChangeSharing:(BOOL)sharing NS_SWIFT_NAME(didChangeSharing(_:));
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -159,6 +159,11 @@ BOOL _initialized = NO;
                                                     }];
                                                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
                                                 }
+                                                if ([radarSDKFraud respondsToSelector:@selector(setSharingDidChangeHandler:)]) {
+                                                    [radarSDKFraud setSharingDidChangeHandler:^(BOOL sharing) {
+                                                        [[RadarDelegateHolder sharedInstance] didChangeSharing:sharing];
+                                                    }];
+                                                }
                                             }
                                             if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
                                                 [Radar startTrackingWithOptions:[Radar getTrackingOptions]];
@@ -434,13 +439,13 @@ BOOL _initialized = NO;
     [[RadarVerificationManager sharedInstance] stopTrackingVerified];
 }
 
-+ (void)startMonitoringIPChanges {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startMonitoringIPChanges()"];
++ (void)startVerifiedChangeListeners {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startVerifiedChangeListeners()"];
     [[RadarVerificationManager sharedInstance] startMonitoringIPChanges];
 }
 
-+ (void)stopMonitoringIPChanges {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopMonitoringIPChanges()"];
++ (void)stopVerifiedChangeListeners {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopVerifiedChangeListeners()"];
     [[RadarVerificationManager sharedInstance] stopMonitoringIPChanges];
 }
 

@@ -95,4 +95,12 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"📍 Radar IP changed"];
 }
 
+- (void)didChangeSharing:(BOOL)sharing {
+    if (self.verifiedDelegate && [self.verifiedDelegate respondsToSelector:@selector(didChangeSharing:)]) {
+        [self.verifiedDelegate didChangeSharing:sharing];
+    }
+
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar sharing changed | sharing = %d", sharing]];
+}
+
 @end
