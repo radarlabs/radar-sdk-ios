@@ -451,11 +451,12 @@
         nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
 
         nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
-            if (nw_path_get_status(path) == nw_path_status_satisfied) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
-            } else {
+            if (nw_path_get_status(path) != nw_path_status_satisfied) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
+                return;
             }
+
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
 
             NSString *ips = [self getIPs];
             BOOL changed = NO;
