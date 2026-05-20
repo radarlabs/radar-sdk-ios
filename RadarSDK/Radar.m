@@ -439,16 +439,6 @@ BOOL _initialized = NO;
     [[RadarVerificationManager sharedInstance] stopTrackingVerified];
 }
 
-+ (void)startVerifiedChangeListeners {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startVerifiedChangeListeners()"];
-    [[RadarVerificationManager sharedInstance] startMonitoringIPChanges];
-}
-
-+ (void)stopVerifiedChangeListeners {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopVerifiedChangeListeners()"];
-    [[RadarVerificationManager sharedInstance] stopMonitoringIPChanges];
-}
-
 + (BOOL)isTrackingVerified {
     return [RadarVerificationManager sharedInstance].started;
 }
@@ -609,6 +599,7 @@ BOOL _initialized = NO;
 
 + (void)setVerifiedDelegate:(id<RadarVerifiedDelegate>)verifiedDelegate {
     [RadarDelegateHolder sharedInstance].verifiedDelegate = verifiedDelegate;
+    [[RadarVerificationManager sharedInstance] updateMonitoringState];
 }
 
 #pragma mark - Events

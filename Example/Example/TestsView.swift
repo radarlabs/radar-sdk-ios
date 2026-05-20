@@ -187,14 +187,6 @@ struct TestsView: View {
                 Radar.stopTrackingVerified()
             }
 
-            StyledButton("startVerifiedChangeListeners") {
-                Radar.startVerifiedChangeListeners()
-            }
-
-            StyledButton("stopVerifiedChangeListeners") {
-                Radar.stopVerifiedChangeListeners()
-            }
-
             StyledButton("getVerifiedLocationToken") {
                 Radar.getVerifiedLocationToken { (status, token) in
                     print("getVerifiedLocationToken: status = \(status); token = \(token?.dictionaryValue())")

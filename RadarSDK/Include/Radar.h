@@ -631,20 +631,6 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (void)stopTrackingVerified NS_SWIFT_NAME(stopTrackingVerified());
 
 /**
- Starts listeners for `RadarVerifiedDelegate`.
-
- @see https://radar.com/documentation/fraud
- */
-+ (void)startVerifiedChangeListeners NS_SWIFT_NAME(startVerifiedChangeListeners());
-
-/**
- Stops listeners for `RadarVerifiedDelegate`.
-
- @see https://radar.com/documentation/fraud
- */
-+ (void)stopVerifiedChangeListeners NS_SWIFT_NAME(stopVerifiedChangeListeners());
-
-/**
  Returns a boolean indicating whether verified tracking has been started.
 
  @return A boolean indicating whether verified tracking has been started.

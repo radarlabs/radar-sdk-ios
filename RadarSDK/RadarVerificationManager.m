@@ -330,7 +330,7 @@
     self.startedInterval = interval;
     self.startedBeacons = beacons;
     
-    [self startMonitoringIPChanges];
+    [self updateMonitoringState];
 
     if ([self isLastTokenValid]) {
         [self scheduleNextIntervalWithLastToken];
@@ -348,7 +348,7 @@
     
     self.started = NO;
 
-    [self stopMonitoringIPChanges];
+    [self updateMonitoringState];
 
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(intervalFired) object:nil];
 }
@@ -432,6 +432,15 @@
     invocation.selector = selector;
     invocation.target = sharedInstance;
     [invocation invoke];
+}
+
+- (void)updateMonitoringState {
+    BOOL shouldMonitor = self.started || [RadarDelegateHolder sharedInstance].verifiedDelegate != nil;
+    if (shouldMonitor) {
+        [self startMonitoringIPChanges];
+    } else {
+        [self stopMonitoringIPChanges];
+    }
 }
 
 - (void)startMonitoringIPChanges {
