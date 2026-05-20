@@ -39,7 +39,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.trackVerifiedAutoFailover = true
 
         Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions)
+        Radar.initialize(publishableKey: "org_test_pk_5857c63d9c1565175db8b00750808a66a002acb8", options: radarInitializeOptions)
+        Radar.setUserLanguage("es")
         Radar.setMetadata(["foo": "bar"])
         Radar.setDelegate(self)
         Radar.setVerifiedDelegate(self)
