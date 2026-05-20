@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didChangeIP NS_SWIFT_NAME(didChangeIP());
 
 /**
- Tells the delegate that the value of `Radar.isSharing()` changed.
+ Tells the delegate that the device's screen sharing state changed.
 
  @param sharing The current screen sharing state.
 
