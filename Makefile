@@ -8,6 +8,12 @@ SWIFTLINT := $(firstword $(wildcard .tools/swiftlint) swiftlint)
 XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 XC_EXAMPLE_ARGS := -sdk $(SDK) -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
+CI_SCHEME ?= RadarSDK
+CI_WORKSPACE ?= Example/Example.xcodeproj/project.xcworkspace
+CI_DESTINATION ?= platform=iOS Simulator,name=iPhone 17,OS=26.4.1
+CI_XC_ARGS := -scheme $(CI_SCHEME) -workspace $(CI_WORKSPACE) -destination "$(CI_DESTINATION)"
+CI_TEST_LOG ?= /tmp/radar-sdk-ios-ci-test.log
+CI_SWIFT_TEST_LOG ?= /tmp/radar-sdk-ios-ci-swift-test.log
 
 bootstrap:
 	./bootstrap.sh
@@ -20,9 +26,6 @@ build:
 
 test:
 	xcodebuild $(XC_TEST_ARGS) test
-
-test-swift:
-	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest
 
 build-example:
 	xcodebuild $(XC_EXAMPLE_ARGS)
@@ -91,6 +94,13 @@ clean-pretty:
 build-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) | xcpretty
 
+ci-build-analyze:
+	@set -o pipefail; \
+	  xcodebuild clean build analyze $(CI_XC_ARGS) 2>&1 \
+	    | tee /tmp/radar-sdk-ios-ci-build-analyze.log \
+	    | xcpretty; \
+	  exit $$?
+
 test-pretty:
 	@set -o pipefail; \
 	  xcodebuild $(XC_TEST_ARGS) test -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest 2>&1 \
@@ -104,8 +114,27 @@ test-pretty:
 	  fi; \
 	  exit $$status
 
+ci-test-pretty:
+	@set -o pipefail; \
+	  xcodebuild test $(CI_XC_ARGS) -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest 2>&1 \
+	    | tee $(CI_TEST_LOG) \
+	    | xcpretty --report junit; \
+	  status=$$?; \
+	  if [ $$status -ne 0 ]; then \
+	    echo ""; \
+	    echo "=== Swift Testing issues (hidden by xcpretty) ==="; \
+	    grep -E "^(Testing failed:|.*✘ Test |.*recorded an issue|.* failed after .* with [0-9]+ issue|Crash: )" $(CI_TEST_LOG) || echo "(no Swift Testing failure markers found — see $(CI_TEST_LOG))"; \
+	  fi; \
+	  exit $$status
+
 test-swift:
 	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest -only-testing:RadarSDKTests/RadarNotificationHelperTest
+
+ci-test-swift:
+	@set -o pipefail; \
+	  xcodebuild test $(CI_XC_ARGS) -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest -only-testing:RadarSDKTests/RadarNotificationHelperTest 2>&1 \
+	    | tee $(CI_SWIFT_TEST_LOG); \
+	  exit $$?
 
 build-example-pretty:
 	set -o pipefail && xcodebuild $(XC_EXAMPLE_ARGS) | xcpretty
@@ -115,4 +144,4 @@ docs:
 
 dist: clean-pretty test-pretty build-pretty lint docs
 
-.PHONY: bootstrap clean test build lint lint-swift format format-check docs dist
+.PHONY: bootstrap clean test build lint lint-swift format format-check ci-build-analyze ci-test-pretty ci-test-swift docs dist
