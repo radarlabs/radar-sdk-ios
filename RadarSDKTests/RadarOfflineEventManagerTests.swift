@@ -34,7 +34,7 @@ extension RadarSerializedTests {
             return RadarGeofenceSwift(
                 id: id, description: "Test Geofence", tag: tag, externalId: id,
                 geometry: .circle(center: center, radius: radius),
-                dwellThreshold: nil, geofenceStopDetection: nil
+                dwellThreshold: nil, geofenceStopDetection: nil, metadata: nil
             )
         }
 
