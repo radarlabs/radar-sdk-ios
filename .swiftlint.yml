@@ -4,7 +4,7 @@ included:
 
 excluded:
   - Carthage
-  - Example/Pods
+  - Example
   - RadarSDKFraud
   - RadarSDKIndoors
   - RadarSDKMotion

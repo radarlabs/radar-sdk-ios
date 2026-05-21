@@ -45,7 +45,7 @@ class RadarUtils: NSObject {
 
     static let country = Locale.current.regionCode
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
-    static let sdkVersion = "3.33.0"
+    static let sdkVersion = "3.34.0"
 
     static var deviceId: String? {
         get async {
@@ -189,6 +189,13 @@ class RadarUtils: NSObject {
 
     static func dictionaryToJson(_ dict: [String: Any]?) -> String {
         guard let dict = dict else { return "{}" }
+
+        // Defends against NSJSONSerialization's NSException path (NaN, non-string keys,
+        // unsupported types), which Swift's do/catch below doesn't catch.
+        guard JSONSerialization.isValidJSONObject(dict) else {
+            RadarLogger.shared.warning("RadarUtils.dictionaryToJson: input is not a valid JSON object, returning empty")
+            return "{}"
+        }
 
         do {
             let data = try JSONSerialization.data(withJSONObject: dict)
