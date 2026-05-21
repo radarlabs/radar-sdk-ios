@@ -29,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setId:(NSString * _Nullable)_id;
 + (NSString * _Nullable)userId;
 + (void)setUserId:(NSString * _Nullable)userId;
++ (NSString * _Nullable)userLanguage;
++ (void)setUserLanguage:(NSString * _Nullable)userLanguage;
 + (NSString * _Nullable)__description;
 + (void)setDescription:(NSString * _Nullable)description;
 + (NSString * _Nullable)product;

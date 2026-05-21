@@ -87,4 +87,20 @@
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar token updated | passed = %d; expiresAt = %@; expiresIn = %f; token = %@", token.passed, token.expiresAt, token.expiresIn, token.token]];
 }
 
+- (void)didChangeIP {
+    if (self.verifiedDelegate && [self.verifiedDelegate respondsToSelector:@selector(didChangeIP)]) {
+        [self.verifiedDelegate didChangeIP];
+    }
+
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"📍 Radar IP changed"];
+}
+
+- (void)didChangeSharing:(BOOL)sharing {
+    if (self.verifiedDelegate && [self.verifiedDelegate respondsToSelector:@selector(didChangeSharing:)]) {
+        [self.verifiedDelegate didChangeSharing:sharing];
+    }
+
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"📍 Radar sharing changed | sharing = %d", sharing]];
+}
+
 @end

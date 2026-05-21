@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.SUBMODULESTOKEN }}
@@ -66,18 +66,18 @@ jobs:
           SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
           scheme: RadarSDK
         run: |
-          xcodebuild clean build analyze -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" | xcpretty && exit ${PIPESTATUS[0]}
+          make ci-build-analyze CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
 
       - name: Test
         env:
           SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
           scheme: RadarSDK
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest | xcpretty && exit ${PIPESTATUS[0]}
+          make ci-test-pretty CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
         
       - name: Test swift 
         env:
           SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
           scheme: RadarSDK
         run: |
-          xcodebuild test -scheme RadarSDK -workspace Example/Example.xcodeproj/project.xcworkspace -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest
+          make ci-test-swift CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"

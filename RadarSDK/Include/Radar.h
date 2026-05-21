@@ -409,6 +409,20 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (NSString *_Nullable)getUserId;
 
 /**
+ Sets the user's preferred language. Pass a BCP-47 language tag like `"en"` or `"es-PR"`.
+
+ @param userLanguage The user's preferred language. If `nil`, the previous `userLanguage` will be cleared.
+ */
++ (void)setUserLanguage:(NSString *_Nullable)userLanguage;
+
+/**
+ Returns the current `userLanguage`.
+
+ @return The current `userLanguage`.
+ */
++ (NSString *_Nullable)getUserLanguage;
+
+/**
  Sets an optional description for the user, displayed in the dashboard.
 
  @param description A description for the user. If `nil`, the previous `description` will be cleared.
@@ -624,6 +638,22 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  @see https://radar.com/documentation/sdk/fraud
  */
 + (BOOL)isTrackingVerified;
+
+/**
+ Returns the current screen sharing state.
+
+ @return A boolean indicating the current screen sharing state.
+
+ @see https://radar.com/documentation/sdk/fraud
+ */
++ (BOOL)isSharing;
+
+/**
+ Clears the last screen sharing state.
+
+ @see https://radar.com/documentation/sdk/fraud
+ */
++ (void)clearSharing;
 
 /**
  Returns the user's last verified location token if still valid, or requests a fresh token if not.
