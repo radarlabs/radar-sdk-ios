@@ -38,6 +38,7 @@ class RadarOfflineEventManager: NSObject {
         completionHandler: @escaping ([RadarEvent], RadarUser?, CLLocation) -> Void
     ) {
         let state = RadarSyncManager.syncStore.read() ?? RadarSyncState()
+        let beaconsEnabled = RadarSettings.trackingOptions?.beacons ?? false
 
         let effectiveGeofenceIds = offlineGeofenceIds ?? Set(state.lastSyncedGeofenceIds)
         let effectiveBeaconIds = offlineBeaconIds ?? Set(state.lastSyncedBeaconIds)
@@ -45,8 +46,15 @@ class RadarOfflineEventManager: NSObject {
         let geofenceEntries = RadarSyncManager.getGeofenceEntries(for: location, against: effectiveGeofenceIds)
         let geofenceExits = RadarSyncManager.getGeofenceExits(for: location, against: effectiveGeofenceIds)
         let geofenceDwells = RadarSyncManager.getGeofenceDwells(for: location, against: effectiveGeofenceIds)
-        let beaconEntries = RadarSyncManager.getBeaconEntries(for: location, against: effectiveBeaconIds)
-        let beaconExits = RadarSyncManager.getBeaconExits(for: location, against: effectiveBeaconIds)
+
+        let beaconEntries =
+            beaconsEnabled
+            ? RadarSyncManager.getBeaconEntries(for: location, against: effectiveBeaconIds)
+            : []
+        let beaconExits =
+            beaconsEnabled
+            ? RadarSyncManager.getBeaconExits(for: location, against: effectiveBeaconIds)
+            : []
 
         let now = Date()
         let isoString = RadarUtils.isoDateFormatter.string(from: now)
@@ -71,9 +79,12 @@ class RadarOfflineEventManager: NSObject {
         }
 
         let currentGeofences = RadarSyncManager.getGeofences(for: location)
-        let currentBeacons = RadarSyncManager.getBeacons(for: location)
+        let currentBeacons = beaconsEnabled ? RadarSyncManager.getBeacons(for: location) : []
         offlineGeofenceIds = Set(currentGeofences.map { $0.id })
-        offlineBeaconIds = Set(currentBeacons.map { $0.id })
+
+        if beaconsEnabled {
+            offlineBeaconIds = Set(currentBeacons.map { $0.id })
+        }
 
         let user = buildSyntheticUser(location: location, geofences: currentGeofences, beacons: currentBeacons)
         completionHandler(events, user, location)
