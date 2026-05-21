@@ -27,19 +27,19 @@ enum RadarGeofenceGeometrySwift: Codable, Sendable, Equatable {
         case .polygon(_, _, let radius): return radius
         }
     }
-    
+
     static func == (lhs: RadarGeofenceGeometrySwift, rhs: RadarGeofenceGeometrySwift) -> Bool {
         if case .circle(let lhsCenter, let lhsRadius) = lhs,
            case .circle(let rhsCenter, let rhsRadius) = rhs {
             return lhsCenter == rhsCenter && lhsRadius == rhsRadius
         }
-        
+
         // maybe this should check for coordinates match as well, but for notification purposes, center + radius is enough
         if case .polygon(_, let lhsCenter, let lhsRadius) = lhs,
            case .polygon(_, let rhsCenter, let rhsRadius) = rhs {
             return lhsCenter == rhsCenter && lhsRadius == rhsRadius
         }
-        
+
         // types don't match, not both circular or both polygonal
         return false
     }
@@ -96,7 +96,7 @@ struct RadarGeofenceSwift: Codable, Sendable, Equatable {
         default:
             geometry = .circle(center: center, radius: radius)
         }
-        
+
         metadata = try container.decodeIfPresent([String: RadarMetadataValue].self, forKey: .metadata)
     }
 
@@ -136,7 +136,7 @@ struct RadarGeofenceSwift: Codable, Sendable, Equatable {
             let ring = coords.map { [$0.longitude, $0.latitude] }
             try container.encode(GeoJSONPolygon(coordinates: [ring]), forKey: .geometry)
         }
-        
+
         try container.encode(metadata, forKey: .metadata)
     }
 }
