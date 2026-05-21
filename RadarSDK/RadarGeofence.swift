@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - Sync Region Types
 
-enum RadarGeofenceGeometrySwift: Codable, Sendable {
+enum RadarGeofenceGeometrySwift: Codable, Sendable, Equatable {
     case circle(center: RadarCoordinateSwift, radius: Double)
     case polygon(coordinates: [RadarCoordinateSwift], center: RadarCoordinateSwift, radius: Double)
 
@@ -27,9 +27,27 @@ enum RadarGeofenceGeometrySwift: Codable, Sendable {
         case .polygon(_, _, let radius): return radius
         }
     }
+
+    static func == (lhs: RadarGeofenceGeometrySwift, rhs: RadarGeofenceGeometrySwift) -> Bool {
+        switch (lhs, rhs) {
+        case let (
+            .circle(lhsCenter, lhsRadius),
+            .circle(rhsCenter, rhsRadius)
+        ):
+            return lhsCenter == rhsCenter && lhsRadius == rhsRadius
+        case let (
+            .polygon(_, lhsCenter, lhsRadius),
+            .polygon(_, rhsCenter, rhsRadius)
+        ):
+            // maybe this should check for coordinates match as well, but for notification purposes, center + radius is enough
+            return lhsCenter == rhsCenter && lhsRadius == rhsRadius
+        default:
+            return false
+        }
+    }
 }
 
-struct RadarGeofenceSwift: Codable, Sendable {
+struct RadarGeofenceSwift: Codable, Sendable, Equatable {
     let id: String
     let description: String
     let tag: String?
@@ -37,6 +55,7 @@ struct RadarGeofenceSwift: Codable, Sendable {
     let geometry: RadarGeofenceGeometrySwift
     let dwellThreshold: Double?
     let geofenceStopDetection: Bool?
+    let metadata: [String: RadarMetadataValue]?
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -49,6 +68,7 @@ struct RadarGeofenceSwift: Codable, Sendable {
         case geometry
         case dwellThreshold
         case stopDetection
+        case metadata
     }
 
     init(from decoder: Decoder) throws {
@@ -78,11 +98,14 @@ struct RadarGeofenceSwift: Codable, Sendable {
         default:
             geometry = .circle(center: center, radius: radius)
         }
+
+        metadata = try container.decodeIfPresent([String: RadarMetadataValue].self, forKey: .metadata)
     }
 
     init(
         id: String, description: String, tag: String?, externalId: String?,
-        geometry: RadarGeofenceGeometrySwift, dwellThreshold: Double?, geofenceStopDetection: Bool?
+        geometry: RadarGeofenceGeometrySwift, dwellThreshold: Double?, geofenceStopDetection: Bool?,
+        metadata: [String: RadarMetadataValue]?
     ) {
         self.id = id
         self.description = description
@@ -91,6 +114,7 @@ struct RadarGeofenceSwift: Codable, Sendable {
         self.geometry = geometry
         self.dwellThreshold = dwellThreshold
         self.geofenceStopDetection = geofenceStopDetection
+        self.metadata = metadata
     }
 
     func encode(to encoder: Encoder) throws {
@@ -114,6 +138,8 @@ struct RadarGeofenceSwift: Codable, Sendable {
             let ring = coords.map { [$0.longitude, $0.latitude] }
             try container.encode(GeoJSONPolygon(coordinates: [ring]), forKey: .geometry)
         }
+
+        try container.encode(metadata, forKey: .metadata)
     }
 }
 
@@ -123,42 +149,6 @@ private struct GeoJSONPoint: Codable, Sendable {
 
 private struct GeoJSONPolygon: Codable, Sendable {
     let coordinates: [[[Double]]]
-}
-
-// MARK: - ObjC Bridge Types
-
-struct RadarCoordinateCodable: Codable, Sendable, Equatable {
-    static func == (lhs: RadarCoordinateCodable, rhs: RadarCoordinateCodable) -> Bool {
-        return lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude
-    }
-
-    let coordinate: CLLocationCoordinate2D
-
-    private enum CodingKeys: String, CodingKey {
-        case coordinates
-    }
-
-    init(coordinate: CLLocationCoordinate2D) {
-        self.coordinate = coordinate
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let pair = try container.decode([Double].self, forKey: .coordinates)
-        guard pair.count == 2 else {
-            throw DecodingError.dataCorruptedError(
-                forKey: .coordinates,
-                in: container,
-                debugDescription: "Expected [longitude, latitude]")
-        }
-        self.coordinate = CLLocationCoordinate2D(latitude: pair[1], longitude: pair[0])
-
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode([coordinate.longitude, coordinate.latitude], forKey: .coordinates)
-    }
 }
 
 enum RadarMetadataValue: Codable, Sendable, Hashable {
@@ -199,28 +189,4 @@ enum RadarMetadataValue: Codable, Sendable, Hashable {
             return nil
         }
     }
-}
-
-/// This is a geofence from the raw dictionary conversion of RadarGeofence in ObjC.
-struct RadarGeofence_Swift: Codable, Sendable, Equatable {
-
-    /// The Radar ID of the geofence.
-    public let _id: String
-
-    /// The description of the geofence. Not to be confused with the `NSObject` `description` property.
-    public let description: String?
-
-    /// The tag of the geofence.
-    public let tag: String?
-
-    /// The external ID of the geofence.
-    public let externalId: String?
-
-    /// The optional set of custom key-value pairs for the geofence.
-    public let metadata: [String: RadarMetadataValue]?
-
-    /// The geometry of the geofence, which can be cast to either `RadarCircleGeometry` or `RadarPolygonGeometry`.
-    public let geometryCenter: RadarCoordinateCodable
-
-    public let geometryRadius: Double
 }

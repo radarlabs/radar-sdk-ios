@@ -9,7 +9,7 @@
 import CoreLocation
 import Foundation
 
-struct RadarCoordinateSwift: Codable, Sendable {
+struct RadarCoordinateSwift: Codable, Sendable, Equatable {
     let latitude: Double
     let longitude: Double
 
