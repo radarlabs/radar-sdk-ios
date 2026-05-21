@@ -409,6 +409,20 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (NSString *_Nullable)getUserId;
 
 /**
+ Sets the user's preferred language. Pass a BCP-47 language tag like `"en"` or `"es-PR"`.
+
+ @param userLanguage The user's preferred language. If `nil`, the previous `userLanguage` will be cleared.
+ */
++ (void)setUserLanguage:(NSString *_Nullable)userLanguage;
+
+/**
+ Returns the current `userLanguage`.
+
+ @return The current `userLanguage`.
+ */
++ (NSString *_Nullable)getUserLanguage;
+
+/**
  Sets an optional description for the user, displayed in the dashboard.
 
  @param description A description for the user. If `nil`, the previous `description` will be cleared.

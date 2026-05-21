@@ -35,6 +35,7 @@
 @property (assign, nonatomic) NSTimeInterval lastTokenSystemUptime;
 @property (assign, nonatomic) BOOL lastTokenBeacons;
 @property (strong, nonatomic) NSString *lastIPs;
+@property (assign, nonatomic) NSTimeInterval lastIPChangeDeliveredAt;
 @property (copy, nonatomic) NSString *expectedCountryCode;
 @property (copy, nonatomic) NSString *expectedStateCode;
 
@@ -330,8 +331,8 @@
     self.startedInterval = interval;
     self.startedBeacons = beacons;
     
-    [self startIPMonitoring];
-    
+    [self updateMonitoringState];
+
     if ([self isLastTokenValid]) {
         [self scheduleNextIntervalWithLastToken];
     } else {
@@ -347,9 +348,9 @@
     }
     
     self.started = NO;
-    
-    [self stopIPMonitoring];
-    
+
+    [self updateMonitoringState];
+
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(intervalFired) object:nil];
 }
 
@@ -434,26 +435,37 @@
     [invocation invoke];
 }
 
-- (void)startIPMonitoring {
+- (void)updateMonitoringState {
+    BOOL shouldMonitor = self.started || [RadarDelegateHolder sharedInstance].verifiedDelegate != nil;
+    if (shouldMonitor) {
+        [self startMonitoringIPChanges];
+    } else {
+        [self stopMonitoringIPChanges];
+    }
+}
+
+- (void)startMonitoringIPChanges {
     if (!_monitor) {
         _monitor = nw_path_monitor_create();
-        
+
         nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
-        
+
         nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
-            if (nw_path_get_status(path) == nw_path_status_satisfied) {
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
-            } else {
+            if (nw_path_get_status(path) != nw_path_status_satisfied) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
+                return;
             }
-            
+
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network connected"];
+
             NSString *ips = [self getIPs];
             BOOL changed = NO;
-            
+            BOOL ipsValid = ips && ![ips isEqualToString:@"error"];
+
             if (!self.lastIPs) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"First time getting IPs | ips = %@", ips]];
                 changed = NO;
-            } else if (!ips || [ips isEqualToString:@"error"]) {
+            } else if (!ipsValid) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Error getting IPs | ips = %@", ips]];
                 changed = YES;
             } else if (![ips isEqualToString:self.lastIPs]) {
@@ -463,8 +475,17 @@
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"IPs unchanged"];
             }
             self.lastIPs = ips;
-            
-            if (changed) {
+
+            if (changed && ipsValid) {
+                NSTimeInterval debounce = [RadarSettings initializeOptions].ipChangeDebounceInterval;
+                NSTimeInterval now = [NSDate date].timeIntervalSinceReferenceDate;
+                if (now - self.lastIPChangeDeliveredAt >= debounce) {
+                    self.lastIPChangeDeliveredAt = now;
+                    [[RadarDelegateHolder sharedInstance] didChangeIP];
+                }
+            }
+
+            if (changed && self.started) {
                 [self callTrackVerifiedWithReason:@"ip_change"];
             }
         });
@@ -472,7 +493,7 @@
     }
 }
 
-- (void)stopIPMonitoring {
+- (void)stopMonitoringIPChanges {
     if (_monitor) {
         nw_path_monitor_cancel(_monitor);
         _monitor = nil;

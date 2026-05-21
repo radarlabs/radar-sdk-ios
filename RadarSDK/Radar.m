@@ -159,6 +159,11 @@ BOOL _initialized = NO;
                                                     }];
                                                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"RadarSDKFraud detected and initialized"];
                                                 }
+                                                if ([radarSDKFraud respondsToSelector:@selector(setSharingDidChangeHandler:)]) {
+                                                    [radarSDKFraud setSharingDidChangeHandler:^(BOOL sharing) {
+                                                        [[RadarDelegateHolder sharedInstance] didChangeSharing:sharing];
+                                                    }];
+                                                }
                                             }
                                             if (sdkConfiguration.startTrackingOnInitialize && ![RadarSettings tracking]) {
                                                 [Radar startTrackingWithOptions:[Radar getTrackingOptions]];
@@ -204,6 +209,14 @@ BOOL _initialized = NO;
 
 + (NSString *_Nullable)getUserId {
     return [RadarSettings userId];
+}
+
++ (void)setUserLanguage:(NSString *)userLanguage {
+    [RadarSettings setUserLanguage:userLanguage];
+}
+
++ (NSString *_Nullable)getUserLanguage {
+    return [RadarSettings userLanguage];
 }
 
 + (void)setDescription:(NSString *)description {
@@ -586,6 +599,7 @@ BOOL _initialized = NO;
 
 + (void)setVerifiedDelegate:(id<RadarVerifiedDelegate>)verifiedDelegate {
     [RadarDelegateHolder sharedInstance].verifiedDelegate = verifiedDelegate;
+    [[RadarVerificationManager sharedInstance] updateMonitoringState];
 }
 
 #pragma mark - Events

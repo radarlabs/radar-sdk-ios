@@ -333,6 +333,7 @@
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
     params[@"source"] = [Radar stringForLocationSource:source];
+    params[@"lang"] = [RadarSettings userLanguage];
     if ([RadarSettings xPlatform]) {
         params[@"xPlatformType"] = [RadarSettings xPlatformSDKType];
         params[@"xPlatformSDKVersion"] = [RadarSettings xPlatformSDKVersion];

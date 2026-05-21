@@ -26,6 +26,11 @@ actor RadarSettingsTest {
         }
     }
 
+    func clearSdkConfiguration() {
+        clearUserDefaults(nil)
+        RadarSettings.sdkConfiguration = nil
+    }
+
     @Test("Clones to new UserDefaults on setAppGroup")
     func clonesToNewUserdefaultOnSetAppGroup() {
         clearUserDefaults(nil)
@@ -115,5 +120,31 @@ actor RadarSettingsTest {
         #expect(appGroupDefaults.string(forKey: "radar-userId") == "more-updated")
         #expect(UserDefaults.standard.string(forKey: "radar-appGroup") == "test.app.group")
         #expect(appGroupDefaults.string(forKey: "radar-appGroup") == "test.app.group")
+    }
+
+    @Test("RadarSdkConfiguration handles useSwiftLocationManager")
+    func sdkConfigurationHandlesUseSwiftLocationManager() {
+        let defaultConfiguration = RadarSdkConfiguration(dict: nil)
+        let enabledConfiguration = RadarSdkConfiguration(dict: [
+            "useSwiftLocationManager": true
+        ])
+
+        #expect(defaultConfiguration.useSwiftLocationManager == false)
+        #expect(enabledConfiguration.useSwiftLocationManager == true)
+        #expect(enabledConfiguration.dictionaryValue()["useSwiftLocationManager"] as? Bool == true)
+    }
+
+    @Test("RadarSettings persists sdkConfiguration useSwiftLocationManager")
+    func radarSettingsPersistsSdkConfigurationUseSwiftLocationManager() {
+        clearSdkConfiguration()
+        defer {
+            clearSdkConfiguration()
+        }
+
+        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+            "useSwiftLocationManager": true
+        ])
+
+        #expect(RadarSettings.sdkConfiguration?.useSwiftLocationManager == true)
     }
 }
