@@ -149,42 +149,6 @@ private struct GeoJSONPolygon: Codable, Sendable {
     let coordinates: [[[Double]]]
 }
 
-// MARK: - ObjC Bridge Types
-
-struct RadarCoordinateCodable: Codable, Sendable, Equatable {
-    static func == (lhs: RadarCoordinateCodable, rhs: RadarCoordinateCodable) -> Bool {
-        return lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude
-    }
-
-    let coordinate: CLLocationCoordinate2D
-
-    private enum CodingKeys: String, CodingKey {
-        case coordinates
-    }
-
-    init(coordinate: CLLocationCoordinate2D) {
-        self.coordinate = coordinate
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let pair = try container.decode([Double].self, forKey: .coordinates)
-        guard pair.count == 2 else {
-            throw DecodingError.dataCorruptedError(
-                forKey: .coordinates,
-                in: container,
-                debugDescription: "Expected [longitude, latitude]")
-        }
-        self.coordinate = CLLocationCoordinate2D(latitude: pair[1], longitude: pair[0])
-
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode([coordinate.longitude, coordinate.latitude], forKey: .coordinates)
-    }
-}
-
 enum RadarMetadataValue: Codable, Sendable, Hashable {
     case string(String)
     case int(Int)
