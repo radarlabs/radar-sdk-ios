@@ -23,7 +23,7 @@ final class RadarLocationManagerSwift: NSObject {
 
     @objc static func restartPreviousTrackingOptions() {
         let previousTrackingOptions = RadarSettings.previousTrackingOptions
-        RadarLogger.shared.debug("Restarting previous tracking options")
+        RadarLogger.shared.debug("🦅 Restarting previous tracking options")
 
         if let previousTrackingOptions {
             Radar.startTracking(trackingOptions: previousTrackingOptions)
