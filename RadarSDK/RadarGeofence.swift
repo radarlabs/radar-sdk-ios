@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - Sync Region Types
 
-enum RadarGeofenceGeometrySwift: Codable, Sendable {
+enum RadarGeofenceGeometrySwift: Codable, Sendable, Equatable {
     case circle(center: RadarCoordinateSwift, radius: Double)
     case polygon(coordinates: [RadarCoordinateSwift], center: RadarCoordinateSwift, radius: Double)
 
@@ -27,9 +27,25 @@ enum RadarGeofenceGeometrySwift: Codable, Sendable {
         case .polygon(_, _, let radius): return radius
         }
     }
+    
+    static func == (lhs: RadarGeofenceGeometrySwift, rhs: RadarGeofenceGeometrySwift) -> Bool {
+        if case .circle(let lhsCenter, let lhsRadius) = lhs,
+           case .circle(let rhsCenter, let rhsRadius) = rhs {
+            return lhsCenter == rhsCenter && lhsRadius == rhsRadius
+        }
+        
+        // maybe this should check for coordinates match as well, but for notification purposes, center + radius is enough
+        if case .polygon(_, let lhsCenter, let lhsRadius) = lhs,
+           case .polygon(_, let rhsCenter, let rhsRadius) = rhs {
+            return lhsCenter == rhsCenter && lhsRadius == rhsRadius
+        }
+        
+        // types don't match, not both circular or both polygonal
+        return false
+    }
 }
 
-struct RadarGeofenceSwift: Codable, Sendable {
+struct RadarGeofenceSwift: Codable, Sendable, Equatable {
     let id: String
     let description: String
     let tag: String?
@@ -37,6 +53,7 @@ struct RadarGeofenceSwift: Codable, Sendable {
     let geometry: RadarGeofenceGeometrySwift
     let dwellThreshold: Double?
     let geofenceStopDetection: Bool?
+    let metadata: [String: RadarMetadataValue]?
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -49,6 +66,7 @@ struct RadarGeofenceSwift: Codable, Sendable {
         case geometry
         case dwellThreshold
         case stopDetection
+        case metadata
     }
 
     init(from decoder: Decoder) throws {
@@ -78,11 +96,14 @@ struct RadarGeofenceSwift: Codable, Sendable {
         default:
             geometry = .circle(center: center, radius: radius)
         }
+        
+        metadata = try container.decodeIfPresent([String: RadarMetadataValue].self, forKey: .metadata)
     }
 
     init(
         id: String, description: String, tag: String?, externalId: String?,
-        geometry: RadarGeofenceGeometrySwift, dwellThreshold: Double?, geofenceStopDetection: Bool?
+        geometry: RadarGeofenceGeometrySwift, dwellThreshold: Double?, geofenceStopDetection: Bool?,
+        metadata: [String: RadarMetadataValue]?
     ) {
         self.id = id
         self.description = description
@@ -91,6 +112,7 @@ struct RadarGeofenceSwift: Codable, Sendable {
         self.geometry = geometry
         self.dwellThreshold = dwellThreshold
         self.geofenceStopDetection = geofenceStopDetection
+        self.metadata = metadata
     }
 
     func encode(to encoder: Encoder) throws {
@@ -114,6 +136,8 @@ struct RadarGeofenceSwift: Codable, Sendable {
             let ring = coords.map { [$0.longitude, $0.latitude] }
             try container.encode(GeoJSONPolygon(coordinates: [ring]), forKey: .geometry)
         }
+        
+        try container.encode(metadata, forKey: .metadata)
     }
 }
 
@@ -199,28 +223,4 @@ enum RadarMetadataValue: Codable, Sendable, Hashable {
             return nil
         }
     }
-}
-
-/// This is a geofence from the raw dictionary conversion of RadarGeofence in ObjC.
-struct RadarGeofence_Swift: Codable, Sendable, Equatable {
-
-    /// The Radar ID of the geofence.
-    public let _id: String
-
-    /// The description of the geofence. Not to be confused with the `NSObject` `description` property.
-    public let description: String?
-
-    /// The tag of the geofence.
-    public let tag: String?
-
-    /// The external ID of the geofence.
-    public let externalId: String?
-
-    /// The optional set of custom key-value pairs for the geofence.
-    public let metadata: [String: RadarMetadataValue]?
-
-    /// The geometry of the geofence, which can be cast to either `RadarCircleGeometry` or `RadarPolygonGeometry`.
-    public let geometryCenter: RadarCoordinateCodable
-
-    public let geometryRadius: Double
 }
