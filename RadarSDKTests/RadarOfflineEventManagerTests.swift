@@ -35,7 +35,7 @@ extension RadarSerializedTests {
             return RadarGeofenceSwift(
                 id: id, description: "Test Geofence", tag: tag, externalId: id,
                 geometry: .circle(center: center, radius: radius),
-                dwellThreshold: nil, geofenceStopDetection: nil
+                dwellThreshold: nil, geofenceStopDetection: nil, metadata: nil
             )
         }
 
@@ -106,7 +106,7 @@ extension RadarSerializedTests {
             // offlineGeofenceIds should still be empty since handleTrackFailure was a no-op.
             // Verify by calling generateEvents: it should use baseline IDs (lastSyncedGeofenceIds = []),
             // meaning the geofence is detected as an entry (not suppressed by prior state).
-            RadarOfflineEventManager.generateEvents(location: location) { events, _, _ in
+            RadarOfflineEventManager.generateEvents(location: location) { _, _, _ in
                 // If handleTrackFailure had run, offlineGeofenceIds would contain "test"
                 // and this second call would detect no state change (empty events).
                 // Since it didn't run, we're still using baseline IDs, so entry is detected.
@@ -260,7 +260,7 @@ extension RadarSerializedTests {
             let location = CLLocation(latitude: testLat, longitude: testLng)
 
             await withCheckedContinuation { continuation in
-                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in
+                RadarOfflineEventManager.generateEvents(location: location) { events, user, _ in
                     #expect(events.count > 0 || user == nil)  // events generated but user/event creation depends on bridge
                     continuation.resume()
                 }
@@ -280,7 +280,7 @@ extension RadarSerializedTests {
             let location = CLLocation(latitude: testLat, longitude: testLng)
 
             await withCheckedContinuation { continuation in
-                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in
+                RadarOfflineEventManager.generateEvents(location: location) { _, _, _ in
                     continuation.resume()
                 }
             }
@@ -297,7 +297,7 @@ extension RadarSerializedTests {
             let location = CLLocation(latitude: testLat, longitude: testLng)
 
             await withCheckedContinuation { continuation in
-                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in
+                RadarOfflineEventManager.generateEvents(location: location) { events, _, _ in
                     #expect(events.isEmpty)
                     continuation.resume()
                 }

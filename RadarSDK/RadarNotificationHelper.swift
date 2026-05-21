@@ -29,7 +29,7 @@ extension UNUserNotificationCenter: NotificationCenterProtocol {
 @objc(RadarNotificationHelper_Swift) @objcMembers
 actor RadarNotificationHelper: NSObject {
 
-    private var currentTask: Task<Void, Never>? = nil
+    private var currentTask: Task<Void, Never>?
     private var isRegistering: Bool = false
 
     public static let shared = RadarNotificationHelper()
@@ -50,7 +50,7 @@ actor RadarNotificationHelper: NSObject {
         let now = Date()
         let notifications: [UNNotificationRequest] = geofences.compactMap { (geofenceDict) -> UNNotificationRequest? in
             if let json = try? JSONSerialization.data(withJSONObject: geofenceDict),
-                let geofence = try? JSONDecoder().decode(RadarGeofence_Swift.self, from: json),
+                let geofence = try? JSONDecoder().decode(RadarGeofenceSwift.self, from: json),
                 let notification = geofence.toNotificationRequest(now: now)
             {
                 return notification

@@ -40,7 +40,7 @@ extension RadarSerializedTests {
             return RadarGeofenceSwift(
                 id: id, description: "Test Geofence", tag: "test", externalId: id,
                 geometry: .circle(center: center, radius: radius),
-                dwellThreshold: dwellThreshold, geofenceStopDetection: stopDetection
+                dwellThreshold: dwellThreshold, geofenceStopDetection: stopDetection, metadata: nil
             )
         }
 
@@ -52,7 +52,7 @@ extension RadarSerializedTests {
             return RadarGeofenceSwift(
                 id: id, description: "Test Polygon", tag: "test", externalId: id,
                 geometry: .polygon(coordinates: coords, center: center, radius: radius),
-                dwellThreshold: nil, geofenceStopDetection: nil
+                dwellThreshold: nil, geofenceStopDetection: nil, metadata: nil
             )
         }
 
