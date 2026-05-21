@@ -24,6 +24,7 @@ extension RadarSerializedTests {
             Radar.initialize(publishableKey: "prj_test_pk_0000000000000000")
             RadarSyncManager.syncStore.clear()
             RadarSettings.sdkConfiguration = nil
+            RadarSettings.trackingOptions = nil
             RadarOfflineEventManager.reset()
         }
 
@@ -351,6 +352,10 @@ extension RadarSerializedTests {
             state.lastSyncedBeaconIds = []
             setState(state)
 
+            let options = RadarTrackingOptions.presetResponsive
+            options.beacons = true
+            RadarSettings.trackingOptions = options
+
             let location = CLLocation(latitude: testLat, longitude: testLng)
 
             var resultUser: RadarUser?
@@ -372,6 +377,10 @@ extension RadarSerializedTests {
             state.lastSyncedBeaconIds = ["beacon1"]
             setState(state)
 
+            let options = RadarTrackingOptions.presetResponsive
+            options.beacons = true
+            RadarSettings.trackingOptions = options
+
             let location = CLLocation(latitude: testLat, longitude: testLng)
 
             var resultUser: RadarUser?
@@ -390,6 +399,10 @@ extension RadarSerializedTests {
             state.syncedBeacons = [beacon]
             state.lastSyncedBeaconIds = ["beacon1"]
             setState(state)
+
+            let options = RadarTrackingOptions.presetResponsive
+            options.beacons = true
+            RadarSettings.trackingOptions = options
 
             let location = CLLocation(latitude: testLat, longitude: testLng)
 
