@@ -207,27 +207,6 @@ class RadarOfflineEventManager: NSObject {
         return RadarSwift.bridge?.createEvent(dict: eventDict)
     }
 
-    private static func geofenceDictionary(from geofence: RadarGeofenceSwift) -> [String: Any] {
-        var dict: [String: Any] = [
-            "_id": geofence.id,
-            "description": geofence.description,
-        ]
-        if let tag = geofence.tag { dict["tag"] = tag }
-        if let externalId = geofence.externalId { dict["externalId"] = externalId }
-
-        switch geofence.geometry {
-        case .circle(let center, let radius):
-            dict["type"] = "circle"
-            dict["geometryCenter"] = ["coordinates": [center.longitude, center.latitude]]
-            dict["geometryRadius"] = radius
-        case .polygon(_, let center, let radius):
-            dict["type"] = "polygon"
-            dict["geometryCenter"] = ["coordinates": [center.longitude, center.latitude]]
-            dict["geometryRadius"] = radius
-        }
-        return dict
-    }
-
     private static func makeBeaconEvent(
         type: String,
         beacon: RadarBeaconSwift,
@@ -254,25 +233,6 @@ class RadarOfflineEventManager: NSObject {
         ]
 
         return RadarSwift.bridge?.createEvent(dict: eventDict)
-    }
-
-    private static func beaconDictionary(from beacon: RadarBeaconSwift) -> [String: Any] {
-        var dict: [String: Any] = [
-            "_id": beacon.id,
-            "uuid": beacon.uuid,
-            "major": beacon.major,
-            "minor": beacon.minor,
-            "type": "ibeacon",
-        ]
-
-        if let desc = beacon.description { dict["description"] = desc }
-        if let tag = beacon.tag { dict["tag"] = tag }
-        if let externalId = beacon.externalId { dict["externalId"] = externalId }
-        if let geometry = beacon.geometry {
-            dict["geometry"] = ["coordinates": [geometry.longitude, geometry.latitude]]
-        }
-
-        return dict
     }
 
     private static func buildSyntheticUser(
@@ -304,5 +264,48 @@ class RadarOfflineEventManager: NSObject {
         if let metadata = cachedUser?.metadata { userDict["metadata"] = metadata }
 
         return RadarUser(object: userDict)
+    }
+}
+
+// MARK: - Model serialization
+
+extension RadarOfflineEventManager {
+
+    fileprivate static func geofenceDictionary(from geofence: RadarGeofenceSwift) -> [String: Any] {
+        var dict: [String: Any] = [
+            "_id": geofence.id,
+            "description": geofence.description,
+        ]
+        if let tag = geofence.tag { dict["tag"] = tag }
+        if let externalId = geofence.externalId { dict["externalId"] = externalId }
+
+        switch geofence.geometry {
+        case .circle(let center, let radius):
+            dict["type"] = "circle"
+            dict["geometryCenter"] = ["coordinates": [center.longitude, center.latitude]]
+            dict["geometryRadius"] = radius
+        case .polygon(_, let center, let radius):
+            dict["type"] = "polygon"
+            dict["geometryCenter"] = ["coordinates": [center.longitude, center.latitude]]
+            dict["geometryRadius"] = radius
+        }
+        return dict
+    }
+
+    fileprivate static func beaconDictionary(from beacon: RadarBeaconSwift) -> [String: Any] {
+        var dict: [String: Any] = [
+            "_id": beacon.id,
+            "uuid": beacon.uuid,
+            "major": beacon.major,
+            "minor": beacon.minor,
+            "type": "ibeacon",
+        ]
+        if let desc = beacon.description { dict["description"] = desc }
+        if let tag = beacon.tag { dict["tag"] = tag }
+        if let externalId = beacon.externalId { dict["externalId"] = externalId }
+        if let geometry = beacon.geometry {
+            dict["geometry"] = ["coordinates": [geometry.longitude, geometry.latitude]]
+        }
+        return dict
     }
 }
