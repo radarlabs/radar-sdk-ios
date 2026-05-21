@@ -29,7 +29,7 @@ extension UNUserNotificationCenter: NotificationCenterProtocol {
 @objc(RadarNotificationHelper_Swift) @objcMembers
 actor RadarNotificationHelper: NSObject {
 
-    private var currentTask: Task<Void, Never>? = nil
+    private var currentTask: Task<Void, Never>?
     private var isRegistering: Bool = false
 
     public static let shared = RadarNotificationHelper()
