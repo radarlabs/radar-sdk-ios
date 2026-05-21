@@ -51,17 +51,18 @@ class RadarOfflineEventManager: NSObject {
         let now = Date()
         let isoString = RadarUtils.isoDateFormatter.string(from: now)
         let isLive = (RadarSettings.publishableKey ?? "").hasPrefix("prj_live")
-        
+
         var events = buildGeofenceEvents(
             entries: geofenceEntries, exits: geofenceExits, dwells: geofenceDwells,
             entryTimestamps: state.geofenceEntryTimestamps,
             location: location, isoDate: isoString, live: isLive, now: now
         )
-        
-        events.append(contentsOf: buildBeaconEvents(
-            entries: beaconEntries, exits: beaconExits,
-            location: location, isoDate: isoString, live: isLive
-        ))
+
+        events.append(
+            contentsOf: buildBeaconEvents(
+                entries: beaconEntries, exits: beaconExits,
+                location: location, isoDate: isoString, live: isLive
+            ))
 
         RadarSyncManager.recordGeofenceEntryTimestamps(geofenceEntries.map { $0.id })
         RadarSyncManager.clearGeofenceEntryState(geofenceExits.map { $0.id })
@@ -89,7 +90,7 @@ class RadarOfflineEventManager: NSObject {
             }
         }
     }
-    
+
     private static func buildGeofenceEvents(
         entries: [RadarGeofenceSwift],
         exits: [RadarGeofenceSwift],
