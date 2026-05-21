@@ -29,19 +29,17 @@ enum RadarGeofenceGeometrySwift: Codable, Sendable, Equatable {
     }
 
     static func == (lhs: RadarGeofenceGeometrySwift, rhs: RadarGeofenceGeometrySwift) -> Bool {
-        if case .circle(let lhsCenter, let lhsRadius) = lhs,
-           case .circle(let rhsCenter, let rhsRadius) = rhs {
+        switch (lhs, rhs) {
+        case let (.circle(lhsCenter, lhsRadius),
+                  .circle(rhsCenter, rhsRadius)):
             return lhsCenter == rhsCenter && lhsRadius == rhsRadius
-        }
-
-        // maybe this should check for coordinates match as well, but for notification purposes, center + radius is enough
-        if case .polygon(_, let lhsCenter, let lhsRadius) = lhs,
-           case .polygon(_, let rhsCenter, let rhsRadius) = rhs {
+        case let (.polygon(_, lhsCenter, lhsRadius),
+                  .polygon(_, rhsCenter, rhsRadius)):
+            // maybe this should check for coordinates match as well, but for notification purposes, center + radius is enough
             return lhsCenter == rhsCenter && lhsRadius == rhsRadius
+        default:
+            return false
         }
-
-        // types don't match, not both circular or both polygonal
-        return false
     }
 }
 
