@@ -7,6 +7,7 @@
 
 import CoreLocation
 import XCTest
+
 @testable import RadarSDK
 
 final class RadarVerifiedHostOverrideTests: XCTestCase {
