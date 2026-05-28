@@ -5,14 +5,14 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>
+#import <Foundation/Foundation.h>
 
 #import "Radar.h"
+#import "RadarActivityManager.h"
 #import "RadarDelegate.h"
 #import "RadarMeta.h"
 #import "RadarPermissionsHelper.h"
-#import "RadarActivityManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,9 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateTracking;
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta;
 - (void)updateTrackingFromInitialize;
-- (void)performIndoorScanIfConfigured:(CLLocation *)location 
-                               beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-                     completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable))completionHandler;
+- (void)performIndoorScanIfConfigured:(CLLocation *)location
+                              beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+                    completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, NSString *_Nullable))completionHandler;
 
 /**
  If `[RadarSettings previousTrackingOptions]` is not `nil`, remove them and
