@@ -9,13 +9,25 @@
 //  imports this header and dispatches to these methods when useSwiftLocationManager is set.
 //
 
+#import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+
+#import "RadarBeacon.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLocationManagerSwift : NSObject
 
 + (void)restartPreviousTrackingOptions;
+
++ (NSArray<NSString *> *)matchBeaconIdsWithRanged:(NSArray<RadarBeacon *> *)rangedBeacons
+                                           synced:(NSArray<RadarBeacon *> *)syncedBeacons;
+
++ (void)replaceSyncedBeaconsOnLocationManager:(CLLocationManager *)locationManager
+                                      beacons:(nullable NSArray<RadarBeacon *> *)beacons;
++ (void)replaceSyncedBeaconUUIDsOnLocationManager:(CLLocationManager *)locationManager
+                                            uuids:(nullable NSArray<NSString *> *)uuids;
++ (void)removeSyncedBeaconsOnLocationManager:(CLLocationManager *)locationManager;
 
 @end
 
