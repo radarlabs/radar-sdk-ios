@@ -1989,7 +1989,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy) {
+    [Radar ipGeocodeWithErrorCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy, NSError *_Nullable error) {
         XCTAssertEqual(status, RadarStatusErrorServer);
         XCTAssertNil(address);
         XCTAssertFalse(proxy);
@@ -2012,15 +2012,69 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-    [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy) {
+    [Radar ipGeocodeWithErrorCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy, NSError *_Nullable error) {
         XCTAssertEqual(status, RadarStatusSuccess);
         AssertAddressOk(address);
         XCTAssertNotNil(address.dma);
         XCTAssertNotNil(address.dmaCode);
         XCTAssertTrue(proxy);
+        XCTAssertNil(error);
 
         [expectation fulfill];
     }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
+- (void)test_Radar_ipGeocode_onComplete_receives_error {
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.apiHelperMock.mockStatus = RadarStatusErrorNetwork;
+    NSError *mockError = [NSError errorWithDomain:NSURLErrorDomain
+                                              code:NSURLErrorNotConnectedToInternet
+                                          userInfo:@{NSLocalizedDescriptionKey: @"simulated network failure"}];
+    self.apiHelperMock.mockError = mockError;
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+    [Radar ipGeocodeWithErrorCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy, NSError *_Nullable error) {
+        XCTAssertEqual(status, RadarStatusErrorNetwork);
+        XCTAssertEqualObjects(error, mockError);
+
+        [expectation fulfill];
+    }];
+
+    [self waitForExpectationsWithTimeout:30
+                                 handler:^(NSError *_Nullable error) {
+                                     if (error) {
+                                         XCTFail();
+                                     }
+                                 }];
+}
+
+- (void)test_Radar_ipGeocode_legacy_three_arg_callback_still_called {
+    // Backward-compat: integrators using the deprecated 3-arg
+    // +ipGeocodeWithCompletionHandler: must still receive callbacks.
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
+    self.apiHelperMock.mockStatus = RadarStatusErrorNetwork;
+    self.apiHelperMock.mockError = [NSError errorWithDomain:NSURLErrorDomain
+                                                       code:NSURLErrorNotConnectedToInternet
+                                                   userInfo:nil];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy) {
+        XCTAssertEqual(status, RadarStatusErrorNetwork);
+
+        [expectation fulfill];
+    }];
+#pragma clang diagnostic pop
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {

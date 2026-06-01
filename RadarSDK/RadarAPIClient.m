@@ -147,7 +147,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (!res) {
                             completionHandler(status, nil);
                             return;
@@ -184,7 +184,7 @@
                                 sleep:NO
                            logPayload:NO
                       extendedTimeout:YES
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                             id eventsObj = res[@"events"];
                             id userObj = res[@"user"];
 
@@ -581,7 +581,7 @@
                                     sleep:YES
                             logPayload:YES
                         extendedTimeout:NO
-                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
@@ -776,7 +776,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error){
 
                     }];
 }
@@ -836,7 +836,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -907,7 +907,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -954,7 +954,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil, nil);
                         }
@@ -1002,7 +1002,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1041,7 +1041,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1107,7 +1107,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1167,7 +1167,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1207,7 +1207,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil, nil);
                         }
@@ -1286,7 +1286,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1342,7 +1342,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1387,7 +1387,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1451,7 +1451,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil, RadarAddressVerificationStatusNone);
                         }
@@ -1511,7 +1511,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1553,7 +1553,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1571,7 +1571,7 @@
 - (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, NO);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, NO, nil);
     }
 
     NSString *host = [RadarSettings host];
@@ -1586,9 +1586,9 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil, NO);
+                            return completionHandler(status, nil, nil, NO, error);
                         }
 
                         id addressObj = res[@"address"];
@@ -1601,10 +1601,10 @@
                         }
 
                         if (address) {
-                            return completionHandler(RadarStatusSuccess, res, address, proxy);
+                            return completionHandler(RadarStatusSuccess, res, address, proxy, nil);
                         }
 
-                        completionHandler(RadarStatusErrorServer, nil, nil, NO);
+                        completionHandler(RadarStatusErrorServer, nil, nil, NO, nil);
                     }];
 }
 
@@ -1664,7 +1664,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1740,7 +1740,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1787,7 +1787,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }

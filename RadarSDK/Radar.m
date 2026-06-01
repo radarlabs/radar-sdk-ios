@@ -1291,11 +1291,19 @@ BOOL _initialized = NO;
 }
 
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler {
+    [Radar ipGeocodeWithErrorCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy, NSError *_Nullable error) {
+        if (completionHandler) {
+            completionHandler(status, address, proxy);
+        }
+    }];
+}
+
++ (void)ipGeocodeWithErrorCompletionHandler:(RadarIPGeocodeWithErrorCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"ipGeocode()"];
-    [[RadarAPIClient sharedInstance] ipGeocodeWithCompletionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy) {
+    [[RadarAPIClient sharedInstance] ipGeocodeWithCompletionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy, NSError *_Nullable error) {
         if (completionHandler) {
             [RadarUtilsDeprecated runOnMainThread:^{
-                completionHandler(status, address, proxy);
+                completionHandler(status, address, proxy, error);
             }];
         }
     }];
