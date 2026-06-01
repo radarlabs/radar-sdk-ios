@@ -53,7 +53,7 @@
         status = self.mockStatus;
     }
     
-    completionHandler(status, response);
+    completionHandler(status, response, self.mockError);
 }
 
 - (void)setMockResponse:(NSDictionary *)response forMethod:(NSString *)urlString {

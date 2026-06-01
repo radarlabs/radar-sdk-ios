@@ -26,6 +26,14 @@ final class RadarLogger: NSObject, @unchecked Sendable {
         logLevelOverride ?? RadarSettings.logLevel
     }
 
+    // Test-only bookkeeping: each `log(...)` call spawns a detached Task that delivers the
+    // message to the delegate asynchronously. Tests need to deterministically await that
+    // delivery instead of racing a wall-clock timeout (which is flaky under CI load). When
+    // `logLevelOverride` is set (test mode) we retain the in-flight tasks so `awaitPendingLogs()`
+    // can await them. In production `logLevelOverride` is nil, so this stays a no-op.
+    private let pendingLogTasksLock = NSLock()
+    private var pendingLogTasks = [Task<Void, Never>]()
+
     @MainActor
     let device = {
         UIDevice.current.isBatteryMonitoringEnabled = true
@@ -65,7 +73,7 @@ final class RadarLogger: NSObject, @unchecked Sendable {
             return
         }
 
-        Task {
+        let task = Task {
             let log = RadarLog(level: level, message: message, type: type, createdAt: Date(), includeDate: includeDate, battery: includeBattery ? await self.device.batteryLevel : nil)
 
             await RadarLogBuffer.shared.log(log)
@@ -82,6 +90,32 @@ final class RadarLogger: NSObject, @unchecked Sendable {
                 self.delegate?.didLog?(message: logMessage)
             }
         }
+
+        // Only retain tasks in test mode to keep production allocation-free.
+        if logLevelOverride != nil {
+            pendingLogTasksLock.lock()
+            pendingLogTasks.append(task)
+            pendingLogTasksLock.unlock()
+        }
+    }
+
+    /// Test hook: awaits every log task spawned so far, guaranteeing their delegate
+    /// callbacks have run. Lets tests assert on delivered messages deterministically
+    /// instead of polling against a wall-clock timeout.
+    func awaitPendingLogs() async {
+        // Drain under the lock in a synchronous helper so the lock is never held across an
+        // `await` (NSLock.lock/unlock are unavailable from async contexts).
+        for task in drainPendingLogTasks() {
+            await task.value
+        }
+    }
+
+    private func drainPendingLogTasks() -> [Task<Void, Never>] {
+        pendingLogTasksLock.lock()
+        defer { pendingLogTasksLock.unlock() }
+        let tasks = pendingLogTasks
+        pendingLogTasks.removeAll()
+        return tasks
     }
 
     // ObjC interface, which will be deprecated
