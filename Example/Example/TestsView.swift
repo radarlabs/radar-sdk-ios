@@ -259,9 +259,9 @@ struct TestsView: View {
             }
 
             StyledButton("ipGeocode") {
-                Radar.ipGeocode { (status, address, proxy) in
+                Radar.ipGeocode { (status, address, proxy, error) in
                     print(
-                        "IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy); full address: \(String(describing: address?.dictionaryValue()))"
+                        "IP geocode: status = \(Radar.stringForStatus(status)); country = \(String(describing: address?.countryCode)); city = \(String(describing: address?.city)); proxy = \(proxy); full address: \(String(describing: address?.dictionaryValue())); error = \(String(describing: error?.localizedDescription))"
                     )
                 }
             }
