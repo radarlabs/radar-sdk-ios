@@ -803,16 +803,19 @@ BOOL _initialized = NO;
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:RadarTripStatusCompleted
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+                                             // Only clear trip state when the server confirms the trip ended
+                                             // (or it no longer exists), so a failed request can be retried.
                                              if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
                                                  [RadarSettings setTripOptions:nil];
                                                  [RadarSettings setTrip:nil];
-
-                                                 // return to previous tracking options after trip
-                                                 [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
-
-                                                 // flush location update to generate events
-                                                 [Radar trackOnceWithCompletionHandler:nil];
                                              }
+
+                                             // Always return to previous tracking options after a trip, even on
+                                             // failure, so we don't stay stuck on trip tracking options (e.g. blue bar).
+                                             [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+
+                                             // flush location update to generate events
+                                             [Radar trackOnceWithCompletionHandler:nil];
 
                                              if (completionHandler) {
                                                  [RadarUtilsDeprecated runOnMainThread:^{
@@ -832,16 +835,19 @@ BOOL _initialized = NO;
     [[RadarAPIClient sharedInstance] updateTripWithOptions:options
                                                     status:RadarTripStatusCanceled
                                          completionHandler:^(RadarStatus status, RadarTrip *trip, NSArray<RadarEvent *> *events) {
+                                             // Only clear trip state when the server confirms the trip ended
+                                             // (or it no longer exists), so a failed request can be retried.
                                              if (status == RadarStatusSuccess || status == RadarStatusErrorNotFound) {
                                                  [RadarSettings setTripOptions:nil];
                                                  [RadarSettings setTrip:nil];
-
-                                                 // return to previous tracking options after trip
-                                                 [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
-
-                                                 // flush location update to generate events
-                                                 [Radar trackOnceWithCompletionHandler:nil];
                                              }
+
+                                             // Always return to previous tracking options after a trip, even on
+                                             // failure, so we don't stay stuck on trip tracking options (e.g. blue bar).
+                                             [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+
+                                             // flush location update to generate events
+                                             [Radar trackOnceWithCompletionHandler:nil];
 
                                              if (completionHandler) {
                                                  [RadarUtilsDeprecated runOnMainThread:^{
