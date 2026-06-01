@@ -165,14 +165,7 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                 NSError *deserializationError = nil;
                 id resObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&deserializationError];
                 if (deserializationError || ![resObj isKindOfClass:[NSDictionary class]]) {
-                    long elapsedMs = (long)(latency * 1000);
-                    NSString *host = req.URL.host ?: @"unknown";
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [[RadarLogger sharedInstance]
-                            logWithLevel:RadarLogLevelError
-                                    type:RadarLogTypeSDKError
-                                 message:[NSString stringWithFormat:@"JSON parse error | host = %@; errorDomain = %@; errorCode = %ld; errorDescription = %@; elapsedMs = %ld",
-                                          host, deserializationError.domain ?: @"RadarSDK", (long)deserializationError.code, deserializationError.localizedDescription ?: @"response was not a JSON dictionary", elapsedMs]];
                         completionHandler(RadarStatusErrorServer, nil, deserializationError);
                     });
 
@@ -258,10 +251,6 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                                                           @"NSException": exception
                                                       }];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[RadarLogger sharedInstance]
-                    logWithLevel:RadarLogLevelError
-                            type:RadarLogTypeSDKError
-                         message:[NSString stringWithFormat:@"Request exception | name = %@; reason = %@", exception.name, exception.reason]];
                 completionHandler(RadarStatusErrorBadRequest, nil, exceptionError);
             });
             return;
