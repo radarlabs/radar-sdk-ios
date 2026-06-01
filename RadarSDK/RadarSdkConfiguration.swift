@@ -32,6 +32,7 @@ class RadarSdkConfiguration: NSObject {
     let useOfflineRTOUpdates: Bool
     let offlineEventGenerationEnabled: Bool
     let useSwiftLocationManager: Bool
+    let startUpdatesWhileInUse: Bool
     let remoteTrackingOptions: [RadarRemoteTrackingOptions]?
 
     public init(dict: [String: Any]?) {
@@ -57,6 +58,7 @@ class RadarSdkConfiguration: NSObject {
         useOfflineRTOUpdates = dict?["useOfflineRTOUpdates"] as? Bool ?? false
         offlineEventGenerationEnabled = dict?["offlineEventGenerationEnabled"] as? Bool ?? false
         useSwiftLocationManager = dict?["useSwiftLocationManager"] as? Bool ?? false
+        startUpdatesWhileInUse = dict?["startUpdatesWhileInUse"] as? Bool ?? false
         remoteTrackingOptions = RadarRemoteTrackingOptions.from(array: dict?["remoteTrackingOptions"] as? [[String: Any]])
     }
 
@@ -86,6 +88,7 @@ class RadarSdkConfiguration: NSObject {
             "useOfflineRTOUpdates": useOfflineRTOUpdates,
             "offlineEventGenerationEnabled": offlineEventGenerationEnabled,
             "useSwiftLocationManager": useSwiftLocationManager,
+            "startUpdatesWhileInUse": startUpdatesWhileInUse,
             "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any,
         ]
     }
