@@ -154,7 +154,7 @@ extension RadarSerializedTests {
             // that the dispatch shim routes to the Swift implementation, not the body.
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
                 "useSwiftLocationManager": true,
-                "useRadarModifiedBeacon": true
+                "useRadarModifiedBeacon": true,
             ])
 
             RadarLocationManager.sharedInstance().replaceSyncedBeacons([])
@@ -209,7 +209,7 @@ extension RadarSerializedTests {
             let uuids = [
                 "11111111-1111-1111-1111-111111111111",
                 "not-a-uuid",
-                "22222222-2222-2222-2222-222222222222"
+                "22222222-2222-2222-2222-222222222222",
             ]
 
             RadarLocationManagerSwift.replaceSyncedBeaconUUIDs(locationManager: manager, uuids: uuids)
@@ -247,7 +247,7 @@ extension RadarSerializedTests {
             let manager = TrackingCLLocationManager()
             manager.seed([
                 "radar_beacon_a", "radar_uuid_a",
-                "radar_geofence_keep", "radar_bubble_keep", "other_keep"
+                "radar_geofence_keep", "radar_bubble_keep", "other_keep",
             ])
 
             RadarLocationManagerSwift.removeSyncedBeacons(locationManager: manager)

@@ -34,11 +34,12 @@ final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
 
     func seed(_ identifiers: [String]) {
         for identifier in identifiers {
-            trackedRegions.insert(CLCircularRegion(
-                center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
-                radius: 100,
-                identifier: identifier
-            ))
+            trackedRegions.insert(
+                CLCircularRegion(
+                    center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
+                    radius: 100,
+                    identifier: identifier
+                ))
         }
     }
 }
