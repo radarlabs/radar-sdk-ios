@@ -61,7 +61,7 @@ final class RadarLocationManagerSwift: NSObject {
 
         RadarLogger.shared.log(
             level: .info,
-            message: "Beacon ID matching | synced=\(syncedMap.count), ranged=\(ranged.count), matchedIds=\(matched)"
+            message: "🦅 Beacon ID matching | synced=\(syncedMap.count), ranged=\(ranged.count), matchedIds=\(matched)"
         )
         return matched
     }
@@ -76,7 +76,7 @@ final class RadarLocationManagerSwift: NSObject {
 
         let options = Radar.getTrackingOptions()
         guard RadarSettings.tracking, options.beacons, let beacons else {
-            RadarLogger.shared.debug("Skipping replacing synced beacons")
+            RadarLogger.shared.debug("🦅 Skipping replacing synced beacons")
             return
         }
 
@@ -86,7 +86,7 @@ final class RadarLocationManagerSwift: NSObject {
             let identifier = "\(syncBeaconIdentifierPrefix)\(beacon._id ?? "")"
             guard let proximityUUID = UUID(uuidString: beacon.uuid) else {
                 RadarLogger.shared.debug(
-                    "Error syncing beacon | identifier = \(identifier); uuid = \(beacon.uuid); major = \(beacon.major); minor = \(beacon.minor)"
+                    "🦅 Error syncing beacon | identifier = \(identifier); uuid = \(beacon.uuid); major = \(beacon.major); minor = \(beacon.minor)"
                 )
                 continue
             }
@@ -104,7 +104,7 @@ final class RadarLocationManagerSwift: NSObject {
             locationManager.requestState(for: region)
 
             RadarLogger.shared.debug(
-                "Synced beacon | identifier = \(identifier); uuid = \(beacon.uuid); major = \(beacon.major); minor = \(beacon.minor)"
+                "🦅 Synced beacon | identifier = \(identifier); uuid = \(beacon.uuid); major = \(beacon.major); minor = \(beacon.minor)"
             )
         }
     }
@@ -127,7 +127,7 @@ final class RadarLocationManagerSwift: NSObject {
         for uuid in uuids.prefix(numUUIDs) {
             let identifier = "\(syncBeaconUUIDIdentifierPrefix)\(uuid)"
             guard let proximityUUID = UUID(uuidString: uuid) else {
-                RadarLogger.shared.debug("Error syncing UUID | identifier = \(identifier); uuid = \(uuid)")
+                RadarLogger.shared.debug("🦅 Error syncing UUID | identifier = \(identifier); uuid = \(uuid)")
                 continue
             }
 
@@ -136,7 +136,7 @@ final class RadarLocationManagerSwift: NSObject {
             locationManager.startMonitoring(for: region)
             locationManager.requestState(for: region)
 
-            RadarLogger.shared.debug("Synced UUID | identifier = \(identifier); uuid = \(uuid)")
+            RadarLogger.shared.debug("🦅 Synced UUID | identifier = \(identifier); uuid = \(uuid)")
         }
     }
 
