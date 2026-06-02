@@ -564,8 +564,7 @@
                         offlineConfig = [RadarConfig fromDictionary:@{@"meta": @{@"trackingOptions": [offlineOptions dictionaryValue]}}];
                     }
                 }
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Offline RTO update on track failure (replay path) | useOfflineRTOUpdates = %d; appliedOfflineConfig = %d (if 0, tracking options will NOT change and stay stuck on the previous profile)", [RadarSettings sdkConfiguration].useOfflineRTOUpdates, offlineConfig != nil]];
-
+                
                 completionHandler(status, nil, nil, nil, nil, offlineConfig, nil);
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Successfully flushed replays"]];
@@ -618,8 +617,7 @@
                                         offlineConfig = [RadarConfig fromDictionary:@{@"meta": @{@"trackingOptions": [offlineOptions dictionaryValue]}}];
                                     }
                                 }
-                                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Offline RTO update on track failure | useOfflineRTOUpdates = %d; appliedOfflineConfig = %d (if 0, tracking options will NOT change and stay stuck on the previous profile)", [RadarSettings sdkConfiguration].useOfflineRTOUpdates, offlineConfig != nil]];
-
+                                
                                 return completionHandler(status, nil, nil, nil, nil, offlineConfig, nil);
                             }
             

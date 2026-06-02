@@ -102,23 +102,19 @@ class RadarOfflineEventManager: NSObject {
             inRampedUpGeofences = false
         }
 
-        RadarLogger.shared.info(
-            "OfflineEventManager: [offline-diag] updateTrackingOptions | geofenceTags=\(geofenceTags) rampUpTags=\(rampUpTags ?? []) inRampedUpGeofences=\(inRampedUpGeofences) onTrip=\(Radar.getTripOptions() != nil)"
-        )
-
         if inRampedUpGeofences {
-            RadarLogger.shared.info("OfflineEventManager: [offline-diag] Resolved tracking options -> inGeofence (ramping up)")
+            RadarLogger.shared.debug("OfflineEventManager: Ramping up tracking options")
             let options = RadarRemoteTrackingOptions.trackingOptions(forKey: "inGeofence", in: remoteOptions)
             options?.type = .inGeofence
             return options
         } else if let onTripOptions = RadarRemoteTrackingOptions.trackingOptions(forKey: "onTrip", in: remoteOptions),
             Radar.getTripOptions() != nil
         {
-            RadarLogger.shared.info("OfflineEventManager: [offline-diag] Resolved tracking options -> onTrip")
+            RadarLogger.shared.debug("OfflineEventManager: Using on-trip tracking options")
             onTripOptions.type = .onTrip
             return onTripOptions
         } else {
-            RadarLogger.shared.info("OfflineEventManager: [offline-diag] Resolved tracking options -> default")
+            RadarLogger.shared.debug("OfflineEventManager: Using default tracking options")
             let options = RadarRemoteTrackingOptions.trackingOptions(forKey: "default", in: remoteOptions)
             options?.type = .default
             return options
@@ -128,10 +124,6 @@ class RadarOfflineEventManager: NSObject {
     @objc static func updateTrackingOptions(for location: CLLocation) -> RadarTrackingOptions? {
         let currentGeofences = RadarSyncManager.getGeofences(for: location)
         let tags = currentGeofences.compactMap { $0.tag }
-
-        RadarLogger.shared.info(
-            "OfflineEventManager: [offline-diag] Geofences for offline tracking options | ids=\(currentGeofences.map { $0.id }) tags=\(tags) accuracy=\(location.horizontalAccuracy) (membership is accuracy-buffered, so a user just outside a geofence can still match)"
-        )
 
         return updateTrackingOptions(geofenceTags: tags)
     }

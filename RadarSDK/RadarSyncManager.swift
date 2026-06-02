@@ -378,10 +378,6 @@ public final class RadarSyncManager: NSObject {
         let currentGeofences = getGeofences(for: location)
         let currentGeofenceIds = Set(currentGeofences.map { $0.id })
 
-        RadarLogger.shared.info(
-            "SyncManager: [offline-diag] Geofence state check | lastSyncedGeofenceIds=\(Array(lastKnownGeofenceIds)) currentlyInside=\(Array(currentGeofenceIds)) accuracy=\(location.horizontalAccuracy)"
-        )
-
         if checkForGeofenceEntries(currentGeofences: currentGeofences, currentGeofenceIds: currentGeofenceIds, lastKnownGeofenceIds: lastKnownGeofenceIds) {
             return true
         }
@@ -514,16 +510,8 @@ public final class RadarSyncManager: NSObject {
         let exitCheckGeofenceIds = Set(exitCheckGeofences.map { $0.id })
         let exitedGeofenceIds = lastKnownGeofenceIds.subtracting(exitCheckGeofenceIds)
 
-        guard !exitedGeofenceIds.isEmpty else {
-            RadarLogger.shared.info(
-                "SyncManager: [offline-diag] No geofence exit detected | lastSyncedGeofenceIds=\(Array(lastKnownGeofenceIds)) stillInside=\(Array(exitCheckGeofenceIds)) (if lastSyncedGeofenceIds is empty here while user is leaving a geofence, exit detection is blind)"
-            )
-            return false
-        }
+        guard !exitedGeofenceIds.isEmpty else { return false }
 
-        RadarLogger.shared.info(
-            "SyncManager: [offline-diag] Geofence exit detected | exited=\(Array(exitedGeofenceIds)) lastSyncedGeofenceIds=\(Array(lastKnownGeofenceIds)) stillInside=\(Array(exitCheckGeofenceIds))"
-        )
         for id in exitedGeofenceIds {
             RadarLogger.shared.debug("SyncManager: Detected geofence exit: \(id)")
         }
@@ -589,9 +577,8 @@ public final class RadarSyncManager: NSObject {
         let acceptedGeofenceIds = Array(timestamps.keys)
         let currentPlaceIds = getPlaces(for: location).map { $0.id }.filter { !rejectedPlaceIds.contains($0) }
 
-        let priorGeofenceIds = syncStore.read()?.lastSyncedGeofenceIds ?? []
         RadarLogger.shared.info(
-            "SyncManager: [offline-diag] Optimistic update lastSyncedGeofenceIds | \(priorGeofenceIds) -> \(acceptedGeofenceIds) places=\(currentPlaceIds)"
+            "SyncManager: Optimistic update | " + "geofences=\(acceptedGeofenceIds) " + "places=\(currentPlaceIds) "
         )
 
         syncStore.modify { state in
@@ -647,7 +634,7 @@ public final class RadarSyncManager: NSObject {
         previousSyncedPlaceIds = state.lastSyncedPlaceIds
 
         RadarLogger.shared.info(
-            "SyncManager: [offline-diag] Saving previous state before optimistic update | geofences=\(previousSyncedGeofenceIds ?? []) places=\(previousSyncedPlaceIds ?? [])"
+            "SyncManager: Saving previous state before optimistic update | " + "geofences=\(previousSyncedGeofenceIds?.count ?? 0) " + "places=\(previousSyncedPlaceIds?.count ?? 0) "
         )
 
         updateLastKnownSyncState(location: location)
@@ -662,10 +649,6 @@ public final class RadarSyncManager: NSObject {
         let clientGeofenceIds = state.lastSyncedGeofenceIds
         let clientPlaceIds = state.lastSyncedPlaceIds
         let clientBeaconIds = state.lastSyncedBeaconIds
-
-        RadarLogger.shared.info(
-            "SyncManager: [offline-diag] Reconciling sync state (track succeeded) | clientGeofenceIds=\(clientGeofenceIds) serverGeofenceIds=\(serverGeofenceIds)"
-        )
 
         let geofenceMismatch = Set(serverGeofenceIds) != Set(clientGeofenceIds)
         let placeMismatch = Set(serverPlaceIds) != Set(clientPlaceIds)
@@ -739,15 +722,9 @@ public final class RadarSyncManager: NSObject {
     }
 
     @objc public static func rollbackSyncState() {
-        guard previousSyncedGeofenceIds != nil || previousSyncedPlaceIds != nil || previousSyncedBeaconIds != nil else {
-            RadarLogger.shared.info("SyncManager: [offline-diag] rollbackSyncState called but no previous state saved, nothing to roll back")
-            return
-        }
+        guard previousSyncedGeofenceIds != nil || previousSyncedPlaceIds != nil || previousSyncedBeaconIds != nil else { return }
 
-        let currentGeofenceIds = syncStore.read()?.lastSyncedGeofenceIds ?? []
-        RadarLogger.shared.info(
-            "SyncManager: [offline-diag] Track failed, rolling back lastSyncedGeofenceIds | \(currentGeofenceIds) -> \(previousSyncedGeofenceIds ?? []) (this discards the optimistic geofence membership; offline exit detection will be blind next cycle)"
-        )
+        RadarLogger.shared.info("SyncManager: Track failed, rolling back to previous sync state")
 
         syncStore.modify { state in
             if state == nil { state = RadarSyncState() }
