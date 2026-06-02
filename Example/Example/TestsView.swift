@@ -11,6 +11,17 @@ import SwiftUI
 struct TestsView: View {
     @State private var outputText: String = ""
 
+    /// Resolves the same `UserDefaults` suite the SDK reads the host from.
+    /// Mirrors `RadarUserDefaults.userDefaults`: the app-group suite if one is
+    /// configured (the example app sets `group.waypoint.data`), else `.standard`.
+    private func radarUserDefaults() -> UserDefaults {
+        if let appGroup = UserDefaults.standard.string(forKey: "radar-appGroup"),
+            let suite = UserDefaults(suiteName: appGroup) {
+            return suite
+        }
+        return .standard
+    }
+
     var body: some View {
         ScrollView {
             Text(outputText)
@@ -20,6 +31,18 @@ struct TestsView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(8)
                 .padding(.horizontal)
+
+            StyledButton("set host: staging") {
+                let host = "https://api.radar-staging.com"
+                radarUserDefaults().set(host, forKey: "radar-host")
+                outputText = "host = \(host)"
+            }
+
+            StyledButton("set host: failing (127.0.0.1:1)") {
+                let host = "http://127.0.0.1:1"
+                radarUserDefaults().set(host, forKey: "radar-host")
+                outputText = "host = \(host) (track requests will fail)"
+            }
 
             StyledButton("remove first notification (simulate sent)") {
                 UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
@@ -367,7 +390,7 @@ struct TestsView: View {
             }
 
             StyledButton("startTrip") {
-                let tripOptions = RadarTripOptions(externalId: "300", destinationGeofenceTag: "a", destinationGeofenceExternalId: "a")
+                let tripOptions = RadarTripOptions(externalId: "abc123", destinationGeofenceTag: "ewr-terminal-c-airside", destinationGeofenceExternalId: "EWR::AIRSIDE::GATES::GATESC70-C99::GATEC70")
                 tripOptions.mode = .car
                 tripOptions.approachingThreshold = 9
                 Radar.startTrip(options: tripOptions)

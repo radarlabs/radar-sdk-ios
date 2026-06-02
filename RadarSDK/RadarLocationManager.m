@@ -1202,6 +1202,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                             }
                                                         }
                                                     } else {
+                                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"SyncManager: [offline-diag] Track did not succeed (beacon path), rolling back sync state | status = %@; hasUser = %d", [Radar stringForStatus:status], user != nil]];
                                                         [RadarSyncManager rollbackSyncState];
                                                     }
                                                 }
@@ -1261,10 +1262,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                             }
                         }
                     } else {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"SyncManager: [offline-diag] Track did not succeed, rolling back sync state | status = %@; hasUser = %d", [Radar stringForStatus:status], user != nil]];
                         [RadarSyncManager rollbackSyncState];
                     }
                 }
-                
+
                 if (!config) {
                     return;
                 }
