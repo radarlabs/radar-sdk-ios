@@ -40,4 +40,29 @@ enum RadarLocationManagerSwiftTestHelpers {
         mock.mockLocationAuthorizationStatus = .authorizedAlways
         RadarLocationManager.sharedInstance().permissionsHelper = mock
     }
+
+    /// Construct a `RadarBeacon` with all the fields `matchBeaconIds` and
+    /// `replaceSyncedBeacons` read.
+    static func makeBeacon(id: String, uuid: String, major: String, minor: String) -> RadarBeacon {
+        let geometry = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))!
+        return RadarBeacon(
+            id: id,
+            description: nil,
+            tag: "",
+            externalId: "",
+            uuid: uuid,
+            major: major,
+            minor: minor,
+            metadata: nil,
+            geometry: geometry
+        )!
+    }
+
+    /// Build `RadarTrackingOptions` with `beacons` toggled as requested.
+    /// Starts from `presetResponsive` to get a valid preset.
+    static func trackingOptions(beacons: Bool) -> RadarTrackingOptions {
+        let options = RadarTrackingOptions.presetResponsive
+        options.beacons = beacons
+        return options
+    }
 }
