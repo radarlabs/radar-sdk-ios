@@ -69,6 +69,7 @@ final class RadarLocationManagerSwift: NSObject {
     @objc(replaceSyncedBeaconsOnLocationManager:beacons:)
     static func replaceSyncedBeacons(locationManager: CLLocationManager, beacons: [RadarBeacon]?) {
         if RadarSettings.useRadarModifiedBeacon {
+            RadarLogger.shared.debug("🦅 Skipping replacing synced beacons | useRadarModifiedBeacon = true")
             return
         }
 
@@ -121,6 +122,7 @@ final class RadarLocationManagerSwift: NSObject {
     @objc(replaceSyncedBeaconUUIDsOnLocationManager:uuids:)
     static func replaceSyncedBeaconUUIDs(locationManager: CLLocationManager, uuids: [String]?) {
         if RadarSettings.useRadarModifiedBeacon {
+            RadarLogger.shared.debug("🦅 Skipping replacing synced beacon UUIDs | useRadarModifiedBeacon = true")
             return
         }
 
@@ -128,6 +130,7 @@ final class RadarLocationManagerSwift: NSObject {
 
         let options = Radar.getTrackingOptions()
         guard RadarSettings.tracking, options.beacons, let uuids else {
+            RadarLogger.shared.debug("🦅 Skipping replacing synced beacon UUIDs")
             return
         }
 
@@ -152,6 +155,7 @@ final class RadarLocationManagerSwift: NSObject {
     @objc(removeSyncedBeaconsOnLocationManager:)
     static func removeSyncedBeacons(locationManager: CLLocationManager) {
         if RadarSettings.useRadarModifiedBeacon {
+            RadarLogger.shared.debug("🦅 Skipping removing synced beacons | useRadarModifiedBeacon = true")
             return
         }
 
