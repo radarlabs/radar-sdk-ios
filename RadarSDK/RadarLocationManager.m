@@ -26,6 +26,7 @@
 #import "RadarIndoorsProtocol.h"
 #import "RadarPlace+Internal.h"
 #import "RadarBeacon+Internal.h"
+#import "RadarLocationManagerSwift.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -447,7 +448,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
 
-            BOOL startUpdates = options.showBlueBar || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
+            CLAuthorizationStatus authorizationStatus = [CLLocationManager authorizationStatus];
+            BOOL startUpdatesWhileInUse = [RadarSettings sdkConfiguration].startUpdatesWhileInUse;
+            BOOL startUpdates = options.showBlueBar || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways ||
+                                (startUpdatesWhileInUse && authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse);
             BOOL stopped = [RadarState stopped];
             if (stopped) {
                 if (options.desiredStoppedUpdateInterval == 0) {
@@ -528,6 +532,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)restartPreviousTrackingOptions {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift restartPreviousTrackingOptions];
+        return;
+    }
+
     RadarTrackingOptions *previousTrackingOptions = [RadarSettings previousTrackingOptions];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Restarting previous tracking options"];
 
@@ -1196,9 +1205,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                         [RadarSyncManager rollbackSyncState];
                                                     }
                                                 }
-                                                if (status != RadarStatusSuccess || !config) { return; }
+                                                if (!config) { return; }
                                                 [self updateTrackingFromMeta:config.meta];
-                                                [self replaceSyncedGeofences:nearbyGeofences];
+                                                if (status == RadarStatusSuccess) {
+                                                    [self replaceSyncedGeofences:nearbyGeofences];
+                                                }
                                             }];
                                         }];
                                     } else {
@@ -1254,12 +1265,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     }
                 }
                 
-                if (status != RadarStatusSuccess || !config) {
+                if (!config) {
                     return;
                 }
 
                 [self updateTrackingFromMeta:config.meta];
-                [self replaceSyncedGeofences:nearbyGeofences];
+                if (status == RadarStatusSuccess) {
+                    [self replaceSyncedGeofences:nearbyGeofences];
+                }
             }];
         }];
     }

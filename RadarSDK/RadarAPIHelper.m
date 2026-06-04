@@ -151,7 +151,7 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                                     type:RadarLogTypeSDKError
                                  message:[NSString stringWithFormat:@"Network error | host = %@; errorDomain = %@; errorCode = %ld; errorDescription = %@; elapsedMs = %ld",
                                           host, error.domain, (long)error.code, error.localizedDescription, elapsedMs]];
-                        completionHandler(RadarStatusErrorNetwork, nil);
+                        completionHandler(RadarStatusErrorNetwork, nil, error);
                     });
 
                     if (sleep) {
@@ -166,7 +166,7 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                 id resObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&deserializationError];
                 if (deserializationError || ![resObj isKindOfClass:[NSDictionary class]]) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        completionHandler(RadarStatusErrorServer, nil);
+                        completionHandler(RadarStatusErrorServer, nil, deserializationError);
                     });
 
                     if (sleep) {
@@ -218,7 +218,7 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    completionHandler(status, res);
+                    completionHandler(status, res, nil);
                 });
 
                 if (sleep) {
@@ -244,8 +244,14 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
             if (sleep) {
                 dispatch_semaphore_signal(self.semaphore);
             }
+            NSError *exceptionError = [NSError errorWithDomain:@"RadarSDK"
+                                                          code:0
+                                                      userInfo:@{
+                                                          NSLocalizedDescriptionKey: exception.reason ?: exception.name ?: @"NSException",
+                                                          @"NSException": exception
+                                                      }];
             dispatch_async(dispatch_get_main_queue(), ^{
-                completionHandler(RadarStatusErrorBadRequest, nil);
+                completionHandler(RadarStatusErrorBadRequest, nil, exceptionError);
             });
             return;
         }

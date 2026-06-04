@@ -9,14 +9,6 @@ import Testing
 
 @testable import RadarSDK
 
-private func waitUntil(timeout: TimeInterval = 5.0, _ check: () async -> Bool) async {
-    let deadline = Date().addingTimeInterval(timeout)
-    while Date() < deadline {
-        if await check() { return }
-        try? await Task.sleep(nanoseconds: 25_000_000)  // poll every 25ms
-    }
-}
-
 final class MockRadarDelegate: NSObject, RadarDelegate, @unchecked Sendable {
     var messages = [String]()
     func didLog(message: String) {
@@ -39,8 +31,7 @@ struct RadarLoggerTests {
         logger.warning("warningLog")
         logger.error("errorLog")
 
-        await waitUntil { delegate.messages.count >= 4 }
-        try await Task.sleep(nanoseconds: 200_000_000)
+        await logger.awaitPendingLogs()
         #expect(delegate.messages.count == 4)
     }
 
@@ -56,7 +47,7 @@ struct RadarLoggerTests {
         logger.warning("warningLog")
         logger.error("errorLog")
 
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        await logger.awaitPendingLogs()
         #expect(delegate.messages.count == 0)
     }
 
@@ -71,8 +62,7 @@ struct RadarLoggerTests {
         logger.info("infoLog")
         logger.warning("warningLog")
 
-        await waitUntil { delegate.messages.count >= 1 }
-        try await Task.sleep(nanoseconds: 200_000_000)
+        await logger.awaitPendingLogs()
         #expect(delegate.messages.count == 1)
     }
 
@@ -87,8 +77,7 @@ struct RadarLoggerTests {
         logger.warning("warningLog")
         logger.error("errorLog")
 
-        await waitUntil { delegate.messages.count >= 1 }
-        try await Task.sleep(nanoseconds: 200_000_000)
+        await logger.awaitPendingLogs()
         #expect(delegate.messages.count == 1)
     }
 
@@ -103,8 +92,7 @@ struct RadarLoggerTests {
         logger.debug("debugLog")
         logger.info("infoLog")
 
-        await waitUntil { delegate.messages.count >= 1 }
-        try await Task.sleep(nanoseconds: 200_000_000)
+        await logger.awaitPendingLogs()
         #expect(delegate.messages.count == 1)
     }
 
@@ -121,8 +109,7 @@ struct RadarLoggerTests {
         logger.log(level: .info, type: .none, message: "hello", includeDate: false, includeBattery: false)
         logger.log(level: .info, type: .none, message: "hello", includeDate: false, includeBattery: false, append: false)
 
-        await waitUntil { delegate.messages.count >= 4 }
-        try await Task.sleep(nanoseconds: 200_000_000)
+        await logger.awaitPendingLogs()
         #expect(delegate.messages.count == 4)
     }
 }
