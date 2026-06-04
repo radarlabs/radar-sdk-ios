@@ -10,63 +10,86 @@ import Testing
 
 @testable import RadarSDK
 
-@Suite(.serialized)
-actor RadarLocationManagerSwiftSeamTests {
+extension RadarSerializedTests {
+    @Suite(.serialized)
+    actor RadarLocationManagerSwiftSeamTests {
 
-    private func clearState() {
-        RadarSettings.previousTrackingOptions = nil
-        RadarSettings.sdkConfiguration = nil
-    }
+        // MARK: - restartPreviousTrackingOptions — Swift twin
 
-    @Test("Swift twin clears previousTrackingOptions when there are none to restart")
-    func swiftTwinClearsPreviousTrackingOptionsWhenNone() {
-        clearState()
-        defer { clearState() }
+        @Test("Swift twin calls Radar.stopTracking and clears previousTrackingOptions when none to restart")
+        func swiftTwinStopsTrackingWhenNoPreviousOptions() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
 
-        RadarLocationManagerSwift.restartPreviousTrackingOptions()
+            // Seed `tracking = true` to observe that `Radar.stopTracking()` actually flipped it off.
+            RadarSettings.tracking = true
 
-        #expect(RadarSettings.previousTrackingOptions == nil)
-    }
+            RadarLocationManagerSwift.restartPreviousTrackingOptions()
 
-    @Test("Swift twin clears previousTrackingOptions after restarting tracking")
-    func swiftTwinClearsPreviousTrackingOptionsAfterRestart() {
-        clearState()
-        defer { clearState() }
+            #expect(RadarSettings.previousTrackingOptions == nil)
+            #expect(RadarSettings.tracking == false)
+        }
 
-        RadarSettings.previousTrackingOptions = RadarTrackingOptions.presetResponsive
+        @Test("Swift twin restarts tracking with previous options and clears previousTrackingOptions")
+        func swiftTwinRestartsTrackingAndClearsPreviousOptions() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
 
-        RadarLocationManagerSwift.restartPreviousTrackingOptions()
+            // Authorize location so `Radar.startTracking(trackingOptions:)` proceeds past the
+            // permission gate in `RadarLocationManager.startTrackingWithOptions:`.
+            RadarLocationManagerSwiftTestHelpers.installAuthorizedPermissions()
+            let previousOptions = RadarTrackingOptions.presetResponsive
+            RadarSettings.previousTrackingOptions = previousOptions
 
-        #expect(RadarSettings.previousTrackingOptions == nil)
-    }
+            RadarLocationManagerSwift.restartPreviousTrackingOptions()
 
-    @Test("Public method routes to Swift twin when useSwiftLocationManager is enabled")
-    func publicMethodRoutesToSwiftTwinWhenFlagEnabled() {
-        clearState()
-        defer { clearState() }
+            // Previous slot cleared, tracking is now active, and the live tracking options
+            // equal the previous options — proving `Radar.startTracking(trackingOptions:)` was
+            // called with the right argument.
+            #expect(RadarSettings.previousTrackingOptions == nil)
+            #expect(RadarSettings.tracking == true)
+            #expect(RadarSettings.trackingOptions == previousOptions)
+        }
 
-        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-            "useSwiftLocationManager": true
-        ])
-        RadarSettings.previousTrackingOptions = RadarTrackingOptions.presetResponsive
+        // MARK: - restartPreviousTrackingOptions — public method routing
 
-        RadarLocationManager.sharedInstance().restartPreviousTrackingOptions()
+        @Test("Public method routes to Swift twin when useSwiftLocationManager is enabled")
+        func publicMethodRoutesToSwiftTwinWhenFlagEnabled() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
 
-        #expect(RadarSettings.previousTrackingOptions == nil)
-    }
+            RadarLocationManagerSwiftTestHelpers.installAuthorizedPermissions()
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                "useSwiftLocationManager": true
+            ])
+            let previousOptions = RadarTrackingOptions.presetResponsive
+            RadarSettings.previousTrackingOptions = previousOptions
 
-    @Test("Public method uses ObjC body when useSwiftLocationManager is disabled")
-    func publicMethodUsesObjCBodyWhenFlagDisabled() {
-        clearState()
-        defer { clearState() }
+            RadarLocationManager.sharedInstance().restartPreviousTrackingOptions()
 
-        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-            "useSwiftLocationManager": false
-        ])
-        RadarSettings.previousTrackingOptions = RadarTrackingOptions.presetResponsive
+            #expect(RadarSettings.previousTrackingOptions == nil)
+            #expect(RadarSettings.tracking == true)
+            #expect(RadarSettings.trackingOptions == previousOptions)
+        }
 
-        RadarLocationManager.sharedInstance().restartPreviousTrackingOptions()
+        @Test("Public method uses ObjC body when useSwiftLocationManager is disabled")
+        func publicMethodUsesObjCBodyWhenFlagDisabled() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
 
-        #expect(RadarSettings.previousTrackingOptions == nil)
+            RadarLocationManagerSwiftTestHelpers.installAuthorizedPermissions()
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                "useSwiftLocationManager": false
+            ])
+            let previousOptions = RadarTrackingOptions.presetResponsive
+            RadarSettings.previousTrackingOptions = previousOptions
+
+            RadarLocationManager.sharedInstance().restartPreviousTrackingOptions()
+
+            // ObjC body should land in the same end state as the Swift twin.
+            #expect(RadarSettings.previousTrackingOptions == nil)
+            #expect(RadarSettings.tracking == true)
+            #expect(RadarSettings.trackingOptions == previousOptions)
+        }
     }
 }
