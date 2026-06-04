@@ -1224,9 +1224,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                         [RadarSyncManager rollbackSyncState];
                                                     }
                                                 }
-                                                if (status != RadarStatusSuccess || !config) { return; }
+                                                if (!config) { return; }
                                                 [self updateTrackingFromMeta:config.meta];
-                                                [self replaceSyncedGeofences:nearbyGeofences];
+                                                if (status == RadarStatusSuccess) {
+                                                    [self replaceSyncedGeofences:nearbyGeofences];
+                                                }
                                             }];
                                         }];
                                     } else {
@@ -1282,12 +1284,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     }
                 }
                 
-                if (status != RadarStatusSuccess || !config) {
+                if (!config) {
                     return;
                 }
 
                 [self updateTrackingFromMeta:config.meta];
-                [self replaceSyncedGeofences:nearbyGeofences];
+                if (status == RadarStatusSuccess) {
+                    [self replaceSyncedGeofences:nearbyGeofences];
+                }
             }];
         }];
     }
