@@ -104,15 +104,20 @@ class RadarOfflineEventManager: NSObject {
 
         if inRampedUpGeofences {
             RadarLogger.shared.debug("OfflineEventManager: Ramping up tracking options")
-            return RadarRemoteTrackingOptions.trackingOptions(forKey: "inGeofence", in: remoteOptions)
+            let options = RadarRemoteTrackingOptions.trackingOptions(forKey: "inGeofence", in: remoteOptions)
+            options?.type = .inGeofence
+            return options
         } else if let onTripOptions = RadarRemoteTrackingOptions.trackingOptions(forKey: "onTrip", in: remoteOptions),
             Radar.getTripOptions() != nil
         {
             RadarLogger.shared.debug("OfflineEventManager: Using on-trip tracking options")
+            onTripOptions.type = .onTrip
             return onTripOptions
         } else {
             RadarLogger.shared.debug("OfflineEventManager: Using default tracking options")
-            return RadarRemoteTrackingOptions.trackingOptions(forKey: "default", in: remoteOptions)
+            let options = RadarRemoteTrackingOptions.trackingOptions(forKey: "default", in: remoteOptions)
+            options?.type = .default
+            return options
         }
     }
 
