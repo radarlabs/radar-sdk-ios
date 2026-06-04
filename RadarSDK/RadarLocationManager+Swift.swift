@@ -92,8 +92,6 @@ final class RadarLocationManagerSwift: NSObject {
                 continue
             }
 
-            // A non-numeric major/minor would otherwise silently monitor a 0/0 region, which
-            // collides with other beacons. Skip the beacon instead of syncing bad values.
             guard let majorInt = Int(beacon.major), let minorInt = Int(beacon.minor) else {
                 RadarLogger.shared.debug(
                     "🦅 Error syncing beacon | identifier = \(identifier); uuid = \(beacon.uuid); major = \(beacon.major); minor = \(beacon.minor)"
