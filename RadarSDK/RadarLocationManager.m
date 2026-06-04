@@ -664,6 +664,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (NSArray<NSString *> *)matchBeaconIds:(NSArray<RadarBeacon *> *)rangedBeacons syncedBeacons:(NSArray<RadarBeacon *> *)syncedBeacons {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        return [RadarLocationManagerSwift matchBeaconIdsWithRanged:rangedBeacons synced:syncedBeacons];
+    }
+
     NSMutableDictionary<NSString *, NSString *> *syncedMap = [NSMutableDictionary dictionary];
     for (RadarBeacon *sb in syncedBeacons) {
         NSString *key = [NSString stringWithFormat:@"%@|%@|%@", [sb.uuid lowercaseString] ?: @"", sb.major ?: @"", sb.minor ?: @""];
@@ -684,10 +688,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift replaceSyncedBeaconsOnLocationManager:self.locationManager beacons:beacons];
+        return;
+    }
+
     if ([RadarSettings useRadarModifiedBeacon]) {
         return;
     }
-    
+
     [self removeSyncedBeacons];
 
     BOOL tracking = [RadarSettings tracking];
@@ -725,10 +734,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedBeaconUUIDs:(NSArray<NSString *> *)uuids {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift replaceSyncedBeaconUUIDsOnLocationManager:self.locationManager uuids:uuids];
+        return;
+    }
+
     if ([RadarSettings useRadarModifiedBeacon]) {
         return;
     }
-    
+
     [self removeSyncedBeacons];
 
     BOOL tracking = [RadarSettings tracking];
@@ -757,10 +771,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeSyncedBeacons {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift removeSyncedBeaconsOnLocationManager:self.locationManager];
+        return;
+    }
+
     if ([RadarSettings useRadarModifiedBeacon]) {
         return;
     }
-    
+
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kSyncBeaconUUIDIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];

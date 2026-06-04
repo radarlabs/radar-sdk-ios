@@ -91,5 +91,22 @@ extension RadarSerializedTests {
             #expect(RadarSettings.tracking == true)
             #expect(RadarSettings.trackingOptions == previousOptions)
         }
+
+        // MARK: - Beacon sync — public method routing
+
+        @Test("Public replaceSyncedBeacons routes to Swift twin when flag enabled")
+        func publicReplaceSyncedBeaconsRoutesToSwiftTwinWhenFlagEnabled() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+
+            // useRadarModifiedBeacon on so the Swift twin short-circuits — exercises only
+            // that the dispatch shim routes to the Swift implementation, not the body.
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                "useSwiftLocationManager": true,
+                "useRadarModifiedBeacon": true,
+            ])
+
+            RadarLocationManager.sharedInstance().replaceSyncedBeacons([])
+        }
     }
 }
