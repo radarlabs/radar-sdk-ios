@@ -378,19 +378,17 @@ public final class RadarSyncManager: NSObject {
 
         let entries = getGeofenceEntries(for: location, against: lastKnownIds)
         if !entries.isEmpty {
-            for geofence in entries {
-                RadarLogger.shared.debug("SyncManager: Detected geofence entry: \(geofence.id)")
-            }
-            recordGeofenceEntryTimestamps(entries.map { $0.id })
+            let ids = entries.map { $0.id }
+            RadarLogger.shared.debug("SyncManager: Detected geofence entries: \(ids)")
+            recordGeofenceEntryTimestamps(ids)
             return true
         }
 
         let exits = getGeofenceExits(for: location, against: lastKnownIds)
         if !exits.isEmpty {
-            for geofence in exits {
-                RadarLogger.shared.debug("SyncManager: Detected geofence exit: \(geofence.id)")
-            }
-            clearGeofenceEntryState(exits.map { $0.id })
+            let ids = exits.map { $0.id }
+            RadarLogger.shared.debug("SyncManager: Detected geofence exits: \(ids)")
+            clearGeofenceEntryState(ids)
             return true
         }
 

@@ -13,7 +13,7 @@ import Foundation
 class RadarOfflineEventManager: NSObject {
 
     private static let queue = DispatchQueue(label: "io.radar.offlineEventManager")
-    nonisolated(unsafe) private static var _offlineGeofenceIds: Set<String>? = nil
+    nonisolated(unsafe) private static var _offlineGeofenceIds: Set<String>?
     nonisolated(unsafe) private static var _offlineBeaconIds: Set<String>?
 
     private static var offlineGeofenceIds: Set<String>? {
@@ -26,14 +26,14 @@ class RadarOfflineEventManager: NSObject {
         set { queue.sync { _offlineBeaconIds = newValue } }
     }
 
-    @objc static func reset() {
+    static func reset() {
         offlineGeofenceIds = nil
         offlineBeaconIds = nil
     }
 
     // MARK: - Event generation
 
-    @objc static func generateEvents(
+    static func generateEvents(
         location: CLLocation,
         completionHandler: @escaping ([RadarEvent], RadarUser?, CLLocation) -> Void
     ) {
@@ -90,11 +90,11 @@ class RadarOfflineEventManager: NSObject {
         completionHandler(events, user, location)
     }
 
-    @objc static func handleTrackFailure(_ location: CLLocation) {
+    static func handleTrackFailure(_ location: CLLocation) {
         let sdkConfig = RadarSettings.sdkConfiguration
 
         if sdkConfig?.offlineEventGenerationEnabled == true {
-            generateEvents(location: location) { events, user, loc in
+            generateEvents(location: location) { events, user, _ in
                 if !events.isEmpty, let user {
                     RadarSwift.bridge?.didReceiveEvents(events, user: user)
                 }
@@ -155,7 +155,7 @@ class RadarOfflineEventManager: NSObject {
 
     // MARK: - Tracking options ramp-up/down
 
-    @objc static func updateTrackingOptions(geofenceTags: [String]) -> RadarTrackingOptions? {
+    static func updateTrackingOptions(geofenceTags: [String]) -> RadarTrackingOptions? {
         let sdkConfig = RadarSettings.sdkConfiguration
         let remoteOptions = sdkConfig?.remoteTrackingOptions
 
@@ -181,7 +181,7 @@ class RadarOfflineEventManager: NSObject {
         }
     }
 
-    @objc static func updateTrackingOptions(for location: CLLocation) -> RadarTrackingOptions? {
+    static func updateTrackingOptions(for location: CLLocation) -> RadarTrackingOptions? {
         let currentGeofences = RadarSyncManager.getGeofences(for: location)
         let tags = currentGeofences.compactMap { $0.tag }
 
@@ -282,41 +282,21 @@ class RadarOfflineEventManager: NSObject {
 
 extension RadarOfflineEventManager {
 
-    fileprivate static func geofenceDictionary(from geofence: RadarGeofenceSwift) -> [String: Any] {
-        var dict: [String: Any] = [
-            "_id": geofence.id,
-            "description": geofence.description,
-        ]
-        if let tag = geofence.tag { dict["tag"] = tag }
-        if let externalId = geofence.externalId { dict["externalId"] = externalId }
-
-        switch geofence.geometry {
-        case .circle(let center, let radius):
-            dict["type"] = "circle"
-            dict["geometryCenter"] = ["coordinates": [center.longitude, center.latitude]]
-            dict["geometryRadius"] = radius
-        case .polygon(_, let center, let radius):
-            dict["type"] = "polygon"
-            dict["geometryCenter"] = ["coordinates": [center.longitude, center.latitude]]
-            dict["geometryRadius"] = radius
+    fileprivate static func dictionary<T: Encodable>(from value: T) -> [String: Any] {
+        guard let data = try? JSONEncoder().encode(value),
+            let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else {
+            RadarLogger.shared.error("OfflineEventManager: Failed to encode \(T.self) to dictionary")
+            return [:]
         }
         return dict
     }
 
+    fileprivate static func geofenceDictionary(from geofence: RadarGeofenceSwift) -> [String: Any] {
+        dictionary(from: geofence)
+    }
+
     fileprivate static func beaconDictionary(from beacon: RadarBeaconSwift) -> [String: Any] {
-        var dict: [String: Any] = [
-            "_id": beacon.id,
-            "uuid": beacon.uuid,
-            "major": beacon.major,
-            "minor": beacon.minor,
-            "type": "ibeacon",
-        ]
-        if let desc = beacon.description { dict["description"] = desc }
-        if let tag = beacon.tag { dict["tag"] = tag }
-        if let externalId = beacon.externalId { dict["externalId"] = externalId }
-        if let geometry = beacon.geometry {
-            dict["geometry"] = ["coordinates": [geometry.longitude, geometry.latitude]]
-        }
-        return dict
+        dictionary(from: beacon)
     }
 }
