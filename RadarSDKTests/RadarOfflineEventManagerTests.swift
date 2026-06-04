@@ -26,6 +26,12 @@ extension RadarSerializedTests {
             RadarSettings.sdkConfiguration = nil
             RadarSettings.trackingOptions = nil
             RadarOfflineEventManager.reset()
+
+            let cachedUser = RadarUser(object: [
+                "_id": "test-user",
+                "location": ["coordinates": [testLng, testLat]],
+            ])
+            RadarSyncTestHelper.setRadarUser(cachedUser)
         }
 
         // MARK: - Helpers
