@@ -1,1 +1,1472 @@
-[{"violation":{"reason":"Function body should span 50 lines or less excluding comments and whitespace: currently spans 52 lines","ruleIdentifier":"function_body_length","ruleDescription":"Function bodies should not span too many lines","location":{"line":40,"file":"RadarSDK\/RadarAPIClient.swift","character":5},"severity":"warning","ruleName":"Function Body Length"},"text":"    func fetchSyncRegion(latitude: Double, longitude: Double) async throws -> SyncRegionResponse {"},{"violation":{"reason":"Variable name 'v' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":172,"file":"RadarSDK\/RadarGeofence.swift","character":16},"severity":"error","ruleName":"Identifier Name"},"text":"        if let v = try? container.decode(Bool.self) {"},{"violation":{"reason":"Variable name 'v' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":174,"file":"RadarSDK\/RadarGeofence.swift","character":23},"severity":"error","ruleName":"Identifier Name"},"text":"        } else if let v = try? container.decode(Int.self) {"},{"violation":{"reason":"Variable name 'v' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":176,"file":"RadarSDK\/RadarGeofence.swift","character":23},"severity":"error","ruleName":"Identifier Name"},"text":"        } else if let v = try? container.decode(Double.self) {"},{"violation":{"reason":"Variable name 'v' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":178,"file":"RadarSDK\/RadarGeofence.swift","character":23},"severity":"error","ruleName":"Identifier Name"},"text":"        } else if let v = try? container.decode(String.self) {"},{"violation":{"reason":"Variable name 'v' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":188,"file":"RadarSDK\/RadarGeofence.swift","character":26},"severity":"error","ruleName":"Identifier Name"},"text":"        case .string(let v): try container.encode(v)"},{"violation":{"reason":"Variable name 'v' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":189,"file":"RadarSDK\/RadarGeofence.swift","character":23},"severity":"error","ruleName":"Identifier Name"},"text":"        case .int(let v): try container.encode(v)"},{"violation":{"reason":"Variable name 'v' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":190,"file":"RadarSDK\/RadarGeofence.swift","character":26},"severity":"error","ruleName":"Identifier Name"},"text":"        case .double(let v): try container.encode(v)"},{"violation":{"reason":"Variable name 'v' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":191,"file":"RadarSDK\/RadarGeofence.swift","character":24},"severity":"error","ruleName":"Identifier Name"},"text":"        case .bool(let v): try container.encode(v)"},{"violation":{"reason":"Type name 'RadarGeofence_Swift' should only contain alphanumeric and other allowed characters","ruleIdentifier":"type_name","ruleDescription":"Type name should only contain alphanumeric characters, start with an uppercase character and span between 3 and 40 characters in length.\nPrivate types may start with an underscore.","location":{"line":205,"file":"RadarSDK\/RadarGeofence.swift","character":8},"severity":"error","ruleName":"Type Name"},"text":"struct RadarGeofence_Swift: Codable, Sendable, Equatable {"},{"violation":{"reason":"Variable name '_id' should only contain alphanumeric and other allowed characters","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":208,"file":"RadarSDK\/RadarGeofence.swift","character":16},"severity":"error","ruleName":"Identifier Name"},"text":"    public let _id: String"},{"violation":{"reason":"Type name 'RadarInAppMessage_Swift' should only contain alphanumeric and other allowed characters","ruleIdentifier":"type_name","ruleDescription":"Type name should only contain alphanumeric characters, start with an uppercase character and span between 3 and 40 characters in length.\nPrivate types may start with an underscore.","location":{"line":11,"file":"RadarSDK\/RadarInAppMessage.swift","character":20},"severity":"error","ruleName":"Type Name"},"text":"public final class RadarInAppMessage_Swift: RadarInAppMessage {"},{"violation":{"reason":"Optional should be implicitly initialized without nil","ruleIdentifier":"implicit_optional_initialization","ruleDescription":"Optionals should be consistently initialized, either with `= nil` or without.","location":{"line":42,"file":"RadarSDK\/RadarInAppMessageDelegate.swift","character":17},"severity":"warning","ruleName":"Implicit Optional Initialization"},"text":"            var image: UIImage? = nil"},{"violation":{"reason":"Trailing closure syntax should not be used when passing more than one closure argument","ruleIdentifier":"multiple_closures_with_trailing_closure","ruleDescription":"Trailing closure syntax should not be used when passing more than one closure argument","location":{"line":82,"file":"RadarSDK\/RadarInAppMessageManager.swift","character":15},"severity":"warning","ruleName":"Multiple Closures with Trailing Closure"},"text":"            ) { result in"},{"violation":{"reason":"Trailing closure syntax should not be used when passing more than one closure argument","ruleIdentifier":"multiple_closures_with_trailing_closure","ruleDescription":"Trailing closure syntax should not be used when passing more than one closure argument","location":{"line":49,"file":"RadarSDK\/RadarInAppMessageView.swift","character":28},"severity":"warning","ruleName":"Multiple Closures with Trailing Closure"},"text":"                        }) {"},{"violation":{"reason":"Force casts should be avoided","ruleIdentifier":"force_cast","ruleDescription":"Force casts should be avoided","location":{"line":105,"file":"RadarSDK\/RadarInAppMessageView.swift","character":16},"severity":"error","ruleName":"Force Cast"},"text":"            ]) as! RadarInAppMessage_Swift,"},{"violation":{"reason":"Variable name 'RADAR_NOTIFICATION_PREFIX' should only contain alphanumeric and other allowed characters","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":8,"file":"RadarSDK\/RadarNotification.swift","character":5},"severity":"error","ruleName":"Identifier Name"},"text":"let RADAR_NOTIFICATION_PREFIX = \"radar_\""},{"violation":{"reason":"Variable name 'GEOFENCE_NOTIFICATION_PREFIX' should only contain alphanumeric and other allowed characters","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":9,"file":"RadarSDK\/RadarNotification.swift","character":5},"severity":"error","ruleName":"Identifier Name"},"text":"let GEOFENCE_NOTIFICATION_PREFIX = \"radar_geofence_\""},{"violation":{"reason":"Function should have complexity 10 or less; currently complexity is 26","ruleIdentifier":"cyclomatic_complexity","ruleDescription":"Complexity of function bodies should be limited.","location":{"line":142,"file":"RadarSDK\/RadarNotification.swift","character":5},"severity":"error","ruleName":"Cyclomatic Complexity"},"text":"    init(from settings: UNNotificationSettings) {"},{"violation":{"reason":"Initializer body should span 50 lines or less excluding comments and whitespace: currently spans 64 lines","ruleIdentifier":"function_body_length","ruleDescription":"Function bodies should not span too many lines","location":{"line":142,"file":"RadarSDK\/RadarNotification.swift","character":5},"severity":"warning","ruleName":"Function Body Length"},"text":"    init(from settings: UNNotificationSettings) {"},{"violation":{"reason":"Optional should be implicitly initialized without nil","ruleIdentifier":"implicit_optional_initialization","ruleDescription":"Optionals should be consistently initialized, either with `= nil` or without.","location":{"line":32,"file":"RadarSDK\/RadarNotificationHelper.swift","character":17},"severity":"warning","ruleName":"Implicit Optional Initialization"},"text":"    private var currentTask: Task<Void, Never>? = nil"},{"violation":{"reason":"Optional should be implicitly initialized without nil","ruleIdentifier":"implicit_optional_initialization","ruleDescription":"Optionals should be consistently initialized, either with `= nil` or without.","location":{"line":16,"file":"RadarSDK\/RadarOfflineEventManager.swift","character":44},"severity":"warning","ruleName":"Implicit Optional Initialization"},"text":"    nonisolated(unsafe) private static var _offlineGeofenceIds: Set<String>? = nil"},{"violation":{"reason":"Objective-C attribute (@objc) is redundant in declaration","ruleIdentifier":"redundant_objc_attribute","ruleDescription":"Objective-C attribute (@objc) is redundant in declaration","location":{"line":23,"file":"RadarSDK\/RadarOfflineEventManager.swift","character":5},"severity":"warning","ruleName":"Redundant @objc Attribute"},"text":"    @objc static func reset() {"},{"violation":{"reason":"Objective-C attribute (@objc) is redundant in declaration","ruleIdentifier":"redundant_objc_attribute","ruleDescription":"Objective-C attribute (@objc) is redundant in declaration","location":{"line":29,"file":"RadarSDK\/RadarOfflineEventManager.swift","character":5},"severity":"warning","ruleName":"Redundant @objc Attribute"},"text":"    @objc static func generateEvents("},{"violation":{"reason":"Objective-C attribute (@objc) is redundant in declaration","ruleIdentifier":"redundant_objc_attribute","ruleDescription":"Objective-C attribute (@objc) is redundant in declaration","location":{"line":79,"file":"RadarSDK\/RadarOfflineEventManager.swift","character":5},"severity":"warning","ruleName":"Redundant @objc Attribute"},"text":"    @objc static func handleTrackFailure(_ location: CLLocation) {"},{"violation":{"reason":"Unused parameter in a closure should be replaced with _","ruleIdentifier":"unused_closure_parameter","ruleDescription":"Unused parameter in a closure should be replaced with _","location":{"line":83,"file":"RadarSDK\/RadarOfflineEventManager.swift","character":64},"severity":"warning","ruleName":"Unused Closure Parameter"},"text":"            generateEvents(location: location) { events, user, loc in"},{"violation":{"reason":"Objective-C attribute (@objc) is redundant in declaration","ruleIdentifier":"redundant_objc_attribute","ruleDescription":"Objective-C attribute (@objc) is redundant in declaration","location":{"line":93,"file":"RadarSDK\/RadarOfflineEventManager.swift","character":5},"severity":"warning","ruleName":"Redundant @objc Attribute"},"text":"    @objc static func updateTrackingOptions(geofenceTags: [String]) -> RadarTrackingOptions? {"},{"violation":{"reason":"Objective-C attribute (@objc) is redundant in declaration","ruleIdentifier":"redundant_objc_attribute","ruleDescription":"Objective-C attribute (@objc) is redundant in declaration","location":{"line":119,"file":"RadarSDK\/RadarOfflineEventManager.swift","character":5},"severity":"warning","ruleName":"Redundant @objc Attribute"},"text":"    @objc static func updateTrackingOptions(for location: CLLocation) -> RadarTrackingOptions? {"},{"violation":{"reason":"`where` clauses are preferred over a single `if` inside a `for`","ruleIdentifier":"for_where","ruleDescription":"`where` clauses are preferred over a single `if` inside a `for`","location":{"line":333,"file":"RadarSDK\/RadarSettings.swift","character":13},"severity":"warning","ruleName":"Prefer For-Where"},"text":"            if !existingTagsSet.contains(tag) {"},{"violation":{"reason":"Class body should span 350 lines or less excluding comments and whitespace: currently spans 609 lines","ruleIdentifier":"type_body_length","ruleDescription":"Type bodies should not span too many lines","location":{"line":13,"file":"RadarSDK\/RadarSyncManager.swift","character":14},"severity":"error","ruleName":"Type Body Length"},"text":"public final class RadarSyncManager: NSObject {"},{"violation":{"reason":"Variable name 't' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":257,"file":"RadarSDK\/RadarSyncManager.swift","character":119},"severity":"error","ruleName":"Identifier Name"},"text":"    private static func greatCircleInterpolate(from a: CLLocationCoordinate2D, to b: CLLocationCoordinate2D, fraction t: Double) -> CLLocationCoordinate2D {"},{"violation":{"reason":"Variable name 'h' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":267,"file":"RadarSDK\/RadarSyncManager.swift","character":13},"severity":"error","ruleName":"Identifier Name"},"text":"        let h = sinHalfDLat * sinHalfDLat + cos(lat1) * cos(lat2) * sinHalfDLon * sinHalfDLon"},{"violation":{"reason":"Function should have complexity 10 or less; currently complexity is 11","ruleIdentifier":"cyclomatic_complexity","ruleDescription":"Complexity of function bodies should be limited.","location":{"line":643,"file":"RadarSDK\/RadarSyncManager.swift","character":18},"severity":"warning","ruleName":"Cyclomatic Complexity"},"text":"    @objc public static func reconcileSyncState(user: RadarUser) {"},{"violation":{"reason":"Function body should span 50 lines or less excluding comments and whitespace: currently spans 58 lines","ruleIdentifier":"function_body_length","ruleDescription":"Function bodies should not span too many lines","location":{"line":643,"file":"RadarSDK\/RadarSyncManager.swift","character":25},"severity":"warning","ruleName":"Function Body Length"},"text":"    @objc public static func reconcileSyncState(user: RadarUser) {"},{"violation":{"reason":"File should contain 400 lines or less: currently contains 775","ruleIdentifier":"file_length","ruleDescription":"Files should not span too many lines.","location":{"line":775,"file":"RadarSDK\/RadarSyncManager.swift","character":1},"severity":"warning","ruleName":"File Length"},"text":"}"},{"violation":{"reason":"Enum element name 'PublishableKey' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":14,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case PublishableKey = \"radar-publishableKey\""},{"violation":{"reason":"Enum element name 'InstallId' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":15,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case InstallId = \"radar-installId\""},{"violation":{"reason":"Enum element name 'SessionId' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":16,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case SessionId = \"radar-sessionId\""},{"violation":{"reason":"Enum element name 'Id' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":17,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"warning","ruleName":"Identifier Name"},"text":"        case Id = \"radar-_id\""},{"violation":{"reason":"Enum element name 'UserId' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":18,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case UserId = \"radar-userId\""},{"violation":{"reason":"Enum element name 'Description' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":19,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case Description = \"radar-description\""},{"violation":{"reason":"Enum element name 'Product' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":20,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case Product = \"radar-product\""},{"violation":{"reason":"Enum element name 'Metadata' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":21,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case Metadata = \"radar-metadata\""},{"violation":{"reason":"Enum element name 'Anonymous' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":22,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case Anonymous = \"radar-anonymous\""},{"violation":{"reason":"Enum element name 'Tracking' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":23,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case Tracking = \"radar-tracking\""},{"violation":{"reason":"Enum element name 'TrackingOptions' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":24,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case TrackingOptions = \"radar-trackingOptions\""},{"violation":{"reason":"Enum element name 'PreviousTrackingOptions' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":25,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case PreviousTrackingOptions = \"radar-previousTrackingOptions\""},{"violation":{"reason":"Enum element name 'RemoteTrackingOptions' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":26,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case RemoteTrackingOptions = \"radar-remoteTrackingOptions\""},{"violation":{"reason":"Enum element name 'ClientSdkConfiguration' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":27,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case ClientSdkConfiguration = \"radar-clientSdkConfiguration\""},{"violation":{"reason":"Enum element name 'SdkConfiguration' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":28,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case SdkConfiguration = \"radar-sdkConfiguration\""},{"violation":{"reason":"Enum element name 'TripOptions' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":29,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case TripOptions = \"radar-tripOptions\""},{"violation":{"reason":"Enum element name 'Trip' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":30,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case Trip = \"radar-trip\""},{"violation":{"reason":"Enum element name 'LogLevel' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":31,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LogLevel = \"radar-logLevel\""},{"violation":{"reason":"Enum element name 'BeaconUUIDs' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":32,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case BeaconUUIDs = \"radar-beaconUUIDs\""},{"violation":{"reason":"Enum element name 'Host' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":33,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case Host = \"radar-host\""},{"violation":{"reason":"Enum element name 'LastTrackedTime' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":34,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LastTrackedTime = \"radar-lastTrackedTime\""},{"violation":{"reason":"Enum element name 'VerifiedHost' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":35,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case VerifiedHost = \"radar-verifiedHost\""},{"violation":{"reason":"Enum element name 'LastAppOpenTime' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":36,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LastAppOpenTime = \"radar-lastAppOpenTime\""},{"violation":{"reason":"Enum element name 'UserDebug' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":37,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case UserDebug = \"radar-userDebug\""},{"violation":{"reason":"Enum element name 'InitializeOptions' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":40,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case InitializeOptions = \"radar-initializeOptions\""},{"violation":{"reason":"Enum element name 'UserTags' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":41,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case UserTags = \"radar-userTags\""},{"violation":{"reason":"Enum element name 'PushNotificationToken' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":42,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case PushNotificationToken = \"radar-pushNotificationToken\""},{"violation":{"reason":"Enum element name 'LocationExtensionToken' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":43,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LocationExtensionToken = \"radar-locationExtensionToken\""},{"violation":{"reason":"Enum element name 'InSurveyMode' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":44,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case InSurveyMode = \"radar-inSurveyMode\""},{"violation":{"reason":"Enum element name 'AppGroup' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":45,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case AppGroup = \"radar-appGroup\""},{"violation":{"reason":"Enum element name 'LastLocation' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":48,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LastLocation = \"radar-lastLocation\""},{"violation":{"reason":"Enum element name 'LastMovedLocation' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":49,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LastMovedLocation = \"radar-lastMovedLocation\""},{"violation":{"reason":"Enum element name 'LastMovedAt' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":50,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LastMovedAt = \"radar-lastMovedAt\""},{"violation":{"reason":"Enum element name 'Stopped' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":51,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case Stopped = \"radar-stopped\""},{"violation":{"reason":"Enum element name 'LastSentAt' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":52,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LastSentAt = \"radar-lastSentAt\""},{"violation":{"reason":"Enum element name 'CanExit' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":53,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case CanExit = \"radar-canExit\""},{"violation":{"reason":"Enum element name 'LastFailedStoppedLocation' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":54,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LastFailedStoppedLocation = \"radar-lastFailedStoppedLocation\""},{"violation":{"reason":"Enum element name 'GeofenceIds' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":55,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case GeofenceIds = \"radar-geofenceIds\""},{"violation":{"reason":"Enum element name 'PlaceId' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":56,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case PlaceId = \"radar-placeId\""},{"violation":{"reason":"Enum element name 'RegionIds' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":57,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case RegionIds = \"radar-regionIds\""},{"violation":{"reason":"Enum element name 'BeaconIds' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":58,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case BeaconIds = \"radar-beaconIds\""},{"violation":{"reason":"Enum element name 'LastHeadingData' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":59,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LastHeadingData = \"radar-lastHeadingData\""},{"violation":{"reason":"Enum element name 'LastMotionActivityData' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":60,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LastMotionActivityData = \"radar-lastMotionActivityData\""},{"violation":{"reason":"Enum element name 'LastPressureData' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":61,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case LastPressureData = \"radar-lastPressureData\""},{"violation":{"reason":"Enum element name 'NotificationPermissionGranted' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":62,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case NotificationPermissionGranted = \"radar-notificationPermissionGranted\""},{"violation":{"reason":"Enum element name 'RegisteredNotifications' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":63,"file":"RadarSDK\/RadarUserDefaults.swift","character":14},"severity":"error","ruleName":"Identifier Name"},"text":"        case RegisteredNotifications = \"radar-registeredNotifications\""},{"violation":{"reason":"Variable name 'to' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":88,"file":"RadarSDK\/RadarUserDefaults.swift","character":50},"severity":"warning","ruleName":"Identifier Name"},"text":"    public static func clone(from: UserDefaults, to: UserDefaults) {"},{"violation":{"reason":"Function name 'InAppMessageTestConstruction()' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":108,"file":"RadarSDKTests\/InAppMessageTest.swift","character":10},"severity":"error","ruleName":"Identifier Name"},"text":"    func InAppMessageTestConstruction() throws {"},{"violation":{"reason":"Function name 'InAppMessageTestToDictionary()' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":126,"file":"RadarSDKTests\/InAppMessageTest.swift","character":10},"severity":"error","ruleName":"Identifier Name"},"text":"    func InAppMessageTestToDictionary() throws {"},{"violation":{"reason":"Function name 'InAppMessageTestCreateView()' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":159,"file":"RadarSDKTests\/InAppMessageTest.swift","character":10},"severity":"error","ruleName":"Identifier Name"},"text":"    func InAppMessageTestCreateView() async throws {"},{"violation":{"reason":"Function name 'InAppMessageViewAlreadyExist()' should start with a lowercase character","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":185,"file":"RadarSDKTests\/InAppMessageTest.swift","character":10},"severity":"error","ruleName":"Identifier Name"},"text":"    func InAppMessageViewAlreadyExist() async throws {"},{"violation":{"reason":"Optional should be implicitly initialized without nil","ruleIdentifier":"implicit_optional_initialization","ruleDescription":"Optionals should be consistently initialized, either with `= nil` or without.","location":{"line":12,"file":"RadarSDKTests\/MockRadarState.swift","character":17},"severity":"warning","ruleName":"Implicit Optional Initialization"},"text":"    private var _registeredNotifications: [NotificationValue]? = nil"},{"violation":{"reason":"Variable name 'i' should be between 3 and 40 characters long","ruleIdentifier":"identifier_name","ruleDescription":"Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.","location":{"line":223,"file":"RadarSDKTests\/RadarNotificationHelperTest.swift","character":13},"severity":"error","ruleName":"Identifier Name"},"text":"        for i in 0..<10 {"},{"violation":{"reason":"Unused parameter in a closure should be replaced with _","ruleIdentifier":"unused_closure_parameter","ruleDescription":"Unused parameter in a closure should be replaced with _","location":{"line":100,"file":"RadarSDKTests\/RadarOfflineEventManagerTests.swift","character":75},"severity":"warning","ruleName":"Unused Closure Parameter"},"text":"            RadarOfflineEventManager.generateEvents(location: location) { events, _, _ in"},{"violation":{"reason":"Unused parameter in a closure should be replaced with _","ruleIdentifier":"unused_closure_parameter","ruleDescription":"Unused parameter in a closure should be replaced with _","location":{"line":254,"file":"RadarSDKTests\/RadarOfflineEventManagerTests.swift","character":93},"severity":"warning","ruleName":"Unused Closure Parameter"},"text":"                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in"},{"violation":{"reason":"Unused parameter in a closure should be replaced with _","ruleIdentifier":"unused_closure_parameter","ruleDescription":"Unused parameter in a closure should be replaced with _","location":{"line":274,"file":"RadarSDKTests\/RadarOfflineEventManagerTests.swift","character":79},"severity":"warning","ruleName":"Unused Closure Parameter"},"text":"                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in"},{"violation":{"reason":"Unused parameter in a closure should be replaced with _","ruleIdentifier":"unused_closure_parameter","ruleDescription":"Unused parameter in a closure should be replaced with _","location":{"line":274,"file":"RadarSDKTests\/RadarOfflineEventManagerTests.swift","character":87},"severity":"warning","ruleName":"Unused Closure Parameter"},"text":"                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in"},{"violation":{"reason":"Unused parameter in a closure should be replaced with _","ruleIdentifier":"unused_closure_parameter","ruleDescription":"Unused parameter in a closure should be replaced with _","location":{"line":274,"file":"RadarSDKTests\/RadarOfflineEventManagerTests.swift","character":93},"severity":"warning","ruleName":"Unused Closure Parameter"},"text":"                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in"},{"violation":{"reason":"Unused parameter in a closure should be replaced with _","ruleIdentifier":"unused_closure_parameter","ruleDescription":"Unused parameter in a closure should be replaced with _","location":{"line":291,"file":"RadarSDKTests\/RadarOfflineEventManagerTests.swift","character":87},"severity":"warning","ruleName":"Unused Closure Parameter"},"text":"                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in"},{"violation":{"reason":"Unused parameter in a closure should be replaced with _","ruleIdentifier":"unused_closure_parameter","ruleDescription":"Unused parameter in a closure should be replaced with _","location":{"line":291,"file":"RadarSDKTests\/RadarOfflineEventManagerTests.swift","character":93},"severity":"warning","ruleName":"Unused Closure Parameter"},"text":"                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in"},{"violation":{"reason":"Unused parameter in a closure should be replaced with _","ruleIdentifier":"unused_closure_parameter","ruleDescription":"Unused parameter in a closure should be replaced with _","location":{"line":22,"file":"RadarSDKTests\/RadarSettingsTest.swift","character":64},"severity":"warning","ruleName":"Unused Closure Parameter"},"text":"        userDefaults.dictionaryRepresentation().forEach { key, value in"},{"violation":{"reason":"Struct body should span 350 lines or less excluding comments and whitespace: currently spans 670 lines","ruleIdentifier":"type_body_length","ruleDescription":"Type bodies should not span too many lines","location":{"line":16,"file":"RadarSDKTests\/RadarSyncManagerTests.swift","character":5},"severity":"error","ruleName":"Type Body Length"},"text":"    struct RadarSyncManagerTests {"},{"violation":{"reason":"File should contain 400 lines or less: currently contains 874","ruleIdentifier":"file_length","ruleDescription":"Files should not span too many lines.","location":{"line":874,"file":"RadarSDKTests\/RadarSyncManagerTests.swift","character":1},"severity":"warning","ruleName":"File Length"},"text":"}"}]
+[
+  {
+    "text": "    func fetchSyncRegion(latitude: Double, longitude: Double) async throws -> SyncRegionResponse {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarAPIClient.swift",
+        "line": 40
+      },
+      "reason": "Function body should span 50 lines or less excluding comments and whitespace: currently spans 52 lines",
+      "ruleDescription": "Function bodies should not span too many lines",
+      "ruleIdentifier": "function_body_length",
+      "ruleName": "Function Body Length",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "        if let v = try? container.decode(Bool.self) {",
+    "violation": {
+      "location": {
+        "character": 16,
+        "file": "RadarSDK/RadarGeofence.swift",
+        "line": 172
+      },
+      "reason": "Variable name 'v' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        } else if let v = try? container.decode(Int.self) {",
+    "violation": {
+      "location": {
+        "character": 23,
+        "file": "RadarSDK/RadarGeofence.swift",
+        "line": 174
+      },
+      "reason": "Variable name 'v' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        } else if let v = try? container.decode(Double.self) {",
+    "violation": {
+      "location": {
+        "character": 23,
+        "file": "RadarSDK/RadarGeofence.swift",
+        "line": 176
+      },
+      "reason": "Variable name 'v' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        } else if let v = try? container.decode(String.self) {",
+    "violation": {
+      "location": {
+        "character": 23,
+        "file": "RadarSDK/RadarGeofence.swift",
+        "line": 178
+      },
+      "reason": "Variable name 'v' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case .string(let v): try container.encode(v)",
+    "violation": {
+      "location": {
+        "character": 26,
+        "file": "RadarSDK/RadarGeofence.swift",
+        "line": 188
+      },
+      "reason": "Variable name 'v' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case .int(let v): try container.encode(v)",
+    "violation": {
+      "location": {
+        "character": 23,
+        "file": "RadarSDK/RadarGeofence.swift",
+        "line": 189
+      },
+      "reason": "Variable name 'v' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case .double(let v): try container.encode(v)",
+    "violation": {
+      "location": {
+        "character": 26,
+        "file": "RadarSDK/RadarGeofence.swift",
+        "line": 190
+      },
+      "reason": "Variable name 'v' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case .bool(let v): try container.encode(v)",
+    "violation": {
+      "location": {
+        "character": 24,
+        "file": "RadarSDK/RadarGeofence.swift",
+        "line": 191
+      },
+      "reason": "Variable name 'v' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "struct RadarGeofence_Swift: Codable, Sendable, Equatable {",
+    "violation": {
+      "location": {
+        "character": 8,
+        "file": "RadarSDK/RadarGeofence.swift",
+        "line": 205
+      },
+      "reason": "Type name 'RadarGeofence_Swift' should only contain alphanumeric and other allowed characters",
+      "ruleDescription": "Type name should only contain alphanumeric characters, start with an uppercase character and span between 3 and 40 characters in length.\nPrivate types may start with an underscore.",
+      "ruleIdentifier": "type_name",
+      "ruleName": "Type Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "    public let _id: String",
+    "violation": {
+      "location": {
+        "character": 16,
+        "file": "RadarSDK/RadarGeofence.swift",
+        "line": 208
+      },
+      "reason": "Variable name '_id' should only contain alphanumeric and other allowed characters",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "public final class RadarInAppMessage_Swift: RadarInAppMessage {",
+    "violation": {
+      "location": {
+        "character": 20,
+        "file": "RadarSDK/RadarInAppMessage.swift",
+        "line": 11
+      },
+      "reason": "Type name 'RadarInAppMessage_Swift' should only contain alphanumeric and other allowed characters",
+      "ruleDescription": "Type name should only contain alphanumeric characters, start with an uppercase character and span between 3 and 40 characters in length.\nPrivate types may start with an underscore.",
+      "ruleIdentifier": "type_name",
+      "ruleName": "Type Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "            var image: UIImage? = nil",
+    "violation": {
+      "location": {
+        "character": 17,
+        "file": "RadarSDK/RadarInAppMessageDelegate.swift",
+        "line": 42
+      },
+      "reason": "Optional should be implicitly initialized without nil",
+      "ruleDescription": "Optionals should be consistently initialized, either with `= nil` or without.",
+      "ruleIdentifier": "implicit_optional_initialization",
+      "ruleName": "Implicit Optional Initialization",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "            ) { result in",
+    "violation": {
+      "location": {
+        "character": 15,
+        "file": "RadarSDK/RadarInAppMessageManager.swift",
+        "line": 82
+      },
+      "reason": "Trailing closure syntax should not be used when passing more than one closure argument",
+      "ruleDescription": "Trailing closure syntax should not be used when passing more than one closure argument",
+      "ruleIdentifier": "multiple_closures_with_trailing_closure",
+      "ruleName": "Multiple Closures with Trailing Closure",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "                        }) {",
+    "violation": {
+      "location": {
+        "character": 28,
+        "file": "RadarSDK/RadarInAppMessageView.swift",
+        "line": 49
+      },
+      "reason": "Trailing closure syntax should not be used when passing more than one closure argument",
+      "ruleDescription": "Trailing closure syntax should not be used when passing more than one closure argument",
+      "ruleIdentifier": "multiple_closures_with_trailing_closure",
+      "ruleName": "Multiple Closures with Trailing Closure",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "            ]) as! RadarInAppMessage_Swift,",
+    "violation": {
+      "location": {
+        "character": 16,
+        "file": "RadarSDK/RadarInAppMessageView.swift",
+        "line": 105
+      },
+      "reason": "Force casts should be avoided",
+      "ruleDescription": "Force casts should be avoided",
+      "ruleIdentifier": "force_cast",
+      "ruleName": "Force Cast",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "let RADAR_NOTIFICATION_PREFIX = \"radar_\"",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarNotification.swift",
+        "line": 8
+      },
+      "reason": "Variable name 'RADAR_NOTIFICATION_PREFIX' should only contain alphanumeric and other allowed characters",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "let GEOFENCE_NOTIFICATION_PREFIX = \"radar_geofence_\"",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarNotification.swift",
+        "line": 9
+      },
+      "reason": "Variable name 'GEOFENCE_NOTIFICATION_PREFIX' should only contain alphanumeric and other allowed characters",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "    init(from settings: UNNotificationSettings) {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarNotification.swift",
+        "line": 142
+      },
+      "reason": "Function should have complexity 10 or less; currently complexity is 26",
+      "ruleDescription": "Complexity of function bodies should be limited.",
+      "ruleIdentifier": "cyclomatic_complexity",
+      "ruleName": "Cyclomatic Complexity",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "    init(from settings: UNNotificationSettings) {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarNotification.swift",
+        "line": 142
+      },
+      "reason": "Initializer body should span 50 lines or less excluding comments and whitespace: currently spans 64 lines",
+      "ruleDescription": "Function bodies should not span too many lines",
+      "ruleIdentifier": "function_body_length",
+      "ruleName": "Function Body Length",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    private var currentTask: Task<Void, Never>? = nil",
+    "violation": {
+      "location": {
+        "character": 17,
+        "file": "RadarSDK/RadarNotificationHelper.swift",
+        "line": 32
+      },
+      "reason": "Optional should be implicitly initialized without nil",
+      "ruleDescription": "Optionals should be consistently initialized, either with `= nil` or without.",
+      "ruleIdentifier": "implicit_optional_initialization",
+      "ruleName": "Implicit Optional Initialization",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    nonisolated(unsafe) private static var _offlineGeofenceIds: Set<String>? = nil",
+    "violation": {
+      "location": {
+        "character": 44,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 16
+      },
+      "reason": "Optional should be implicitly initialized without nil",
+      "ruleDescription": "Optionals should be consistently initialized, either with `= nil` or without.",
+      "ruleIdentifier": "implicit_optional_initialization",
+      "ruleName": "Implicit Optional Initialization",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    @objc static func reset() {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 23
+      },
+      "reason": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleIdentifier": "redundant_objc_attribute",
+      "ruleName": "Redundant @objc Attribute",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    @objc static func generateEvents(",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 29
+      },
+      "reason": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleIdentifier": "redundant_objc_attribute",
+      "ruleName": "Redundant @objc Attribute",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    @objc static func handleTrackFailure(_ location: CLLocation) {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 79
+      },
+      "reason": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleIdentifier": "redundant_objc_attribute",
+      "ruleName": "Redundant @objc Attribute",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "            generateEvents(location: location) { events, user, loc in",
+    "violation": {
+      "location": {
+        "character": 64,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 83
+      },
+      "reason": "Unused parameter in a closure should be replaced with _",
+      "ruleDescription": "Unused parameter in a closure should be replaced with _",
+      "ruleIdentifier": "unused_closure_parameter",
+      "ruleName": "Unused Closure Parameter",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    @objc static func updateTrackingOptions(geofenceTags: [String]) -> RadarTrackingOptions? {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 93
+      },
+      "reason": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleIdentifier": "redundant_objc_attribute",
+      "ruleName": "Redundant @objc Attribute",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    @objc static func updateTrackingOptions(for location: CLLocation) -> RadarTrackingOptions? {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 119
+      },
+      "reason": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleIdentifier": "redundant_objc_attribute",
+      "ruleName": "Redundant @objc Attribute",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "            if !existingTagsSet.contains(tag) {",
+    "violation": {
+      "location": {
+        "character": 13,
+        "file": "RadarSDK/RadarSettings.swift",
+        "line": 333
+      },
+      "reason": "`where` clauses are preferred over a single `if` inside a `for`",
+      "ruleDescription": "`where` clauses are preferred over a single `if` inside a `for`",
+      "ruleIdentifier": "for_where",
+      "ruleName": "Prefer For-Where",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "public final class RadarSyncManager: NSObject {",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarSyncManager.swift",
+        "line": 13
+      },
+      "reason": "Class body should span 350 lines or less excluding comments and whitespace: currently spans 609 lines",
+      "ruleDescription": "Type bodies should not span too many lines",
+      "ruleIdentifier": "type_body_length",
+      "ruleName": "Type Body Length",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "    private static func greatCircleInterpolate(from a: CLLocationCoordinate2D, to b: CLLocationCoordinate2D, fraction t: Double) -> CLLocationCoordinate2D {",
+    "violation": {
+      "location": {
+        "character": 119,
+        "file": "RadarSDK/RadarSyncManager.swift",
+        "line": 257
+      },
+      "reason": "Variable name 't' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        let h = sinHalfDLat * sinHalfDLat + cos(lat1) * cos(lat2) * sinHalfDLon * sinHalfDLon",
+    "violation": {
+      "location": {
+        "character": 13,
+        "file": "RadarSDK/RadarSyncManager.swift",
+        "line": 267
+      },
+      "reason": "Variable name 'h' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "    @objc public static func reconcileSyncState(user: RadarUser) {",
+    "violation": {
+      "location": {
+        "character": 18,
+        "file": "RadarSDK/RadarSyncManager.swift",
+        "line": 643
+      },
+      "reason": "Function should have complexity 10 or less; currently complexity is 11",
+      "ruleDescription": "Complexity of function bodies should be limited.",
+      "ruleIdentifier": "cyclomatic_complexity",
+      "ruleName": "Cyclomatic Complexity",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    @objc public static func reconcileSyncState(user: RadarUser) {",
+    "violation": {
+      "location": {
+        "character": 25,
+        "file": "RadarSDK/RadarSyncManager.swift",
+        "line": 643
+      },
+      "reason": "Function body should span 50 lines or less excluding comments and whitespace: currently spans 58 lines",
+      "ruleDescription": "Function bodies should not span too many lines",
+      "ruleIdentifier": "function_body_length",
+      "ruleName": "Function Body Length",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "}",
+    "violation": {
+      "location": {
+        "character": 1,
+        "file": "RadarSDK/RadarSyncManager.swift",
+        "line": 775
+      },
+      "reason": "File should contain 400 lines or less: currently contains 775",
+      "ruleDescription": "Files should not span too many lines.",
+      "ruleIdentifier": "file_length",
+      "ruleName": "File Length",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "        case PublishableKey = \"radar-publishableKey\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 14
+      },
+      "reason": "Enum element name 'PublishableKey' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case InstallId = \"radar-installId\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 15
+      },
+      "reason": "Enum element name 'InstallId' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case SessionId = \"radar-sessionId\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 16
+      },
+      "reason": "Enum element name 'SessionId' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case Id = \"radar-_id\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 17
+      },
+      "reason": "Enum element name 'Id' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "        case UserId = \"radar-userId\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 18
+      },
+      "reason": "Enum element name 'UserId' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case Description = \"radar-description\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 19
+      },
+      "reason": "Enum element name 'Description' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case Product = \"radar-product\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 20
+      },
+      "reason": "Enum element name 'Product' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case Metadata = \"radar-metadata\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 21
+      },
+      "reason": "Enum element name 'Metadata' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case Anonymous = \"radar-anonymous\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 22
+      },
+      "reason": "Enum element name 'Anonymous' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case Tracking = \"radar-tracking\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 23
+      },
+      "reason": "Enum element name 'Tracking' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case TrackingOptions = \"radar-trackingOptions\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 24
+      },
+      "reason": "Enum element name 'TrackingOptions' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case PreviousTrackingOptions = \"radar-previousTrackingOptions\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 25
+      },
+      "reason": "Enum element name 'PreviousTrackingOptions' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case RemoteTrackingOptions = \"radar-remoteTrackingOptions\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 26
+      },
+      "reason": "Enum element name 'RemoteTrackingOptions' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case ClientSdkConfiguration = \"radar-clientSdkConfiguration\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 27
+      },
+      "reason": "Enum element name 'ClientSdkConfiguration' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case SdkConfiguration = \"radar-sdkConfiguration\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 28
+      },
+      "reason": "Enum element name 'SdkConfiguration' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case TripOptions = \"radar-tripOptions\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 29
+      },
+      "reason": "Enum element name 'TripOptions' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case Trip = \"radar-trip\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 30
+      },
+      "reason": "Enum element name 'Trip' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LogLevel = \"radar-logLevel\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 31
+      },
+      "reason": "Enum element name 'LogLevel' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case BeaconUUIDs = \"radar-beaconUUIDs\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 32
+      },
+      "reason": "Enum element name 'BeaconUUIDs' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case Host = \"radar-host\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 33
+      },
+      "reason": "Enum element name 'Host' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LastTrackedTime = \"radar-lastTrackedTime\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 34
+      },
+      "reason": "Enum element name 'LastTrackedTime' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case VerifiedHost = \"radar-verifiedHost\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 35
+      },
+      "reason": "Enum element name 'VerifiedHost' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LastAppOpenTime = \"radar-lastAppOpenTime\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 36
+      },
+      "reason": "Enum element name 'LastAppOpenTime' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case UserDebug = \"radar-userDebug\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 37
+      },
+      "reason": "Enum element name 'UserDebug' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case InitializeOptions = \"radar-initializeOptions\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 40
+      },
+      "reason": "Enum element name 'InitializeOptions' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case UserTags = \"radar-userTags\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 41
+      },
+      "reason": "Enum element name 'UserTags' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case PushNotificationToken = \"radar-pushNotificationToken\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 42
+      },
+      "reason": "Enum element name 'PushNotificationToken' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LocationExtensionToken = \"radar-locationExtensionToken\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 43
+      },
+      "reason": "Enum element name 'LocationExtensionToken' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case InSurveyMode = \"radar-inSurveyMode\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 44
+      },
+      "reason": "Enum element name 'InSurveyMode' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case AppGroup = \"radar-appGroup\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 45
+      },
+      "reason": "Enum element name 'AppGroup' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LastLocation = \"radar-lastLocation\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 48
+      },
+      "reason": "Enum element name 'LastLocation' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LastMovedLocation = \"radar-lastMovedLocation\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 49
+      },
+      "reason": "Enum element name 'LastMovedLocation' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LastMovedAt = \"radar-lastMovedAt\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 50
+      },
+      "reason": "Enum element name 'LastMovedAt' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case Stopped = \"radar-stopped\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 51
+      },
+      "reason": "Enum element name 'Stopped' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LastSentAt = \"radar-lastSentAt\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 52
+      },
+      "reason": "Enum element name 'LastSentAt' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case CanExit = \"radar-canExit\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 53
+      },
+      "reason": "Enum element name 'CanExit' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LastFailedStoppedLocation = \"radar-lastFailedStoppedLocation\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 54
+      },
+      "reason": "Enum element name 'LastFailedStoppedLocation' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case GeofenceIds = \"radar-geofenceIds\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 55
+      },
+      "reason": "Enum element name 'GeofenceIds' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case PlaceId = \"radar-placeId\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 56
+      },
+      "reason": "Enum element name 'PlaceId' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case RegionIds = \"radar-regionIds\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 57
+      },
+      "reason": "Enum element name 'RegionIds' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case BeaconIds = \"radar-beaconIds\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 58
+      },
+      "reason": "Enum element name 'BeaconIds' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LastHeadingData = \"radar-lastHeadingData\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 59
+      },
+      "reason": "Enum element name 'LastHeadingData' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LastMotionActivityData = \"radar-lastMotionActivityData\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 60
+      },
+      "reason": "Enum element name 'LastMotionActivityData' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case LastPressureData = \"radar-lastPressureData\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 61
+      },
+      "reason": "Enum element name 'LastPressureData' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case NotificationPermissionGranted = \"radar-notificationPermissionGranted\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 62
+      },
+      "reason": "Enum element name 'NotificationPermissionGranted' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "        case RegisteredNotifications = \"radar-registeredNotifications\"",
+    "violation": {
+      "location": {
+        "character": 14,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 63
+      },
+      "reason": "Enum element name 'RegisteredNotifications' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "    public static func clone(from: UserDefaults, to: UserDefaults) {",
+    "violation": {
+      "location": {
+        "character": 50,
+        "file": "RadarSDK/RadarUserDefaults.swift",
+        "line": 88
+      },
+      "reason": "Variable name 'to' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    func InAppMessageTestConstruction() throws {",
+    "violation": {
+      "location": {
+        "character": 10,
+        "file": "RadarSDKTests/InAppMessageTest.swift",
+        "line": 108
+      },
+      "reason": "Function name 'InAppMessageTestConstruction()' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "    func InAppMessageTestToDictionary() throws {",
+    "violation": {
+      "location": {
+        "character": 10,
+        "file": "RadarSDKTests/InAppMessageTest.swift",
+        "line": 126
+      },
+      "reason": "Function name 'InAppMessageTestToDictionary()' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "    func InAppMessageTestCreateView() async throws {",
+    "violation": {
+      "location": {
+        "character": 10,
+        "file": "RadarSDKTests/InAppMessageTest.swift",
+        "line": 159
+      },
+      "reason": "Function name 'InAppMessageTestCreateView()' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "    func InAppMessageViewAlreadyExist() async throws {",
+    "violation": {
+      "location": {
+        "character": 10,
+        "file": "RadarSDKTests/InAppMessageTest.swift",
+        "line": 185
+      },
+      "reason": "Function name 'InAppMessageViewAlreadyExist()' should start with a lowercase character",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "    private var _registeredNotifications: [NotificationValue]? = nil",
+    "violation": {
+      "location": {
+        "character": 17,
+        "file": "RadarSDKTests/MockRadarState.swift",
+        "line": 12
+      },
+      "reason": "Optional should be implicitly initialized without nil",
+      "ruleDescription": "Optionals should be consistently initialized, either with `= nil` or without.",
+      "ruleIdentifier": "implicit_optional_initialization",
+      "ruleName": "Implicit Optional Initialization",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "        for i in 0..<10 {",
+    "violation": {
+      "location": {
+        "character": 13,
+        "file": "RadarSDKTests/RadarNotificationHelperTest.swift",
+        "line": 223
+      },
+      "reason": "Variable name 'i' should be between 3 and 40 characters long",
+      "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
+      "ruleIdentifier": "identifier_name",
+      "ruleName": "Identifier Name",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "            RadarOfflineEventManager.generateEvents(location: location) { events, _, _ in",
+    "violation": {
+      "location": {
+        "character": 75,
+        "file": "RadarSDKTests/RadarOfflineEventManagerTests.swift",
+        "line": 100
+      },
+      "reason": "Unused parameter in a closure should be replaced with _",
+      "ruleDescription": "Unused parameter in a closure should be replaced with _",
+      "ruleIdentifier": "unused_closure_parameter",
+      "ruleName": "Unused Closure Parameter",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in",
+    "violation": {
+      "location": {
+        "character": 93,
+        "file": "RadarSDKTests/RadarOfflineEventManagerTests.swift",
+        "line": 254
+      },
+      "reason": "Unused parameter in a closure should be replaced with _",
+      "ruleDescription": "Unused parameter in a closure should be replaced with _",
+      "ruleIdentifier": "unused_closure_parameter",
+      "ruleName": "Unused Closure Parameter",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in",
+    "violation": {
+      "location": {
+        "character": 79,
+        "file": "RadarSDKTests/RadarOfflineEventManagerTests.swift",
+        "line": 274
+      },
+      "reason": "Unused parameter in a closure should be replaced with _",
+      "ruleDescription": "Unused parameter in a closure should be replaced with _",
+      "ruleIdentifier": "unused_closure_parameter",
+      "ruleName": "Unused Closure Parameter",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in",
+    "violation": {
+      "location": {
+        "character": 87,
+        "file": "RadarSDKTests/RadarOfflineEventManagerTests.swift",
+        "line": 274
+      },
+      "reason": "Unused parameter in a closure should be replaced with _",
+      "ruleDescription": "Unused parameter in a closure should be replaced with _",
+      "ruleIdentifier": "unused_closure_parameter",
+      "ruleName": "Unused Closure Parameter",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in",
+    "violation": {
+      "location": {
+        "character": 93,
+        "file": "RadarSDKTests/RadarOfflineEventManagerTests.swift",
+        "line": 274
+      },
+      "reason": "Unused parameter in a closure should be replaced with _",
+      "ruleDescription": "Unused parameter in a closure should be replaced with _",
+      "ruleIdentifier": "unused_closure_parameter",
+      "ruleName": "Unused Closure Parameter",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in",
+    "violation": {
+      "location": {
+        "character": 87,
+        "file": "RadarSDKTests/RadarOfflineEventManagerTests.swift",
+        "line": 291
+      },
+      "reason": "Unused parameter in a closure should be replaced with _",
+      "ruleDescription": "Unused parameter in a closure should be replaced with _",
+      "ruleIdentifier": "unused_closure_parameter",
+      "ruleName": "Unused Closure Parameter",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "                RadarOfflineEventManager.generateEvents(location: location) { events, user, loc in",
+    "violation": {
+      "location": {
+        "character": 93,
+        "file": "RadarSDKTests/RadarOfflineEventManagerTests.swift",
+        "line": 291
+      },
+      "reason": "Unused parameter in a closure should be replaced with _",
+      "ruleDescription": "Unused parameter in a closure should be replaced with _",
+      "ruleIdentifier": "unused_closure_parameter",
+      "ruleName": "Unused Closure Parameter",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "        userDefaults.dictionaryRepresentation().forEach { key, value in",
+    "violation": {
+      "location": {
+        "character": 64,
+        "file": "RadarSDKTests/RadarSettingsTest.swift",
+        "line": 22
+      },
+      "reason": "Unused parameter in a closure should be replaced with _",
+      "ruleDescription": "Unused parameter in a closure should be replaced with _",
+      "ruleIdentifier": "unused_closure_parameter",
+      "ruleName": "Unused Closure Parameter",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    struct RadarSyncManagerTests {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDKTests/RadarSyncManagerTests.swift",
+        "line": 16
+      },
+      "reason": "Struct body should span 350 lines or less excluding comments and whitespace: currently spans 670 lines",
+      "ruleDescription": "Type bodies should not span too many lines",
+      "ruleIdentifier": "type_body_length",
+      "ruleName": "Type Body Length",
+      "severity": "error"
+    }
+  },
+  {
+    "text": "}",
+    "violation": {
+      "location": {
+        "character": 1,
+        "file": "RadarSDKTests/RadarSyncManagerTests.swift",
+        "line": 874
+      },
+      "reason": "File should contain 400 lines or less: currently contains 874",
+      "ruleDescription": "Files should not span too many lines.",
+      "ruleIdentifier": "file_length",
+      "ruleName": "File Length",
+      "severity": "warning"
+    }
+  }
+]
