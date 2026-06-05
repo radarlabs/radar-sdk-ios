@@ -32,6 +32,10 @@ make format
 make lint-swift
 ```
 
+`.swiftlint-baseline.json` is written by SwiftLint as one minified line. A git clean filter
+(`.gitattributes` + `git config filter.swiftlint-baseline.clean "jq -S ."`) pretty-prints it
+on stage so its diffs stay readable. Run `make bootstrap` once to configure the filter.
+
 Tests use `xcodebuild` targeting an iPhone simulator. The default destination is `iPhone 17, OS=26.2`. Override with:
 
 ```bash
