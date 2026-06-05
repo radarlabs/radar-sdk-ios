@@ -166,6 +166,7 @@
 		BA46C16A2F4E0A9000031891 /* trip_with_legs.json in Resources */ = {isa = PBXBuildFile; fileRef = BA46C1692F4E0A8300031891 /* trip_with_legs.json */; };
 		BA46C16C2F4E0CFA00031891 /* RadarTripLegTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BA46C16B2F4E0CEC00031891 /* RadarTripLegTest.m */; };
 		BA561CD82FD377AA00D7A3E3 /* RadarOperatingHoursEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA561CD72FD377A100D7A3E3 /* RadarOperatingHoursEvaluator.swift */; };
+		BA561CDA2FD3869500D7A3E3 /* RadarOperatingHoursEvaluatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA561CD92FD3868600D7A3E3 /* RadarOperatingHoursEvaluatorTest.swift */; };
 		BA7180552FB3D33100A28DD4 /* RadarUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7180542FB3D32900A28DD4 /* RadarUtilsTests.swift */; };
 		BA7794BA2FAD195E00E197CA /* RadarLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7794B82FAD195E00E197CA /* RadarLog.swift */; };
 		BA7794BB2FAD195E00E197CA /* RadarLogBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7794B92FAD195E00E197CA /* RadarLogBuffer.swift */; };
@@ -349,6 +350,7 @@
 		BA46C1692F4E0A8300031891 /* trip_with_legs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = trip_with_legs.json; sourceTree = "<group>"; };
 		BA46C16B2F4E0CEC00031891 /* RadarTripLegTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTripLegTest.m; sourceTree = "<group>"; };
 		BA561CD72FD377A100D7A3E3 /* RadarOperatingHoursEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOperatingHoursEvaluator.swift; sourceTree = "<group>"; };
+		BA561CD92FD3868600D7A3E3 /* RadarOperatingHoursEvaluatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOperatingHoursEvaluatorTest.swift; sourceTree = "<group>"; };
 		BA7180542FB3D32900A28DD4 /* RadarUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarUtilsTests.swift; sourceTree = "<group>"; };
 		BA7794B82FAD195E00E197CA /* RadarLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLog.swift; sourceTree = "<group>"; };
 		BA7794B92FAD195E00E197CA /* RadarLogBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLogBuffer.swift; sourceTree = "<group>"; };
@@ -678,6 +680,7 @@
 		DD236C822308797B00EB88F9 /* RadarSDKTests */ = {
 			isa = PBXGroup;
 			children = (
+				BA561CD92FD3868600D7A3E3 /* RadarOperatingHoursEvaluatorTest.swift */,
 				BA7180542FB3D32900A28DD4 /* RadarUtilsTests.swift */,
 				BA7794BC2FAD198B00E197CA /* MockAPIHelper.swift */,
 				BA7794BD2FAD198B00E197CA /* RadarFileStorageTests.swift */,
@@ -1117,6 +1120,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA561CDA2FD3869500D7A3E3 /* RadarOperatingHoursEvaluatorTest.swift in Sources */,
 				F6A0DAC82EF087AC00BC10B4 /* RadarSettingsTest.swift in Sources */,
 				F6FA1102000000000000A001 /* RadarVerifiedHostOverrideTests.swift in Sources */,
 				DD8E2F7424018C17002D51AB /* RadarPermissionsHelperMock.m in Sources */,
