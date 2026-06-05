@@ -31,39 +31,61 @@ actor RadarNotificationHelper: NSObject {
 
     private var currentTask: Task<Void, Never>?
     private var isRegistering: Bool = false
+    private let geofenceStore: RadarFileStorageObject<[RadarGeofenceSwift]>
 
     public static let shared = RadarNotificationHelper()
 
     private let notificationCenter: NotificationCenterProtocol
     private let radarState: RadarState
 
-    init(notificationCenter: NotificationCenterProtocol = UNUserNotificationCenter.current(), radarState: RadarState = RadarState()) {
+    init(
+        notificationCenter: NotificationCenterProtocol = UNUserNotificationCenter.current(),
+        radarState: RadarState = RadarState(),
+        geofenceStore: RadarFileStorageObject<[RadarGeofenceSwift]> = RadarFileStorageObject(fileName: "radar_notification_geofences.json")
+    ) {
         self.notificationCenter = notificationCenter
         self.radarState = radarState
+        self.geofenceStore = geofenceStore
     }
 
     public func registerGeofenceNotifications(geofences: [[String: Sendable]]?) async {
         guard let geofences else {
             return
         }
-
-        let now = Date()
-        let notifications: [UNNotificationRequest] = geofences.compactMap { (geofenceDict) -> UNNotificationRequest? in
-            if let json = try? JSONSerialization.data(withJSONObject: geofenceDict),
-                let geofence = try? JSONDecoder().decode(RadarGeofenceSwift.self, from: json),
-                let notification = geofence.toNotificationRequest(now: now)
-            {
-                return notification
+        
+        let decoded: [RadarGeofenceSwift] = geofences.compactMap { geofenceDict in
+            guard let json = try? JSONSerialization.data(withJSONObject: geofenceDict),
+                  let geofence = try? JSONDecoder().decode(RadarGeofenceSwift.self, from: json)
+            else {
+                return nil
             }
-            return nil
+            return geofence
         }
+        
+        // Persist the full nearby set (incl. metadata + operatingHours) so a
+        // refresh can re-evaluate operating hours later without a track
+        geofenceStore.writeAsync(decoded)
+        
+        await registerGeofences(decoded)
+    }
+    
+    public func refreshGeofenceNotifications() async {
+        guard let geofences = geofenceStore.read() else {
+            return
+        }
+        await registerGeofences(geofences)
+    }
 
+    private func registerGeofences(_ geofences: [RadarGeofenceSwift]) async {
+        let now = Date()
+        let notifications: [UNNotificationRequest] = geofences.compactMap { $0.toNotificationRequest(now: now) }
+        
         RadarLogger.debug("NotificationHelper registering: \(notifications.map(\.identifier))")
-
+        
         // cancel previous work
         let previousTask = currentTask
         previousTask?.cancel()
-
+        
         isRegistering = true
         let task = Task { [notifications] in
             await previousTask?.value
@@ -81,7 +103,7 @@ actor RadarNotificationHelper: NSObject {
         currentTask = task
         await task.value
     }
-
+    
     private func registerNotifications(notifications: [UNNotificationRequest]?) async {
         // if notifications is not null, we update the pending notifications, otherwise we only update the registered notifications list
         if let notifications {

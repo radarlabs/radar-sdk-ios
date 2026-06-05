@@ -66,6 +66,23 @@ extension RadarGeofenceSwift {
         else {
             return nil
         }
+
+        if case .bool(true)? = metadata["radar:restrictToOperatingHours"] {
+            let closeBufferMinutes: Int = {
+                if case let .int(value)? = metadata["radar:operatingHoursCloseBufferMinutes"] {
+                    return value
+                }
+                return 0
+            }()
+            if !RadarOperatingHoursEvaluator.isOpen(
+                operatingHours: operatingHours,
+                now: now,
+                closeBufferMinutes: closeBufferMinutes
+            ) {
+                return nil
+            }
+        }
+
         guard let geofenceData = try? JSONEncoder().encode(self) else {
             return nil
         }
