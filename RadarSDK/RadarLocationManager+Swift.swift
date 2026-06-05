@@ -71,6 +71,7 @@ final class RadarLocationManagerSwift: NSObject {
     @objc(replaceSyncedBeaconsOnLocationManager:beacons:)
     static func replaceSyncedBeacons(locationManager: CLLocationManager, beacons: [RadarBeacon]?) {
         if RadarSettings.useRadarModifiedBeacon {
+            RadarLogger.shared.debug("🦅 Skipping replacing synced beacons | useRadarModifiedBeacon = true")
             return
         }
 
@@ -93,8 +94,15 @@ final class RadarLocationManagerSwift: NSObject {
                 continue
             }
 
-            let major = CLBeaconMajorValue(truncatingIfNeeded: Int(beacon.major) ?? 0)
-            let minor = CLBeaconMinorValue(truncatingIfNeeded: Int(beacon.minor) ?? 0)
+            guard let majorInt = Int(beacon.major), let minorInt = Int(beacon.minor) else {
+                RadarLogger.shared.debug(
+                    "🦅 Error syncing beacon | identifier = \(identifier); uuid = \(beacon.uuid); major = \(beacon.major); minor = \(beacon.minor)"
+                )
+                continue
+            }
+
+            let major = CLBeaconMajorValue(truncatingIfNeeded: majorInt)
+            let minor = CLBeaconMinorValue(truncatingIfNeeded: minorInt)
             let region = CLBeaconRegion(
                 proximityUUID: proximityUUID,
                 major: major,
@@ -114,6 +122,7 @@ final class RadarLocationManagerSwift: NSObject {
     @objc(replaceSyncedBeaconUUIDsOnLocationManager:uuids:)
     static func replaceSyncedBeaconUUIDs(locationManager: CLLocationManager, uuids: [String]?) {
         if RadarSettings.useRadarModifiedBeacon {
+            RadarLogger.shared.debug("🦅 Skipping replacing synced beacon UUIDs | useRadarModifiedBeacon = true")
             return
         }
 
@@ -121,6 +130,7 @@ final class RadarLocationManagerSwift: NSObject {
 
         let options = Radar.getTrackingOptions()
         guard RadarSettings.tracking, options.beacons, let uuids else {
+            RadarLogger.shared.debug("🦅 Skipping replacing synced beacon UUIDs")
             return
         }
 
@@ -145,6 +155,7 @@ final class RadarLocationManagerSwift: NSObject {
     @objc(removeSyncedBeaconsOnLocationManager:)
     static func removeSyncedBeacons(locationManager: CLLocationManager) {
         if RadarSettings.useRadarModifiedBeacon {
+            RadarLogger.shared.debug("🦅 Skipping removing synced beacons | useRadarModifiedBeacon = true")
             return
         }
 
