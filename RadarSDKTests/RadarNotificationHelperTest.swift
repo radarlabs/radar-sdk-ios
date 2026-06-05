@@ -75,7 +75,7 @@ private func makeGeofenceDict(
     if let closeBufferMinutes {
         metadata["radar:operatingHoursCloseBufferMinutes"] = closeBufferMinutes
     }
-    
+
     var dict: [String: Sendable] = [
         "_id": id,
         "description": "Test Geofence \(id)",
@@ -286,7 +286,7 @@ struct RadarNotificationHelperTest {
         let delivered = await helper.getDeliveredNotifications()
         #expect(delivered.isEmpty, "No false deliveries after rapid registrations")
     }
-    
+
     @Test("restricted geofence is suppressed when closed")
     func restrictedGeofenceSuppressedWhenClosed() {
         let now = localDate(hour: 23)
@@ -298,7 +298,7 @@ struct RadarNotificationHelperTest {
         let geofence = decodeGeofence(dict)
         #expect(geofence?.toNotificationRequest(now: now) == nil)
     }
-    
+
     @Test("restricted geofence is registered when open")
     func restrictedGeofenceRegisteredWhenOpen() {
         let now = localDate(hour: 12)
@@ -310,7 +310,7 @@ struct RadarNotificationHelperTest {
         let geofence = decodeGeofence(dict)
         #expect(geofence?.toNotificationRequest(now: now) != nil)
     }
-    
+
     @Test("unrestricted geofence ignores operating hours")
     func unrestrictedGeofenceIgnoresHours() {
         let now = localDate(hour: 23)
@@ -322,7 +322,7 @@ struct RadarNotificationHelperTest {
         let geofence = decodeGeofence(dict)
         #expect(geofence?.toNotificationRequest(now: now) != nil)
     }
-    
+
     @Test("restricted geofence with no hours is treated as open")
     func restrictedGeofenceNilHoursOpen() {
         let now = localDate(hour: 23)
@@ -330,7 +330,7 @@ struct RadarNotificationHelperTest {
         let geofence = decodeGeofence(dict)
         #expect(geofence?.toNotificationRequest(now: now) != nil)
     }
-    
+
     @Test("close buffer suppresses a restricted geofence near closing")
     func restrictedGeofenceCloseBufferSuppresses() {
         let now = localDate(hour: 16, minute: 45)
@@ -343,30 +343,30 @@ struct RadarNotificationHelperTest {
         let geofence = decodeGeofence(dict)
         #expect(geofence?.toNotificationRequest(now: now) == nil)
     }
-    
+
     @Test("refresh re-registers from the persisted store")
     func refreshReRegistersFromStore() async {
         let mockCenter = MockNotificationCenter()
         let mockState = MockRadarState()
         let store = RadarFileStorageObject<[RadarGeofenceSwift]>(fileName: "test/refresh_\(UUID().uuidString).json")
         let helper = RadarNotificationHelper(notificationCenter: mockCenter, radarState: mockState, geofenceStore: store)
-        
+
         await helper.registerGeofenceNotifications(geofences: [
             makeGeofenceDict(id: "1"),
             makeGeofenceDict(id: "2"),
         ])
-        
+
         // Simulate the pending list being lost (e.g. relaunch) so we can prove refresh rebuilds it.
         mockCenter.pendingRequests.removeAll()
-        
+
         await helper.refreshGeofenceNotifications()
-        
+
         let pending = await mockCenter.pendingNotificationRequests()
         #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_1", "radar_geofence_2"]))
-        
+
         store.clear()
     }
-    
+
     @Test("refresh with an empty store is a no-op")
     func refreshEmptyStoreNoOp() async {
         let mockCenter = MockNotificationCenter()
@@ -374,9 +374,9 @@ struct RadarNotificationHelperTest {
         let store = RadarFileStorageObject<[RadarGeofenceSwift]>(fileName: "test/refresh_\(UUID().uuidString).json")
         store.clear()
         let helper = RadarNotificationHelper(notificationCenter: mockCenter, radarState: mockState, geofenceStore: store)
-        
+
         await helper.refreshGeofenceNotifications()
-        
+
         let pending = await mockCenter.pendingNotificationRequests()
         #expect(pending.isEmpty)
     }

@@ -52,23 +52,23 @@ actor RadarNotificationHelper: NSObject {
         guard let geofences else {
             return
         }
-        
+
         let decoded: [RadarGeofenceSwift] = geofences.compactMap { geofenceDict in
             guard let json = try? JSONSerialization.data(withJSONObject: geofenceDict),
-                  let geofence = try? JSONDecoder().decode(RadarGeofenceSwift.self, from: json)
+                let geofence = try? JSONDecoder().decode(RadarGeofenceSwift.self, from: json)
             else {
                 return nil
             }
             return geofence
         }
-        
+
         // Persist the full nearby set (incl. metadata + operatingHours) so a
         // refresh can re-evaluate operating hours later without a track
         geofenceStore.writeAsync(decoded)
-        
+
         await registerGeofences(decoded)
     }
-    
+
     public func refreshGeofenceNotifications() async {
         guard let geofences = geofenceStore.read() else {
             return
@@ -79,13 +79,13 @@ actor RadarNotificationHelper: NSObject {
     private func registerGeofences(_ geofences: [RadarGeofenceSwift]) async {
         let now = Date()
         let notifications: [UNNotificationRequest] = geofences.compactMap { $0.toNotificationRequest(now: now) }
-        
+
         RadarLogger.debug("NotificationHelper registering: \(notifications.map(\.identifier))")
-        
+
         // cancel previous work
         let previousTask = currentTask
         previousTask?.cancel()
-        
+
         isRegistering = true
         let task = Task { [notifications] in
             await previousTask?.value
@@ -103,7 +103,7 @@ actor RadarNotificationHelper: NSObject {
         currentTask = task
         await task.value
     }
-    
+
     private func registerNotifications(notifications: [UNNotificationRequest]?) async {
         // if notifications is not null, we update the pending notifications, otherwise we only update the registered notifications list
         if let notifications {

@@ -10,7 +10,7 @@ import Foundation
 
 enum RadarOperatingHoursEvaluator {
     private static let daysOfWeekAbbr = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    
+
     static func isOpen(
         operatingHours: [String: [[String]]]?,
         now: Date = Date(),
@@ -20,32 +20,32 @@ enum RadarOperatingHoursEvaluator {
         guard let operatingHours else {
             return true
         }
-        
+
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = timeZone
-        
+
         let weekdayIndex = calendar.component(.weekday, from: now) - 1
         guard weekdayIndex >= 0, weekdayIndex < daysOfWeekAbbr.count,
-              let dailyHours = operatingHours[daysOfWeekAbbr[weekdayIndex]]
+            let dailyHours = operatingHours[daysOfWeekAbbr[weekdayIndex]]
         else {
             return true
         }
-        
+
         let nowMinutes = calendar.component(.hour, from: now) * 60 + calendar.component(.minute, from: now)
-        
+
         return dailyHours.contains { window in
             guard window.count == 2,
-                  let open = minutesSinceMidnight(window[0]),
-                  let close = minutesSinceMidnight(window[1])
+                let open = minutesSinceMidnight(window[0]),
+                let close = minutesSinceMidnight(window[1])
             else {
                 return false
             }
-            
+
             let effectiveClose = close - closeBufferMinutes
             return nowMinutes > open && nowMinutes < effectiveClose
         }
     }
-    
+
     private static func minutesSinceMidnight(_ timeString: String) -> Int? {
         if timeString == "24:00" {
             return 24 * 60
