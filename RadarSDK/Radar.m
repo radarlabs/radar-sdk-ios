@@ -1761,6 +1761,10 @@ BOOL _initialized = NO;
         [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation * _Nullable location, NSArray<RadarEvent *> * _Nullable events, RadarUser * _Nullable user) {
             completionHandler();
         }];
+    } else if ([payload[@"type"] isEqual:@"radar:refreshNotifications"]) {
+        [[RadarNotificationHelper_Swift shared] refreshGeofenceNotificationsWithCompletionHandler:^() {
+            completionHandler();
+        }];
     } else {
         completionHandler();
     }
