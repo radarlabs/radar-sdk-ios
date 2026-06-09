@@ -230,7 +230,7 @@ class RadarUtils: NSObject {
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         return formatter
     }()
-    
+
     static func escapeNonAsciiCharacters(_ string: String) -> String {
         var escaped = ""
         escaped.reserveCapacity(string.utf16.count)
