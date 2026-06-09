@@ -59,10 +59,10 @@ struct RadarNotificationContent: Sendable, Hashable {
 
 extension RadarGeofenceSwift {
     private static let schedulingWindowFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "en_US_POSIX")
-        f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
-        return f
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+        return formatter
     }()
 
     func toNotificationRequest(now: Date = Date()) -> UNNotificationRequest? {

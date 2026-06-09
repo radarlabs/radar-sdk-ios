@@ -30,19 +30,19 @@ private func makeGeofence(metadata: [String: RadarMetadataValue]?) -> RadarGeofe
 }
 
 private func baseMetadata(extras: [String: RadarMetadataValue] = [:]) -> [String: RadarMetadataValue] {
-    var m: [String: RadarMetadataValue] = [
+    var meta: [String: RadarMetadataValue] = [
         "radar:notificationText": .string("Hello"),
         "radar:campaignId": .string("campaign_1"),
     ]
-    for (k, v) in extras { m[k] = v }
-    return m
+    for (key, value) in extras { meta[key] = value }
+    return meta
 }
 
 private let formatter: DateFormatter = {
-    let f = DateFormatter()
-    f.locale = Locale(identifier: "en_US_POSIX")
-    f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
-    return f
+    let fmt = DateFormatter()
+    fmt.locale = Locale(identifier: "en_US_POSIX")
+    fmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+    return fmt
 }()
 
 private func isoString(_ date: Date) -> String {
