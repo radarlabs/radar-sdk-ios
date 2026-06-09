@@ -72,7 +72,7 @@ struct RadarUtilsTests {
         // U+1F600 -> surrogate pair \ud83d\ude00, both valid JSON.
         let escaped = RadarUtils.escapeNonAsciiCharacters("😀")
         #expect(escaped == "\\ud83d\\ude00")
-        let decoded = try JSONSerialization.jsonObject(with: Data("\"\(escaped)\"".utf8)) as? String
+        let decoded = try JSONSerialization.jsonObject(with: Data("\"\(escaped)\"".utf8), options: [.allowFragments]) as? String
         #expect(decoded == "😀")
     }
 }
