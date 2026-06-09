@@ -62,66 +62,74 @@ struct RadarNotificationTest {
 
     @Test func beforeStartsAt_returnsNil() {
         let future = now.addingTimeInterval(3600)
-        let geofence = makeGeofence(metadata: baseMetadata(extras: [
-            "radar:startsAt": .string(isoString(future))
-        ]))
+        let geofence = makeGeofence(
+            metadata: baseMetadata(extras: [
+                "radar:startsAt": .string(isoString(future))
+            ]))
         #expect(geofence.toNotificationRequest(now: now) == nil)
     }
 
     @Test func afterStartsAt_returnsRequest() {
         let past = now.addingTimeInterval(-3600)
-        let geofence = makeGeofence(metadata: baseMetadata(extras: [
-            "radar:startsAt": .string(isoString(past))
-        ]))
+        let geofence = makeGeofence(
+            metadata: baseMetadata(extras: [
+                "radar:startsAt": .string(isoString(past))
+            ]))
         #expect(geofence.toNotificationRequest(now: now) != nil)
     }
 
     @Test func afterEndsAt_returnsNil() {
         let past = now.addingTimeInterval(-3600)
-        let geofence = makeGeofence(metadata: baseMetadata(extras: [
-            "radar:endsAt": .string(isoString(past))
-        ]))
+        let geofence = makeGeofence(
+            metadata: baseMetadata(extras: [
+                "radar:endsAt": .string(isoString(past))
+            ]))
         #expect(geofence.toNotificationRequest(now: now) == nil)
     }
 
     @Test func beforeEndsAt_returnsRequest() {
         let future = now.addingTimeInterval(3600)
-        let geofence = makeGeofence(metadata: baseMetadata(extras: [
-            "radar:endsAt": .string(isoString(future))
-        ]))
+        let geofence = makeGeofence(
+            metadata: baseMetadata(extras: [
+                "radar:endsAt": .string(isoString(future))
+            ]))
         #expect(geofence.toNotificationRequest(now: now) != nil)
     }
 
     @Test func withinWindow_returnsRequest() {
         let past = now.addingTimeInterval(-3600)
         let future = now.addingTimeInterval(3600)
-        let geofence = makeGeofence(metadata: baseMetadata(extras: [
-            "radar:startsAt": .string(isoString(past)),
-            "radar:endsAt": .string(isoString(future)),
-        ]))
+        let geofence = makeGeofence(
+            metadata: baseMetadata(extras: [
+                "radar:startsAt": .string(isoString(past)),
+                "radar:endsAt": .string(isoString(future)),
+            ]))
         #expect(geofence.toNotificationRequest(now: now) != nil)
     }
 
     @Test func atEndsAt_boundary_returnsNil() {
         // Use a date with zero sub-second component to avoid ms rounding in the formatter
         let secNow = Date(timeIntervalSince1970: floor(now.timeIntervalSince1970))
-        let geofence = makeGeofence(metadata: baseMetadata(extras: [
-            "radar:endsAt": .string(isoString(secNow))
-        ]))
+        let geofence = makeGeofence(
+            metadata: baseMetadata(extras: [
+                "radar:endsAt": .string(isoString(secNow))
+            ]))
         #expect(geofence.toNotificationRequest(now: secNow) == nil)
     }
 
     @Test func unparseableStartsAt_returnsRequest() {
-        let geofence = makeGeofence(metadata: baseMetadata(extras: [
-            "radar:startsAt": .string("not-a-date")
-        ]))
+        let geofence = makeGeofence(
+            metadata: baseMetadata(extras: [
+                "radar:startsAt": .string("not-a-date")
+            ]))
         #expect(geofence.toNotificationRequest(now: now) != nil)
     }
 
     @Test func unparseableEndsAt_returnsRequest() {
-        let geofence = makeGeofence(metadata: baseMetadata(extras: [
-            "radar:endsAt": .string("not-a-date")
-        ]))
+        let geofence = makeGeofence(
+            metadata: baseMetadata(extras: [
+                "radar:endsAt": .string("not-a-date")
+            ]))
         #expect(geofence.toNotificationRequest(now: now) != nil)
     }
 
