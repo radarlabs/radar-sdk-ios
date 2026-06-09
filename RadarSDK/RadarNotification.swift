@@ -58,7 +58,28 @@ struct RadarNotificationContent: Sendable, Hashable {
 }
 
 extension RadarGeofenceSwift {
+    private static let schedulingWindowFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+        return f
+    }()
+
     func toNotificationRequest(now: Date = Date()) -> UNNotificationRequest? {
+        let formatter = RadarGeofenceSwift.schedulingWindowFormatter
+        if let startsAtStr = metadata?["radar:startsAt"]?.string() {
+            let datePart = String(startsAtStr.prefix(23))
+            if let startsAt = formatter.date(from: datePart), now < startsAt {
+                return nil
+            }
+        }
+        if let endsAtStr = metadata?["radar:endsAt"]?.string() {
+            let datePart = String(endsAtStr.prefix(23))
+            if let endsAt = formatter.date(from: datePart), now >= endsAt {
+                return nil
+            }
+        }
+
         let identifier = GEOFENCE_NOTIFICATION_PREFIX + id
         // Content
         guard let metadata = metadata,

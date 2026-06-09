@@ -619,6 +619,32 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             NSDictionary *metadata = geofence.metadata;
             if (metadata) {
+                static NSDateFormatter *windowFormatter;
+                static dispatch_once_t windowFormatterOnce;
+                dispatch_once(&windowFormatterOnce, ^{
+                    windowFormatter = [[NSDateFormatter alloc] init];
+                    windowFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+                    windowFormatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSS";
+                });
+                NSDate *now = [NSDate date];
+                NSString *startsAtString = [metadata objectForKey:@"radar:startsAt"];
+                if ([startsAtString isKindOfClass:[NSString class]] && startsAtString.length >= 23) {
+                    NSDate *startsAt = [windowFormatter dateFromString:[startsAtString substringToIndex:23]];
+                    if (startsAt && [now compare:startsAt] == NSOrderedAscending) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                            message:[NSString stringWithFormat:@"Skipping notification: before window | geofenceId = %@", geofenceId]];
+                        continue;
+                    }
+                }
+                NSString *endsAtString = [metadata objectForKey:@"radar:endsAt"];
+                if ([endsAtString isKindOfClass:[NSString class]] && endsAtString.length >= 23) {
+                    NSDate *endsAt = [windowFormatter dateFromString:[endsAtString substringToIndex:23]];
+                    if (endsAt && [now compare:endsAt] != NSOrderedAscending) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                            message:[NSString stringWithFormat:@"Skipping notification: after window | geofenceId = %@", geofenceId]];
+                        continue;
+                    }
+                }
                 UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:identifier];
                 if (content) {
 
