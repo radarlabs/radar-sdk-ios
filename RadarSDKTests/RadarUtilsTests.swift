@@ -50,4 +50,31 @@ struct RadarUtilsTests {
         let dict: [String: Any] = ["nested": inner]
         #expect(RadarUtils.dictionaryToJson(dict) == "{}")
     }
+    
+    @Test func escapeNonAsciiLeavesAsciiUntouched() {
+        #expect(RadarUtils.escapeNonAsciiCharacters("{\"name\":\"Cafe\"}") == "{\"name\":\"Cafe\"}")
+    }
+    
+    @Test func escapeNonAsciiEscapesAccentedCharacters() {
+        #expect(RadarUtils.escapeNonAsciiCharacters("Café") == "Caf\\u00e9")
+        #expect(RadarUtils.escapeNonAsciiCharacters("Niño") == "Ni\\u00f1o")
+    }
+    
+    @Test func escapeNonAsciiResultIsValidJson() {
+        let json = RadarUtils.escapeNonAsciiCharacters(RadarUtils.dictionaryToJson(["name": "Café"]))
+        // Every character is now ASCII.
+        #expect(json.allSatisfy { $0.isASCII })
+        let data = json.data(using: .utf8)!
+        let decoded = try! JSONSerialization.jsonObject(with: data) as! [String: String]
+        #expect(decoded["name"] == "Café")
+    }
+    
+    @Test func escapeNonAsciiHandlesEmojiSurrogatePairs() {
+        // U+1F600 -> surrogate pair \ud83d\ude00, both valid JSON.
+        let escaped = RadarUtils.escapeNonAsciiCharacters("😀")
+        #expect(escaped == "\\ud83d\\ude00")
+        let json = "\"\(escaped)\"".data(using: .utf8)!
+        let decoded = try! JSONSerialization.jsonObject(with: json) as! String
+        #expect(decoded == "😀")
+    }
 }
