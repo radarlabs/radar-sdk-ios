@@ -1,3 +1,7 @@
 *.swift filter=radar-keys
 *.m filter=radar-keys
 *.h filter=radar-keys
+
+# Pretty-print the SwiftLint baseline on stage so its diffs are readable.
+# Requires `git config filter.swiftlint-baseline.clean "jq -S ."` (set up by bootstrap.sh).
+.swiftlint-baseline.json filter=swiftlint-baseline

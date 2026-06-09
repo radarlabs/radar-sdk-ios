@@ -42,6 +42,19 @@ else
   echo "clang-format already installed"
 fi
 
+if ! command -v jq >/dev/null; then
+  echo "installing jq..."
+  brew install jq
+else
+  echo "jq already installed"
+fi
+
+# Pretty-print the SwiftLint baseline (via .gitattributes filter) when it is staged, so its
+# diffs are readable instead of one giant minified line. clean-only and non-required: a clone
+# without this configured just falls back to SwiftLint's one-line output, no errors.
+echo "configuring swiftlint-baseline git clean filter..."
+git config filter.swiftlint-baseline.clean "jq -S ."
+
 SWIFTLINT_VERSION="0.63.2"
 SWIFTLINT_BIN=".tools/swiftlint"
 
