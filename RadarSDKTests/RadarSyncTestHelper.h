@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+@class RadarUser;
+
 @interface RadarSyncTestHelper : NSObject
 + (void)setStopped:(BOOL)stopped;
++ (void)setRadarUser:(RadarUser *)user;
 @end
