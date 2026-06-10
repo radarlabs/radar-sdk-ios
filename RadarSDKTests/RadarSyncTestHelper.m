@@ -1,5 +1,5 @@
 //
-//  RadatSyncTestHelper.m
+//  RadarSyncTestHelper.m
 //  RadarSDK
 //
 //  Created by Alan Charles on 4/9/26.
@@ -11,4 +11,5 @@
 
 @implementation RadarSyncTestHelper
 + (void)setStopped:(BOOL)stopped { [RadarState setStopped:stopped]; }
++ (void)setRadarUser:(RadarUser *)user { [RadarState setRadarUser:user]; }
 @end

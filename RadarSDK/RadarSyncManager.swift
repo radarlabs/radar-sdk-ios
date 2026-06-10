@@ -374,17 +374,30 @@ public final class RadarSyncManager: NSObject {
 
     @objc public static func hasGeofenceStateChanged(location: CLLocation) -> Bool {
         let state = syncStore.read() ?? RadarSyncState()
-        let lastKnownGeofenceIds = Set(state.lastSyncedGeofenceIds)
-        let currentGeofences = getGeofences(for: location)
-        let currentGeofenceIds = Set(currentGeofences.map { $0.id })
+        let lastKnownIds = Set(state.lastSyncedGeofenceIds)
 
-        if checkForGeofenceEntries(currentGeofences: currentGeofences, currentGeofenceIds: currentGeofenceIds, lastKnownGeofenceIds: lastKnownGeofenceIds) {
+        let entries = getGeofenceEntries(for: location, against: lastKnownIds)
+        if !entries.isEmpty {
+            let ids = entries.map { $0.id }
+            RadarLogger.shared.debug("SyncManager: Detected geofence entries: \(ids)")
+            recordGeofenceEntryTimestamps(ids)
             return true
         }
-        if checkForGeofenceExits(location: location, lastKnownGeofenceIds: lastKnownGeofenceIds) {
+
+        let exits = getGeofenceExits(for: location, against: lastKnownIds)
+        if !exits.isEmpty {
+            let ids = exits.map { $0.id }
+            RadarLogger.shared.debug("SyncManager: Detected geofence exits: \(ids)")
+            clearGeofenceEntryState(ids)
             return true
         }
-        if checkForGeofenceDwell(currentGeofences: currentGeofences, currentGeofenceIds: currentGeofenceIds, lastKnownGeofenceIds: lastKnownGeofenceIds) {
+
+        let dwells = getGeofenceDwells(for: location, against: lastKnownIds)
+        if !dwells.isEmpty {
+            for geofence in dwells {
+                RadarLogger.shared.debug("SyncManager: Dwell threshold reached for geofence: \(geofence.id)")
+                markDwellFired(geofence.id)
+            }
             return true
         }
 
@@ -462,114 +475,6 @@ public final class RadarSyncManager: NSObject {
 
         return false
     }
-    private static func checkForGeofenceEntries(
-        currentGeofences: [RadarGeofenceSwift],
-        currentGeofenceIds: Set<String>,
-        lastKnownGeofenceIds: Set<String>
-    ) -> Bool {
-        let enteredGeofenceIds = currentGeofenceIds.subtracting(lastKnownGeofenceIds)
-        guard !enteredGeofenceIds.isEmpty else { return false }
-
-        let sdkConfig = RadarSettings.sdkConfiguration
-        let projectStopDetection = sdkConfig?.stopDetection ?? false
-        let isStopped = RadarSwift.bridge?.isStopped() ?? false
-
-        var timestamps = syncStore.read()?.geofenceEntryTimestamps ?? [:]
-        var hasEntry = false
-
-        for id in enteredGeofenceIds {
-            let geofence = currentGeofences.first { $0.id == id }
-            let requireStop: Bool
-            if let geofenceStop = geofence?.geofenceStopDetection {
-                requireStop = geofenceStop
-            } else {
-                requireStop = projectStopDetection
-            }
-            if requireStop && !isStopped {
-                RadarLogger.shared.debug("SyncManager: Skipping geofence entry (stop detection, not stopped): \(id)")
-                continue
-            }
-            RadarLogger.shared.debug("SyncManager: Detected geofence entry: \(id)")
-            timestamps[id] = Date().timeIntervalSince1970
-            hasEntry = true
-        }
-        if hasEntry {
-            syncStore.modify { state in
-                if state == nil { state = RadarSyncState() }
-                state?.geofenceEntryTimestamps = timestamps
-            }
-        }
-        return hasEntry
-    }
-
-    private static func checkForGeofenceExits(
-        location: CLLocation,
-        lastKnownGeofenceIds: Set<String>
-    ) -> Bool {
-        let exitCheckGeofences = getGeofences(for: location, checkingForExit: true)
-        let exitCheckGeofenceIds = Set(exitCheckGeofences.map { $0.id })
-        let exitedGeofenceIds = lastKnownGeofenceIds.subtracting(exitCheckGeofenceIds)
-
-        guard !exitedGeofenceIds.isEmpty else { return false }
-
-        for id in exitedGeofenceIds {
-            RadarLogger.shared.debug("SyncManager: Detected geofence exit: \(id)")
-        }
-
-        syncStore.modify { state in
-            guard state != nil else { return }
-            for id in exitedGeofenceIds {
-                state?.geofenceEntryTimestamps.removeValue(forKey: id)
-                state?.dwellEventsFired.removeAll { $0 == id }
-            }
-        }
-        return true
-    }
-
-    private static func checkForGeofenceDwell(
-        currentGeofences: [RadarGeofenceSwift],
-        currentGeofenceIds: Set<String>,
-        lastKnownGeofenceIds: Set<String>
-    ) -> Bool {
-        let sdkConfig = RadarSettings.sdkConfiguration
-        let projectDwellThreshold = sdkConfig?.defaultGeofenceDwellThreshold ?? 0
-        let anyGeofenceHasDwell = currentGeofences.contains { $0.dwellThreshold != nil }
-
-        guard projectDwellThreshold > 0 || anyGeofenceHasDwell else { return false }
-
-        let state = syncStore.read() ?? RadarSyncState()
-        let timestamps = state.geofenceEntryTimestamps
-        let dwellFired = Set(state.dwellEventsFired)
-
-        for id in currentGeofenceIds.intersection(lastKnownGeofenceIds) {
-            if dwellFired.contains(id) { continue }
-            guard let entryTimestamp = timestamps[id] else { continue }
-
-            // Per-geofence threshold overrides project default
-            let geofence = currentGeofences.first { $0.id == id }
-            let thresholdMinutes: Double
-            if let perGeofenceThreshold = geofence?.dwellThreshold {
-                thresholdMinutes = perGeofenceThreshold
-            } else if projectDwellThreshold > 0 {
-                thresholdMinutes = Double(projectDwellThreshold)
-            } else {
-                continue
-            }
-
-            let entryDate = Date(timeIntervalSince1970: entryTimestamp)
-            let elapsedMinutes = Date().timeIntervalSince(entryDate) / 60.0
-
-            if elapsedMinutes >= thresholdMinutes {
-                RadarLogger.shared.debug("SyncManager: Dwell threshold reached for geofence: \(id)")
-                syncStore.modify { state in
-                    state?.dwellEventsFired.append(id)
-                }
-                return true
-            }
-        }
-
-        return false
-    }
 
     private static func updateLastKnownSyncState(location: CLLocation) {
         // For geofences, only include those that passed stop detection (have entry timestamps)
@@ -596,18 +501,12 @@ public final class RadarSyncManager: NSObject {
         let enteredIds = currentGeofenceIds.subtracting(lastKnownIds)
         guard !enteredIds.isEmpty else { return [] }
 
-        let sdkConfig = RadarSettings.sdkConfiguration
-        let projectStopDetection = sdkConfig?.stopDetection ?? false
+        let projectStopDetection = RadarSettings.sdkConfiguration?.stopDetection ?? false
         let isStopped = RadarSwift.bridge?.isStopped() ?? false
 
         return currentGeofences.filter { geofence in
             guard enteredIds.contains(geofence.id) else { return false }
-            let requireStop: Bool
-            if let geofenceStop = geofence.geofenceStopDetection {
-                requireStop = geofenceStop
-            } else {
-                requireStop = projectStopDetection
-            }
+            let requireStop = geofence.geofenceStopDetection ?? projectStopDetection
             if requireStop && !isStopped {
                 RadarLogger.shared.debug("SyncManager: Skipping geofence entry (stop detection, not stopped): \(geofence.id)")
                 return false
@@ -624,6 +523,84 @@ public final class RadarSyncManager: NSObject {
 
         let allSyncedGeofences = syncStore.read()?.syncedGeofences ?? []
         return allSyncedGeofences.filter { exitedIds.contains($0.id) }
+    }
+
+    static func getGeofenceDwells(for location: CLLocation, against lastKnownIds: Set<String>) -> [RadarGeofenceSwift] {
+        let projectDwellThreshold = RadarSettings.sdkConfiguration?.defaultGeofenceDwellThreshold ?? 0
+        let currentGeofences = getGeofences(for: location)
+        let currentGeofenceIds = Set(currentGeofences.map { $0.id })
+        let anyGeofenceHasDwell = currentGeofences.contains { $0.dwellThreshold != nil }
+
+        guard projectDwellThreshold > 0 || anyGeofenceHasDwell else { return [] }
+
+        let state = syncStore.read() ?? RadarSyncState()
+        let timestamps = state.geofenceEntryTimestamps
+        let dwellFired = Set(state.dwellEventsFired)
+        let now = Date()
+
+        return currentGeofences.filter { geofence in
+            guard currentGeofenceIds.intersection(lastKnownIds).contains(geofence.id) else { return false }
+            guard !dwellFired.contains(geofence.id) else { return false }
+            guard let entryTimestamp = timestamps[geofence.id] else { return false }
+
+            let thresholdMinutes: Double
+            if let perGeofenceThreshold = geofence.dwellThreshold {
+                thresholdMinutes = perGeofenceThreshold
+            } else if projectDwellThreshold > 0 {
+                thresholdMinutes = Double(projectDwellThreshold)
+            } else {
+                return false
+            }
+
+            let elapsedMinutes = now.timeIntervalSince(Date(timeIntervalSince1970: entryTimestamp)) / 60.0
+            return elapsedMinutes >= thresholdMinutes
+        }
+    }
+
+    // MARK: - Beacon Diff
+
+    static func getBeaconEntries(for location: CLLocation, against lastKnownIds: Set<String>) -> [RadarBeaconSwift] {
+        let currentBeacons = getBeacons(for: location)
+        let currentBeaconIds = Set(currentBeacons.map { $0.id })
+        let enteredIds = currentBeaconIds.subtracting(lastKnownIds)
+
+        guard !enteredIds.isEmpty else { return [] }
+        return currentBeacons.filter { enteredIds.contains($0.id) }
+    }
+
+    static func getBeaconExits(for location: CLLocation, against lastKnownIds: Set<String>) -> [RadarBeaconSwift] {
+        let currentBeacons = getBeacons(for: location)
+        let currentIds = Set(currentBeacons.map { $0.id })
+        let exitedIds = lastKnownIds.subtracting(currentIds)
+
+        guard !exitedIds.isEmpty else { return [] }
+
+        let allSyncedBeacons = syncStore.read()?.syncedBeacons ?? []
+        return allSyncedBeacons.filter { exitedIds.contains($0.id) }
+    }
+
+    // MARK: - Geofence State Mutations
+
+    static func recordGeofenceEntryTimestamps(_ ids: [String]) {
+        guard !ids.isEmpty else { return }
+        let now = Date().timeIntervalSince1970
+        syncStore.modify { state in
+            if state == nil { state = RadarSyncState() }
+            for id in ids {
+                state?.geofenceEntryTimestamps[id] = now
+            }
+        }
+    }
+
+    static func clearGeofenceEntryState(_ ids: [String]) {
+        guard !ids.isEmpty else { return }
+        syncStore.modify { state in
+            guard state != nil else { return }
+            for id in ids {
+                state?.geofenceEntryTimestamps.removeValue(forKey: id)
+                state?.dwellEventsFired.removeAll { $0 == id }
+            }
+        }
     }
 
     // MARK: - Server reconciliation
