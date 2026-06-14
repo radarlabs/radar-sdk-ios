@@ -45,14 +45,6 @@ extension RadarSerializedTests {
             )
         }
 
-        func makeBeacon(id: String, lat: Double, lng: Double) -> RadarBeaconSwift {
-            return RadarBeaconSwift(
-                id: id, description: "Test Beacon", tag: "test", externalId: id,
-                uuid: "test-uuid", major: "1", minor: "1",
-                geometry: RadarCoordinateSwift(latitude: lat, longitude: lng)
-            )
-        }
-
         func setState(_ state: RadarSyncState) {
             RadarSyncManager.syncStore.write(state)
         }
