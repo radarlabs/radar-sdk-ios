@@ -275,7 +275,7 @@
       "location": {
         "character": 44,
         "file": "RadarSDK/RadarOfflineEventManager.swift",
-        "line": 16
+        "line": 105
       },
       "reason": "Optional should be implicitly initialized without nil",
       "ruleDescription": "Optionals should be consistently initialized, either with `= nil` or without.",
@@ -397,7 +397,7 @@
         "file": "RadarSDK/RadarSyncManager.swift",
         "line": 13
       },
-      "reason": "Class body should span 350 lines or less excluding comments and whitespace: currently spans 609 lines",
+      "reason": "Class body should span 350 lines or less excluding comments and whitespace: currently spans 583 lines",
       "ruleDescription": "Type bodies should not span too many lines",
       "ruleIdentifier": "type_body_length",
       "ruleName": "Type Body Length",
@@ -440,7 +440,7 @@
       "location": {
         "character": 18,
         "file": "RadarSDK/RadarSyncManager.swift",
-        "line": 643
+        "line": 620
       },
       "reason": "Function should have complexity 10 or less; currently complexity is 11",
       "ruleDescription": "Complexity of function bodies should be limited.",
@@ -455,7 +455,7 @@
       "location": {
         "character": 25,
         "file": "RadarSDK/RadarSyncManager.swift",
-        "line": 643
+        "line": 620
       },
       "reason": "Function body should span 50 lines or less excluding comments and whitespace: currently spans 58 lines",
       "ruleDescription": "Function bodies should not span too many lines",
@@ -470,9 +470,9 @@
       "location": {
         "character": 1,
         "file": "RadarSDK/RadarSyncManager.swift",
-        "line": 775
+        "line": 752
       },
-      "reason": "File should contain 400 lines or less: currently contains 775",
+      "reason": "File should contain 400 lines or less: currently contains 752",
       "ruleDescription": "Files should not span too many lines.",
       "ruleIdentifier": "file_length",
       "ruleName": "File Length",
