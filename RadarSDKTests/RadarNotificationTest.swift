@@ -107,14 +107,25 @@ struct RadarNotificationTest {
         #expect(geofence.toNotificationRequest(now: now) != nil)
     }
 
-    @Test func atEndsAt_boundary_returnsNil() {
-        // Use a date with zero sub-second component to avoid ms rounding in the formatter
+    @Test func atEndsAt_boundary_returnsRequest() {
+        // endsAt is inclusive: at exactly endsAt the notification should still fire
         let secNow = Date(timeIntervalSince1970: floor(now.timeIntervalSince1970))
         let geofence = makeGeofence(
             metadata: baseMetadata(extras: [
                 "radar:endsAt": .string(isoString(secNow))
             ]))
-        #expect(geofence.toNotificationRequest(now: secNow) == nil)
+        #expect(geofence.toNotificationRequest(now: secNow) != nil)
+    }
+
+    @Test func afterEndsAt_boundary_returnsNil() {
+        // endsAt is inclusive: one second past endsAt the notification should not fire
+        let secNow = Date(timeIntervalSince1970: floor(now.timeIntervalSince1970))
+        let oneSecondAfter = Date(timeIntervalSince1970: secNow.timeIntervalSince1970 + 1)
+        let geofence = makeGeofence(
+            metadata: baseMetadata(extras: [
+                "radar:endsAt": .string(isoString(secNow))
+            ]))
+        #expect(geofence.toNotificationRequest(now: oneSecondAfter) == nil)
     }
 
     @Test func unparseableStartsAt_returnsRequest() {
