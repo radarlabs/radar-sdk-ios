@@ -58,7 +58,33 @@ struct RadarNotificationContent: Sendable, Hashable {
 }
 
 extension RadarGeofenceSwift {
+    private static let schedulingWindowFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+        return formatter
+    }()
+    // "yyyy-MM-dd'T'HH:mm:ss.SSS" is 23 chars; prefix to this length strips any trailing timezone suffix so the string is parsed as wall-clock local time
+    private static let schedulingWindowDatePrefixLength = 23
+
     func toNotificationRequest(now: Date = Date()) -> UNNotificationRequest? {
+        let formatter = RadarGeofenceSwift.schedulingWindowFormatter
+        let prefixLength = RadarGeofenceSwift.schedulingWindowDatePrefixLength
+        // Window is [startsAt, endsAt]: skip when now is before the window opens
+        if let startsAtStr = metadata?["radar:startsAt"]?.string() {
+            let datePart = String(startsAtStr.prefix(prefixLength))
+            if let startsAt = formatter.date(from: datePart), now < startsAt {
+                return nil
+            }
+        }
+        // Window is [startsAt, endsAt]: skip when now is strictly past the end (end is inclusive)
+        if let endsAtStr = metadata?["radar:endsAt"]?.string() {
+            let datePart = String(endsAtStr.prefix(prefixLength))
+            if let endsAt = formatter.date(from: datePart), now > endsAt {
+                return nil
+            }
+        }
+
         let identifier = GEOFENCE_NOTIFICATION_PREFIX + id
         // Content
         guard let metadata = metadata,
