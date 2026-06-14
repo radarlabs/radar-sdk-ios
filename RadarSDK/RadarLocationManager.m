@@ -619,6 +619,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             NSDictionary *metadata = geofence.metadata;
             if (metadata) {
+                // "yyyy-MM-dd'T'HH:mm:ss.SSS" is 23 chars; prefix to this length strips any trailing timezone suffix so the string is parsed as wall-clock local time
+                static const NSUInteger kSchedulingWindowDatePrefixLength = 23;
                 static NSDateFormatter *windowFormatter;
                 static dispatch_once_t windowFormatterOnce;
                 dispatch_once(&windowFormatterOnce, ^{
@@ -628,8 +630,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 });
                 NSDate *now = [NSDate date];
                 NSString *startsAtString = [metadata objectForKey:@"radar:startsAt"];
-                if ([startsAtString isKindOfClass:[NSString class]] && startsAtString.length >= 23) {
-                    NSDate *startsAt = [windowFormatter dateFromString:[startsAtString substringToIndex:23]];
+                // Window is [startsAt, endsAt): skip when now is before the window opens
+                if ([startsAtString isKindOfClass:[NSString class]] && startsAtString.length >= kSchedulingWindowDatePrefixLength) {
+                    NSDate *startsAt = [windowFormatter dateFromString:[startsAtString substringToIndex:kSchedulingWindowDatePrefixLength]];
                     if (startsAt && [now compare:startsAt] == NSOrderedAscending) {
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                             message:[NSString stringWithFormat:@"Skipping notification: before window | geofenceId = %@", geofenceId]];
@@ -637,8 +640,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     }
                 }
                 NSString *endsAtString = [metadata objectForKey:@"radar:endsAt"];
-                if ([endsAtString isKindOfClass:[NSString class]] && endsAtString.length >= 23) {
-                    NSDate *endsAt = [windowFormatter dateFromString:[endsAtString substringToIndex:23]];
+                // Window is [startsAt, endsAt): skip when now has reached or passed the end (end is exclusive)
+                if ([endsAtString isKindOfClass:[NSString class]] && endsAtString.length >= kSchedulingWindowDatePrefixLength) {
+                    NSDate *endsAt = [windowFormatter dateFromString:[endsAtString substringToIndex:kSchedulingWindowDatePrefixLength]];
                     if (endsAt && [now compare:endsAt] != NSOrderedAscending) {
                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                             message:[NSString stringWithFormat:@"Skipping notification: after window | geofenceId = %@", geofenceId]];
