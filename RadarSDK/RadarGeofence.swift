@@ -144,7 +144,7 @@ struct RadarGeofenceSwift: Codable, Sendable, Equatable {
             try container.encode(GeoJSONPolygon(coordinates: [ring]), forKey: .geometry)
         }
 
-        try container.encode(metadata, forKey: .metadata)
+        try container.encodeIfPresent(metadata, forKey: .metadata)
         try container.encodeIfPresent(operatingHours, forKey: .operatingHours)
     }
 }
