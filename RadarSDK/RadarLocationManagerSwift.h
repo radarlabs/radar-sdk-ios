@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       location:(CLLocation *)location
                                         radius:(int)radius;
 + (void)removeBubbleGeofenceOnLocationManager:(CLLocationManager *)locationManager;
++ (void)removeSyncedGeofencesOnLocationManager:(CLLocationManager *)locationManager;
 + (void)removeAllRegionsOnLocationManager:(CLLocationManager *)locationManager;
 
 @end

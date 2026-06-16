@@ -85,6 +85,25 @@ extension RadarSerializedTests {
             #expect(remaining == ["other_keep", "radar_beacon_keep", "radar_geofence_keep"])
         }
 
+        // MARK: - removeSyncedGeofences
+
+        @Test("removeSyncedGeofences removes only radar_geofence_* regions, leaves others")
+        func removeSyncedGeofencesRemovesOnlyGeofencePrefix() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+
+            let manager = TrackingCLLocationManager()
+            manager.seed([
+                "radar_geofence_a", "radar_geofence_b",
+                "radar_bubble_keep", "radar_beacon_keep", "radar_uuid_keep", "other_keep",
+            ])
+
+            RadarLocationManagerSwift.removeSyncedGeofences(locationManager: manager)
+
+            let remaining = manager.trackedRegions.map { $0.identifier }.sorted()
+            #expect(remaining == ["other_keep", "radar_beacon_keep", "radar_bubble_keep", "radar_uuid_keep"])
+        }
+
         // MARK: - removeAllRegions
 
         @Test("removeAllRegions removes every radar_* region, leaves non-radar regions")
