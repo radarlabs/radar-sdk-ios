@@ -75,9 +75,18 @@ jobs:
         run: |
           make ci-test-pretty CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
         
-      - name: Test swift 
+      - name: Test swift
         env:
           SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
           scheme: RadarSDK
         run: |
           make ci-test-swift CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
+
+      - name: Build example app
+        env:
+          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
+        run: |
+          make build-example-pretty DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
+
+      - name: Lint podspecs
+        run: make lint
