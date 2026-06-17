@@ -39,6 +39,7 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 
 + (NSDictionary *)appInfo;
 
++ (NSString *)escapeNonAsciiCharacters:(NSString *)string;
 @end
 
 __attribute__((deprecated("Use RadarUtils for swift implementation instead, except deviceOS, deviceId, foreground, backgroundTimeRemaining, and runOnMainThread calls from Objective-C")));
