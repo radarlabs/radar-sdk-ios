@@ -87,7 +87,7 @@ jobs:
         env:
           SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
         run: |
-          make build-example-pretty DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
+          make ci-build-example CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
 
       - name: Lint podspecs
         run: make lint
