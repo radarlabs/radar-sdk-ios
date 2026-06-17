@@ -69,12 +69,15 @@ extension RadarGeofenceSwift {
         guard let geofenceData = try? JSONEncoder().encode(self) else {
             return nil
         }
-        let userInfo: [String: Any] = [
+        var userInfo: [String: Any] = [
             "registeredAt": now.timeIntervalSince1970,
             "identifier": identifier,
             "geofenceId": id,
             "geofenceData": geofenceData,
         ]
+        for (key, value) in metadata {
+            userInfo[key] = value.anyValue
+        }
         let content = metadataContent.toNotificationContent(userInfo: userInfo)
 
         // Trigger

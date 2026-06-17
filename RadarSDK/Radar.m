@@ -702,7 +702,8 @@ BOOL _initialized = NO;
                        deliveredAfter:(NSDate *)deliveredAfter {
     
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
-    
+    [metadata removeObjectForKey:@"geofenceData"];
+
     if (conversionSource) {
         [metadata setValue:conversionSource forKey:@"conversionSource"];
     }

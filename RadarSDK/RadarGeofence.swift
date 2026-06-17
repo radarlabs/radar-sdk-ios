@@ -189,4 +189,13 @@ enum RadarMetadataValue: Codable, Sendable, Hashable {
             return nil
         }
     }
+    
+    var anyValue: Any {
+        switch self {
+        case .string(let v): return v
+        case .int(let v): return v
+        case .double(let v): return v
+        case .bool(let v): return v
+        }
+    }
 }
