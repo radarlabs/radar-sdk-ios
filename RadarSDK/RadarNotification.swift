@@ -58,7 +58,20 @@ struct RadarNotificationContent: Sendable, Hashable {
 }
 
 extension RadarGeofenceSwift {
+    private static let schedulingWindowFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+        return formatter
+    }()
+    // "yyyy-MM-dd'T'HH:mm:ss.SSS" is 23 chars; prefix to this length strips any trailing timezone suffix so the string is parsed as wall-clock local time
+    private static let schedulingWindowDatePrefixLength = 23
+
     func toNotificationRequest(now: Date = Date()) -> UNNotificationRequest? {
+        if !isWithinSchedulingWindow(now: now) {
+            return nil
+        }
+
         let identifier = GEOFENCE_NOTIFICATION_PREFIX + id
         // Content
         guard let metadata = metadata,
@@ -66,15 +79,39 @@ extension RadarGeofenceSwift {
         else {
             return nil
         }
+
+        if case .bool(true)? = metadata["radar:restrictToOperatingHours"] {
+            let closeBufferMinutes: Int = {
+                if case let .int(value)? = metadata["radar:operatingHoursCloseBufferMinutes"] {
+                    return max(0, value)
+                }
+                return 0
+            }()
+            if !RadarOperatingHoursEvaluator.isOpen(
+                operatingHours: operatingHours,
+                now: now,
+                closeBufferMinutes: closeBufferMinutes
+            ) {
+                return nil
+            }
+        }
+
         guard let geofenceData = try? JSONEncoder().encode(self) else {
             return nil
         }
-        let userInfo: [String: Any] = [
+        var userInfo: [String: Any] = [
             "registeredAt": now.timeIntervalSince1970,
             "identifier": identifier,
             "geofenceId": id,
             "geofenceData": geofenceData,
         ]
+
+        // Forward only Radar-namespaced metadata onto the notification (and thus the tap
+        // conversion). Avoids leaking arbitrary/custom geofence metadata into /events while
+        // preserving all campaign fields.
+        for (key, value) in metadata where key.hasPrefix("radar:") {
+            userInfo[key] = value.anyValue
+        }
         let content = metadataContent.toNotificationContent(userInfo: userInfo)
 
         // Trigger
@@ -87,6 +124,26 @@ extension RadarGeofenceSwift {
         let trigger = UNLocationNotificationTrigger(region: region, repeats: repeats)
 
         return UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+    }
+
+    private func isWithinSchedulingWindow(now: Date) -> Bool {
+        let formatter = RadarGeofenceSwift.schedulingWindowFormatter
+        let prefixLength = RadarGeofenceSwift.schedulingWindowDatePrefixLength
+        // Window is [startsAt, endsAt]: skip when now is before the window opens
+        if let startsAtStr = metadata?["radar:startsAt"]?.string() {
+            let datePart = String(startsAtStr.prefix(prefixLength))
+            if let startsAt = formatter.date(from: datePart), now < startsAt {
+                return false
+            }
+        }
+        // Window is [startsAt, endsAt]: skip when now is strictly past the end (end is inclusive)
+        if let endsAtStr = metadata?["radar:endsAt"]?.string() {
+            let datePart = String(endsAtStr.prefix(prefixLength))
+            if let endsAt = formatter.date(from: datePart), now > endsAt {
+                return false
+            }
+        }
+        return true
     }
 }
 

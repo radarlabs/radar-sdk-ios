@@ -45,7 +45,7 @@ class RadarUtils: NSObject {
 
     static let country = Locale.current.regionCode
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
-    static let sdkVersion = "3.34.2"
+    static let sdkVersion = "3.36.0"
 
     static var deviceId: String? {
         get async {
@@ -230,6 +230,19 @@ class RadarUtils: NSObject {
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         return formatter
     }()
+
+    static func escapeNonAsciiCharacters(_ string: String) -> String {
+        var escaped = ""
+        escaped.reserveCapacity(string.utf16.count)
+        for codeUnit in string.utf16 {
+            if codeUnit < 0x80, let scalar = Unicode.Scalar(codeUnit) {
+                escaped.unicodeScalars.append(scalar)
+            } else {
+                escaped += String(format: "\\u%04x", codeUnit)
+            }
+        }
+        return escaped
+    }
 }
 
 internal extension CLLocation {

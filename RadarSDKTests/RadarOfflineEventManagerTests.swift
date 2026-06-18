@@ -24,7 +24,14 @@ extension RadarSerializedTests {
             Radar.initialize(publishableKey: "prj_test_pk_0000000000000000")
             RadarSyncManager.syncStore.clear()
             RadarSettings.sdkConfiguration = nil
+            RadarSettings.trackingOptions = nil
             RadarOfflineEventManager.reset()
+
+            let cachedUser = RadarUser(object: [
+                "_id": "test-user",
+                "location": ["coordinates": [testLng, testLat]],
+            ])
+            RadarSyncTestHelper.setRadarUser(cachedUser)
         }
 
         // MARK: - Helpers
@@ -332,5 +339,6 @@ extension RadarSerializedTests {
             }
             #expect(postResetEvents.isEmpty)  // no change on second call proves state was repopulated
         }
+
     }
 }

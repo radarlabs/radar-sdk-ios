@@ -139,9 +139,16 @@ ci-test-swift:
 build-example-pretty:
 	set -o pipefail && xcodebuild $(XC_EXAMPLE_ARGS) | xcpretty
 
+ci-build-example:
+	@set -o pipefail; \
+	  xcodebuild -sdk iphonesimulator -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination "$(CI_DESTINATION)" ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode" 2>&1 \
+	    | tee /tmp/radar-sdk-ios-ci-build-example.log \
+	    | xcpretty; \
+	  exit $$?
+
 docs:
 	jazzy
 
 dist: clean-pretty test-pretty build-pretty lint docs
 
-.PHONY: bootstrap clean test build lint lint-swift format format-check ci-build-analyze ci-test-pretty ci-test-swift docs dist
+.PHONY: bootstrap clean test build lint lint-swift format format-check ci-build-analyze ci-build-example ci-test-pretty ci-test-swift docs dist

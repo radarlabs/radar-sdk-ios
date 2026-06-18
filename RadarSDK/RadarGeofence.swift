@@ -56,6 +56,7 @@ struct RadarGeofenceSwift: Codable, Sendable, Equatable {
     let dwellThreshold: Double?
     let geofenceStopDetection: Bool?
     let metadata: [String: RadarMetadataValue]?
+    let operatingHours: [String: [[String]]]?
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -69,6 +70,7 @@ struct RadarGeofenceSwift: Codable, Sendable, Equatable {
         case dwellThreshold
         case stopDetection
         case metadata
+        case operatingHours
     }
 
     init(from decoder: Decoder) throws {
@@ -100,12 +102,14 @@ struct RadarGeofenceSwift: Codable, Sendable, Equatable {
         }
 
         metadata = try container.decodeIfPresent([String: RadarMetadataValue].self, forKey: .metadata)
+        operatingHours = try container.decodeIfPresent([String: [[String]]].self, forKey: .operatingHours)
     }
 
     init(
         id: String, description: String, tag: String?, externalId: String?,
         geometry: RadarGeofenceGeometrySwift, dwellThreshold: Double?, geofenceStopDetection: Bool?,
-        metadata: [String: RadarMetadataValue]?
+        metadata: [String: RadarMetadataValue]?,
+        operatingHours: [String: [[String]]]? = nil
     ) {
         self.id = id
         self.description = description
@@ -115,6 +119,7 @@ struct RadarGeofenceSwift: Codable, Sendable, Equatable {
         self.dwellThreshold = dwellThreshold
         self.geofenceStopDetection = geofenceStopDetection
         self.metadata = metadata
+        self.operatingHours = operatingHours
     }
 
     func encode(to encoder: Encoder) throws {
@@ -139,7 +144,8 @@ struct RadarGeofenceSwift: Codable, Sendable, Equatable {
             try container.encode(GeoJSONPolygon(coordinates: [ring]), forKey: .geometry)
         }
 
-        try container.encode(metadata, forKey: .metadata)
+        try container.encodeIfPresent(metadata, forKey: .metadata)
+        try container.encodeIfPresent(operatingHours, forKey: .operatingHours)
     }
 }
 
@@ -187,6 +193,15 @@ enum RadarMetadataValue: Codable, Sendable, Hashable {
             return value
         } else {
             return nil
+        }
+    }
+
+    var anyValue: Any {
+        switch self {
+        case .string(let value): return value
+        case .int(let value): return value
+        case .double(let value): return value
+        case .bool(let value): return value
         }
     }
 }

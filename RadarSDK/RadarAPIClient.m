@@ -67,7 +67,7 @@
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey {
     NSDictionary *appInfo = [RadarUtils appInfo];
-    NSString *appInfoJSON = [RadarUtils dictionaryToJson:appInfo];
+    NSString *appInfoJSON = [RadarUtils escapeNonAsciiCharacters:[RadarUtils dictionaryToJson:appInfo]];
     
     NSMutableDictionary *headers = [@{
         @"Authorization": publishableKey,
