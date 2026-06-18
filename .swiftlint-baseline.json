@@ -245,7 +245,7 @@
       "location": {
         "character": 5,
         "file": "RadarSDK/RadarNotification.swift",
-        "line": 142
+        "line": 163
       },
       "reason": "Function should have complexity 10 or less; currently complexity is 26",
       "ruleDescription": "Complexity of function bodies should be limited.",
@@ -260,7 +260,7 @@
       "location": {
         "character": 5,
         "file": "RadarSDK/RadarNotification.swift",
-        "line": 142
+        "line": 163
       },
       "reason": "Initializer body should span 50 lines or less excluding comments and whitespace: currently spans 64 lines",
       "ruleDescription": "Function bodies should not span too many lines",
@@ -270,17 +270,107 @@
     }
   },
   {
-    "text": "    private static func buildGeofenceEvents(",
+    "text": "    nonisolated(unsafe) private static var _offlineGeofenceIds: Set<String>? = nil",
     "violation": {
       "location": {
-        "character": 20,
+        "character": 44,
         "file": "RadarSDK/RadarOfflineEventManager.swift",
         "line": 105
       },
-      "reason": "Function should have 5 parameters or less: it currently has 8",
-      "ruleDescription": "Number of function parameters should be low.",
-      "ruleIdentifier": "function_parameter_count",
-      "ruleName": "Function Parameter Count",
+      "reason": "Optional should be implicitly initialized without nil",
+      "ruleDescription": "Optionals should be consistently initialized, either with `= nil` or without.",
+      "ruleIdentifier": "implicit_optional_initialization",
+      "ruleName": "Implicit Optional Initialization",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    @objc static func reset() {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 23
+      },
+      "reason": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleIdentifier": "redundant_objc_attribute",
+      "ruleName": "Redundant @objc Attribute",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    @objc static func generateEvents(",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 29
+      },
+      "reason": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleIdentifier": "redundant_objc_attribute",
+      "ruleName": "Redundant @objc Attribute",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    @objc static func handleTrackFailure(_ location: CLLocation) {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 79
+      },
+      "reason": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleIdentifier": "redundant_objc_attribute",
+      "ruleName": "Redundant @objc Attribute",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "            generateEvents(location: location) { events, user, loc in",
+    "violation": {
+      "location": {
+        "character": 64,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 83
+      },
+      "reason": "Unused parameter in a closure should be replaced with _",
+      "ruleDescription": "Unused parameter in a closure should be replaced with _",
+      "ruleIdentifier": "unused_closure_parameter",
+      "ruleName": "Unused Closure Parameter",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    @objc static func updateTrackingOptions(geofenceTags: [String]) -> RadarTrackingOptions? {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 93
+      },
+      "reason": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleIdentifier": "redundant_objc_attribute",
+      "ruleName": "Redundant @objc Attribute",
+      "severity": "warning"
+    }
+  },
+  {
+    "text": "    @objc static func updateTrackingOptions(for location: CLLocation) -> RadarTrackingOptions? {",
+    "violation": {
+      "location": {
+        "character": 5,
+        "file": "RadarSDK/RadarOfflineEventManager.swift",
+        "line": 124
+      },
+      "reason": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
+      "ruleIdentifier": "redundant_objc_attribute",
+      "ruleName": "Redundant @objc Attribute",
       "severity": "warning"
     }
   },
@@ -1185,36 +1275,6 @@
     }
   },
   {
-    "text": "    struct RadarOfflineEventManagerTests {",
-    "violation": {
-      "location": {
-        "character": 5,
-        "file": "RadarSDKTests/RadarOfflineEventManagerTests.swift",
-        "line": 17
-      },
-      "reason": "Struct body should span 350 lines or less excluding comments and whitespace: currently spans 377 lines",
-      "ruleDescription": "Type bodies should not span too many lines",
-      "ruleIdentifier": "type_body_length",
-      "ruleName": "Type Body Length",
-      "severity": "error"
-    }
-  },
-  {
-    "text": "}",
-    "violation": {
-      "location": {
-        "character": 1,
-        "file": "RadarSDKTests/RadarOfflineEventManagerTests.swift",
-        "line": 513
-      },
-      "reason": "File should contain 400 lines or less: currently contains 513",
-      "ruleDescription": "Files should not span too many lines.",
-      "ruleIdentifier": "file_length",
-      "ruleName": "File Length",
-      "severity": "warning"
-    }
-  },
-  {
     "text": "        userDefaults.dictionaryRepresentation().forEach { key, value in",
     "violation": {
       "location": {
@@ -1237,7 +1297,7 @@
         "file": "RadarSDKTests/RadarSyncManagerTests.swift",
         "line": 16
       },
-      "reason": "Struct body should span 350 lines or less excluding comments and whitespace: currently spans 670 lines",
+      "reason": "Struct body should span 350 lines or less excluding comments and whitespace: currently spans 672 lines",
       "ruleDescription": "Type bodies should not span too many lines",
       "ruleIdentifier": "type_body_length",
       "ruleName": "Type Body Length",
@@ -1250,9 +1310,9 @@
       "location": {
         "character": 1,
         "file": "RadarSDKTests/RadarSyncManagerTests.swift",
-        "line": 874
+        "line": 876
       },
-      "reason": "File should contain 400 lines or less: currently contains 874",
+      "reason": "File should contain 400 lines or less: currently contains 876",
       "ruleDescription": "Files should not span too many lines.",
       "ruleIdentifier": "file_length",
       "ruleName": "File Length",
