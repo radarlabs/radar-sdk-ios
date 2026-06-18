@@ -749,7 +749,7 @@ public final class RadarSyncManager: NSObject {
             )
         }
     }
-    
+
     // MARK: - QA map display surface
     // Read-only snapshot accessors over the locally-cached synced data, exposed
     // for the example app's MapView.
@@ -798,8 +798,8 @@ public struct RadarSyncedGeofenceSnapshot {
 
         public var center: CLLocationCoordinate2D {
             switch self {
-            case .circle(let c, _): return c
-            case .polygon(_, let c, _): return c
+            case .circle(let center, _): return center
+            case .polygon(_, let center, _): return center
             }
         }
     }
@@ -810,18 +810,18 @@ public struct RadarSyncedGeofenceSnapshot {
         self.tag = swift.tag
         self.externalId = swift.externalId
         switch swift.geometry {
-        case .circle(let c, let r):
+        case .circle(let center, let radius):
             self.geometry = .circle(
-                center: CLLocationCoordinate2D(latitude: c.latitude, longitude: c.longitude),
-                radius: r
+                center: CLLocationCoordinate2D(latitude: center.latitude, longitude: center.longitude),
+                radius: radius
             )
-        case .polygon(let coords, let c, let r):
+        case .polygon(let coords, let center, let radius):
             self.geometry = .polygon(
                 coordinates: coords.map {
                     CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
                 },
-                center: CLLocationCoordinate2D(latitude: c.latitude, longitude: c.longitude),
-                radius: r
+                center: CLLocationCoordinate2D(latitude: center.latitude, longitude: center.longitude),
+                radius: radius
             )
         }
     }
