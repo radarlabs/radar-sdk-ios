@@ -60,10 +60,15 @@ class RadarOfflineEventManager: NSObject {
         let isoString = RadarUtils.isoDateFormatter.string(from: now)
         let isLive = (RadarSettings.publishableKey ?? "").hasPrefix("prj_live")
 
+        let dwellDurations = state.geofenceEntryTimestamps.mapValues { now.timeIntervalSince1970 - $0 }
+
         var events = buildGeofenceEvents(
-            entries: geofenceEntries, exits: geofenceExits, dwells: geofenceDwells,
-            entryTimestamps: state.geofenceEntryTimestamps,
-            location: location, isoDate: isoString, live: isLive, now: now
+            entries: geofenceEntries, exits: geofenceExits,
+            location: location, isoDate: isoString, live: isLive
+        )
+        events += buildDwellEvents(
+            dwells: geofenceDwells, dwellDurations: dwellDurations,
+            location: location, isoDate: isoString, live: isLive
         )
 
         events.append(
@@ -105,12 +110,9 @@ class RadarOfflineEventManager: NSObject {
     private static func buildGeofenceEvents(
         entries: [RadarGeofenceSwift],
         exits: [RadarGeofenceSwift],
-        dwells: [RadarGeofenceSwift],
-        entryTimestamps: [String: Double],
         location: CLLocation,
         isoDate: String,
-        live: Bool,
-        now: Date
+        live: Bool
     ) -> [RadarEvent] {
         var events = [RadarEvent]()
         for geofence in entries {
@@ -123,8 +125,19 @@ class RadarOfflineEventManager: NSObject {
             events.append(event)
             RadarLogger.shared.info("OfflineEventManager: Generated geofence exit for \(geofence.id)")
         }
+        return events
+    }
+
+    private static func buildDwellEvents(
+        dwells: [RadarGeofenceSwift],
+        dwellDurations: [String: TimeInterval],
+        location: CLLocation,
+        isoDate: String,
+        live: Bool
+    ) -> [RadarEvent] {
+        var events = [RadarEvent]()
         for geofence in dwells {
-            let duration = entryTimestamps[geofence.id].map { now.timeIntervalSince1970 - $0 } ?? 0
+            let duration = dwellDurations[geofence.id] ?? 0
             guard let event = makeGeofenceEvent(type: "user.dwelled_in_geofence", geofence: geofence, location: location, isoDate: isoDate, live: live, duration: duration) else { continue }
             events.append(event)
             RadarLogger.shared.info("OfflineEventManager: Generated geofence dwell for \(geofence.id)")
