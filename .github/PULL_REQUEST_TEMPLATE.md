@@ -22,12 +22,6 @@ Before opening, please run the same checks CI runs:
 
 <!-- Link any related GitHub issue, e.g. Closes #123. -->
 
-## Type of change
-
-- [ ] Bug fix (non-breaking)
-- [ ] New feature (non-breaking)
-- [ ] Breaking change (alters existing public API behavior)
-- [ ] Documentation / internal only (no SDK behavior change)
 
 ## Manual test steps
 
