@@ -83,7 +83,7 @@ extension RadarGeofenceSwift {
         if case .bool(true)? = metadata["radar:restrictToOperatingHours"] {
             let closeBufferMinutes: Int = {
                 if case let .int(value)? = metadata["radar:operatingHoursCloseBufferMinutes"] {
-                    return value
+                    return max(0, value)
                 }
                 return 0
             }()

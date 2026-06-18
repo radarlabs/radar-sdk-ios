@@ -64,7 +64,7 @@ actor RadarNotificationHelper: NSObject {
 
         // Persist the full nearby set (incl. metadata + operatingHours) so a
         // refresh can re-evaluate operating hours later without a track
-        geofenceStore.writeAsync(decoded)
+        geofenceStore.write(decoded)
 
         await registerGeofences(decoded)
     }
