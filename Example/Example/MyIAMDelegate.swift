@@ -9,19 +9,28 @@
 import RadarSDK
 
 class MyIAMDelegate: RadarInAppMessageDelegate {
-    override func createInAppMessageView(_ message: RadarInAppMessage, onDismiss: @escaping () -> Void, onInAppMessageClicked: @escaping () -> Void, completionHandler: @escaping (UIViewController) -> Void) {
+    private let logStream: LogStream
+
+    init(logStream: LogStream) {
+        self.logStream = logStream
+        super.init()
+    }
+
+    override func createInAppMessageView(
+        _ message: RadarInAppMessage, onDismiss: @escaping () -> Void, onInAppMessageClicked: @escaping () -> Void, completionHandler: @escaping (UIViewController) -> Void
+    ) {
         guard let message = message as? RadarInAppMessage_Swift else {
             return
         }
         message.body.text = message.body.text + " {Loyal User}!"
         super.createInAppMessageView(message, onDismiss: onDismiss, onInAppMessageClicked: onInAppMessageClicked, completionHandler: completionHandler)
     }
-    
+
     override func onInAppMessageButtonClicked(_ message: RadarInAppMessage) {
-        print("IAM CLICKED")
+        logStream.write(result: "IAM clicked")
     }
 
     override func onInAppMessageDismissed(_ message: RadarInAppMessage) {
-        print("IAM DISMISSED")
+        logStream.write(result: "IAM dismissed")
     }
 }
