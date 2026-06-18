@@ -75,7 +75,11 @@ extension RadarGeofenceSwift {
             "geofenceId": id,
             "geofenceData": geofenceData,
         ]
-        for (key, value) in metadata {
+
+        // Forward only Radar-namespaced metadata onto the notification (and thus the tap
+        // conversion). Avoids leaking arbitrary/custom geofence metadata into /events while
+        // preserving all campaign fields.
+        for (key, value) in metadata where key.hasPrefix("radar:") {
             userInfo[key] = value.anyValue
         }
         let content = metadataContent.toNotificationContent(userInfo: userInfo)
