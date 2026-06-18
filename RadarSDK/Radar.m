@@ -702,7 +702,12 @@ BOOL _initialized = NO;
                        deliveredAfter:(NSDate *)deliveredAfter {
     
     NSMutableDictionary *metadata = [[NSMutableDictionary alloc] initWithDictionary:request.content.userInfo];
-    
+    // `geofenceData` is an internal NSData blob (the encoded geofence) that the Swift
+    // notification builder puts on the notification's userInfo for host apps to decode.
+    // It's not JSON-serializable, and the conversion request serializes metadata to JSON,
+    // so it must be stripped here or the /events request fails with a bad request.
+    [metadata removeObjectForKey:@"geofenceData"];
+
     if (conversionSource) {
         [metadata setValue:conversionSource forKey:@"conversionSource"];
     }
