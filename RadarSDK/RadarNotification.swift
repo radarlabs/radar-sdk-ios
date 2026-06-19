@@ -72,6 +72,10 @@ extension RadarGeofenceSwift {
             return nil
         }
 
+        if !isActiveOnDayOfWeek(now: now) {
+            return nil
+        }
+
         let identifier = GEOFENCE_NOTIFICATION_PREFIX + id
         // Content
         guard let metadata = metadata,
@@ -144,6 +148,27 @@ extension RadarGeofenceSwift {
             }
         }
         return true
+    }
+
+    private func isActiveOnDayOfWeek(now: Date) -> Bool {
+        // `radar:daysOfWeek` is a comma-separated list of day abbreviations ("Sun"…"Sat"); the
+        // campaign only fires on the listed days. An absent or empty value means every day.
+        guard let daysOfWeekStr = metadata?["radar:daysOfWeek"]?.string() else {
+            return true
+        }
+        let allowedDays = Set(
+            daysOfWeekStr
+                .split(separator: ",")
+                .map { $0.trimmingCharacters(in: .whitespaces).lowercased() }
+                .filter { !$0.isEmpty }
+        )
+        if allowedDays.isEmpty {
+            return true
+        }
+        guard let today = RadarOperatingHoursEvaluator.weekdayAbbreviation(for: now)?.lowercased() else {
+            return true
+        }
+        return allowedDays.contains(today)
     }
 }
 

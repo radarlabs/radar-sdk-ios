@@ -87,6 +87,15 @@ struct RadarOperatingHoursEvaluatorTest {
         #expect(RadarOperatingHoursEvaluator.isOpen(operatingHours: hours, now: date(timezone, hour: 14), timeZone: timezone))
     }
 
+    @Test("weekday abbreviation is evaluated in the supplied timezone")
+    func weekdayAbbreviationRespectsTimezone() {
+        // 02:00 UTC on 2026-06-05 is the previous calendar day (and weekday) in Los Angeles (19:00).
+        let instant = date(utc, hour: 2)
+        #expect(RadarOperatingHoursEvaluator.weekdayAbbreviation(for: instant, timeZone: utc) == dayKey(for: instant, timezone: utc))
+        #expect(RadarOperatingHoursEvaluator.weekdayAbbreviation(for: instant, timeZone: losAngeles) == dayKey(for: instant, timezone: losAngeles))
+        #expect(dayKey(for: instant, timezone: utc) != dayKey(for: instant, timezone: losAngeles))
+    }
+
     @Test("the same instant is evaluated in the supplied timezone")
     func respectsTimezone() {
         // 21:00 UTC on 2026-06-05 == 14:00 PDT the same calendar day.

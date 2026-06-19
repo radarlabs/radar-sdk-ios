@@ -649,6 +649,30 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         continue;
                     }
                 }
+                // `radar:daysOfWeek` is a comma-separated list of day abbreviations ("Sun"…"Sat"); skip when
+                // today (device-local) is not listed. An absent or empty value means every day of the week.
+                NSString *daysOfWeekString = [metadata objectForKey:@"radar:daysOfWeek"];
+                if ([daysOfWeekString isKindOfClass:[NSString class]] && daysOfWeekString.length > 0) {
+                    static NSArray<NSString *> *daysOfWeekAbbr;
+                    static dispatch_once_t daysOfWeekAbbrOnce;
+                    dispatch_once(&daysOfWeekAbbrOnce, ^{
+                        daysOfWeekAbbr = @[ @"sun", @"mon", @"tue", @"wed", @"thu", @"fri", @"sat" ];
+                    });
+                    NSMutableSet<NSString *> *allowedDays = [NSMutableSet set];
+                    for (NSString *day in [daysOfWeekString componentsSeparatedByString:@","]) {
+                        NSString *trimmed = [[day stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] lowercaseString];
+                        if (trimmed.length > 0) {
+                            [allowedDays addObject:trimmed];
+                        }
+                    }
+                    NSInteger weekdayIndex = [[NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian] component:NSCalendarUnitWeekday fromDate:now] - 1;
+                    NSString *today = (weekdayIndex >= 0 && weekdayIndex < (NSInteger)daysOfWeekAbbr.count) ? daysOfWeekAbbr[weekdayIndex] : nil;
+                    if (today && allowedDays.count > 0 && ![allowedDays containsObject:today]) {
+                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                            message:[NSString stringWithFormat:@"Skipping notification: day of week not active | geofenceId = %@", geofenceId]];
+                        continue;
+                    }
+                }
                 UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:identifier];
                 if (content) {
 
