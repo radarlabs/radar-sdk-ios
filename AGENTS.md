@@ -63,3 +63,7 @@ Run `git submodule update --init --recursive` to initialize submodules.
 ## Xcode Project
 
 The Xcode project is `RadarSDK.xcodeproj`. When adding new Swift files, add them to the project file (`project.pbxproj`) so they are compiled. Remove the corresponding `.m` and `.h` files from the project when migrating a class.
+
+## Debugging CI Failures
+
+If you cannot fetch CI failures, prompt the user to copy in the failure logs. This is often helpful with debugging CircleCI failures.
