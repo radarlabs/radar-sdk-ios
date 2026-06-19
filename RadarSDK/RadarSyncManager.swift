@@ -749,4 +749,123 @@ public final class RadarSyncManager: NSObject {
             )
         }
     }
+
+    // MARK: - QA map display surface
+    // Read-only snapshot accessors over the locally-cached synced data, exposed
+    // for the example app's MapView.
+
+    public static func getSyncedRegion() -> CLCircularRegion? {
+        guard let state = syncStore.read(),
+            let center = state.syncedRegionCenter,
+            let radius = state.syncedRegionRadius, radius > 0
+        else { return nil }
+        return CLCircularRegion(
+            center: CLLocationCoordinate2D(latitude: center.latitude, longitude: center.longitude),
+            radius: radius,
+            identifier: "\(syncRegionIdentifierPrefix)region"
+        )
+    }
+
+    public static func getSyncedGeofences() -> [RadarSyncedGeofenceSnapshot] {
+        syncStore.read()?.syncedGeofences?.map(RadarSyncedGeofenceSnapshot.init(from:)) ?? []
+    }
+
+    public static func getSyncedPlaces() -> [RadarSyncedPlaceSnapshot] {
+        syncStore.read()?.syncedPlaces?.map(RadarSyncedPlaceSnapshot.init(from:)) ?? []
+    }
+
+    public static func getSyncedBeacons() -> [RadarSyncedBeaconSnapshot] {
+        syncStore.read()?.syncedBeacons?.map(RadarSyncedBeaconSnapshot.init(from:)) ?? []
+    }
+}
+
+// MARK: - Snapshot types
+
+public struct RadarSyncedGeofenceSnapshot {
+    public let id: String
+    public let description: String
+    public let tag: String?
+    public let externalId: String?
+    public let geometry: Geometry
+
+    public enum Geometry {
+        case circle(center: CLLocationCoordinate2D, radius: Double)
+        case polygon(
+            coordinates: [CLLocationCoordinate2D],
+            center: CLLocationCoordinate2D,
+            radius: Double
+        )
+
+        public var center: CLLocationCoordinate2D {
+            switch self {
+            case .circle(let center, _): return center
+            case .polygon(_, let center, _): return center
+            }
+        }
+    }
+
+    init(from swift: RadarGeofenceSwift) {
+        self.id = swift.id
+        self.description = swift.description
+        self.tag = swift.tag
+        self.externalId = swift.externalId
+        switch swift.geometry {
+        case .circle(let center, let radius):
+            self.geometry = .circle(
+                center: CLLocationCoordinate2D(latitude: center.latitude, longitude: center.longitude),
+                radius: radius
+            )
+        case .polygon(let coords, let center, let radius):
+            self.geometry = .polygon(
+                coordinates: coords.map {
+                    CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+                },
+                center: CLLocationCoordinate2D(latitude: center.latitude, longitude: center.longitude),
+                radius: radius
+            )
+        }
+    }
+}
+
+public struct RadarSyncedPlaceSnapshot {
+    public let id: String
+    public let name: String
+    public let categories: [String]
+    public let group: String?
+    public let location: CLLocationCoordinate2D
+
+    init(from swift: RadarPlaceSwift) {
+        self.id = swift.id
+        self.name = swift.name
+        self.categories = swift.categories
+        self.group = swift.group
+        self.location = CLLocationCoordinate2D(
+            latitude: swift.location.latitude,
+            longitude: swift.location.longitude
+        )
+    }
+}
+
+public struct RadarSyncedBeaconSnapshot {
+    public let id: String
+    public let description: String?
+    public let tag: String?
+    public let uuid: String
+    public let major: String
+    public let minor: String
+    public let location: CLLocationCoordinate2D?
+
+    init(from swift: RadarBeaconSwift) {
+        self.id = swift.id
+        self.description = swift.description
+        self.tag = swift.tag
+        self.uuid = swift.uuid
+        self.major = swift.major
+        self.minor = swift.minor
+        if let geom = swift.geometry {
+            self.location = CLLocationCoordinate2D(latitude: geom.latitude, longitude: geom.longitude)
+        } else {
+            self.location = nil
+        }
+    }
 }

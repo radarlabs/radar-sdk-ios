@@ -93,3 +93,11 @@ class RadarSdkConfiguration: NSObject {
         ]
     }
 }
+
+extension RadarSdkConfiguration {
+    /// QA accessor exposed via the public ObjC header. Returns the cached
+    /// SDK configuration, or nil if none has been fetched yet.
+    @objc static func current() -> RadarSdkConfiguration? {
+        RadarSettings.sdkConfiguration
+    }
+}
