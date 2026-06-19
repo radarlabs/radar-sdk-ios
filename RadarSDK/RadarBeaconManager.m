@@ -154,6 +154,13 @@ static NSString *const kBeaconNotificationIdentifierPrefix = @"radar_beacon_noti
         
         if (region) {
             NSString *notificationId = [NSString stringWithFormat:@"%@%@", kBeaconNotificationIdentifierPrefix, uuid];
+            // Honor the campaign scheduling window / day-of-week filter, mirroring the geofence path, so a
+            // beacon notification isn't scheduled outside its window or on a non-selected day of the week.
+            if (![RadarNotificationHelper isNotificationActiveForMetadata:metadata now:[NSDate date]]) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                    message:[NSString stringWithFormat:@"Skipping beacon notification: outside campaign schedule window or day | identifier = %@", notificationId]];
+                continue;
+            }
             // Extract notification content from metadata
             UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:notificationId];
             if (content) {

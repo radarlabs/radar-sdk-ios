@@ -619,59 +619,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             NSDictionary *metadata = geofence.metadata;
             if (metadata) {
-                // "yyyy-MM-dd'T'HH:mm:ss.SSS" is 23 chars; prefix to this length strips any trailing timezone suffix so the string is parsed as wall-clock local time
-                static const NSUInteger kSchedulingWindowDatePrefixLength = 23;
-                static NSDateFormatter *windowFormatter;
-                static dispatch_once_t windowFormatterOnce;
-                dispatch_once(&windowFormatterOnce, ^{
-                    windowFormatter = [[NSDateFormatter alloc] init];
-                    windowFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-                    windowFormatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSS";
-                });
-                NSDate *now = [NSDate date];
-                NSString *startsAtString = [metadata objectForKey:@"radar:startsAt"];
-                // Window is [startsAt, endsAt]: skip when now is before the window opens
-                if ([startsAtString isKindOfClass:[NSString class]] && startsAtString.length >= kSchedulingWindowDatePrefixLength) {
-                    NSDate *startsAt = [windowFormatter dateFromString:[startsAtString substringToIndex:kSchedulingWindowDatePrefixLength]];
-                    if (startsAt && [now compare:startsAt] == NSOrderedAscending) {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                            message:[NSString stringWithFormat:@"Skipping notification: before window | geofenceId = %@", geofenceId]];
-                        continue;
-                    }
-                }
-                NSString *endsAtString = [metadata objectForKey:@"radar:endsAt"];
-                // Window is [startsAt, endsAt]: skip when now is strictly past the end (end is inclusive)
-                if ([endsAtString isKindOfClass:[NSString class]] && endsAtString.length >= kSchedulingWindowDatePrefixLength) {
-                    NSDate *endsAt = [windowFormatter dateFromString:[endsAtString substringToIndex:kSchedulingWindowDatePrefixLength]];
-                    if (endsAt && [now compare:endsAt] == NSOrderedDescending) {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                            message:[NSString stringWithFormat:@"Skipping notification: after window | geofenceId = %@", geofenceId]];
-                        continue;
-                    }
-                }
-                // `radar:daysOfWeek` is a comma-separated list of day abbreviations ("Sun"…"Sat"); skip when
-                // today (device-local) is not listed. An absent or empty value means every day of the week.
-                NSString *daysOfWeekString = [metadata objectForKey:@"radar:daysOfWeek"];
-                if ([daysOfWeekString isKindOfClass:[NSString class]] && daysOfWeekString.length > 0) {
-                    static NSArray<NSString *> *daysOfWeekAbbr;
-                    static dispatch_once_t daysOfWeekAbbrOnce;
-                    dispatch_once(&daysOfWeekAbbrOnce, ^{
-                        daysOfWeekAbbr = @[ @"sun", @"mon", @"tue", @"wed", @"thu", @"fri", @"sat" ];
-                    });
-                    NSMutableSet<NSString *> *allowedDays = [NSMutableSet set];
-                    for (NSString *day in [daysOfWeekString componentsSeparatedByString:@","]) {
-                        NSString *trimmed = [[day stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] lowercaseString];
-                        if (trimmed.length > 0) {
-                            [allowedDays addObject:trimmed];
-                        }
-                    }
-                    NSInteger weekdayIndex = [[NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian] component:NSCalendarUnitWeekday fromDate:now] - 1;
-                    NSString *today = (weekdayIndex >= 0 && weekdayIndex < (NSInteger)daysOfWeekAbbr.count) ? daysOfWeekAbbr[weekdayIndex] : nil;
-                    if (today && allowedDays.count > 0 && ![allowedDays containsObject:today]) {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                            message:[NSString stringWithFormat:@"Skipping notification: day of week not active | geofenceId = %@", geofenceId]];
-                        continue;
-                    }
+                // Skip the notification when outside the campaign's scheduling window or not active on
+                // today's local day of week (region monitoring above still starts). Shared with the
+                // beacon path via RadarNotificationHelper so the evaluation stays in one place.
+                if (![RadarNotificationHelper isNotificationActiveForMetadata:metadata now:[NSDate date]]) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                        message:[NSString stringWithFormat:@"Skipping notification: outside campaign schedule window or day | geofenceId = %@", geofenceId]];
+                    continue;
                 }
                 UNMutableNotificationContent *content = [RadarNotificationHelper extractContentFromMetadata:metadata identifier:identifier];
                 if (content) {
