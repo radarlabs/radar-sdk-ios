@@ -555,6 +555,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    // Always clear the existing bubble first. If tracking is off, the correct
+    // end state is no bubble geofence, so we remove then return early.
     [self removeBubbleGeofence];
 
     BOOL tracking = [RadarSettings tracking];

@@ -170,6 +170,8 @@ final class RadarLocationManagerSwift: NSObject {
 
     @objc(replaceBubbleGeofenceOnLocationManager:location:radius:)
     static func replaceBubbleGeofence(locationManager: CLLocationManager, location: CLLocation, radius: Int32) {
+        // Always clear the existing bubble first. If tracking is off, the correct
+        // end state is no bubble geofence, so we remove then return early.
         removeBubbleGeofence(locationManager: locationManager)
 
         guard RadarSettings.tracking else {
