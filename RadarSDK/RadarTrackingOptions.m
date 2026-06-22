@@ -367,6 +367,8 @@ NSString *const kTypeIsUser = @"is-user";
     return self.desiredStoppedUpdateInterval == options.desiredStoppedUpdateInterval && self.desiredMovingUpdateInterval == options.desiredMovingUpdateInterval &&
            self.desiredSyncInterval == options.desiredSyncInterval && self.desiredAccuracy == options.desiredAccuracy && self.stopDuration == options.stopDuration &&
            self.stopDistance == options.stopDistance &&
+           // Dates serialize to/from the dictionary at millisecond precision (timeIntervalSince1970 * 1000),
+           // so they are only meaningful to the millisecond; compare within 1ms rather than for exact equality.
            (self.startTrackingAfter == nil ? options.startTrackingAfter == nil :
                                              fabs(self.startTrackingAfter.timeIntervalSince1970 - options.startTrackingAfter.timeIntervalSince1970) < 0.001) &&
            (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil :
