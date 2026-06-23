@@ -69,10 +69,12 @@ extension RadarGeofenceSwift {
 
     func toNotificationRequest(now: Date = Date()) -> UNNotificationRequest? {
         if !isWithinSchedulingWindow(now: now) {
+            RadarLogger.debug("CSGN skip \(id): outside scheduling window")
             return nil
         }
 
         if !isActiveOnDayOfWeek(now: now) {
+            RadarLogger.debug("CSGN skip \(id): not active on today's day of week")
             return nil
         }
 
@@ -81,6 +83,11 @@ extension RadarGeofenceSwift {
         guard let metadata = metadata,
             let metadataContent = RadarNotificationContent(from: metadata)
         else {
+            // Only surface this for geofences that look like campaigns; ordinary geofences
+            // legitimately carry no notification content and would otherwise spam the log.
+            if metadata?["radar:campaignType"] != nil {
+                RadarLogger.debug("CSGN skip \(id): missing radar:notificationText/radar:campaignId")
+            }
             return nil
         }
 
@@ -96,11 +103,13 @@ extension RadarGeofenceSwift {
                 now: now,
                 closeBufferMinutes: closeBufferMinutes
             ) {
+                RadarLogger.debug("CSGN skip \(id): operating hours closed")
                 return nil
             }
         }
 
         guard let geofenceData = try? JSONEncoder().encode(self) else {
+            RadarLogger.debug("CSGN skip \(id): failed to encode geofence")
             return nil
         }
         var userInfo: [String: Any] = [
@@ -127,6 +136,9 @@ extension RadarGeofenceSwift {
         let repeats = if case let .bool(value)? = metadata["radar:notificationRepeats"] { value } else { false }
         let trigger = UNLocationNotificationTrigger(region: region, repeats: repeats)
 
+        RadarLogger.debug(
+            "CSGN register \(id) campaign=\(metadataContent.campaignId) center=(\(latitude),\(longitude)) r=\(radius) repeats=\(repeats)"
+        )
         return UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
     }
 

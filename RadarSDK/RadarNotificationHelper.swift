@@ -54,12 +54,15 @@ actor RadarNotificationHelper: NSObject {
         }
 
         let decoded: [RadarGeofenceSwift] = geofences.compactMap { geofenceDict in
-            guard let json = try? JSONSerialization.data(withJSONObject: geofenceDict),
-                let geofence = try? JSONDecoder().decode(RadarGeofenceSwift.self, from: json)
-            else {
+            do {
+                let json = try JSONSerialization.data(withJSONObject: geofenceDict)
+                return try JSONDecoder().decode(RadarGeofenceSwift.self, from: json)
+            } catch {
+                // Surface schema mismatches (e.g. a missing `_id`) that would otherwise drop
+                // the geofence silently and leave no CSGN registered.
+                RadarLogger.debug("NotificationHelper failed to decode geofence: \(error) dict=\(geofenceDict)")
                 return nil
             }
-            return geofence
         }
 
         // Persist the full nearby set (incl. metadata + operatingHours) so a
