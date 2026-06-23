@@ -15,6 +15,7 @@ struct MainView: View {
         case Map
         case Logs
         case Tests
+        case CSGN
     }
     
     @State private var selectedTab: TabIdentifier = .Tests;
@@ -32,6 +33,10 @@ struct MainView: View {
             TestsView().tabItem {
                 Text("Tests")
             }.tag(TabIdentifier.Tests)
+
+            CSGNInspectorView().tabItem {
+                Text("CSGN")
+            }.tag(TabIdentifier.CSGN)
         }
     }
 }

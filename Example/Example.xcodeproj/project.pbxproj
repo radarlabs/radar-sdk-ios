@@ -34,6 +34,7 @@
 		F64C80D72F64876500943B7A /* RadarSDKFraud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F6513E792E60A5F600523472 /* LocationPushExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F6513E722E60A5F600523472 /* LocationPushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F6513F602E6B736200523472 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F5F2E6B736200523472 /* MainView.swift */; };
+		F6513F702E6B736200523472 /* CSGNInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F712E6B736200523472 /* CSGNInspectorView.swift */; };
 		F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65F79382EF458E000399E84 /* MyIAMDelegate.swift */; };
 		F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */ = {isa = PBXBuildFile; fileRef = F66DAD642E707F0300896773 /* waypoints.gpx */; };
 /* End PBXBuildFile section */
@@ -166,6 +167,7 @@
 		F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKFraud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513E722E60A5F600523472 /* LocationPushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LocationPushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513F5F2E6B736200523472 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		F6513F712E6B736200523472 /* CSGNInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSGNInspectorView.swift; sourceTree = "<group>"; };
 		F65F79382EF458E000399E84 /* MyIAMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyIAMDelegate.swift; sourceTree = "<group>"; };
 		F66DAD642E707F0300896773 /* waypoints.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = waypoints.gpx; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -272,6 +274,7 @@
 				DDB861D22385FC3E00770661 /* Default-568h@2x.png */,
 				DD236D26230A006700EB88F9 /* AppDelegate.swift */,
 				F6513F5F2E6B736200523472 /* MainView.swift */,
+				F6513F712E6B736200523472 /* CSGNInspectorView.swift */,
 				F61886C42EA7DC800072E87C /* MapView.swift */,
 				F63DDAD42E746BB0006991F5 /* StyledButton.swift */,
 				F61886C02EA7DB3F0072E87C /* MyRadarDelegate.swift */,
@@ -537,6 +540,7 @@
 				F618871C2EAFC1EE0072E87C /* Test.mm in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
 				F6513F602E6B736200523472 /* MainView.swift in Sources */,
+				F6513F702E6B736200523472 /* CSGNInspectorView.swift in Sources */,
 				F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */,
 				F61886C12EA7DB440072E87C /* MyRadarDelegate.swift in Sources */,
 				F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */,
