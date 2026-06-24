@@ -550,6 +550,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift replaceBubbleGeofenceOnLocationManager:self.locationManager location:location radius:radius];
+        return;
+    }
+
     [self removeBubbleGeofence];
 
     BOOL tracking = [RadarSettings tracking];
@@ -566,6 +571,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeBubbleGeofence {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift removeBubbleGeofenceOnLocationManager:self.locationManager];
+        return;
+    }
+
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kBubbleGeofenceIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
@@ -820,6 +830,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeAllRegions {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift removeAllRegionsOnLocationManager:self.locationManager];
+        return;
+    }
+
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
