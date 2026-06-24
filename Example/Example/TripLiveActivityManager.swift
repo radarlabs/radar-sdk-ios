@@ -5,55 +5,60 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import ActivityKit
+import Foundation
 import RadarSDK
 
 @available(iOS 16.2, *)
 final class TripLiveActivityManager {
     static let shared = TripLiveActivityManager()
     private init() {}
-    
+
+    /// Set by AppDelegate at launch so lifecycle messages flow into the Debug
+    /// tab's unified console. Optional so the singleton can construct itself
+    /// before AppDelegate is ready.
+    var logStream: LogStream?
+
     private var currentActivity: Activity<TripActivityExtensionAttributes>?
-    
+
     /// Duration (in seconds) to keep the activity visible after ending
     private let dismissalDelay: TimeInterval = 5
-    
+
     var hasActiveActivity: Bool {
         currentActivity != nil
     }
-    
+
     // MARK: - Public Methods
     func startActivity(trip: RadarTrip) {
         guard checkActivitiesEnabled() else { return }
-        
+
         // End any existing activity first
         endActivity()
-        
+
         Task {
             let contentState = await buildContentState(from: trip)
             createActivity(contentState: contentState)
         }
     }
-    
+
     func updateActivity(trip: RadarTrip, statusOverride: String? = nil) {
         guard let activity = currentActivity else {
-            print("No active Live Activity to update")
+            logStream?.write(error: "Live Activity update skipped", detail: "no active activity")
             return
         }
-        
+
         Task {
             let contentState = await buildContentState(from: trip, statusOverride: statusOverride)
             await activity.update(.init(state: contentState, staleDate: nil))
         }
     }
-    
+
     func endActivity(status: String = "completed") {
         guard let activity = currentActivity else {
-            print("No active Live Activity to end")
+            logStream?.write(error: "Live Activity end skipped", detail: "no active activity")
             return
         }
-        
+
         let finalState = TripActivityExtensionAttributes.ContentState(
             name: "Trip Ended",
             tripId: "",
@@ -68,21 +73,21 @@ final class TripLiveActivityManager {
                 dismissalPolicy: .after(.now + dismissalDelay)
             )
             currentActivity = nil
-            print("Live Activity ended: \(status)")
+            logStream?.write(result: "Live Activity ended", detail: "status: \(status)")
         }
     }
-    
+
     // MARK: - Private Methods
     private func checkActivitiesEnabled() -> Bool {
         let authInfo = ActivityAuthorizationInfo()
 
         guard authInfo.areActivitiesEnabled else {
-            print("Live Activities are not enabled - check Settings")
+            logStream?.write(error: "Live Activities not enabled", detail: "Check Settings → Notifications")
             return false
         }
         return true
     }
-    
+
     private func createActivity(contentState: TripActivityExtensionAttributes.ContentState) {
         do {
             let activity = try Activity.request(
@@ -91,15 +96,15 @@ final class TripLiveActivityManager {
                 pushType: nil
             )
             currentActivity = activity
-            print("Live Activity started")
+            logStream?.write(result: "Live Activity started")
         } catch {
-            print("Error starting Live Activity: \(error.localizedDescription)")
+            logStream?.write(error: "Live Activity start failed", detail: error.localizedDescription)
         }
     }
-    
+
     private func buildContentState(from trip: RadarTrip, statusOverride: String? = nil) async -> TripActivityExtensionAttributes.ContentState {
         let destinationAddress = await fetchDestinationAddress(from: trip)
-        
+
         return TripActivityExtensionAttributes.ContentState(
             name: trip.externalId ?? trip._id,
             tripId: trip._id,
@@ -109,19 +114,19 @@ final class TripLiveActivityManager {
             destinationAddress: destinationAddress
         )
     }
-    
+
     private func fetchDestinationAddress(from trip: RadarTrip) async -> String? {
         guard let destinationLocation = trip.destinationLocation else {
             return nil
         }
-        
+
         let location = CLLocation(
             latitude: destinationLocation.coordinate.latitude,
             longitude: destinationLocation.coordinate.longitude
         )
-        
+
         return await withCheckedContinuation { continuation in
-            Radar.reverseGeocode(location: location) { status, addresses in
+            Radar.reverseGeocode(location: location) { _, addresses in
                 let address = addresses?.first?.formattedAddress?.truncatedAtFirstComma
                 continuation.resume(returning: address)
             }
