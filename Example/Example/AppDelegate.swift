@@ -6,21 +6,24 @@
 //
 
 import ActivityKit
+import Combine
 import RadarSDK
 import SwiftUI
 import UIKit
 import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarDelegate, RadarVerifiedDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarVerifiedDelegate {
 
     let locationManager = CLLocationManager()
     var window: UIWindow?  // required for UIWindowSceneDelegate
 
-    var scrollView: UIScrollView?
-    var demoFunctions = Array<() -> Void>()
-
-    var useSwiftUI = true
+    let logStream = LogStream()
+    let settingsStore = SettingsStore()
+    let permissionsStore = PermissionsStore()
+    let mapOverlayRegistry = MapOverlayRegistry()
+    let tripBuilderStore = TripBuilderStore()
+    private var cancellables = Set<AnyCancellable>()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in }
@@ -39,16 +42,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.trackVerifiedAutoFailover = true
 
         Radar.setAppGroup("group.waypoint.data")
-        Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000", options: radarInitializeOptions)
-        Radar.setMetadata(["foo": "bar"])
-        Radar.setDelegate(self)
+        Radar.initialize(publishableKey: settingsStore.resolvedPublishableKey, options: radarInitializeOptions)
+        Radar.setDelegate(logStream)
+        wireLiveActivitySubscriptions()
         Radar.setVerifiedDelegate(self)
-        Radar.setInAppMessageDelegate(MyIAMDelegate())
+        Radar.setInAppMessageDelegate(MyIAMDelegate(logStream: logStream))
+        settingsStore.loadFromSDK()
+        mapOverlayRegistry.register(MonitoredRegionsSource())
+        mapOverlayRegistry.register(NearbyGeofencesSource())
+        mapOverlayRegistry.register(SyncedRegionSource())
+        mapOverlayRegistry.register(NearbyPlacesSource())
+        mapOverlayRegistry.register(TripGeofencesSource(store: tripBuilderStore))
+        mapOverlayRegistry.register(TripDestinationSource())
+        mapOverlayRegistry.register(TripBreadcrumbsSource(store: tripBuilderStore))
+        mapOverlayRegistry.register(TripEventsSource(store: tripBuilderStore))
+
+        tripBuilderStore.bind(logStream: logStream, registry: mapOverlayRegistry)
+        tripBuilderStore.refreshActiveTrip()
+
+        if #available(iOS 16.2, *) {
+            TripLiveActivityManager.shared.logStream = logStream
+        }
 
         if #available(iOS 15.0, *) {
-            locationManager.startMonitoringLocationPushes { data, error in
-                print("Extension Token", data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
-                Radar.setLocationExtensionToken(data?.map { String(format: "%02x", $0) }.joined() ?? "no token")
+            locationManager.startMonitoringLocationPushes { data, _ in
+                let token = data?.map { String(format: "%02x", $0) }.joined() ?? "no token"
+                self.logStream.write(result: "extension push token registered", detail: "token: \(token)")
+                Radar.setLocationExtensionToken(token)
             }
         }
 
@@ -63,94 +83,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         return true
     }
 
-    func demoButton(text: String, function: @escaping () -> Void) {
-        guard let scrollView = self.scrollView else { return }
-
-        let buttonHeight = 30
-        scrollView.contentSize.height += CGFloat(buttonHeight)
-
-        let buttonFrame = CGRect(x: 0, y: demoFunctions.count * buttonHeight, width: Int(scrollView.frame.width), height: buttonHeight)
-        let button = UIButton(
-            frame: buttonFrame,
-            primaryAction: UIAction(handler: { _ in
-                function()
-            }))
-        button.setTitleColor(.black, for: .normal)
-        button.setTitleColor(.lightGray, for: .highlighted)
-        button.setTitle(text, for: .normal)
-
-        demoFunctions.append(function)
-
-        scrollView.addSubview(button)
-    }
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
+        let appDelegate = (UIApplication.shared.delegate as? AppDelegate) ?? self
+
         let window = UIWindow(windowScene: windowScene)
-
         window.backgroundColor = .white
-
-        if useSwiftUI {
-            let controller = UIHostingController(rootView: MainView())
-            controller.view.frame = UIScreen.main.bounds
-            window.addSubview(controller.view)
-        } else {
-            scrollView = UIScrollView(frame: CGRect(x: 0, y: 100, width: window.frame.size.width, height: window.frame.size.height))
-            scrollView!.contentSize.height = 0
-            scrollView!.contentSize.width = window.frame.size.width
-
-            window.addSubview(scrollView!)
-        }
-
+        let controller = UIHostingController(
+            rootView: MainView()
+                .environmentObject(appDelegate.logStream)
+                .environmentObject(appDelegate.settingsStore)
+                .environmentObject(appDelegate.permissionsStore)
+                .environmentObject(appDelegate.mapOverlayRegistry)
+                .environmentObject(appDelegate.tripBuilderStore)
+        )
+        controller.view.frame = UIScreen.main.bounds
+        window.addSubview(controller.view)
         window.makeKeyAndVisible()
-
         self.window = window
-
-        if UIApplication.shared.applicationState != .background {
-            //            Radar.getLocation { (status, location, stopped) in
-            //                print("Location: status = \(Radar.stringForStatus(status)); location = \(String(describing: location))")
-            //            }
-            //
-            //            Radar.trackOnce { (status, location, events, user) in
-            //                print("Track once: status = \(Radar.stringForStatus(status)); location = \(String(describing: location)); events = \(String(describing: events)); user = \(String(describing: user))")
-            //            }
-        }
-
-        demoButton(text: "IAM") {
-            Radar.showInAppMessage(
-                RadarInAppMessage.fromDictionary([
-                    "title": [
-                        "text": "This is the titleakfjaklsjdflajsldfjalsdjflajsldkfjaslkfdjkalsjdfklajlkfdjklsjflajsd",
-                        "color": "#ff0000",
-                    ],
-                    "body": [
-                        "text": "This is a demo message.",
-                        "color": "#00ff00",
-                    ],
-                    "button": [
-                        "text": "Buy it",
-                        "color": "#0000ff",
-                        "backgroundColor": "#EB0083",
-                    ],
-                    "image": [
-                        "url": "https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg",
-                        "name": "image.jpeg",
-                    ],
-                    "metadata": [
-                        "campainId": "1234"
-                    ],
-                ])!)
-        }
-        demoButton(text: "get User Id") {
-            print(Radar.getUserId())
-        }
-        demoButton(text: "track once") {
-            print(Radar.trackOnce())
-        }
     }
 
     func requestLocationPermissions() {
@@ -183,7 +134,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     func userNotificationCenter(
         _ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        print("will present notification!")
+        logStream.write(result: "willPresent notification")
         completionHandler([.list, .banner, .sound])
     }
 
@@ -191,12 +142,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         // Uncomment for manual setup for notification conversions and URLs
         // Radar.logConversion(response: response)
         // Radar.openURLFromNotification(response.notification)
-        print(response)
+        logStream.write(result: "didReceive notification response", detail: "\(response)")
     }
 
     // this function is called ONLY for silent-pushes
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) async -> UIBackgroundFetchResult {
-        print(userInfo)
+        logStream.write(result: "silent push received", detail: "\(userInfo)")
 
         return .newData
     }
@@ -204,34 +155,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     func notify(_ body: String) {
     }
 
-    // MARK: - RadarDelegate Methods (for Live Activity)
-    // These delegate methods are optional and only needed if you want to update a Live Activity based on trip events and location updates.
-    func didReceiveEvents(_ events: [RadarEvent], user: RadarUser?) {
-        // End the Live Activity when the user stops a trip
+    // MARK: - Live Activity (subscribes to LogStream)
+
+    private func wireLiveActivitySubscriptions() {
+        logStream.didReceiveEventsPublisher
+            .sink { [weak self] events, _ in
+                self?.handleEventsForLiveActivity(events)
+            }
+            .store(in: &cancellables)
+        logStream.didUpdateLocationPublisher
+            .sink { [weak self] _, user in
+                self?.handleLocationUpdateForLiveActivity(user: user)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func handleEventsForLiveActivity(_ events: [RadarEvent]) {
         if #available(iOS 16.2, *) {
-            for event in events {
-                if event.type == .userStoppedTrip {
-                    TripLiveActivityManager.shared.endActivity(status: "completed")
-                }
+            for event in events where event.type == .userStoppedTrip {
+                TripLiveActivityManager.shared.endActivity(status: "completed")
             }
         }
     }
 
-    func didUpdateLocation(_ location: CLLocation, user: RadarUser) {
-        // Update the Live Activity with the latest trip progress
+    private func handleLocationUpdateForLiveActivity(user: RadarUser) {
         if #available(iOS 16.2, *) {
             if user.trip != nil {
                 handleTripLiveActivity(user: user)
             }
         }
-    }
-
-    func didChangeIP() {
-        print("RadarVerifiedDelegate: didChangeIP")
-    }
-
-    func didChangeSharing(_ sharing: Bool) {
-        print("RadarVerifiedDelegate: didChangeSharing | sharing = \(sharing)")
     }
 
     // MARK: - Live Activity Handling

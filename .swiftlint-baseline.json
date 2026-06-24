@@ -20,7 +20,7 @@
       "location": {
         "character": 16,
         "file": "RadarSDK/RadarGeofence.swift",
-        "line": 162
+        "line": 168
       },
       "reason": "Variable name 'v' should be between 3 and 40 characters long",
       "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
@@ -35,7 +35,7 @@
       "location": {
         "character": 23,
         "file": "RadarSDK/RadarGeofence.swift",
-        "line": 164
+        "line": 170
       },
       "reason": "Variable name 'v' should be between 3 and 40 characters long",
       "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
@@ -50,7 +50,7 @@
       "location": {
         "character": 23,
         "file": "RadarSDK/RadarGeofence.swift",
-        "line": 166
+        "line": 172
       },
       "reason": "Variable name 'v' should be between 3 and 40 characters long",
       "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
@@ -65,7 +65,7 @@
       "location": {
         "character": 23,
         "file": "RadarSDK/RadarGeofence.swift",
-        "line": 168
+        "line": 174
       },
       "reason": "Variable name 'v' should be between 3 and 40 characters long",
       "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
@@ -80,7 +80,7 @@
       "location": {
         "character": 26,
         "file": "RadarSDK/RadarGeofence.swift",
-        "line": 178
+        "line": 184
       },
       "reason": "Variable name 'v' should be between 3 and 40 characters long",
       "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
@@ -95,7 +95,7 @@
       "location": {
         "character": 23,
         "file": "RadarSDK/RadarGeofence.swift",
-        "line": 179
+        "line": 185
       },
       "reason": "Variable name 'v' should be between 3 and 40 characters long",
       "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
@@ -110,7 +110,7 @@
       "location": {
         "character": 26,
         "file": "RadarSDK/RadarGeofence.swift",
-        "line": 180
+        "line": 186
       },
       "reason": "Variable name 'v' should be between 3 and 40 characters long",
       "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
@@ -125,7 +125,7 @@
       "location": {
         "character": 24,
         "file": "RadarSDK/RadarGeofence.swift",
-        "line": 181
+        "line": 187
       },
       "reason": "Variable name 'v' should be between 3 and 40 characters long",
       "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
@@ -245,7 +245,7 @@
       "location": {
         "character": 5,
         "file": "RadarSDK/RadarNotification.swift",
-        "line": 163
+        "line": 199
       },
       "reason": "Function should have complexity 10 or less; currently complexity is 26",
       "ruleDescription": "Complexity of function bodies should be limited.",
@@ -260,117 +260,12 @@
       "location": {
         "character": 5,
         "file": "RadarSDK/RadarNotification.swift",
-        "line": 163
+        "line": 199
       },
       "reason": "Initializer body should span 50 lines or less excluding comments and whitespace: currently spans 64 lines",
       "ruleDescription": "Function bodies should not span too many lines",
       "ruleIdentifier": "function_body_length",
       "ruleName": "Function Body Length",
-      "severity": "warning"
-    }
-  },
-  {
-    "text": "    nonisolated(unsafe) private static var _offlineGeofenceIds: Set<String>? = nil",
-    "violation": {
-      "location": {
-        "character": 44,
-        "file": "RadarSDK/RadarOfflineEventManager.swift",
-        "line": 105
-      },
-      "reason": "Optional should be implicitly initialized without nil",
-      "ruleDescription": "Optionals should be consistently initialized, either with `= nil` or without.",
-      "ruleIdentifier": "implicit_optional_initialization",
-      "ruleName": "Implicit Optional Initialization",
-      "severity": "warning"
-    }
-  },
-  {
-    "text": "    @objc static func reset() {",
-    "violation": {
-      "location": {
-        "character": 5,
-        "file": "RadarSDK/RadarOfflineEventManager.swift",
-        "line": 23
-      },
-      "reason": "Objective-C attribute (@objc) is redundant in declaration",
-      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
-      "ruleIdentifier": "redundant_objc_attribute",
-      "ruleName": "Redundant @objc Attribute",
-      "severity": "warning"
-    }
-  },
-  {
-    "text": "    @objc static func generateEvents(",
-    "violation": {
-      "location": {
-        "character": 5,
-        "file": "RadarSDK/RadarOfflineEventManager.swift",
-        "line": 29
-      },
-      "reason": "Objective-C attribute (@objc) is redundant in declaration",
-      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
-      "ruleIdentifier": "redundant_objc_attribute",
-      "ruleName": "Redundant @objc Attribute",
-      "severity": "warning"
-    }
-  },
-  {
-    "text": "    @objc static func handleTrackFailure(_ location: CLLocation) {",
-    "violation": {
-      "location": {
-        "character": 5,
-        "file": "RadarSDK/RadarOfflineEventManager.swift",
-        "line": 79
-      },
-      "reason": "Objective-C attribute (@objc) is redundant in declaration",
-      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
-      "ruleIdentifier": "redundant_objc_attribute",
-      "ruleName": "Redundant @objc Attribute",
-      "severity": "warning"
-    }
-  },
-  {
-    "text": "            generateEvents(location: location) { events, user, loc in",
-    "violation": {
-      "location": {
-        "character": 64,
-        "file": "RadarSDK/RadarOfflineEventManager.swift",
-        "line": 83
-      },
-      "reason": "Unused parameter in a closure should be replaced with _",
-      "ruleDescription": "Unused parameter in a closure should be replaced with _",
-      "ruleIdentifier": "unused_closure_parameter",
-      "ruleName": "Unused Closure Parameter",
-      "severity": "warning"
-    }
-  },
-  {
-    "text": "    @objc static func updateTrackingOptions(geofenceTags: [String]) -> RadarTrackingOptions? {",
-    "violation": {
-      "location": {
-        "character": 5,
-        "file": "RadarSDK/RadarOfflineEventManager.swift",
-        "line": 93
-      },
-      "reason": "Objective-C attribute (@objc) is redundant in declaration",
-      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
-      "ruleIdentifier": "redundant_objc_attribute",
-      "ruleName": "Redundant @objc Attribute",
-      "severity": "warning"
-    }
-  },
-  {
-    "text": "    @objc static func updateTrackingOptions(for location: CLLocation) -> RadarTrackingOptions? {",
-    "violation": {
-      "location": {
-        "character": 5,
-        "file": "RadarSDK/RadarOfflineEventManager.swift",
-        "line": 124
-      },
-      "reason": "Objective-C attribute (@objc) is redundant in declaration",
-      "ruleDescription": "Objective-C attribute (@objc) is redundant in declaration",
-      "ruleIdentifier": "redundant_objc_attribute",
-      "ruleName": "Redundant @objc Attribute",
       "severity": "warning"
     }
   },
@@ -397,7 +292,7 @@
         "file": "RadarSDK/RadarSyncManager.swift",
         "line": 13
       },
-      "reason": "Class body should span 350 lines or less excluding comments and whitespace: currently spans 583 lines",
+      "reason": "Class body should span 350 lines or less excluding comments and whitespace: currently spans 603 lines",
       "ruleDescription": "Type bodies should not span too many lines",
       "ruleIdentifier": "type_body_length",
       "ruleName": "Type Body Length",
@@ -470,9 +365,9 @@
       "location": {
         "character": 1,
         "file": "RadarSDK/RadarSyncManager.swift",
-        "line": 752
+        "line": 871
       },
-      "reason": "File should contain 400 lines or less: currently contains 752",
+      "reason": "File should contain 400 lines or less: currently contains 871",
       "ruleDescription": "Files should not span too many lines.",
       "ruleIdentifier": "file_length",
       "ruleName": "File Length",
@@ -1265,7 +1160,7 @@
       "location": {
         "character": 13,
         "file": "RadarSDKTests/RadarNotificationHelperTest.swift",
-        "line": 223
+        "line": 259
       },
       "reason": "Variable name 'i' should be between 3 and 40 characters long",
       "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
