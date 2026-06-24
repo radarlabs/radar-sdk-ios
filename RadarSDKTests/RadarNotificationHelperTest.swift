@@ -63,7 +63,9 @@ private func makeGeofenceDict(
     campaignId: String = "campaign_1",
     operatingHours: [String: [[String]]]? = nil,
     restrictToOperatingHours: Bool = false,
-    closeBufferMinutes: Int? = nil
+    closeBufferMinutes: Int? = nil,
+    startsAt: String? = nil,
+    endsAt: String? = nil
 ) -> [String: Sendable] {
     var metadata: [String: Sendable] = [
         "radar:notificationText": "Hello from \(id)",
@@ -74,6 +76,12 @@ private func makeGeofenceDict(
     }
     if let closeBufferMinutes {
         metadata["radar:operatingHoursCloseBufferMinutes"] = closeBufferMinutes
+    }
+    if let startsAt {
+        metadata["radar:startsAt"] = startsAt
+    }
+    if let endsAt {
+        metadata["radar:endsAt"] = endsAt
     }
 
     var dict: [String: Sendable] = [
@@ -109,6 +117,19 @@ private func localDayKey(for date: Date) -> String {
     cal.timeZone = .current
     let idx = cal.component(.weekday, from: date) - 1
     return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][idx]
+}
+
+// Formats a wall-clock scheduling-window timestamp the way the server sends radar:startsAt/endsAt
+// (the SDK parses the leading 23 chars; the trailing timezone is ignored).
+private let schedulingWindowFormatter: DateFormatter = {
+    let fmt = DateFormatter()
+    fmt.locale = Locale(identifier: "en_US_POSIX")
+    fmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+    return fmt
+}()
+
+private func isoString(_ date: Date) -> String {
+    schedulingWindowFormatter.string(from: date)
 }
 
 // MARK: - Tests
@@ -385,5 +406,59 @@ struct RadarNotificationHelperTest {
 
         let pending = await mockCenter.pendingNotificationRequests()
         #expect(pending.isEmpty)
+    }
+
+    @Test("refresh deregisters a campaign whose scheduling window has ended")
+    func refreshDeregistersEndedWindow() async {
+        let mockCenter = MockNotificationCenter()
+        let mockState = MockRadarState()
+        let fileName = "refresh_window_\(UUID().uuidString).json"
+        let store = RadarFileStorageObject<[RadarGeofenceSwift]>(fileName: fileName)
+        let helper = RadarNotificationHelper(notificationCenter: mockCenter, radarState: mockState, geofenceStore: store)
+
+        // Registered while within the window (endsAt in the future): both are pending.
+        await helper.registerGeofenceNotifications(geofences: [
+            makeGeofenceDict(id: "1", endsAt: isoString(Date().addingTimeInterval(3600))),
+            makeGeofenceDict(id: "2"),
+        ])
+        var pending = await mockCenter.pendingNotificationRequests()
+        #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_1", "radar_geofence_2"]))
+
+        // The window for geofence "1" has since ended (endsAt now in the past). A refresh push
+        // re-evaluates the cache and must prune it, leaving the windowless geofence registered.
+        store.write([
+            decodeGeofence(makeGeofenceDict(id: "1", endsAt: isoString(Date().addingTimeInterval(-3600))))!,
+            decodeGeofence(makeGeofenceDict(id: "2"))!,
+        ])
+        await helper.refreshGeofenceNotifications()
+
+        pending = await mockCenter.pendingNotificationRequests()
+        #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_2"]))
+
+        store.clear()
+    }
+
+    @Test("refresh keeps a campaign still within its scheduling window")
+    func refreshKeepsActiveWindow() async {
+        let mockCenter = MockNotificationCenter()
+        let mockState = MockRadarState()
+        let store = RadarFileStorageObject<[RadarGeofenceSwift]>(fileName: "refresh_active_\(UUID().uuidString).json")
+        store.write([
+            decodeGeofence(
+                makeGeofenceDict(
+                    id: "1",
+                    startsAt: isoString(Date().addingTimeInterval(-3600)),
+                    endsAt: isoString(Date().addingTimeInterval(3600))
+                )
+            )!
+        ])
+        let helper = RadarNotificationHelper(notificationCenter: mockCenter, radarState: mockState, geofenceStore: store)
+
+        await helper.refreshGeofenceNotifications()
+
+        let pending = await mockCenter.pendingNotificationRequests()
+        #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_1"]))
+
+        store.clear()
     }
 }
