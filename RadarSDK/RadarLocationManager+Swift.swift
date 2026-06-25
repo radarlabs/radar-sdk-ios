@@ -27,6 +27,7 @@ final class RadarLocationManagerSwift: NSObject {
     // hand until that file is fully ported.
     private static let identifierPrefix = "radar_"
     private static let bubbleGeofenceIdentifierPrefix = "radar_bubble_"
+    private static let syncGeofenceIdentifierPrefix = "radar_geofence_"
     private static let syncBeaconIdentifierPrefix = "radar_beacon_"
     private static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
 
@@ -169,6 +170,8 @@ final class RadarLocationManagerSwift: NSObject {
 
     @objc(replaceBubbleGeofenceOnLocationManager:location:radius:)
     static func replaceBubbleGeofence(locationManager: CLLocationManager, location: CLLocation, radius: Int32) {
+        // Always clear the existing bubble first. If tracking is off, the correct
+        // end state is no bubble geofence, so we remove then return early.
         removeBubbleGeofence(locationManager: locationManager)
 
         guard RadarSettings.tracking else {
@@ -196,6 +199,16 @@ final class RadarLocationManagerSwift: NSObject {
         }
 
         RadarLogger.shared.debug("🦅 Removed bubble geofences")
+    }
+
+    @objc(removeSyncedGeofencesOnLocationManager:)
+    static func removeSyncedGeofences(locationManager: CLLocationManager) {
+        for region in locationManager.monitoredRegions
+        where region.identifier.hasPrefix(syncGeofenceIdentifierPrefix) {
+            locationManager.stopMonitoring(for: region)
+        }
+
+        RadarLogger.shared.debug("🦅 Removed synced geofences")
     }
 
     @objc(removeAllRegionsOnLocationManager:)

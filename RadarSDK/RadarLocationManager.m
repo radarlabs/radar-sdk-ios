@@ -555,6 +555,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    // Always clear the existing bubble first. If tracking is off, the correct
+    // end state is no bubble geofence, so we remove then return early.
     [self removeBubbleGeofence];
 
     BOOL tracking = [RadarSettings tracking];
@@ -694,6 +696,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeSyncedGeofences {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift removeSyncedGeofencesOnLocationManager:self.locationManager];
+        return;
+    }
+
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
