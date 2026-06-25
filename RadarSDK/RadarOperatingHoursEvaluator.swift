@@ -46,6 +46,19 @@ enum RadarOperatingHoursEvaluator {
         }
     }
 
+    /// Returns the day-of-week abbreviation ("Sun"…"Sat") for `date` evaluated in `timeZone`,
+    /// matching the keys used by `isOpen` and the `radar:daysOfWeek` campaign metadata.
+    static func weekdayAbbreviation(for date: Date, timeZone: TimeZone = .current) -> String? {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+
+        let weekdayIndex = calendar.component(.weekday, from: date) - 1
+        guard weekdayIndex >= 0, weekdayIndex < daysOfWeekAbbr.count else {
+            return nil
+        }
+        return daysOfWeekAbbr[weekdayIndex]
+    }
+
     private static func minutesSinceMidnight(_ timeString: String) -> Int? {
         if timeString == "24:00" {
             return 24 * 60
