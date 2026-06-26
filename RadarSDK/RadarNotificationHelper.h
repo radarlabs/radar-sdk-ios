@@ -30,6 +30,12 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 
 + (nullable UNMutableNotificationContent *)extractContentFromMetadata:(nullable NSDictionary *)metadata identifier:(nullable NSString *)identifier;
 
+/// Returns whether a client-side notification carrying `metadata` should be scheduled at `now`:
+/// within the optional `radar:startsAt`/`radar:endsAt` window (inclusive, parsed as wall-clock local
+/// time) and active on the local day in `radar:daysOfWeek`. Absent/empty values mean "no constraint".
+/// Used by the geofence notification path so the window + day-of-week evaluation stays in one place.
++ (BOOL)isNotificationActiveForMetadata:(nullable NSDictionary *)metadata now:(NSDate *)now;
+
 + (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler;
 @end
 
