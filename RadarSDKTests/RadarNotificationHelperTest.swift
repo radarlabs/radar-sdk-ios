@@ -58,12 +58,14 @@ final class MockNotificationCenter: NotificationCenterProtocol, @unchecked Senda
 
 // MARK: - Test Helpers
 
-private func makeGeofenceDict(
+func makeGeofenceDict(
     id: String,
     campaignId: String = "campaign_1",
     operatingHours: [String: [[String]]]? = nil,
     restrictToOperatingHours: Bool = false,
-    closeBufferMinutes: Int? = nil
+    closeBufferMinutes: Int? = nil,
+    startsAt: String? = nil,
+    endsAt: String? = nil
 ) -> [String: Sendable] {
     var metadata: [String: Sendable] = [
         "radar:notificationText": "Hello from \(id)",
@@ -74,6 +76,12 @@ private func makeGeofenceDict(
     }
     if let closeBufferMinutes {
         metadata["radar:operatingHoursCloseBufferMinutes"] = closeBufferMinutes
+    }
+    if let startsAt {
+        metadata["radar:startsAt"] = startsAt
+    }
+    if let endsAt {
+        metadata["radar:endsAt"] = endsAt
     }
 
     var dict: [String: Sendable] = [
@@ -93,7 +101,7 @@ private func makeGeofenceDict(
     return dict
 }
 
-private func decodeGeofence(_ dict: [String: Sendable]) -> RadarGeofenceSwift? {
+func decodeGeofence(_ dict: [String: Sendable]) -> RadarGeofenceSwift? {
     guard let json = try? JSONSerialization.data(withJSONObject: dict) else { return nil }
     return try? JSONDecoder().decode(RadarGeofenceSwift.self, from: json)
 }
@@ -344,46 +352,4 @@ struct RadarNotificationHelperTest {
         #expect(geofence?.toNotificationRequest(now: now) == nil)
     }
 
-    @Test("refresh re-registers from the persisted store")
-    func refreshReRegistersFromStore() async {
-        let mockCenter = MockNotificationCenter()
-        let mockState = MockRadarState()
-        let fileName = "refresh_\(UUID().uuidString).json"
-        let store = RadarFileStorageObject<[RadarGeofenceSwift]>(fileName: fileName)
-        let helper = RadarNotificationHelper(notificationCenter: mockCenter, radarState: mockState, geofenceStore: store)
-
-        await helper.registerGeofenceNotifications(geofences: [
-            makeGeofenceDict(id: "1"),
-            makeGeofenceDict(id: "2"),
-        ])
-
-        // Simulate the pending list being lost (e.g. relaunch) so we can prove refresh rebuilds it.
-        mockCenter.pendingRequests.removeAll()
-
-        let helperAfterRelaunch = RadarNotificationHelper(
-            notificationCenter: mockCenter,
-            radarState: mockState,
-            geofenceStore: RadarFileStorageObject<[RadarGeofenceSwift]>(fileName: fileName)
-        )
-        await helperAfterRelaunch.refreshGeofenceNotifications()
-
-        let pending = await mockCenter.pendingNotificationRequests()
-        #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_1", "radar_geofence_2"]))
-
-        store.clear()
-    }
-
-    @Test("refresh with an empty store is a no-op")
-    func refreshEmptyStoreNoOp() async {
-        let mockCenter = MockNotificationCenter()
-        let mockState = MockRadarState()
-        let store = RadarFileStorageObject<[RadarGeofenceSwift]>(fileName: "refresh_empty_\(UUID().uuidString).json")
-        store.clear()
-        let helper = RadarNotificationHelper(notificationCenter: mockCenter, radarState: mockState, geofenceStore: store)
-
-        await helper.refreshGeofenceNotifications()
-
-        let pending = await mockCenter.pendingNotificationRequests()
-        #expect(pending.isEmpty)
-    }
 }
