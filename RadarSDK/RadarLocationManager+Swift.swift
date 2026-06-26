@@ -25,6 +25,9 @@ final class RadarLocationManagerSwift: NSObject {
 
     // Mirror of the identifier prefix constants in RadarLocationManager.m. Kept in sync by
     // hand until that file is fully ported.
+    private static let identifierPrefix = "radar_"
+    private static let bubbleGeofenceIdentifierPrefix = "radar_bubble_"
+    private static let syncGeofenceIdentifierPrefix = "radar_geofence_"
     private static let syncBeaconIdentifierPrefix = "radar_beacon_"
     private static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
 
@@ -161,6 +164,57 @@ final class RadarLocationManagerSwift: NSObject {
         where region.identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix)
             || region.identifier.hasPrefix(syncBeaconIdentifierPrefix)
         {
+            locationManager.stopMonitoring(for: region)
+        }
+    }
+
+    @objc(replaceBubbleGeofenceOnLocationManager:location:radius:)
+    static func replaceBubbleGeofence(locationManager: CLLocationManager, location: CLLocation, radius: Int32) {
+        // Always clear the existing bubble first. If tracking is off, the correct
+        // end state is no bubble geofence, so we remove then return early.
+        removeBubbleGeofence(locationManager: locationManager)
+
+        guard RadarSettings.tracking else {
+            return
+        }
+
+        let identifier = "\(bubbleGeofenceIdentifierPrefix)\(UUID().uuidString)"
+        let region = CLCircularRegion(
+            center: location.coordinate,
+            radius: CLLocationDistance(radius),
+            identifier: identifier
+        )
+        locationManager.startMonitoring(for: region)
+
+        RadarLogger.shared.debug(
+            "🦅 Successfully added bubble geofence | latitude = \(location.coordinate.latitude); longitude = \(location.coordinate.longitude); radius = \(radius); identifier = \(identifier)"
+        )
+    }
+
+    @objc(removeBubbleGeofenceOnLocationManager:)
+    static func removeBubbleGeofence(locationManager: CLLocationManager) {
+        for region in locationManager.monitoredRegions
+        where region.identifier.hasPrefix(bubbleGeofenceIdentifierPrefix) {
+            locationManager.stopMonitoring(for: region)
+        }
+
+        RadarLogger.shared.debug("🦅 Removed bubble geofences")
+    }
+
+    @objc(removeSyncedGeofencesOnLocationManager:)
+    static func removeSyncedGeofences(locationManager: CLLocationManager) {
+        for region in locationManager.monitoredRegions
+        where region.identifier.hasPrefix(syncGeofenceIdentifierPrefix) {
+            locationManager.stopMonitoring(for: region)
+        }
+
+        RadarLogger.shared.debug("🦅 Removed synced geofences")
+    }
+
+    @objc(removeAllRegionsOnLocationManager:)
+    static func removeAllRegions(locationManager: CLLocationManager) {
+        for region in locationManager.monitoredRegions
+        where region.identifier.hasPrefix(identifierPrefix) {
             locationManager.stopMonitoring(for: region)
         }
     }

@@ -550,6 +550,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceBubbleGeofence:(CLLocation *)location radius:(int)radius {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift replaceBubbleGeofenceOnLocationManager:self.locationManager location:location radius:radius];
+        return;
+    }
+
+    // Always clear the existing bubble first. If tracking is off, the correct
+    // end state is no bubble geofence, so we remove then return early.
     [self removeBubbleGeofence];
 
     BOOL tracking = [RadarSettings tracking];
@@ -566,6 +573,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeBubbleGeofence {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift removeBubbleGeofenceOnLocationManager:self.locationManager];
+        return;
+    }
+
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kBubbleGeofenceIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
@@ -684,6 +696,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeSyncedGeofences {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift removeSyncedGeofencesOnLocationManager:self.locationManager];
+        return;
+    }
+
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kSyncGeofenceIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];
@@ -820,6 +837,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)removeAllRegions {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift removeAllRegionsOnLocationManager:self.locationManager];
+        return;
+    }
+
     for (CLRegion *region in self.locationManager.monitoredRegions) {
         if ([region.identifier hasPrefix:kIdentifierPrefix]) {
             [self.locationManager stopMonitoringForRegion:region];

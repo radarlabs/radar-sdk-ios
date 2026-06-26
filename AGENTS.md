@@ -43,6 +43,10 @@ make test DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=18.5"
 make build SDK="iphonesimulator" DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=18.5"
 ```
 
+## Formatting
+
+`make format` reformats the **entire** repo (`clang_format.sh` + `swift-format -i -r RadarSDK RadarSDKTests`), not just your changed files. Since formatting is not enforced repo-wide, running it on a scoped change produces a large unrelated diff. For a focused change, format only the files you touched (e.g. `swift-format -i <path>`) rather than running `make format`.
+
 ## Project Structure
 
 ```
