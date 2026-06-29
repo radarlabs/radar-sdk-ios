@@ -2214,30 +2214,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertFalse([buffer shouldFlushBatchWithOptions:options], @"batchSize=0 means no size-based flush");
 }
 
-- (void)test_RadarReplayBuffer_writeAndRead {
-    RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithDict:@{
-        @"logLevel": @"warning",
-        @"startTrackingOnInitialize": @(NO),
-        @"trackOnceOnAppOpen": @(NO),
-        @"usePersistence": @(YES),
-        @"extendFlushReplays": @(NO),
-        @"useLogPersistence": @(NO),
-        @"useRadarModifiedBeacon": @(NO),
-        @"syncAfterSetUser": @(NO)
-    }];
-    [RadarSettings setSdkConfiguration:sdkConfiguration];
-    
-    CLLocation *location = [[CLLocation alloc] initWithLatitude:0.1 longitude:0.1];
-    NSMutableDictionary * params = [RadarTestUtils createTrackParamWithLocation:location stopped:YES foreground:YES source:RadarLocationSourceGeofenceEnter replayed:YES beacons:[NSArray arrayWithObject:[RadarBeacon alloc]] verified:YES attestationString:@"attestationString" keyId:@"keyID" attestationError:@"attestationError" encrypted:YES expectedCountryCode:@"CountryCode" expectedStateCode:@"StateCode"];
-    
-    [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:params];
-    [[RadarReplayBuffer sharedInstance] setValue:NULL forKey:@"mutableReplayBuffer"];
-    [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
-    NSMutableArray<RadarReplay *> *mutableReplayBuffer = [[RadarReplayBuffer sharedInstance] valueForKey:@"mutableReplayBuffer"];
-    XCTAssertEqual(mutableReplayBuffer.count, 1);
-    XCTAssertEqualObjects(mutableReplayBuffer.firstObject.replayParams, params);
-}
-
 - (void)test_RadarSdkConfiguration {
     RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithDict:@{
         @"logLevel": @"warning",

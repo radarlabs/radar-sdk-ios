@@ -11,29 +11,29 @@ import Foundation
 @objc(RadarReplay)
 @objcMembers
 internal class RadarReplay: NSObject, NSSecureCoding {
-    
-    @objc public let replayParams: [AnyHashable: Any]
-    
+
+    public let replayParams: [AnyHashable: Any]
+
     @objc(initWithParams:)
     public init(params: [AnyHashable: Any]) {
         self.replayParams = params
         super.init()
     }
-    
+
     public required init?(coder: NSCoder) {
         // Mirrors the original Obj-C `decodeObjectForKey:` to preserve
         // backwards-compatibility with already-persisted replay buffers.
-        guard let params = coder.decodeObject(forKey: "replayParams") as? [AnyHashable : Any] else {
+        guard let params = coder.decodeObject(forKey: "replayParams") as? [AnyHashable: Any] else {
             return nil
         }
         self.replayParams = params
         super.init()
     }
-    
+
     public func encode(with coder: NSCoder) {
         coder.encode(replayParams, forKey: "replayParams")
     }
-    
+
     @objc(arrayForReplays:)
     public static func arrayForReplays(_ replays: [RadarReplay]?) -> [[AnyHashable: Any]]? {
         guard let replays = replays else {
@@ -41,7 +41,7 @@ internal class RadarReplay: NSObject, NSSecureCoding {
         }
         return replays.map { $0.replayParams }
     }
-    
+
     public override func isEqual(_ object: Any?) -> Bool {
         if self === object as? RadarReplay {
             return true
@@ -51,11 +51,11 @@ internal class RadarReplay: NSObject, NSSecureCoding {
         }
         return (replayParams as NSDictionary).isEqual(to: other.replayParams)
     }
-    
+
     public override var hash: Int {
         return (replayParams as NSDictionary).hash
     }
-    
+
     public static var supportsSecureCoding: Bool {
         return true
     }
