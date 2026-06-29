@@ -28,6 +28,67 @@ static dispatch_semaphore_t notificationSemaphore;
     }
 }
 
++ (BOOL)isNotificationActiveForMetadata:(NSDictionary *)metadata now:(NSDate *)now {
+    // No (or non-dictionary) metadata means no scheduling constraint, so the notification is
+    // active — the same fail-open default as the absent-value cases below and the Swift path's
+    // isActiveOnDayOfWeek. Callers (e.g. RadarLocationManager) already guard against nil.
+    if (![metadata isKindOfClass:[NSDictionary class]]) {
+        return YES;
+    }
+
+    // "yyyy-MM-dd'T'HH:mm:ss.SSS" is 23 chars; prefix to this length strips any trailing timezone suffix so the string is parsed as wall-clock local time
+    static const NSUInteger kSchedulingWindowDatePrefixLength = 23;
+    static NSDateFormatter *windowFormatter;
+    static dispatch_once_t windowFormatterOnce;
+    dispatch_once(&windowFormatterOnce, ^{
+        windowFormatter = [[NSDateFormatter alloc] init];
+        windowFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+        windowFormatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSS";
+    });
+
+    NSString *startsAtString = [metadata objectForKey:@"radar:startsAt"];
+    // Window is [startsAt, endsAt]: skip when now is before the window opens
+    if ([startsAtString isKindOfClass:[NSString class]] && startsAtString.length >= kSchedulingWindowDatePrefixLength) {
+        NSDate *startsAt = [windowFormatter dateFromString:[startsAtString substringToIndex:kSchedulingWindowDatePrefixLength]];
+        if (startsAt && [now compare:startsAt] == NSOrderedAscending) {
+            return NO;
+        }
+    }
+    NSString *endsAtString = [metadata objectForKey:@"radar:endsAt"];
+    // Window is [startsAt, endsAt]: skip when now is strictly past the end (end is inclusive)
+    if ([endsAtString isKindOfClass:[NSString class]] && endsAtString.length >= kSchedulingWindowDatePrefixLength) {
+        NSDate *endsAt = [windowFormatter dateFromString:[endsAtString substringToIndex:kSchedulingWindowDatePrefixLength]];
+        if (endsAt && [now compare:endsAt] == NSOrderedDescending) {
+            return NO;
+        }
+    }
+
+    // `radar:daysOfWeek` is a comma-separated list of day abbreviations ("Sun"…"Sat"); skip when
+    // today (device-local) is not listed. An absent or empty value means every day of the week.
+    NSString *daysOfWeekString = [metadata objectForKey:@"radar:daysOfWeek"];
+    if ([daysOfWeekString isKindOfClass:[NSString class]] && daysOfWeekString.length > 0) {
+        static NSArray<NSString *> *daysOfWeekAbbr;
+        static dispatch_once_t daysOfWeekAbbrOnce;
+        dispatch_once(&daysOfWeekAbbrOnce, ^{
+            daysOfWeekAbbr = @[ @"sun", @"mon", @"tue", @"wed", @"thu", @"fri", @"sat" ];
+        });
+        NSMutableSet<NSString *> *allowedDays = [NSMutableSet set];
+        for (NSString *day in [daysOfWeekString componentsSeparatedByString:@","]) {
+            NSString *trimmed = [[day stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] lowercaseString];
+            if (trimmed.length > 0) {
+                [allowedDays addObject:trimmed];
+            }
+        }
+        NSInteger weekdayIndex = [[NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian] component:NSCalendarUnitWeekday fromDate:now] - 1;
+        NSString *today = (weekdayIndex >= 0 && weekdayIndex < (NSInteger)daysOfWeekAbbr.count) ? daysOfWeekAbbr[weekdayIndex] : nil;
+        if (today && allowedDays.count > 0 && ![allowedDays containsObject:today]) {
+            return NO;
+        }
+    }
+
+    return YES;
+}
+
 + (void)showNotificationsForEvents:(NSArray<RadarEvent *> *)events {
     if (!events || !events.count) {
         return;

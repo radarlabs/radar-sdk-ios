@@ -9,6 +9,9 @@
 import Foundation
 
 enum RadarOperatingHoursEvaluator {
+    // Fixed English abbreviations matching the server-supplied `operatingHours` keys and
+    // `radar:daysOfWeek` values; intentionally NOT localized — a locale-formatted weekday
+    // (e.g. "dim.") would stop matching the backend's English keys.
     private static let daysOfWeekAbbr = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     static func isOpen(
@@ -44,6 +47,19 @@ enum RadarOperatingHoursEvaluator {
             let effectiveClose = close - closeBufferMinutes
             return nowMinutes > open && nowMinutes < effectiveClose
         }
+    }
+
+    /// Returns the day-of-week abbreviation ("Sun"…"Sat") for `date` evaluated in `timeZone`,
+    /// matching the keys used by `isOpen` and the `radar:daysOfWeek` campaign metadata.
+    static func weekdayAbbreviation(for date: Date, timeZone: TimeZone = .current) -> String? {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+
+        let weekdayIndex = calendar.component(.weekday, from: date) - 1
+        guard weekdayIndex >= 0, weekdayIndex < daysOfWeekAbbr.count else {
+            return nil
+        }
+        return daysOfWeekAbbr[weekdayIndex]
     }
 
     private static func minutesSinceMidnight(_ timeString: String) -> Int? {
