@@ -9,6 +9,9 @@
 import Foundation
 
 enum RadarOperatingHoursEvaluator {
+    // Fixed English abbreviations matching the server-supplied `operatingHours` keys and
+    // `radar:daysOfWeek` values; intentionally NOT localized — a locale-formatted weekday
+    // (e.g. "dim.") would stop matching the backend's English keys.
     private static let daysOfWeekAbbr = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     static func isOpen(

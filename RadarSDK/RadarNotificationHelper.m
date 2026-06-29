@@ -29,6 +29,9 @@ static dispatch_semaphore_t notificationSemaphore;
 }
 
 + (BOOL)isNotificationActiveForMetadata:(NSDictionary *)metadata now:(NSDate *)now {
+    // No (or non-dictionary) metadata means no scheduling constraint, so the notification is
+    // active — the same fail-open default as the absent-value cases below and the Swift path's
+    // isActiveOnDayOfWeek. Callers (e.g. RadarLocationManager) already guard against nil.
     if (![metadata isKindOfClass:[NSDictionary class]]) {
         return YES;
     }
