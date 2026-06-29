@@ -60,7 +60,7 @@ struct RadarUtilsTests {
         #expect(json.contains("\"foo\":\"bar\""))
         #expect(!json.contains("blob"))
     }
-    
+
     @Test func dictionarytoJsonSanitizedNotificationDiffWithData() {
         let params: [String: Any] = [
             "latitude": 1.0,
@@ -69,7 +69,7 @@ struct RadarUtilsTests {
         let json = RadarUtils.dictionaryToJson(params)
         #expect(json.contains("\"identifier\":\"radar_x\""))
         #expect(json.contains("\"latitude\":1"))
-        #expect(!json.contains("info"))   // the only thing dropped
+        #expect(!json.contains("info"))  // the only thing dropped
     }
 
     @Test func escapeNonAsciiLeavesAsciiUntouched() {
