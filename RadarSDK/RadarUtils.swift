@@ -263,9 +263,9 @@ class RadarUtils: NSObject {
         }
     }
 
-    static func jsonData(_ dict: [String: Any]?) -> Data? {
+    static func jsonData(_ dict: NSDictionary?) -> Data? {
         guard let dict = dict else { return nil }
-        let jsonObject = JSONSerialization.isValidJSONObject(dict) ? dict : (jsonSanitized(dict) ?? [:])
+        let jsonObject: Any = JSONSerialization.isValidJSONObject(dict) ? dict : (jsonSanitized(dict) ?? [:])
         return try? JSONSerialization.data(withJSONObject: jsonObject)
     }
 }
