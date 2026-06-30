@@ -190,22 +190,21 @@ class RadarUtils: NSObject {
     static func dictionaryToJson(_ dict: [String: Any]?) -> String {
         guard let dict = dict else { return "{}" }
 
-        // Defends against NSJSONSerialization's NSException path (NaN, non-string keys,
-        // unsupported types), which Swift's do/catch below doesn't catch.
-        guard JSONSerialization.isValidJSONObject(dict) else {
-            RadarLogger.shared.warning("RadarUtils.dictionaryToJson: input is not a valid JSON object, returning empty")
-            return "{}"
+        let jsonObject: Any
+        if JSONSerialization.isValidJSONObject(dict) {
+            jsonObject = dict
+        } else {
+            // Drop only the offending values rather than discarding the whole payload.
+            // JSONSerialization throws an NSException (not a Swift error) for these, which
+            // Swift do/catch can't catch — so we must sanitize *before* serializing.
+            RadarLogger.shared.warning("RadarUtils.dictionaryToJson: input contained non-JSON values; sanitizing")
+            jsonObject = jsonSanitized(dict) ?? [:]
         }
 
         do {
-            let data = try JSONSerialization.data(withJSONObject: dict)
-            guard let string = String(data: data, encoding: .utf8) else {
-                // data could not be converted to string
-                return "{}"
-            }
-            return string
+            let data = try JSONSerialization.data(withJSONObject: jsonObject)
+            return String(data: data, encoding: .utf8) ?? "{}"
         } catch {
-            // failed to json serialize
             RadarLogger.shared.warning("RadarUtils.dictionaryToJson failed: \(error.localizedDescription)")
             return "{}"
         }
@@ -242,6 +241,32 @@ class RadarUtils: NSObject {
             }
         }
         return escaped
+    }
+
+    static func jsonSanitized(_ value: Any) -> Any? {
+        switch value {
+        case let dict as [AnyHashable: Any]:
+            return dict.reduce(into: [String: Any]()) { result, pair in
+                guard let key = pair.key as? String else { return }  // drop non-string keys
+                if let sanitized = jsonSanitized(pair.value) {
+                    result[key] = sanitized
+                }
+            }
+        case let array as [Any]:
+            return array.compactMap { jsonSanitized($0) }
+        case is String, is NSNull:
+            return value
+        case let number as NSNumber:
+            return number.doubleValue.isFinite ? number : nil  // reject NaN/±Inf
+        default:
+            return nil  // Data, Date, URL, custom objects
+        }
+    }
+
+    static func jsonData(_ dict: NSDictionary?) -> Data? {
+        guard let dict = dict else { return nil }
+        let jsonObject: Any = JSONSerialization.isValidJSONObject(dict) ? dict : (jsonSanitized(dict) ?? [:])
+        return try? JSONSerialization.data(withJSONObject: jsonObject)
     }
 }
 

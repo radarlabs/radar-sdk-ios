@@ -130,9 +130,9 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                         requestParams[@"replays"] = updatedReplays;
                     }
 
-                    [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:requestParams options:0 error:NULL]];
+                    [req setHTTPBody:[RadarUtils jsonData:requestParams]];
                 } else {
-                    [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
+                    [req setHTTPBody:[RadarUtils jsonData:params]];
                 }
             }
 
