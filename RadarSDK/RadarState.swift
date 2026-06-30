@@ -9,11 +9,11 @@ class RadarState {
     public var registeredNotifications: [NotificationValue]? {
         get {
             if let obj = RadarUserDefaults.object(forKey: .RegisteredNotifications),
-               JSONSerialization.isValidJSONObject(obj),
-               let data = try? JSONSerialization.data(withJSONObject: obj),
-               let value = try? JSONDecoder().decode([NotificationValue].self, from: data)
+                JSONSerialization.isValidJSONObject(obj),
+                let data = try? JSONSerialization.data(withJSONObject: obj),
+                let value = try? JSONDecoder().decode([NotificationValue].self, from: data)
             {
-               return value
+                return value
             }
             return nil
         }
