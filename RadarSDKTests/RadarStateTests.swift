@@ -11,7 +11,7 @@ import Testing
 
 @testable import RadarSDK
 
-@Suite
+@Suite(.serialized)
 struct RadarStateTests {
 
     @Test func registeredNotificationsGetterIgnoresPoisonedCache() {
