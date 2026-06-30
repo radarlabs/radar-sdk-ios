@@ -372,7 +372,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
 // everything that determines whether re-adding would change behavior — identifier, content, and the
 // location trigger's region — but deliberately excludes userInfo (its registeredAt is stamped fresh
 // on every build, so including it would make every request look changed and defeat the diff).
-+ (NSString *)notificationSignatureForRequest:(UNNotificationRequest *)request {
++ (NSString *)notificationUniqueIdentifierForRequest:(UNNotificationRequest *)request {
     UNNotificationContent *content = request.content;
     NSMutableArray<NSString *> *parts = [NSMutableArray arrayWithObjects:request.identifier ?: @"", content.title ?: @"", content.subtitle ?: @"", content.body ?: @"", nil];
     if ([request.trigger isKindOfClass:[UNLocationNotificationTrigger class]]) {
@@ -402,20 +402,20 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
             // re-arms it, and iOS will not fire an entry for a trigger scheduled while the device is
             // already inside the region. Leaving unchanged triggers in place preserves their arm
             // point so an in-progress geofence entry still fires.
-            NSMutableSet<NSString *> *desiredSignatures = [NSMutableSet new];
+            NSMutableSet<NSString *> *desiredUniqueIdentifiers = [NSMutableSet new];
             for (UNNotificationRequest *request in requests) {
-                [desiredSignatures addObject:[self notificationSignatureForRequest:request]];
+                [desiredUniqueIdentifiers addObject:[self notificationUniqueIdentifierForRequest:request]];
             }
 
-            NSMutableSet<NSString *> *existingSignatures = [NSMutableSet new];
+            NSMutableSet<NSString *> *existingUniqueIdentifiers = [NSMutableSet new];
             NSMutableArray *identifiersToRemove = [NSMutableArray new];
             NSMutableArray *userInfosToKeep = [NSMutableArray new];
             for (UNNotificationRequest *request in pending) {
                 if ([request.identifier hasPrefix:prefix]) {
-                    NSString *signature = [self notificationSignatureForRequest:request];
-                    if ([desiredSignatures containsObject:signature]) {
+                    NSString *uniqueIdentifier = [self notificationUniqueIdentifierForRequest:request];
+                    if ([desiredUniqueIdentifiers containsObject:uniqueIdentifier]) {
                         // Unchanged: leave it armed and keep it registered.
-                        [existingSignatures addObject:signature];
+                        [existingUniqueIdentifiers addObject:uniqueIdentifier];
                         if (request.content.userInfo) {
                             [userInfosToKeep addObject:request.content.userInfo];
                         }
@@ -437,7 +437,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
             // keep their arm point.
             NSMutableArray<UNNotificationRequest *> *requestsToAdd = [NSMutableArray new];
             for (UNNotificationRequest *request in requests) {
-                if (![existingSignatures containsObject:[self notificationSignatureForRequest:request]]) {
+                if (![existingUniqueIdentifiers containsObject:[self notificationUniqueIdentifierForRequest:request]]) {
                     [requestsToAdd addObject:request];
                 }
             }

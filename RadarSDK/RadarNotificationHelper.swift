@@ -120,13 +120,13 @@ actor RadarNotificationHelper: NSObject {
             // the region. Leaving unchanged triggers in place preserves their arm point so an
             // in-progress geofence entry still fires.
             let existingGeofenceRequests = requests.filter { $0.identifier.starts(with: GEOFENCE_NOTIFICATION_PREFIX) }
-            let existingSignatures = Set(existingGeofenceRequests.map { Self.notificationSignature(for: $0) })
-            let desiredSignatures = Set(notifications.map { Self.notificationSignature(for: $0) })
+            let existingUniqueIdentifiers = Set(existingGeofenceRequests.map { Self.notificationUniqueIdentifier(for: $0) })
+            let desiredUniqueIdentifiers = Set(notifications.map { Self.notificationUniqueIdentifier(for: $0) })
 
-            // Remove pending geofence notifications that are gone or changed (signature no longer desired).
+            // Remove pending geofence notifications that are gone or changed (unique identifier no longer desired).
             let notificationIdentifiersToRemove =
                 existingGeofenceRequests
-                .filter { !desiredSignatures.contains(Self.notificationSignature(for: $0)) }
+                .filter { !desiredUniqueIdentifiers.contains(Self.notificationUniqueIdentifier(for: $0)) }
                 .map { $0.identifier }
             if !notificationIdentifiersToRemove.isEmpty {
                 notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationIdentifiersToRemove)
@@ -143,7 +143,7 @@ actor RadarNotificationHelper: NSObject {
 
             // Add only notifications that aren't already pending unchanged, so triggers we left in
             // place keep their arm point.
-            for notification in notifications where !existingSignatures.contains(Self.notificationSignature(for: notification)) {
+            for notification in notifications where !existingUniqueIdentifiers.contains(Self.notificationUniqueIdentifier(for: notification)) {
                 do {
                     try await notificationCenter.add(notification)
                     if Task.isCancelled {
@@ -171,7 +171,7 @@ actor RadarNotificationHelper: NSObject {
     /// identifier, content, and the location trigger's region — but deliberately excludes
     /// `userInfo` (its `registeredAt` is stamped fresh on every build, so including it would make
     /// every request look changed and defeat the diff).
-    private static func notificationSignature(for request: UNNotificationRequest) -> String {
+    private static func notificationUniqueIdentifier(for request: UNNotificationRequest) -> String {
         let content = request.content
         var parts: [String] = [request.identifier, content.title, content.subtitle, content.body]
         if let trigger = request.trigger as? UNLocationNotificationTrigger,
