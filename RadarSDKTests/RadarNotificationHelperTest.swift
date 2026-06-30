@@ -29,6 +29,9 @@ final class MockNotificationCenter: NotificationCenterProtocol, @unchecked Senda
     var pendingRequests: [UNNotificationRequest] = []
     var authorized: Bool
     var canSend: Bool
+    /// Number of times `add` was called — lets tests assert that unchanged notifications are not
+    /// torn down and re-added on a re-registration.
+    var addCallCount = 0
 
     init(authorized: Bool = true, canSend: Bool = true) {
         self.authorized = authorized
@@ -42,6 +45,7 @@ final class MockNotificationCenter: NotificationCenterProtocol, @unchecked Senda
 
     func add(_ request: UNNotificationRequest) async throws {
         try await Task.sleep(nanoseconds: 10_000_000)
+        addCallCount += 1
         pendingRequests.append(request)
     }
 
@@ -65,7 +69,8 @@ func makeGeofenceDict(
     restrictToOperatingHours: Bool = false,
     closeBufferMinutes: Int? = nil,
     startsAt: String? = nil,
-    endsAt: String? = nil
+    endsAt: String? = nil,
+    radius: Double = 100.0
 ) -> [String: Sendable] {
     var metadata: [String: Sendable] = [
         "radar:notificationText": "Hello from \(id)",
@@ -93,7 +98,7 @@ func makeGeofenceDict(
         "geometryCenter": [
             "coordinates": [-74.0, 40.0]
         ],
-        "geometryRadius": 100.0,
+        "geometryRadius": radius,
     ]
     if let operatingHours {
         dict["operatingHours"] = operatingHours
@@ -254,6 +259,57 @@ struct RadarNotificationHelperTest {
         // No false deliveries
         let delivered = await helper.getDeliveredNotifications()
         #expect(delivered.isEmpty)
+    }
+
+    @Test("Re-registering identical geofences leaves unchanged notifications armed")
+    func reRegisteringSameGeofencesPreservesPendingRequests() async throws {
+        let mockCenter = MockNotificationCenter()
+        let mockState = MockRadarState()
+        let helper = RadarNotificationHelper(notificationCenter: mockCenter, radarState: mockState)
+
+        let geofences = [makeGeofenceDict(id: "1"), makeGeofenceDict(id: "2")]
+        await helper.registerGeofenceNotifications(geofences: geofences)
+
+        let afterFirst = mockCenter.pendingRequests
+        #expect(afterFirst.count == 2)
+        let addCountAfterFirst = mockCenter.addCallCount
+
+        // Re-register the identical set, as happens on every track via replaceSyncedGeofences.
+        // Unchanged triggers must not be torn down and re-added — re-adding re-arms the
+        // UNLocationNotificationTrigger and iOS will not fire an entry for a trigger scheduled
+        // while the device is already inside the region.
+        await helper.registerGeofenceNotifications(geofences: geofences)
+
+        let afterSecond = mockCenter.pendingRequests
+        #expect(afterSecond.count == 2)
+        #expect(mockCenter.addCallCount == addCountAfterFirst, "Unchanged notifications should not be re-added")
+        for request in afterFirst {
+            #expect(
+                afterSecond.contains { $0 === request },
+                "Unchanged notification \(request.identifier) should remain the same pending request instance"
+            )
+        }
+
+        let delivered = await helper.getDeliveredNotifications()
+        #expect(delivered.isEmpty, "Re-registering identical geofences must not look like a delivery")
+    }
+
+    @Test("Re-registering a changed geofence rebuilds that notification")
+    func reRegisteringChangedGeofenceReplaces() async throws {
+        let mockCenter = MockNotificationCenter()
+        let mockState = MockRadarState()
+        let helper = RadarNotificationHelper(notificationCenter: mockCenter, radarState: mockState)
+
+        await helper.registerGeofenceNotifications(geofences: [makeGeofenceDict(id: "1", radius: 100.0)])
+        let first = try #require(mockCenter.pendingRequests.first)
+
+        // Same id but a different region — the trigger changed, so it must be rebuilt.
+        await helper.registerGeofenceNotifications(geofences: [makeGeofenceDict(id: "1", radius: 250.0)])
+
+        let pending = await mockCenter.pendingNotificationRequests()
+        #expect(pending.count == 1)
+        #expect(pending.first?.identifier == "radar_geofence_1")
+        #expect(pending.first !== first, "A changed geofence notification should be rebuilt, not left in place")
     }
 
     @Test("Concurrent registrations never produce false deliveries")

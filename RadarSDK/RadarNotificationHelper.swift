@@ -108,19 +108,29 @@ actor RadarNotificationHelper: NSObject {
     private func registerNotifications(notifications: [UNNotificationRequest]?) async {
         // if notifications is not null, we update the pending notifications, otherwise we only update the registered notifications list
         if let notifications {
-            // remove all geofence notifications
             let requests = await notificationCenter.pendingNotificationRequests()
             if Task.isCancelled {
                 return
             }
-            let notificationIdentifiersToRemove = requests.compactMap {
-                let identifier = $0.identifier
-                if identifier.starts(with: GEOFENCE_NOTIFICATION_PREFIX) {
-                    return identifier
-                }
-                return nil
+
+            // Diff against the currently-pending geofence notifications instead of tearing them all
+            // down and re-adding. This runs on every track (replaceSyncedGeofences), which re-builds
+            // the same requests; re-adding an unchanged UNLocationNotificationTrigger re-arms it, and
+            // iOS will not fire an entry for a trigger scheduled while the device is already inside
+            // the region. Leaving unchanged triggers in place preserves their arm point so an
+            // in-progress geofence entry still fires.
+            let existingGeofenceRequests = requests.filter { $0.identifier.starts(with: GEOFENCE_NOTIFICATION_PREFIX) }
+            let existingSignatures = Set(existingGeofenceRequests.map { Self.notificationSignature(for: $0) })
+            let desiredSignatures = Set(notifications.map { Self.notificationSignature(for: $0) })
+
+            // Remove pending geofence notifications that are gone or changed (signature no longer desired).
+            let notificationIdentifiersToRemove =
+                existingGeofenceRequests
+                .filter { !desiredSignatures.contains(Self.notificationSignature(for: $0)) }
+                .map { $0.identifier }
+            if !notificationIdentifiersToRemove.isEmpty {
+                notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationIdentifiersToRemove)
             }
-            notificationCenter.removePendingNotificationRequests(withIdentifiers: notificationIdentifiersToRemove)
 
             let permissions = await notificationCenter.radarNotificationPermissions()
             if Task.isCancelled {
@@ -131,8 +141,9 @@ actor RadarNotificationHelper: NSObject {
                 return
             }
 
-            // add notifications
-            for notification in notifications {
+            // Add only notifications that aren't already pending unchanged, so triggers we left in
+            // place keep their arm point.
+            for notification in notifications where !existingSignatures.contains(Self.notificationSignature(for: notification)) {
                 do {
                     try await notificationCenter.add(notification)
                     if Task.isCancelled {
@@ -153,6 +164,25 @@ actor RadarNotificationHelper: NSObject {
         radarState.registeredNotifications = pending
         RadarLogger.debug("NotificationHelper registered: \(pending.map(\.identifier))")
         isRegistering = false
+    }
+
+    /// A stable identity for a geofence notification used to diff desired vs. already-pending
+    /// requests. Covers everything that determines whether re-adding would change behavior —
+    /// identifier, content, and the location trigger's region — but deliberately excludes
+    /// `userInfo` (its `registeredAt` is stamped fresh on every build, so including it would make
+    /// every request look changed and defeat the diff).
+    private static func notificationSignature(for request: UNNotificationRequest) -> String {
+        let content = request.content
+        var parts: [String] = [request.identifier, content.title, content.subtitle, content.body]
+        if let trigger = request.trigger as? UNLocationNotificationTrigger,
+            let region = trigger.region as? CLCircularRegion
+        {
+            parts.append(String(format: "%.6f,%.6f,%.2f", region.center.latitude, region.center.longitude, region.radius))
+            parts.append(region.notifyOnEntry ? "1" : "0")
+            parts.append(region.notifyOnExit ? "1" : "0")
+            parts.append(trigger.repeats ? "1" : "0")
+        }
+        return parts.joined(separator: "|")
     }
 
     public func getDeliveredNotifications() async -> [[String: Sendable]] {
