@@ -21,8 +21,6 @@ internal class RadarReplay: NSObject, NSSecureCoding {
     }
 
     public required init?(coder: NSCoder) {
-        // Mirrors the original Obj-C `decodeObjectForKey:` to preserve
-        // backwards-compatibility with already-persisted replay buffers.
         guard let params = coder.decodeObject(forKey: "replayParams") as? [AnyHashable: Any] else {
             return nil
         }

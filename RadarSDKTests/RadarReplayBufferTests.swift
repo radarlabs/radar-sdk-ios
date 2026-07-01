@@ -46,7 +46,7 @@ final class RadarReplayBufferTests: XCTestCase {
         XCTAssertEqual(buffer.batchCount(), 0)
     }
 
-    func test_dropOldestReplay_removesfirst() {
+    func test_dropOldestReplay_removesFirst() {
         setPersistence(false)
         let buffer = RadarReplayBuffer.sharedInstance
         buffer.writeNewReplayToBuffer(["i": 1])
@@ -67,7 +67,7 @@ final class RadarReplayBufferTests: XCTestCase {
         XCTAssertEqual(buffer.flushableReplays.first?.replayParams as NSDictionary?, ["i": 1] as NSDictionary)
     }
 
-    func test_persistence_prunesEveryFithAbove50() {
+    func test_persistence_prunesEveryFifthAbove50() {
         setPersistence(true)
         let buffer = RadarReplayBuffer.sharedInstance
         for index in 0..<51 {
@@ -80,7 +80,7 @@ final class RadarReplayBufferTests: XCTestCase {
         XCTAssertEqual(buffer.batchCount(), 41)  // every 5th of 51 pruned from store
     }
 
-    func test_writeNewReplay_presistenceDisabledDoesNotPersist() {
+    func test_writeNewReplay_persistenceDisabledDoesNotPersist() {
         setPersistence(false)
         let buffer = RadarReplayBuffer.sharedInstance
         buffer.writeNewReplayToBuffer(["i": 1])
