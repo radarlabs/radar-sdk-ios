@@ -21,11 +21,18 @@ final class RadarIPGeocodeAsyncTests: XCTestCase {
         apiHelperMock = RadarAPIHelperMock()
         RadarAPIClient.sharedInstance().apiHelper = apiHelperMock
     }
+    
+    private func jsonDictionary(fromResource resource: String) throws -> [AnyHashable: Any] {
+        let bundle = Bundle(for: Self.self)
+        let url = try XCTUnwrap(bundle.url(forResource: resource, withExtension: "json"))
+        let data = try Data(contentsOf: url)
+        return try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [AnyHashable: Any])
+    }
 
     // Regression guard for the `3.34.1` "Ambiguous use of ipGeocode()" break
-    func test_ipGeocode_async_isUnambiguous_andReturnsThreeTuple() async {
+    func test_ipGeocode_async_isUnambiguous_andReturnsThreeTuple() async throws {
         apiHelperMock.mockStatus = .success
-        apiHelperMock.mockResponse = RadarTestUtils.jsonDictionary(fromResource: "geocode_ip")
+        apiHelperMock.mockResponse = try jsonDictionary(fromResource: "geocode_ip")
 
         let (status, address, proxy) = await Radar.ipGeocode()
 
