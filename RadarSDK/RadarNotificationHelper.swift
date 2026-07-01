@@ -166,21 +166,23 @@ actor RadarNotificationHelper: NSObject {
         isRegistering = false
     }
 
-    /// A stable identity for a geofence notification used to diff desired vs. already-pending
-    /// requests. Covers everything that determines whether re-adding would change behavior —
-    /// identifier, content, and the location trigger's region — but deliberately excludes
-    /// `userInfo` (its `registeredAt` is stamped fresh on every build, so including it would make
-    /// every request look changed and defeat the diff).
-    private static func notificationUniqueIdentifier(for request: UNNotificationRequest) -> String {
+    static func notificationUniqueIdentifier(for request: UNNotificationRequest) -> String {
         let content = request.content
         var parts: [String] = [request.identifier, content.title, content.subtitle, content.body]
-        if let trigger = request.trigger as? UNLocationNotificationTrigger,
-            let region = trigger.region as? CLCircularRegion
-        {
-            parts.append(String(format: "%.6f,%.6f,%.2f", region.center.latitude, region.center.longitude, region.radius))
-            parts.append(region.notifyOnEntry ? "1" : "0")
-            parts.append(region.notifyOnExit ? "1" : "0")
-            parts.append(trigger.repeats ? "1" : "0")
+        if let trigger = request.trigger as? UNLocationNotificationTrigger {
+            if let region = trigger.region as? CLCircularRegion {
+                parts.append(String(format: "%.6f,%.6f,%.2f", region.center.latitude, region.center.longitude, region.radius))
+                parts.append(region.notifyOnEntry ? "1" : "0")
+                parts.append(region.notifyOnExit ? "1" : "0")
+                parts.append(trigger.repeats ? "1" : "0")
+            } else if let region = trigger.region as? CLBeaconRegion {
+                parts.append(region.proximityUUID.uuidString)
+                parts.append(region.major?.stringValue ?? "")
+                parts.append(region.minor?.stringValue ?? "")
+                parts.append(region.notifyOnEntry ? "1" : "0")
+                parts.append(region.notifyOnExit ? "1" : "0")
+                parts.append(trigger.repeats ? "1" : "0")
+            }
         }
         return parts.joined(separator: "|")
     }

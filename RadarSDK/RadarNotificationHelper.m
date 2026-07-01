@@ -368,10 +368,6 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     }
 }
 
-// A stable identity for a notification used to diff desired vs. already-pending requests. Covers
-// everything that determines whether re-adding would change behavior — identifier, content, and the
-// location trigger's region — but deliberately excludes userInfo (its registeredAt is stamped fresh
-// on every build, so including it would make every request look changed and defeat the diff).
 + (NSString *)notificationUniqueIdentifierForRequest:(UNNotificationRequest *)request {
     UNNotificationContent *content = request.content;
     NSMutableArray<NSString *> *parts = [NSMutableArray arrayWithObjects:request.identifier ?: @"", content.title ?: @"", content.subtitle ?: @"", content.body ?: @"", nil];
@@ -380,6 +376,14 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
         if ([trigger.region isKindOfClass:[CLCircularRegion class]]) {
             CLCircularRegion *region = (CLCircularRegion *)trigger.region;
             [parts addObject:[NSString stringWithFormat:@"%.6f,%.6f,%.2f", region.center.latitude, region.center.longitude, region.radius]];
+            [parts addObject:region.notifyOnEntry ? @"1" : @"0"];
+            [parts addObject:region.notifyOnExit ? @"1" : @"0"];
+            [parts addObject:trigger.repeats ? @"1" : @"0"];
+        } else if ([trigger.region isKindOfClass:[CLBeaconRegion class]]) {
+            CLBeaconRegion *region = (CLBeaconRegion *)trigger.region;
+            [parts addObject:region.proximityUUID.UUIDString ?: @""];
+            [parts addObject:region.major ? region.major.stringValue : @""];
+            [parts addObject:region.minor ? region.minor.stringValue : @""];
             [parts addObject:region.notifyOnEntry ? @"1" : @"0"];
             [parts addObject:region.notifyOnExit ? @"1" : @"0"];
             [parts addObject:trigger.repeats ? @"1" : @"0"];

@@ -5,6 +5,7 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import Testing
 import UserNotifications
@@ -29,8 +30,6 @@ final class MockNotificationCenter: NotificationCenterProtocol, @unchecked Senda
     var pendingRequests: [UNNotificationRequest] = []
     var authorized: Bool
     var canSend: Bool
-    /// Number of times `add` was called — lets tests assert that unchanged notifications are not
-    /// torn down and re-added on a re-registration.
     var addCallCount = 0
 
     init(authorized: Bool = true, canSend: Bool = true) {
@@ -355,6 +354,27 @@ struct RadarNotificationHelperTest {
         )
         let geofence = decodeGeofence(dict)
         #expect(geofence?.toNotificationRequest(now: now) == nil)
+    }
+
+    @Test("beacon region signature changes when major/minor changes")
+    func beaconRegionSignatureChangesWithMajorMinor() {
+        func beaconRequest(major: UInt16, minor: UInt16) -> UNNotificationRequest {
+            let uuid = UUID(uuidString: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5")!
+            let region = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: "beacon")
+            let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
+            let content = UNMutableNotificationContent()
+            content.title = "Beacon"
+            // RadarBeaconManager derives the notification identifier from UUID alone, so a changed
+            // major/minor must be reflected elsewhere in the signature or it looks unchanged.
+            return UNNotificationRequest(identifier: "radar_beacon_5A4BCFCE", content: content, trigger: trigger)
+        }
+
+        let original = beaconRequest(major: 1, minor: 1)
+        let sameRegion = beaconRequest(major: 1, minor: 1)
+        let changedMinor = beaconRequest(major: 1, minor: 2)
+
+        #expect(RadarNotificationHelper.notificationUniqueIdentifier(for: original) == RadarNotificationHelper.notificationUniqueIdentifier(for: sameRegion))
+        #expect(RadarNotificationHelper.notificationUniqueIdentifier(for: original) != RadarNotificationHelper.notificationUniqueIdentifier(for: changedMinor))
     }
 
 }

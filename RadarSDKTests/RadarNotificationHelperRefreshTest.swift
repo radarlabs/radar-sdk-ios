@@ -133,10 +133,6 @@ extension RadarNotificationHelperTest {
         #expect(afterFirst.count == 2)
         let addCountAfterFirst = mockCenter.addCallCount
 
-        // Re-register the identical set, as happens on every track via replaceSyncedGeofences.
-        // Unchanged triggers must not be torn down and re-added — re-adding re-arms the
-        // UNLocationNotificationTrigger and iOS will not fire an entry for a trigger scheduled
-        // while the device is already inside the region.
         await helper.registerGeofenceNotifications(geofences: geofences)
 
         let afterSecond = mockCenter.pendingRequests

@@ -36,6 +36,12 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 /// Used by the geofence notification path so the window + day-of-week evaluation stays in one place.
 + (BOOL)isNotificationActiveForMetadata:(nullable NSDictionary *)metadata now:(NSDate *)now;
 
+/// A stable identity for `request` used to diff desired vs. already-pending notifications in
+/// `updateClientSideCampaignsWithPrefix:notificationRequests:`. Covers identifier, content, and
+/// (for location triggers backed by a `CLCircularRegion` or `CLBeaconRegion`) the trigger's region,
+/// but deliberately excludes `userInfo` since its `registeredAt` is stamped fresh on every build.
++ (NSString *)notificationUniqueIdentifierForRequest:(UNNotificationRequest *)request;
+
 + (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler;
 @end
 
