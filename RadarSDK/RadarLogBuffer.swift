@@ -29,14 +29,6 @@ actor RadarLogBuffer {
 
     let apiClient: RadarAPIClient
 
-    // Test hook: lets tests await the initial async log load deterministically instead of
-    // racing a wall-clock timeout, which is flaky under CI's saturated cooperative thread pool.
-    // A continuation-based signal is used (rather than storing the load Task itself) because
-    // actor initializers disallow further isolated-property writes once `self` has been
-    // captured by an escaping closure, which the fire-and-forget load Task below requires.
-    private var isLogsLoaded = false
-    private var logsLoadedContinuations = [CheckedContinuation<Void, Never>]()
-
     init(logsFile: String = "persistent_logs.txt", maxLogs: Int = 500, keep: Int = 250, logPersistence: Bool? = nil, apiClient: RadarAPIClient = RadarAPIClient.shared) {
         self.logsFile = RadarFileStorage(fileName: logsFile)
         self.MAX_LOGS = maxLogs
@@ -49,17 +41,7 @@ actor RadarLogBuffer {
         }
     }
 
-    /// Test hook: awaits the initial log-loading task so tests can assert on `logs`
-    /// deterministically instead of polling against a wall-clock timeout.
-    func awaitInitialLoad() async {
-        if isLogsLoaded { return }
-        await withCheckedContinuation { continuation in
-            logsLoadedContinuations.append(continuation)
-        }
-    }
-
     func loadLogs() async {
-        defer { markLogsLoaded() }
         guard let logsFile, #available(iOS 15.0, *) else { return }
 
         do {
@@ -75,13 +57,6 @@ actor RadarLogBuffer {
         } catch {
 
         }
-    }
-
-    private func markLogsLoaded() {
-        isLogsLoaded = true
-        let continuations = logsLoadedContinuations
-        logsLoadedContinuations = []
-        continuations.forEach { $0.resume() }
     }
 
     func log(_ log: RadarLog) {

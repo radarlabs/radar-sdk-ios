@@ -9,6 +9,14 @@ import Testing
 
 @testable import RadarSDK
 
+private func waitUntil(timeout: TimeInterval = 5.0, _ check: () async -> Bool) async {
+    let deadline = Date().addingTimeInterval(timeout)
+    while Date() < deadline {
+        if await check() { return }
+        try? await Task.sleep(nanoseconds: 25_000_000)
+    }
+}
+
 @Suite
 struct RadarLogBufferTests {
 
@@ -44,7 +52,7 @@ struct RadarLogBufferTests {
     @Test func logsSavesToBuffer() async throws {
         let logsFile = "test/logs1.txt"
         let buffer = RadarLogBuffer(logsFile: logsFile, maxLogs: 10, keep: 10, logPersistence: true)
-        await buffer.awaitInitialLoad()
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
 
         await buffer.log(simpleLog("test1"))
         await buffer.log(simpleLog("test2"))
@@ -72,7 +80,8 @@ struct RadarLogBufferTests {
 
         let logsFile = "test/logs2.txt"
         let buffer = RadarLogBuffer(logsFile: logsFile, logPersistence: true, apiClient: client)
-        await buffer.awaitInitialLoad()
+        // buffer initialization is async, wait for logs to be loaded
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
 
         await buffer.log(simpleLog("test1"))
         await buffer.log(simpleLog("test2"))
@@ -108,7 +117,8 @@ struct RadarLogBufferTests {
 
         let buffer = RadarLogBuffer(logsFile: logsFile, maxLogs: 10, keep: 5, logPersistence: true)
 
-        await buffer.awaitInitialLoad()
+        await waitUntil { await buffer.logs.count >= 3 }
+        try? await Task.sleep(nanoseconds: 200_000_000)
         #expect(await buffer.logs.count == 3)
 
         file?.delete()
@@ -117,7 +127,8 @@ struct RadarLogBufferTests {
     @Test func purgesBufferWhenFilled() async throws {
         let logsFile = "test/logs4.txt"
         let buffer = RadarLogBuffer(logsFile: logsFile, maxLogs: 10, keep: 5, logPersistence: true)
-        await buffer.awaitInitialLoad()
+        // buffer initialization is async, wait for logs to be loaded
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
 
         guard let file = file(logsFile) else {
             Issue.record("logsFile should not produce invalid URL")
