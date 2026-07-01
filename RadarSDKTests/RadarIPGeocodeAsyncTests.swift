@@ -21,7 +21,7 @@ final class RadarIPGeocodeAsyncTests: XCTestCase {
         apiHelperMock = RadarAPIHelperMock()
         RadarAPIClient.sharedInstance().apiHelper = apiHelperMock
     }
-    
+
     private func jsonDictionary(fromResource resource: String) throws -> [AnyHashable: Any] {
         let bundle = Bundle(for: Self.self)
         let url = try XCTUnwrap(bundle.url(forResource: resource, withExtension: "json"))
