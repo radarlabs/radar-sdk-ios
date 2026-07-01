@@ -2058,7 +2058,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_Radar_ipGeocode_legacy_three_arg_callback_still_called {
-    // Backward-compat: integrators using the deprecated 3-arg
+    // Backward-compat: integrators using the legacy 3-arg
     // +ipGeocodeWithCompletionHandler: must still receive callbacks.
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusErrorNetwork;
@@ -2068,14 +2068,11 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy) {
         XCTAssertEqual(status, RadarStatusErrorNetwork);
 
         [expectation fulfill];
     }];
-#pragma clang diagnostic pop
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
