@@ -15,6 +15,7 @@
 #import "RadarLogger.h"
 #import "RadarUtils.h"
 #import "RadarDelegateHolder.h"
+#import "RadarAPIClient.h"
 
 @implementation RadarSwiftBridge
 
@@ -79,6 +80,15 @@
 
 - (RadarUser * _Nullable)radarUser {
     return [RadarState radarUser];
+}
+
+- (void)flushReplaysRequest:(NSArray<NSDictionary *> *)replays
+          completionHandler:(void (^)(RadarStatus, NSDictionary * _Nullable))completionHandler {
+    [[RadarAPIClient sharedInstance] flushReplays:replays completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
+        if (completionHandler) {
+            completionHandler(status, res);
+        }
+    }];
 }
 
 @end

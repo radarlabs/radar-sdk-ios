@@ -6,8 +6,8 @@
 //
 
 #import <Foundation/Foundation.h>
-
-#import "RadarReplay.h"
+#import "Radar.h"
+@class RadarReplay;
 @class RadarTrackingOptions;
 
 // 2d: figure out what this means
