@@ -7,3 +7,4 @@
 #import "../RadarSDK/RadarLocationManager.h"
 #import "RadarAPIHelperMock.h"
 #import "RadarPermissionsHelperMock.h"
+#import "RadarTestUtils.h"
