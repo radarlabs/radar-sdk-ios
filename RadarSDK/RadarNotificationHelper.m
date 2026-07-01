@@ -6,6 +6,7 @@
 //
 
 #import <UserNotifications/UserNotifications.h>
+#import <CoreLocation/CoreLocation.h>
 
 #import "RadarEvent.h"
 #import "RadarLogger.h"
@@ -367,39 +368,86 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     }
 }
 
++ (NSString *)notificationUniqueIdentifierForRequest:(UNNotificationRequest *)request {
+    UNNotificationContent *content = request.content;
+    NSMutableArray<NSString *> *parts = [NSMutableArray arrayWithObjects:request.identifier ?: @"", content.title ?: @"", content.subtitle ?: @"", content.body ?: @"", nil];
+    if ([request.trigger isKindOfClass:[UNLocationNotificationTrigger class]]) {
+        UNLocationNotificationTrigger *trigger = (UNLocationNotificationTrigger *)request.trigger;
+        if ([trigger.region isKindOfClass:[CLCircularRegion class]]) {
+            CLCircularRegion *region = (CLCircularRegion *)trigger.region;
+            [parts addObject:[NSString stringWithFormat:@"%.6f,%.6f,%.2f", region.center.latitude, region.center.longitude, region.radius]];
+            [parts addObject:region.notifyOnEntry ? @"1" : @"0"];
+            [parts addObject:region.notifyOnExit ? @"1" : @"0"];
+            [parts addObject:trigger.repeats ? @"1" : @"0"];
+        } else if ([trigger.region isKindOfClass:[CLBeaconRegion class]]) {
+            CLBeaconRegion *region = (CLBeaconRegion *)trigger.region;
+            [parts addObject:region.proximityUUID.UUIDString ?: @""];
+            [parts addObject:region.major ? region.major.stringValue : @""];
+            [parts addObject:region.minor ? region.minor.stringValue : @""];
+            [parts addObject:region.notifyOnEntry ? @"1" : @"0"];
+            [parts addObject:region.notifyOnExit ? @"1" : @"0"];
+            [parts addObject:trigger.repeats ? @"1" : @"0"];
+        }
+    }
+    return [parts componentsJoinedByString:@"|"];
+}
+
 // IMPORTANT: All campaigns request must have the same identifier prefix or frequency capping will be wrong
 + (void) updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         dispatch_semaphore_wait(notificationSemaphore, DISPATCH_TIME_FOREVER);
-        [self removePendingNotificationsWithPrefix:prefix completionHandler:^{
-            [self addOnPremiseNotificationRequests:requests];
+        UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+        [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull pending) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)pending.count]];
+
+            // Diff against the currently-pending notifications instead of removing all prefixed ones
+            // and re-adding. updateClientSideCampaigns runs on every track (replaceSyncedGeofences)
+            // and re-builds the same requests; re-adding an unchanged UNLocationNotificationTrigger
+            // re-arms it, and iOS will not fire an entry for a trigger scheduled while the device is
+            // already inside the region. Leaving unchanged triggers in place preserves their arm
+            // point so an in-progress geofence entry still fires.
+            NSMutableSet<NSString *> *desiredUniqueIdentifiers = [NSMutableSet new];
+            for (UNNotificationRequest *request in requests) {
+                [desiredUniqueIdentifiers addObject:[self notificationUniqueIdentifierForRequest:request]];
+            }
+
+            NSMutableSet<NSString *> *existingUniqueIdentifiers = [NSMutableSet new];
+            NSMutableArray *identifiersToRemove = [NSMutableArray new];
+            NSMutableArray *userInfosToKeep = [NSMutableArray new];
+            for (UNNotificationRequest *request in pending) {
+                if ([request.identifier hasPrefix:prefix]) {
+                    NSString *uniqueIdentifier = [self notificationUniqueIdentifierForRequest:request];
+                    if ([desiredUniqueIdentifiers containsObject:uniqueIdentifier]) {
+                        // Unchanged: leave it armed and keep it registered.
+                        [existingUniqueIdentifiers addObject:uniqueIdentifier];
+                        if (request.content.userInfo) {
+                            [userInfosToKeep addObject:request.content.userInfo];
+                        }
+                    } else {
+                        [identifiersToRemove addObject:request.identifier];
+                    }
+                } else if (request.content.userInfo) {
+                    [userInfosToKeep addObject:request.content.userInfo];
+                }
+            }
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications to remove", (unsigned long)identifiersToRemove.count]];
+            [RadarState setRegisteredNotifications:userInfosToKeep];
+            if (identifiersToRemove.count > 0) {
+                [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiersToRemove];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
+            }
+
+            // Add only requests that aren't already pending unchanged, so triggers we left in place
+            // keep their arm point.
+            NSMutableArray<UNNotificationRequest *> *requestsToAdd = [NSMutableArray new];
+            for (UNNotificationRequest *request in requests) {
+                if (![existingUniqueIdentifiers containsObject:[self notificationUniqueIdentifierForRequest:request]]) {
+                    [requestsToAdd addObject:request];
+                }
+            }
+            [self addOnPremiseNotificationRequests:requestsToAdd];
         }];
     });
-}
-
-+ (void)removePendingNotificationsWithPrefix:(NSString *)prefix completionHandler:(void (^)(void))completionHandler {
-    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-    [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications", (unsigned long)requests.count]];
-        NSMutableArray *identifiersToRemove = [NSMutableArray new];
-        NSMutableArray *userInfosToKeep = [NSMutableArray new];
-        for (UNNotificationRequest *request in requests) {
-            if ([request.identifier hasPrefix:prefix]) {
-                [identifiersToRemove addObject:request.identifier];
-            } else {
-                [userInfosToKeep addObject:request.content.userInfo];
-            }
-        }
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found %lu pending notifications to remove", (unsigned long)identifiersToRemove.count]];        
-        [RadarState setRegisteredNotifications:userInfosToKeep];
-        if (identifiersToRemove.count > 0) {
-            [notificationCenter removePendingNotificationRequestsWithIdentifiers:identifiersToRemove];
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Removed pending notifications"];
-        }
-
-        completionHandler();
-    }];
-
 }
 
 + (void)addOnPremiseNotificationRequests:(NSArray<UNNotificationRequest *> *)requests {

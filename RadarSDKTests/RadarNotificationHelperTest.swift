@@ -5,6 +5,7 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import Testing
 import UserNotifications
@@ -29,6 +30,7 @@ final class MockNotificationCenter: NotificationCenterProtocol, @unchecked Senda
     var pendingRequests: [UNNotificationRequest] = []
     var authorized: Bool
     var canSend: Bool
+    var addCallCount = 0
 
     init(authorized: Bool = true, canSend: Bool = true) {
         self.authorized = authorized
@@ -42,6 +44,7 @@ final class MockNotificationCenter: NotificationCenterProtocol, @unchecked Senda
 
     func add(_ request: UNNotificationRequest) async throws {
         try await Task.sleep(nanoseconds: 10_000_000)
+        addCallCount += 1
         pendingRequests.append(request)
     }
 
@@ -65,7 +68,8 @@ func makeGeofenceDict(
     restrictToOperatingHours: Bool = false,
     closeBufferMinutes: Int? = nil,
     startsAt: String? = nil,
-    endsAt: String? = nil
+    endsAt: String? = nil,
+    radius: Double = 100.0
 ) -> [String: Sendable] {
     var metadata: [String: Sendable] = [
         "radar:notificationText": "Hello from \(id)",
@@ -93,7 +97,7 @@ func makeGeofenceDict(
         "geometryCenter": [
             "coordinates": [-74.0, 40.0]
         ],
-        "geometryRadius": 100.0,
+        "geometryRadius": radius,
     ]
     if let operatingHours {
         dict["operatingHours"] = operatingHours
@@ -350,6 +354,27 @@ struct RadarNotificationHelperTest {
         )
         let geofence = decodeGeofence(dict)
         #expect(geofence?.toNotificationRequest(now: now) == nil)
+    }
+
+    @Test("beacon region signature changes when major/minor changes")
+    func beaconRegionSignatureChangesWithMajorMinor() {
+        func beaconRequest(major: UInt16, minor: UInt16) -> UNNotificationRequest {
+            let uuid = UUID(uuidString: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5")!
+            let region = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: "beacon")
+            let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
+            let content = UNMutableNotificationContent()
+            content.title = "Beacon"
+            // RadarBeaconManager derives the notification identifier from UUID alone, so a changed
+            // major/minor must be reflected elsewhere in the signature or it looks unchanged.
+            return UNNotificationRequest(identifier: "radar_beacon_5A4BCFCE", content: content, trigger: trigger)
+        }
+
+        let original = beaconRequest(major: 1, minor: 1)
+        let sameRegion = beaconRequest(major: 1, minor: 1)
+        let changedMinor = beaconRequest(major: 1, minor: 2)
+
+        #expect(RadarNotificationHelper.notificationUniqueIdentifier(for: original) == RadarNotificationHelper.notificationUniqueIdentifier(for: sameRegion))
+        #expect(RadarNotificationHelper.notificationUniqueIdentifier(for: original) != RadarNotificationHelper.notificationUniqueIdentifier(for: changedMinor))
     }
 
 }
