@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)useRadarModifiedBeacon;
 - (BOOL)useOpenedAppConversion;
 - (BOOL)useForegroundLocationUpdatedAtMsDiff;
-- (BOOL)useNotificationDiff;
 - (BOOL)syncAfterSetUser;
 - (BOOL)useSyncRegion;
 - (NSInteger)defaultGeofenceDwellThreshold;

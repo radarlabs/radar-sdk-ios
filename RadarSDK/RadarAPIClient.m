@@ -471,25 +471,11 @@
                                         }];
     }
 
-    if (sdkConfiguration.useNotificationDiff) {
-        [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
-            if (notificationsDelivered) {
-                params[@"notificationDiff"] = notificationsDelivered;
-            }
+    [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
+        if (notificationsDelivered) {
+            params[@"notificationDiff"] = notificationsDelivered;
+        }
 
-            [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
-                                                                options:options
-                                                                stopped:stopped
-                                                            location:location
-                                                                source:source
-                                                            verified:verified
-                                              useSecondaryVerifiedHost:useSecondaryVerifiedHost
-                                                        publishableKey:publishableKey
-                                                notificationsRemaining:notificationsRemaining
-                                                locationMetadata:locationMetadata
-                                                    completionHandler:completionHandler];
-        }];
-    } else {
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                             options:options
                                                             stopped:stopped
@@ -498,10 +484,10 @@
                                                         verified:verified
                                           useSecondaryVerifiedHost:useSecondaryVerifiedHost
                                                     publishableKey:publishableKey
-                                            notificationsRemaining:@[]
+                                            notificationsRemaining:notificationsRemaining
                                             locationMetadata:locationMetadata
                                                 completionHandler:completionHandler];
-    }
+    }];
 }
 
 - (void)makeTrackRequestWithParams:(NSDictionary *)params
