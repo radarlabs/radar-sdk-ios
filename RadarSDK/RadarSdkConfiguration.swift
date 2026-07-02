@@ -22,7 +22,6 @@ class RadarSdkConfiguration: NSObject {
     let useForegroundLocationUpdatedAtMsDiff: Bool
     let useNotificationDiff: Bool
     let syncAfterSetUser: Bool
-    let useNotificationDiffV2: Bool
     let useSyncRegion: Bool
     let defaultGeofenceDwellThreshold: Int
     let bufferGeofenceEntries: Bool
@@ -48,7 +47,6 @@ class RadarSdkConfiguration: NSObject {
         useForegroundLocationUpdatedAtMsDiff = dict?["useForegroundLocationUpdatedAtMsDiff"] as? Bool ?? false
         useNotificationDiff = dict?["useNotificationDiff"] as? Bool ?? false
         syncAfterSetUser = dict?["syncAfterSetUser"] as? Bool ?? false
-        useNotificationDiffV2 = dict?["useNotificationDiffV2"] as? Bool ?? false
         useSyncRegion = dict?["useSyncRegion"] as? Bool ?? false
         defaultGeofenceDwellThreshold = dict?["defaultGeofenceDwellThreshold"] as? Int ?? 0
         bufferGeofenceEntries = dict?["bufferGeofenceEntries"] as? Bool ?? true
@@ -78,7 +76,6 @@ class RadarSdkConfiguration: NSObject {
             "useForegroundLocationUpdatedAtMsDiff": useForegroundLocationUpdatedAtMsDiff,
             "useNotificationDiff": useNotificationDiff,
             "syncAfterSetUser": syncAfterSetUser,
-            "useNotificationDiffV2": useNotificationDiffV2,
             "useSyncRegion": useSyncRegion,
             "defaultGeofenceDwellThreshold": defaultGeofenceDwellThreshold,
             "bufferGeofenceEntries": bufferGeofenceEntries,

@@ -588,16 +588,13 @@
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
 
-                                    if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
+                                    if (NSClassFromString(@"XCTestCase") == nil) {
                                         [[RadarNotificationHelper_Swift shared]
                                             removeRegisteredNotificationsWithNotifications:params[@"notificationDiff"]
                                             completionHandler:^() {}
                                         ];
-                                    } else {
-                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
-                                        [RadarState setRegisteredNotifications:notificationsRemaining];
                                     }
-                                    
+
                                     [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
                                 } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
                                         !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {

@@ -447,34 +447,8 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
         return;
     }
     
-    if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
-        [[RadarNotificationHelper_Swift shared] getDeliveredNotificationsWithCompletionHandler:^(NSArray* notificationsDelivered) {
-            completionHandler(notificationsDelivered, @[]);
-        }];
-        return;
-    }
-    
-    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-    NSArray *registeredNotifications = [RadarState registeredNotifications];
-    
-    [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests) {
-        NSMutableArray *currentNotifications = [NSMutableArray new];
-        
-        for (UNNotificationRequest *request in requests) {
-            if (request.content.userInfo) {
-                [currentNotifications addObject:request.content.userInfo];
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Found pending registered notification | userInfo = %@", request.content.userInfo]];
-            }
-        }
-        
-        NSMutableArray *notificationsDelivered = [NSMutableArray arrayWithArray:registeredNotifications];
-
-        [notificationsDelivered removeObjectsInArray:currentNotifications];
-
-        if (completionHandler) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Setting %lu notifications remaining after re-registering", (unsigned long)notificationsDelivered.count]];
-            completionHandler(notificationsDelivered, currentNotifications);
-        }
+    [[RadarNotificationHelper_Swift shared] getDeliveredNotificationsWithCompletionHandler:^(NSArray* notificationsDelivered) {
+        completionHandler(notificationsDelivered, @[]);
     }];
 }
 

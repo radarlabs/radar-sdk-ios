@@ -587,13 +587,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
-    if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
+    if (NSClassFromString(@"XCTestCase") == nil) {
         [[RadarNotificationHelper_Swift shared]
             registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
             completionHandler:^() {}
         ];
     }
-    
+
     if (!geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
 
@@ -667,11 +667,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
     
-    if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
-        // we've already registered notifications before the geofences
-        return;
-    }
-    [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kSyncGeofenceIdentifierPrefix notificationRequests:requests];
+    // notifications for synced geofences are already registered above via RadarNotificationHelper_Swift
 }
 
 - (void)removeSyncedGeofences {

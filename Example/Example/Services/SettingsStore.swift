@@ -330,7 +330,6 @@ extension SettingsStore {
             .bool("useRadarModifiedBeacon", c.useRadarModifiedBeacon()),
             .bool("useOpenedAppConversion", c.useOpenedAppConversion()),
             .bool("useNotificationDiff", c.useNotificationDiff()),
-            .bool("useNotificationDiffV2", c.useNotificationDiffV2()),
             .bool("useForegroundLocationUpdatedAtMsDiff", c.useForegroundLocationUpdatedAtMsDiff()),
             .bool("useOfflineRTOUpdates", c.useOfflineRTOUpdates()),
             .bool("offlineEventGenerationEnabled", c.offlineEventGenerationEnabled()),

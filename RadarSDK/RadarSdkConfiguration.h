@@ -28,7 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)useForegroundLocationUpdatedAtMsDiff;
 - (BOOL)useNotificationDiff;
 - (BOOL)syncAfterSetUser;
-- (BOOL)useNotificationDiffV2;
 - (BOOL)useSyncRegion;
 - (NSInteger)defaultGeofenceDwellThreshold;
 - (BOOL)bufferGeofenceEntries;
