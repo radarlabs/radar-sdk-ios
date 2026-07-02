@@ -32,6 +32,9 @@ make format
 make lint-swift
 ```
 
+**Always run `make lint-swift` before committing or pushing any Swift change** CI fails on
+new violations. It only lints changed files against the baseline, so it's fast — there's no reason to skip it.
+
 `.swiftlint-baseline.json` is written by SwiftLint as one minified line. A git clean filter
 (`.gitattributes` + `git config filter.swiftlint-baseline.clean "jq -S ."`) pretty-prints it
 on stage so its diffs stay readable. Run `make bootstrap` once to configure the filter.
