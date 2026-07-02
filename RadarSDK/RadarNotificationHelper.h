@@ -36,8 +36,6 @@ typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
 /// Used by the geofence notification path so the window + day-of-week evaluation stays in one place.
 + (BOOL)isNotificationActiveForMetadata:(nullable NSDictionary *)metadata now:(NSDate *)now;
 
-+ (NSString *)notificationUniqueIdentifierForRequest:(UNNotificationRequest *)request;
-
 + (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler;
 @end
 

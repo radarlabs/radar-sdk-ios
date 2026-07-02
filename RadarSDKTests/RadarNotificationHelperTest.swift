@@ -5,7 +5,6 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import CoreLocation
 import Foundation
 import Testing
 import UserNotifications
@@ -356,25 +355,29 @@ struct RadarNotificationHelperTest {
         #expect(geofence?.toNotificationRequest(now: now) == nil)
     }
 
-    @Test("beacon region signature changes when major/minor changes")
-    func beaconRegionSignatureChangesWithMajorMinor() {
-        func beaconRequest(major: UInt16, minor: UInt16) -> UNNotificationRequest {
-            let uuid = UUID(uuidString: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5")!
-            let region = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: "beacon")
-            let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
-            let content = UNMutableNotificationContent()
-            content.title = "Beacon"
-            // RadarBeaconManager derives the notification identifier from UUID alone, so a changed
-            // major/minor must be reflected elsewhere in the signature or it looks unchanged.
-            return UNNotificationRequest(identifier: "radar_beacon_5A4BCFCE", content: content, trigger: trigger)
-        }
+    @Test("requests differing only in volatile userInfo are unchanged")
+    func volatileUserInfoIsIgnoredInComparison() throws {
+        let geofence = try #require(decodeGeofence(makeGeofenceDict(id: "1")))
+        // registeredAt (and the geofenceData blob) are rebuilt on every track; they must not make
+        // an otherwise-identical notification look changed, or every track re-arms the trigger.
+        let first = try #require(geofence.toNotificationRequest(now: localDate(hour: 9)))
+        let second = try #require(geofence.toNotificationRequest(now: localDate(hour: 10)))
+        #expect(RadarNotificationHelper.isNotificationUnchanged(first, comparedTo: second))
+    }
 
-        let original = beaconRequest(major: 1, minor: 1)
-        let sameRegion = beaconRequest(major: 1, minor: 1)
-        let changedMinor = beaconRequest(major: 1, minor: 2)
+    @Test("a changed region radius is detected")
+    func changedRadiusIsDetected() throws {
+        let small = try #require(decodeGeofence(makeGeofenceDict(id: "1", radius: 100.0))?.toNotificationRequest())
+        let large = try #require(decodeGeofence(makeGeofenceDict(id: "1", radius: 250.0))?.toNotificationRequest())
+        #expect(!RadarNotificationHelper.isNotificationUnchanged(small, comparedTo: large))
+    }
 
-        #expect(RadarNotificationHelper.notificationUniqueIdentifier(for: original) == RadarNotificationHelper.notificationUniqueIdentifier(for: sameRegion))
-        #expect(RadarNotificationHelper.notificationUniqueIdentifier(for: original) != RadarNotificationHelper.notificationUniqueIdentifier(for: changedMinor))
+    @Test("changed campaign metadata is detected")
+    func changedCampaignMetadataIsDetected() throws {
+        // Same content and region — only the campaign metadata carried in userInfo differs.
+        let original = try #require(decodeGeofence(makeGeofenceDict(id: "1", campaignId: "campaign_1"))?.toNotificationRequest())
+        let updated = try #require(decodeGeofence(makeGeofenceDict(id: "1", campaignId: "campaign_2"))?.toNotificationRequest())
+        #expect(!RadarNotificationHelper.isNotificationUnchanged(original, comparedTo: updated))
     }
 
 }

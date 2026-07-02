@@ -166,4 +166,24 @@ extension RadarNotificationHelperTest {
         #expect(pending.first?.identifier == "radar_geofence_1")
         #expect(pending.first !== first, "A changed geofence notification should be rebuilt, not left in place")
     }
+
+    @Test("Re-registering with changed campaign metadata rebuilds that notification")
+    func reRegisteringChangedMetadataReplaces() async throws {
+        let mockCenter = MockNotificationCenter()
+        let mockState = MockRadarState()
+        let helper = RadarNotificationHelper(notificationCenter: mockCenter, radarState: mockState)
+
+        await helper.registerGeofenceNotifications(geofences: [makeGeofenceDict(id: "1", campaignId: "campaign_1")])
+        let first = try #require(mockCenter.pendingRequests.first)
+
+        // Same id, content, and region — only the campaign metadata carried in userInfo changed,
+        // so the notification must be re-registered with the new metadata.
+        await helper.registerGeofenceNotifications(geofences: [makeGeofenceDict(id: "1", campaignId: "campaign_2")])
+
+        let pending = await mockCenter.pendingNotificationRequests()
+        #expect(pending.count == 1)
+        #expect(pending.first?.identifier == "radar_geofence_1")
+        #expect(pending.first !== first, "Changed campaign metadata should rebuild the notification")
+        #expect(pending.first?.content.userInfo["campaignId"] as? String == "campaign_2")
+    }
 }
