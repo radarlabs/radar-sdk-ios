@@ -97,6 +97,10 @@
     [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
 }
 
+- (void)didUpdateClientLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source {
+    [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
+}
+
 - (RadarUser * _Nullable)radarUser {
     return [RadarState radarUser];
 }

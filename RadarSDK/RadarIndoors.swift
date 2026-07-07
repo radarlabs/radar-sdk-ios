@@ -34,10 +34,8 @@ class RadarSDKIndoors {
                 continuation.resume()
             }
             let selector = NSSelectorFromString("useModelWithName:getModelData:completionHandler:")
-            bridge.invoke(target:instance, selector:selector, args: [model, getModelData, completion])
+            bridge.invoke(target: instance, selector: selector, args: [model, getModelData, completion])
         }
-
-
     }
 
     func getLocation() async -> CLLocation? {
@@ -47,7 +45,7 @@ class RadarSDKIndoors {
                 continuation.resume(returning: result)
             }
             let selector = NSSelectorFromString("getLocationWithCompletionHandler:")
-            bridge.invoke(target:instance, selector:selector, args: [completion])
+            bridge.invoke(target: instance, selector: selector, args: [completion])
         }
     }
 
@@ -86,7 +84,7 @@ class RadarSDKIndoors {
 internal class RadarIndoors: NSObject {
     public static let shared = RadarIndoors()
 
-    var currentModelId: String? = nil
+    var currentModelId: String?
 
     /**
      RadarSDKIndoors calls
@@ -145,11 +143,9 @@ internal class RadarIndoors: NSObject {
             semaphore.wait() // Blocks the calling (framework) thread until the download resolves
             return box.url
         }
-        await sdk.useModel(model: "\(modelId).mlmodel", getModelData:getModelData)
+        await sdk.useModel(model: "\(modelId).mlmodel", getModelData: getModelData)
         sdk.setOnLocationUpdate(onLocationUpdate)
         await sdk.start()
-
-
     }
 
     public func getLocation() async -> CLLocation? {

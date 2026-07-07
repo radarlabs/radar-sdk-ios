@@ -27,6 +27,7 @@ protocol RadarSwiftBridgeProtocol {
     func createGeofence(dict: [String: Any]) -> RadarGeofence?
     func isForeground() -> Bool
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser)
+    func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource)
     func radarUser() -> RadarUser?
 }
 

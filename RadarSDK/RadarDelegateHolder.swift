@@ -19,10 +19,10 @@ public actor RadarDelegateActor {
 @objc(RadarDelegateHolder_Swift)
 public class RadarDelegateHolder: NSObject {
 
-    @objc
-    public static var delegate: RadarDelegate?
-
+    // Routes through RadarSwiftBridge to the ObjC RadarDelegateHolder singleton, which owns the
+    // app's delegate (set via Radar.setDelegate). This is the single source of truth — do not
+    // reintroduce a separate delegate here, or these updates will silently never reach the app.
     static func didUpdateClientLocation(location: CLLocation, stopped: Bool, source: RadarLocationSource) {
-        delegate?.didUpdateClientLocation?(location, stopped: stopped, source: source)
+        RadarSwift.bridge?.didUpdateClientLocation(location, stopped: stopped, source: source)
     }
 }
