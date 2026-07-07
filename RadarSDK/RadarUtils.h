@@ -33,6 +33,7 @@ typedef NS_ENUM(NSInteger, RadarConnectionType) {
 + (CLLocation *)locationForDictionary:(NSDictionary *_Nonnull)dict;
 + (NSDictionary *)dictionaryForLocation:(CLLocation *)location;
 + (NSString *)dictionaryToJson:(NSDictionary *)dict;
++ (nullable NSData *)jsonData:(nullable NSDictionary *)dict;
 
 + (RadarConnectionType)networkType;
 + (NSString *)networkTypeString;

@@ -45,10 +45,36 @@ struct RadarUtilsTests {
         #expect(RadarUtils.dictionaryToJson(dict) == "{}")
     }
 
-    @Test func dictionaryToJsonReturnsEmptyForNestedNonStringKey() {
+    @Test func dictionaryToJsonDropsNestedNonStringKeysKeepingContainer() throws {
         let inner: NSDictionary = [1: "value"]
         let dict: [String: Any] = ["nested": inner]
-        #expect(RadarUtils.dictionaryToJson(dict) == "{}")
+        let json = RadarUtils.dictionaryToJson(dict)
+        let decoded = try JSONSerialization.jsonObject(with: Data(json.utf8)) as? [String: Any]
+        #expect(decoded?.keys.contains("nested") == true)
+        #expect((decoded?["nested"] as? [String: Any])?.isEmpty == true)
+    }
+
+    @Test func dictionaryToJsonDropsDataButKeepsSiblings() throws {
+        let dict: [String: Any] = ["foo": "bar", "blob": Data("x".utf8)]
+        let decoded =
+            try JSONSerialization.jsonObject(
+                with: Data(RadarUtils.dictionaryToJson(dict).utf8)) as? [String: Any]
+        #expect(decoded?["foo"] as? String == "bar")
+        #expect(decoded?.keys.contains("blob") == false)
+    }
+    @Test func dictionaryToJsonSanitizesNotificationDiffWithData() throws {
+        let params: [String: Any] = [
+            "latitude": 1.0,
+            "notificationDiff": [["identifier": "radar_x", "registeredAt": 123, "info": Data("y".utf8)]],
+        ]
+        let decoded =
+            try JSONSerialization.jsonObject(
+                with: Data(RadarUtils.dictionaryToJson(params).utf8)) as? [String: Any]
+        #expect(decoded?["latitude"] as? Double == 1.0)
+        let entry = (decoded?["notificationDiff"] as? [[String: Any]])?.first
+        #expect(entry?["identifier"] as? String == "radar_x")
+        #expect(entry?["registeredAt"] as? Int == 123)
+        #expect(entry?.keys.contains("info") == false)
     }
 
     @Test func escapeNonAsciiLeavesAsciiUntouched() {
