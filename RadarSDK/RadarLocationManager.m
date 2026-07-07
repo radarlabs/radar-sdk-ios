@@ -588,9 +588,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        // The Swift location-manager path converges on the V2 notification system: register
-        // geofence notifications through the Swift actor regardless of useNotificationDiffV2,
-        // then hand the region monitoring to the Swift twin.
         [[RadarNotificationHelper_Swift shared] registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
                                                                         completionHandler:^(){
                                                                         }];
