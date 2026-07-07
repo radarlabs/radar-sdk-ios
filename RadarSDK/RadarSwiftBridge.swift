@@ -14,6 +14,7 @@ import Foundation
 protocol RadarSwiftBridgeProtocol {
     func flushReplays()
     func logOpenedAppConversion()
+    func invoke(target: NSObject, selector: Selector, args: [Any])
     func geofenceIds() -> [String]?
     func beaconIds() -> [String]?
     func placeId() -> String?
