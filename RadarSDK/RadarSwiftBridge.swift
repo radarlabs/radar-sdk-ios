@@ -13,6 +13,7 @@ import Foundation
 @objc
 protocol RadarSwiftBridgeProtocol {
     func flushReplays()
+    func flushReplaysRequest(_ replays: [[AnyHashable: Any]], completionHandler: ((RadarStatus, [AnyHashable: Any]?) -> Void)?)
     func logOpenedAppConversion()
     func geofenceIds() -> [String]?
     func beaconIds() -> [String]?
