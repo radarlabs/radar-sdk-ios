@@ -1615,6 +1615,9 @@ BOOL _initialized = NO;
     case RadarLocationSourceBeaconExit:
         str = @"BEACON_EXIT";
         break;
+    case RadarLocationSourceIndoors:
+        str = @"INDOORS";
+        break;
     case RadarLocationSourceUnknown:
         str = @"UNKNOWN";
     }
