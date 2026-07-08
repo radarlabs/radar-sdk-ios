@@ -19,7 +19,8 @@
                       operatingHours:(RadarOperatingHours *_Nullable)operatingHours
                             geometry:(RadarGeofenceGeometry *_Nonnull)geometry
                       dwellThreshold:(NSNumber *_Nullable)dwellThreshold
-               geofenceStopDetection:(NSNumber *_Nullable)geofenceStopDetection;
+               geofenceStopDetection:(NSNumber *_Nullable)geofenceStopDetection
+                 activeIndoorModelId:(NSString *_Nullable)activeIndoorModelId;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
