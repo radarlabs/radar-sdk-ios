@@ -40,7 +40,8 @@
                       operatingHours:(RadarOperatingHours *_Nullable)operatingHours
                             geometry:(RadarGeofenceGeometry *_Nonnull)geometry
                       dwellThreshold:(NSNumber *_Nullable)dwellThreshold
-                  geofenceStopDetection:(NSNumber *_Nullable)geofenceStopDetection {
+                  geofenceStopDetection:(NSNumber *_Nullable)geofenceStopDetection
+                 activeIndoorModelId:(NSString *_Nullable)activeIndoorModelId {
     self = [super init];
     if (self) {
         __id = _id;
@@ -52,6 +53,7 @@
         _geometry = geometry;
         _dwellThreshold = dwellThreshold;
         _geofenceStopDetection = geofenceStopDetection;
+        _activeIndoorModelId = activeIndoorModelId;
     }
     return self;
 }
@@ -112,7 +114,13 @@
     if (stopDetectionObj && [stopDetectionObj isKindOfClass:[NSNumber class]]) {
         geofenceStopDetection = (NSNumber *)stopDetectionObj;
     }
-    
+
+    NSString *activeIndoorModelId;
+    id activeIndoorModelIdObj = dict[@"activeIndoorModelId"];
+    if (activeIndoorModelIdObj && [activeIndoorModelIdObj isKindOfClass:[NSString class]]) {
+        activeIndoorModelId = (NSString *)activeIndoorModelIdObj;
+    }
+
     id typeObj = dict[@"type"];
     if ([typeObj isKindOfClass:[NSString class]]) {
         NSString *type = (NSString *)typeObj;
@@ -155,7 +163,7 @@
         }
     }
     
-    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata operatingHours:operatingHours geometry:geometry dwellThreshold:dwellThreshold geofenceStopDetection:geofenceStopDetection];
+    return [[RadarGeofence alloc] initWithId:_id description:description tag:tag externalId:externalId metadata:metadata operatingHours:operatingHours geometry:geometry dwellThreshold:dwellThreshold geofenceStopDetection:geofenceStopDetection activeIndoorModelId:activeIndoorModelId];
 }
 
 - (NSMutableArray<RadarCoordinate *> *)getPolygonCoordinates:(NSDictionary *)dict {
