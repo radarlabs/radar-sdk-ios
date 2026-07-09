@@ -82,7 +82,8 @@ enum RadarLocationManagerSwiftTestHelpers {
             operatingHours: nil,
             geometry: geometry,
             dwellThreshold: nil,
-            geofenceStopDetection: nil
+            geofenceStopDetection: nil,
+            activeIndoorModelId: nil
         )!
     }
 
