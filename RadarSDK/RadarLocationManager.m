@@ -587,6 +587,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [[RadarNotificationHelper_Swift shared] registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
+                                                                        completionHandler:^(){
+                                                                        }];
+        [RadarLocationManagerSwift replaceSyncedGeofencesOnLocationManager:self.locationManager geofences:geofences];
+        return;
+    }
+
     if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
         [[RadarNotificationHelper_Swift shared]
             registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
