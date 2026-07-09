@@ -188,6 +188,7 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
 
     func flushReplays() {}
     func logOpenedAppConversion() {}
+    func invoke(target: NSObject, selector: Selector, args: [Any]) {}
     func geofenceIds() -> [String]? { nil }
     func beaconIds() -> [String]? { nil }
     func placeId() -> String? { nil }
@@ -200,5 +201,6 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func createGeofence(dict: [String: Any]) -> RadarGeofence? { nil }
     func isForeground() -> Bool { false }
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {}
+    func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {}
     func radarUser() -> RadarUser? { nil }
 }
