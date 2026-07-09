@@ -5,5 +5,8 @@
 #import "RadarSyncTestHelper.h"
 #import "../RadarSDK/RadarAPIClient.h"
 #import "../RadarSDK/RadarLocationManager.h"
+#import "../RadarSDK/RadarGeofence+Internal.h"
+#import "../RadarSDK/RadarCircleGeometry+Internal.h"
+#import "../RadarSDK/RadarPolygonGeometry+Internal.h"
 #import "RadarAPIHelperMock.h"
 #import "RadarPermissionsHelperMock.h"

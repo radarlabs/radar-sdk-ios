@@ -13,7 +13,9 @@ import Foundation
 @objc
 protocol RadarSwiftBridgeProtocol {
     func flushReplays()
+    func flushReplaysRequest(_ replays: [[AnyHashable: Any]], completionHandler: ((RadarStatus, [AnyHashable: Any]?) -> Void)?)
     func logOpenedAppConversion()
+    func invoke(target: NSObject, selector: Selector, args: [Any])
     func geofenceIds() -> [String]?
     func beaconIds() -> [String]?
     func placeId() -> String?
@@ -26,6 +28,7 @@ protocol RadarSwiftBridgeProtocol {
     func createGeofence(dict: [String: Any]) -> RadarGeofence?
     func isForeground() -> Bool
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser)
+    func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource)
     func radarUser() -> RadarUser?
 }
 
