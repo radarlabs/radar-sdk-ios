@@ -141,6 +141,12 @@
 	<string>Your foreground location usage description goes here.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Your motion usage description goes here.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Used by the indoor survey tool's AR tracking.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Used by the indoor survey tool to range beacons.</string>
+	<key>NSBluetoothWhileInUseUsageDescription</key>
+	<string>Used by the indoor survey tool to range beacons.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -164,6 +170,7 @@
 		<string>remote-notification</string>
 		<string>fetch</string>
 		<string>processing</string>
+		<string>bluetooth-central</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen.storyboard</string>
