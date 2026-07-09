@@ -165,7 +165,10 @@ internal class RadarIndoors: NSObject {
         do {
             let data = try await RadarAPIClient.shared.getAsset(url: "models/\(modelId)/rssi_lstm.mlmodel")
             let temporaryDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-            let fileURL = temporaryDirectoryURL.appendingPathComponent(UUID().uuidString + ".mlmodel")
+            // Write to a deterministic per-model path so re-downloading the same model overwrites
+            // its file rather than leaking a new UUID-named blob into tmp on every model switch.
+            let fileName = modelId.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? modelId
+            let fileURL = temporaryDirectoryURL.appendingPathComponent("radar_indoor_\(fileName).mlmodel")
             try data.write(to: fileURL)
             return fileURL
         } catch {
