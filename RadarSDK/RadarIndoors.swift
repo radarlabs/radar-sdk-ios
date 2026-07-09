@@ -111,6 +111,7 @@ internal class RadarIndoors: NSObject {
             // stop indoor updates if it's on
             if currentModelId != nil {
                 await sdk.stop()
+                currentModelId = nil
             }
             return
         }
@@ -123,7 +124,6 @@ internal class RadarIndoors: NSObject {
             RadarLogger.shared.debug("found no model id in current geofences")
             return
         }
-        currentModelId = modelId
         // This callback is invoked synchronously by the RadarSDKIndoors framework, and only on a
         // local-cache miss, to fetch the model's data from the server. The framework's API requires a
         // URL returned synchronously, so we bridge the async download onto a detached Task and block
@@ -147,6 +147,9 @@ internal class RadarIndoors: NSObject {
         await sdk.useModel(model: "\(modelId).mlmodel", getModelData: getModelData)
         sdk.setOnLocationUpdate(onLocationUpdate)
         await sdk.start()
+        // Record the active model only once start() has returned, so a failure earlier in the
+        // chain doesn't leave currentModelId set and short-circuit the next updateTracking pass.
+        currentModelId = modelId
     }
 
     public func getLocation() async -> CLLocation? {
