@@ -1056,7 +1056,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                               beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
                     completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, CLLocation *_Nullable))completionHandler {
     [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
-        completionHandler(beacons, indoorLocation);
+        // RadarIndoors resolves the location on the RadarIndoorsActor's (background) executor, so
+        // its completion fires off the main thread. The downstream track pipeline touches
+        // main-actor-isolated state (e.g. RadarInAppMessageManager), and the real RadarAPIHelper
+        // already delivers its callbacks on the main queue, so marshal back to main here to keep
+        // that contract and avoid a main-actor executor assertion.
+        [RadarUtilsDeprecated runOnMainThread:^{
+            completionHandler(beacons, indoorLocation);
+        }];
     }];
 }
 

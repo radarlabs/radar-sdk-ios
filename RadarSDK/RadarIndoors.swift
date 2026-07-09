@@ -18,8 +18,12 @@ public actor RadarIndoorsActor {
 @RadarIndoorsActor
 @available(iOS 13.0, *)
 class RadarSDKIndoors {
-    let instance: NSObject
-    init?() {
+    // Write-once in the nonisolated initializer, only read from actor-isolated methods afterwards,
+    // so nonisolated(unsafe) is sound and lets the init run off the actor.
+    nonisolated(unsafe) let instance: NSObject
+    // nonisolated so it can be constructed from RadarIndoors' nonisolated initializer. The body
+    // only does an Objective-C runtime class lookup and touches no actor-isolated state.
+    nonisolated init?() {
         // Fail the initializer when the optional RadarSDKIndoors framework isn't linked, so
         // `RadarSDKIndoors()` is nil and the `guard let sdk` checks downstream mean what they say.
         guard let cls = NSClassFromString("RadarSDKIndoors") as? NSObject.Type else {
@@ -83,20 +87,33 @@ class RadarSDKIndoors {
 @available(iOS 13.0, *)
 @objc(RadarIndoors) @objcMembers
 internal class RadarIndoors: NSObject {
-    public static let shared = RadarIndoors()
+    // `shared` and `init()` are nonisolated so the Objective-C tracking code can obtain the
+    // singleton without running on the RadarIndoorsActor executor. Accessing an actor-isolated
+    // member synchronously from off-actor traps at runtime ("Incorrect actor executor
+    // assumption"), which is what `[[RadarIndoors shared] ...]` was doing. The async methods
+    // below stay actor-isolated; their generated completion-handler thunks hop onto the actor.
+    public nonisolated static let shared = RadarIndoors()
 
     var currentModelId: String?
 
     /**
      RadarSDKIndoors calls
      */
-    let sdk = RadarSDKIndoors()
+    let sdk: RadarSDKIndoors?
 
-    let onLocationUpdate: @Sendable @convention(block) (CLLocation) -> Void = { location in
-        Task {
-            await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
-            RadarLogger.shared.debug("indoor location update")
+    let onLocationUpdate: @Sendable @convention(block) (CLLocation) -> Void
+
+    // Initialized entirely from nonisolated, Sendable expressions so the singleton can be built
+    // off the actor. The stored properties are only read again from actor-isolated methods.
+    nonisolated override init() {
+        self.sdk = RadarSDKIndoors()
+        self.onLocationUpdate = { location in
+            Task {
+                await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
+                RadarLogger.shared.debug("indoor location update")
+            }
         }
+        super.init()
     }
 
     public func updateTracking(user: RadarUser) async {
