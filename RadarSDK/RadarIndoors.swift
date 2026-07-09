@@ -18,17 +18,18 @@ public actor RadarIndoorsActor {
 @RadarIndoorsActor
 @available(iOS 13.0, *)
 class RadarSDKIndoors {
-    let instance: NSObject?
-    init? () {
-        if let cls = NSClassFromString("RadarSDKIndoors") as? NSObject.Type {
-            instance = cls.init()
-        } else {
-            instance = nil
+    let instance: NSObject
+    init?() {
+        // Fail the initializer when the optional RadarSDKIndoors framework isn't linked, so
+        // `RadarSDKIndoors()` is nil and the `guard let sdk` checks downstream mean what they say.
+        guard let cls = NSClassFromString("RadarSDKIndoors") as? NSObject.Type else {
+            return nil
         }
+        instance = cls.init()
     }
 
     public func useModel(model: String, getModelData: @convention(block) @escaping @Sendable () -> URL?) async {
-        guard let bridge = RadarSwift.bridge, let instance else { return }
+        guard let bridge = RadarSwift.bridge else { return }
         await withCheckedContinuation { continuation in
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
@@ -39,7 +40,7 @@ class RadarSDKIndoors {
     }
 
     func getLocation() async -> CLLocation? {
-        guard let bridge = RadarSwift.bridge, let instance else { return nil }
+        guard let bridge = RadarSwift.bridge else { return nil }
         return await withCheckedContinuation { continuation in
             let completion: @convention(block) (CLLocation?) -> Void = { result in
                 continuation.resume(returning: result)
@@ -50,7 +51,7 @@ class RadarSDKIndoors {
     }
 
     func start() async {
-        guard let bridge = RadarSwift.bridge, let instance else { return }
+        guard let bridge = RadarSwift.bridge else { return }
         await withCheckedContinuation { continuation in
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
@@ -61,7 +62,7 @@ class RadarSDKIndoors {
     }
 
     func stop() async {
-        guard let bridge = RadarSwift.bridge, let instance else { return }
+        guard let bridge = RadarSwift.bridge else { return }
         await withCheckedContinuation { continuation in
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
@@ -72,7 +73,7 @@ class RadarSDKIndoors {
     }
 
     public func setOnLocationUpdate(_ block: @convention(block) @escaping @Sendable (CLLocation) -> Void) {
-        guard let bridge = RadarSwift.bridge, let instance else { return }
+        guard let bridge = RadarSwift.bridge else { return }
         let selector = NSSelectorFromString("setOnLocationUpdate:")
         bridge.invoke(target: instance, selector: selector, args: [block])
     }
