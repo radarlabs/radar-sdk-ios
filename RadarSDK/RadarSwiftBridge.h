@@ -14,9 +14,12 @@
 #import "RadarPlace+Internal.h"
 #import "RadarTripOptions.h"
 #import <CoreLocation/CoreLocation.h>
+#import "Radar.h"
 
 @protocol RadarSwiftBridgeProtocol
 - (void)flushReplays;
+- (void)flushReplaysRequest:(NSArray<NSDictionary *> * _Nonnull)replays
+          completionHandler:(void (^_Nullable)(RadarStatus status, NSDictionary * _Nullable res))completionHandler;
 - (void)logOpenedAppConversion;
 - (void)invokeWithTarget:(NSObject * _Nonnull)target selector:(SEL _Nonnull)selector args:(NSArray * _Nonnull)args;
 
