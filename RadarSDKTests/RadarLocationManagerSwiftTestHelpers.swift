@@ -58,6 +58,35 @@ enum RadarLocationManagerSwiftTestHelpers {
         )!
     }
 
+    /// Construct a circle `RadarGeofence` with the fields `replaceSyncedGeofences` reads
+    /// (`_id` and a `RadarCircleGeometry` center/radius).
+    static func makeGeofence(id: String, latitude: Double = 0, longitude: Double = 0, radius: Double = 100) -> RadarGeofence {
+        let center = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))!
+        return geofence(id: id, geometry: RadarCircleGeometry(center: center, radius: radius))
+    }
+
+    /// Construct a polygon `RadarGeofence`; `replaceSyncedGeofences` reads the polygon's
+    /// computed `center`/`radius`.
+    static func makePolygonGeofence(id: String, latitude: Double = 0, longitude: Double = 0, radius: Double = 100) -> RadarGeofence {
+        let center = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))!
+        return geofence(id: id, geometry: RadarPolygonGeometry(coordinates: [center], center: center, radius: radius))
+    }
+
+    private static func geofence(id: String, geometry: RadarGeofenceGeometry) -> RadarGeofence {
+        return RadarGeofence(
+            id: id,
+            description: id,
+            tag: nil,
+            externalId: nil,
+            metadata: nil,
+            operatingHours: nil,
+            geometry: geometry,
+            dwellThreshold: nil,
+            geofenceStopDetection: nil,
+            activeIndoorModelId: nil
+        )!
+    }
+
     /// Build `RadarTrackingOptions` with `beacons` toggled as requested.
     /// Starts from `presetResponsive` to get a valid preset.
     static func trackingOptions(beacons: Bool) -> RadarTrackingOptions {

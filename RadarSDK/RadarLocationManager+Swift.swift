@@ -201,6 +201,49 @@ final class RadarLocationManagerSwift: NSObject {
         RadarLogger.shared.debug("🦅 Removed bubble geofences")
     }
 
+    @objc(replaceSyncedGeofencesOnLocationManager:geofences:)
+    static func replaceSyncedGeofences(locationManager: CLLocationManager, geofences: [RadarGeofence]?) {
+        // Region monitoring only. Geofence notifications are registered separately through the
+        // Swift notification actor (RadarNotificationHelper) by the ObjC dispatcher, so this
+        // twin matches the shape of replaceSyncedBeacons.
+        guard let geofences else {
+            RadarLogger.shared.debug("🦅 Skipping replacing synced geofences")
+            return
+        }
+
+        removeSyncedGeofences(locationManager: locationManager)
+
+        let options = Radar.getTrackingOptions()
+        let numGeofences = min(geofences.count, options.beacons ? 9 : 19)
+
+        for geofence in geofences.prefix(numGeofences) {
+            var center: RadarCoordinate?
+            var radius = 100.0
+            if let circle = geofence.geometry as? RadarCircleGeometry {
+                center = circle.center
+                radius = circle.radius
+            } else if let polygon = geofence.geometry as? RadarPolygonGeometry {
+                center = polygon.center
+                radius = polygon.radius
+            }
+            guard let center else {
+                continue
+            }
+
+            let identifier = "\(syncGeofenceIdentifierPrefix)\(geofence._id)"
+            let region = CLCircularRegion(
+                center: center.coordinate,
+                radius: radius,
+                identifier: identifier
+            )
+            locationManager.startMonitoring(for: region)
+
+            RadarLogger.shared.debug(
+                "🦅 Synced geofence | latitude = \(center.coordinate.latitude); longitude = \(center.coordinate.longitude); radius = \(radius); identifier = \(identifier)"
+            )
+        }
+    }
+
     @objc(removeSyncedGeofencesOnLocationManager:)
     static func removeSyncedGeofences(locationManager: CLLocationManager) {
         for region in locationManager.monitoredRegions
