@@ -455,7 +455,7 @@
         locationMetadata[@"indoorMLLongitude"] = @(indoorLocation.coordinate.longitude);
         locationMetadata[@"deviceLatitude"] = params[@"latitude"];
         locationMetadata[@"deviceLongitude"] = params[@"longitude"];
-        // Replace the reported coordinates with the indoor ML model's prediction.
+        // CRTICAL: Overwrite the reported coordinates with the indoor ML model's prediction.
         params[@"latitude"] = @(indoorLocation.coordinate.latitude);
         params[@"longitude"] = @(indoorLocation.coordinate.longitude);
     }
