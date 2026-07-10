@@ -1055,16 +1055,32 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)getIndoorLocationIfConfigured:(CLLocation *)location
                               beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
                     completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, CLLocation *_Nullable))completionHandler {
-    [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
-        // RadarIndoors resolves the location on the RadarIndoorsActor's (background) executor, so
-        // its completion fires off the main thread. The downstream track pipeline touches
-        // main-actor-isolated state (e.g. RadarInAppMessageManager), and the real RadarAPIHelper
-        // already delivers its callbacks on the main queue, so marshal back to main here to keep
-        // that contract and avoid a main-actor executor assertion.
+    // RadarIndoors resolves the location on the RadarIndoorsActor's (background) executor, so its
+    // completion fires off the main thread. The downstream track pipeline touches main-actor-isolated
+    // state (e.g. RadarInAppMessageManager), and the real RadarAPIHelper already delivers its
+    // callbacks on the main queue, so marshal back to main to keep that contract and avoid a
+    // main-actor executor assertion. getLocation also has no bounded duration (unlike the old
+    // fixed-length indoor scan), so guard the completion to fire exactly once — whichever of the
+    // RadarIndoors callback or the 5s timeout wins — so a hung bridge can't leave the track pipeline
+    // (self.sending) stuck. The guard is only touched on the main thread, so no lock is needed.
+    __block BOOL completed = NO;
+    void (^finish)(CLLocation *_Nullable) = ^(CLLocation *_Nullable indoorLocation) {
         [RadarUtilsDeprecated runOnMainThread:^{
+            if (completed) {
+                return;
+            }
+            completed = YES;
             completionHandler(beacons, indoorLocation);
         }];
+    };
+
+    [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
+        finish(indoorLocation);
     }];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        finish(nil);
+    });
 }
 
 - (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed beacons:(NSArray<RadarBeacon *> *_Nullable)beacons forceTrack:(BOOL)forceTrack {
