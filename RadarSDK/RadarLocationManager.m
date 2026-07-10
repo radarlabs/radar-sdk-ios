@@ -1052,9 +1052,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 // RadarSDKIndoors framework is absent), then invokes the completion with the passed-through
 // beacons so callers keep the beacon variable they already resolved. RadarIndoors decides
 // internally whether indoor positioning is active based on trackingOptions/model state.
-- (void)getIndoorLocationIfConfigured:(CLLocation *)location
-                              beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-                    completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, CLLocation *_Nullable))completionHandler {
+- (void)getIndoorLocationIfConfiguredWithBeacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+                               completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, CLLocation *_Nullable))completionHandler {
     // RadarIndoors resolves the location on the RadarIndoorsActor's (background) executor, so its
     // completion fires off the main thread. The downstream track pipeline touches main-actor-isolated
     // state (e.g. RadarInAppMessageManager), and the real RadarAPIHelper already delivers its
@@ -1094,9 +1093,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     
     if ([RadarSettings useRadarModifiedBeacon]) {
         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-            [self getIndoorLocationIfConfigured:location
-                                        beacons:beacons
-                              completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, CLLocation *_Nullable indoorLocation) {
+            [self getIndoorLocationIfConfiguredWithBeacons:beacons
+                                         completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, CLLocation *_Nullable indoorLocation) {
                 [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                            stopped:stopped
                                                         foreground:[RadarUtilsDeprecated foreground]
@@ -1249,9 +1247,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                     if ([RadarSyncManager hasBeaconStateChangedWithRangedBeaconIds:rangedIds]) {
                                         [RadarState updateLastSentAt];
                                         [RadarSyncManager saveBeaconStateWithBeaconIds:matchedIds2];
-                                        [self getIndoorLocationIfConfigured:location
-                                                                    beacons:rangedBeacons
-                                                          completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, CLLocation *_Nullable indoorLocation) {
+                                        [self getIndoorLocationIfConfiguredWithBeacons:rangedBeacons
+                                                                     completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, CLLocation *_Nullable indoorLocation) {
                                             [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                                                        stopped:stopped
                                                                                     foreground:[RadarUtilsDeprecated foreground]
@@ -1310,9 +1307,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
 
-        [self getIndoorLocationIfConfigured:location
-                                    beacons:beacons
-                          completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, CLLocation *_Nullable indoorLocation) {
+        [self getIndoorLocationIfConfiguredWithBeacons:beacons
+                                     completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, CLLocation *_Nullable indoorLocation) {
             [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                        stopped:stopped
                                                     foreground:[RadarUtilsDeprecated foreground]

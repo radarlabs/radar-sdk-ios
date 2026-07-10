@@ -339,9 +339,8 @@ BOOL _initialized = NO;
                          };
 
                          void (^performIndoorScanThenTrack)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-                            [[RadarLocationManager sharedInstance] getIndoorLocationIfConfigured:location
-                                                                                          beacons:beacons
-                                                                                completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, CLLocation *_Nullable indoorLocation) {
+                            [[RadarLocationManager sharedInstance] getIndoorLocationIfConfiguredWithBeacons:beacons
+                                                                                          completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, CLLocation *_Nullable indoorLocation) {
                                 callTrackAPI(beacons, indoorLocation);
                             }];
                         };
@@ -395,9 +394,8 @@ BOOL _initialized = NO;
 
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
-    [[RadarLocationManager sharedInstance] getIndoorLocationIfConfigured:location
-                                                                  beacons:nil
-                                                        completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, CLLocation *_Nullable indoorLocation) {
+    [[RadarLocationManager sharedInstance] getIndoorLocationIfConfiguredWithBeacons:nil
+                                                                  completionHandler:^(NSArray<RadarBeacon *> *_Nullable beacons, CLLocation *_Nullable indoorLocation) {
         [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                    stopped:NO
                                                 foreground:YES
