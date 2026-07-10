@@ -480,25 +480,11 @@
                                         }];
     }
 
-    if (sdkConfiguration.useNotificationDiff) {
-        [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
-            if (notificationsDelivered) {
-                params[@"notificationDiff"] = notificationsDelivered;
-            }
+    [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
+        if (notificationsDelivered) {
+            params[@"notificationDiff"] = notificationsDelivered;
+        }
 
-            [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
-                                                                options:options
-                                                                stopped:stopped
-                                                            location:location
-                                                                source:source
-                                                            verified:verified
-                                              useSecondaryVerifiedHost:useSecondaryVerifiedHost
-                                                        publishableKey:publishableKey
-                                                notificationsRemaining:notificationsRemaining
-                                                locationMetadata:locationMetadata
-                                                    completionHandler:completionHandler];
-        }];
-    } else {
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                             options:options
                                                             stopped:stopped
@@ -507,10 +493,10 @@
                                                         verified:verified
                                           useSecondaryVerifiedHost:useSecondaryVerifiedHost
                                                     publishableKey:publishableKey
-                                            notificationsRemaining:@[]
+                                            notificationsRemaining:notificationsRemaining
                                             locationMetadata:locationMetadata
                                                 completionHandler:completionHandler];
-    }
+    }];
 }
 
 - (void)makeTrackRequestWithParams:(NSDictionary *)params
@@ -597,16 +583,20 @@
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
 
-                                    if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
+                                    // Skip notification removal under XCTest. RadarNotificationHelper_Swift.shared resolves its
+                                    // notification center from UNUserNotificationCenter.current(), which has no app bundle or
+                                    // notification entitlements in the unit-test host and misbehaves there. This call used to be
+                                    // gated behind the useNotificationDiffV2 flag (false in tests); removing the flag made it
+                                    // unconditional, so the guard preserves the prior "skip in tests" behavior. This matches the
+                                    // existing XCTestCase guards elsewhere in the SDK. TODO: route through the injectable
+                                    // NotificationCenterProtocol seam instead so tests can use a mock and this guard can be deleted.
+                                    if (NSClassFromString(@"XCTestCase") == nil) {
                                         [[RadarNotificationHelper_Swift shared]
                                             removeRegisteredNotificationsWithNotifications:params[@"notificationDiff"]
                                             completionHandler:^() {}
                                         ];
-                                    } else {
-                                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
-                                        [RadarState setRegisteredNotifications:notificationsRemaining];
                                     }
-                                    
+
                                     [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
                                 } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
                                         !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {

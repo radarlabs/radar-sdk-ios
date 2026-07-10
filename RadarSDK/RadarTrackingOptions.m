@@ -54,6 +54,14 @@ NSString *const kTypeOnTrip = @"on-trip";
 NSString *const kTypeInGeofence = @"in-geofence";
 NSString *const kTypeIsUser = @"is-user";
 
+// startTrackingAfter/stopTrackingAfter round-trip through millisecond serialization in
+// -dictionaryValue (timeIntervalSince1970 * 1000, then / 1000 on the way back), which loses a
+// few hundred nanoseconds of precision. DBL_EPSILON (~2.2e-16) is far smaller than a single ULP
+// at Unix-timestamp magnitudes (~2.4e-7 near 1.75e9), so comparing dates against it made -isEqual
+// spuriously report inequality for a serialized-then-deserialized copy. Compare at the millisecond
+// precision the dates are actually stored with instead.
+static const NSTimeInterval kRadarTrackingOptionsDateEpsilon = 0.001;
+
 + (RadarTrackingOptions *)presetContinuous {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
     options.desiredStoppedUpdateInterval = 30;
@@ -368,9 +376,9 @@ NSString *const kTypeIsUser = @"is-user";
            self.desiredSyncInterval == options.desiredSyncInterval && self.desiredAccuracy == options.desiredAccuracy && self.stopDuration == options.stopDuration &&
            self.stopDistance == options.stopDistance &&
            (self.startTrackingAfter == nil ? options.startTrackingAfter == nil :
-                                             fabs(self.startTrackingAfter.timeIntervalSince1970 - options.startTrackingAfter.timeIntervalSince1970) < DBL_EPSILON) &&
+                                             fabs(self.startTrackingAfter.timeIntervalSince1970 - options.startTrackingAfter.timeIntervalSince1970) < kRadarTrackingOptionsDateEpsilon) &&
            (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil :
-                                            fabs(self.stopTrackingAfter.timeIntervalSince1970 - options.stopTrackingAfter.timeIntervalSince1970) < DBL_EPSILON) &&
+                                            fabs(self.stopTrackingAfter.timeIntervalSince1970 - options.stopTrackingAfter.timeIntervalSince1970) < kRadarTrackingOptionsDateEpsilon) &&
            self.syncLocations == options.syncLocations && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
