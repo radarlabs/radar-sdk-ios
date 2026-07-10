@@ -450,7 +450,9 @@
         }
     }
 
-    if (options.useIndoorScan && indoorLocation) {
+    if (options.useIndoorScan && indoorLocation &&
+        CLLocationCoordinate2DIsValid(indoorLocation.coordinate) &&
+        (indoorLocation.coordinate.latitude != 0.0 || indoorLocation.coordinate.longitude != 0.0)) {
         locationMetadata[@"indoorMLLatitude"] = @(indoorLocation.coordinate.latitude);
         locationMetadata[@"indoorMLLongitude"] = @(indoorLocation.coordinate.longitude);
         locationMetadata[@"deviceLatitude"] = params[@"latitude"];

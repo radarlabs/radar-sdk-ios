@@ -110,6 +110,19 @@ final class RadarIndoorLocationTrackParamsTests: XCTestCase {
         XCTAssertNil(params["locationMetadata"], "no locationMetadata should be sent when indoor is off and motion/pressure are off")
     }
 
+    // MARK: - indoor on but the prediction is an invalid / sentinel coordinate
+
+    func test_indoorOn_withZeroIslandIndoorLocation_leavesCoordinatesUntouched() {
+        setIndoorScanEnabled(true)
+        // (0, 0) is a valid CLLocationCoordinate2D but the classic "no fix" sentinel; the coordinate
+        // overwrite must reject it so a bad prediction can't move the reported location to null island.
+        let params = track(indoorLocation: CLLocation(latitude: 0, longitude: 0))
+
+        XCTAssertEqual(params["latitude"] as? Double ?? .nan, deviceLatitude, accuracy: 1e-9)
+        XCTAssertEqual(params["longitude"] as? Double ?? .nan, deviceLongitude, accuracy: 1e-9)
+        XCTAssertNil(params["locationMetadata"], "invalid/zero indoor coordinate should be ignored")
+    }
+
     // MARK: - indoor on but no prediction available
 
     func test_indoorOn_withNilIndoorLocation_leavesCoordinatesUntouched() {
