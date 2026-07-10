@@ -110,7 +110,9 @@ internal class RadarIndoors: NSObject {
         self.onLocationUpdate = { location in
             Task {
                 await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
-                RadarLogger.shared.debug("indoor location update")
+                RadarLogger.shared.debug(
+                    "Indoor location update | latitude = \(location.coordinate.latitude); longitude = \(location.coordinate.longitude); horizontalAccuracy = \(location.horizontalAccuracy); floor = \(location.floor.map { String($0.level) } ?? "nil"); timestamp = \(location.timestamp)"
+                )
             }
         }
         super.init()
