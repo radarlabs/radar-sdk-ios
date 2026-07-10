@@ -405,17 +405,20 @@ BOOL _initialized = NO;
                                             indoorLocation:indoorLocation
                                          completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                              NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                                            if (status == RadarStatusSuccess && config != nil) {
-                                                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                            
+                                            if (status == RadarStatusSuccess) {
+                                                if (config != nil) {
+                                                    [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                                }
+                                                if (user) {
+                                                    [[RadarIndoors shared] updateTrackingWithUser:user completionHandler:^{}];
+                                                }
                                             }
-                                            if (status == RadarStatusSuccess && user) {
-                                                [[RadarIndoors shared] updateTrackingWithUser:user completionHandler:^{}];
+                                            if (completionHandler) {
+                                                [RadarUtilsDeprecated runOnMainThread:^{
+                                                    completionHandler(status, location, events, user);
+                                                }];
                                             }
-                                             if (completionHandler) {
-                                                 [RadarUtilsDeprecated runOnMainThread:^{
-                                                     completionHandler(status, location, events, user);
-                                                 }];
-                                             }
                                          }];
     }];
 }
