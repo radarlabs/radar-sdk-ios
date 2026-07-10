@@ -13,13 +13,13 @@ import Foundation
 /// officially unsupported by Apple, but this is the same technique
 /// `TrackingCLLocationManager` uses for `CLLocationManager`.
 final class StubCLHeading: CLHeading, @unchecked Sendable {
-    private let _magneticHeading: CLLocationDirection
-    private let _trueHeading: CLLocationDirection
-    private let _headingAccuracy: CLLocationDirection
-    private let _x: CLHeadingComponentValue
-    private let _y: CLHeadingComponentValue
-    private let _z: CLHeadingComponentValue
-    private let _timestamp: Date
+    private let storedMagneticHeading: CLLocationDirection
+    private let storedTrueHeading: CLLocationDirection
+    private let storedHeadingAccuracy: CLLocationDirection
+    private let storedX: CLHeadingComponentValue
+    private let storedY: CLHeadingComponentValue
+    private let storedZ: CLHeadingComponentValue
+    private let storedTimestamp: Date
 
     init(
         magneticHeading: CLLocationDirection,
@@ -30,13 +30,13 @@ final class StubCLHeading: CLHeading, @unchecked Sendable {
         z: CLHeadingComponentValue,
         timestamp: Date
     ) {
-        _magneticHeading = magneticHeading
-        _trueHeading = trueHeading
-        _headingAccuracy = headingAccuracy
-        _x = x
-        _y = y
-        _z = z
-        _timestamp = timestamp
+        storedMagneticHeading = magneticHeading
+        storedTrueHeading = trueHeading
+        storedHeadingAccuracy = headingAccuracy
+        storedX = x
+        storedY = y
+        storedZ = z
+        storedTimestamp = timestamp
         super.init()
     }
 
@@ -44,11 +44,11 @@ final class StubCLHeading: CLHeading, @unchecked Sendable {
         fatalError("init(coder:) is not used by tests")
     }
 
-    override var magneticHeading: CLLocationDirection { _magneticHeading }
-    override var trueHeading: CLLocationDirection { _trueHeading }
-    override var headingAccuracy: CLLocationDirection { _headingAccuracy }
-    override var x: CLHeadingComponentValue { _x }
-    override var y: CLHeadingComponentValue { _y }
-    override var z: CLHeadingComponentValue { _z }
-    override var timestamp: Date { _timestamp }
+    override var magneticHeading: CLLocationDirection { storedMagneticHeading }
+    override var trueHeading: CLLocationDirection { storedTrueHeading }
+    override var headingAccuracy: CLLocationDirection { storedHeadingAccuracy }
+    override var x: CLHeadingComponentValue { storedX }
+    override var y: CLHeadingComponentValue { storedY }
+    override var z: CLHeadingComponentValue { storedZ }
+    override var timestamp: Date { storedTimestamp }
 }
