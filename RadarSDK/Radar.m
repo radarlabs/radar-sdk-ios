@@ -25,6 +25,7 @@
 #import "RadarInAppMessageDelegate.h"
 #import "RadarSDKFraudProtocol.h"
 #import "RadarSwiftBridge.h"
+#import "RadarRevealRiskManager.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -427,6 +428,42 @@ BOOL _initialized = NO;
 + (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackVerified()"];
     [[RadarVerificationManager sharedInstance] trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy reason:reason transactionId:transactionId completionHandler:completionHandler];
+}
+
++ (void)revealRiskWithCompletionHandler:(RadarRevealRiskCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"revealRisk()"];
+
+    Class radarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+    if (!radarSDKFraud) {
+        if (completionHandler) {
+            completionHandler(RadarStatusErrorPlugin, nil);
+        }
+        return;
+    }
+
+    // RadarAPIClient is pure Swift; gather the fraud payload here (Objective-C plugin) and
+    // hand it to RadarRevealRiskManager, which bridges to the async Swift API client.
+    NSMutableDictionary *options = [NSMutableDictionary dictionary];
+    [[radarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
+        NSString *fraudPayload = result[@"payload"];
+        if (!result || result[@"error"] || !fraudPayload) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (completionHandler) {
+                    completionHandler(RadarStatusErrorUnknown, nil);
+                }
+            });
+            return;
+        }
+        [[RadarRevealRiskManager shared] revealRiskWithFraudPayload:fraudPayload
+                                  useSecondaryVerifiedHost:NO
+                                         completionHandler:^(RadarRevealRisk * _Nullable result) {
+            if (result) {
+                completionHandler(RadarStatusSuccess, result);
+            } else {
+                completionHandler(RadarStatusErrorServer, nil);
+            }
+        }];
+    }];
 }
 
 + (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {
@@ -1773,6 +1810,9 @@ BOOL _initialized = NO;
     } else {
         completionHandler();
     }
+}
+
++ (void)revealRisk {
 }
 
 @end

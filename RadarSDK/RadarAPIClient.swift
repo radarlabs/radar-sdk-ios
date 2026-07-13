@@ -9,8 +9,6 @@ import Foundation
 
 public final class RadarAPIClient: Sendable {
 
-    typealias RadarRevealRiskCompletionHandler = (RadarStatus, RadarRevealRisk?) -> Void
-    
     struct APIError: Error {
         let data: Data
         let response: URLResponse
@@ -121,134 +119,42 @@ public final class RadarAPIClient: Sendable {
         }
     }
     
-    func reviealRisk(
-        foreground: Bool,
-        indoorScan: String?,
-        fraudPayload: String?,
-        expectedCountryCode: String?,
-        expectedStateCode: String?,
-        reason: String?,
-        transactionId: String?,
+    func revealRisk(
+        fraudPayload: String,
         useSecondaryVerifiedHost: Bool,
-        completionHandler: RadarRevealRiskAPICompletionHandler?
-    ) async throws {
+    ) async throws -> RadarRevealRisk {
+        let sdkConfiguration = RadarSettings.sdkConfiguration
+        
+        let params: [String: Any?] = [
+            "installId": RadarSettings.installId,
+            "userId": RadarSettings.userId,
+            "deviceId": await RadarUtils.deviceId,
+            "description": RadarSettings.description,
+            "metadata": RadarSettings.metadata,
+            "sessionId": RadarSettings.sessionId,
+            "deviceType": RadarUtils.deviceType,
+            "deviceMake": RadarUtils.deviceMake,
+            "sdkVersion": RadarUtils.sdkVersion,
+            "deviceModel": RadarUtils.deviceModel,
+            "deviceOS": await RadarUtils.deviceOS,
+            "country": RadarUtils.country,
+            "timeZoneOffset": RadarUtils.timeZoneOffset,
+            "lang": RadarSettings.userLanguage,
+            "fraudPayload": fraudPayload,
+            "appId": Bundle.main.bundleIdentifier,
+            "appName": Bundle.main.object(forInfoDictionaryKey: "CFBundleName"),
+            "appVersion": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersion"),
+            "appBuild": Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion"),
+            "xPlatformType": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKType : "Native",
+            "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
+        ]
+        
+        let (data, response) = try await apiHelper.radarRequest(method: "POST", url: "reveal/risk", body: params)
 
-        var publishableKey = RadarSettings.publishableKey
-        if publishableKey == nil {
-            return completionHandler(RadarStatusErrorPublishableKey, nil)
+        guard let result = RadarRevealRisk.fromData(data) else {
+            throw APIError(data: data, response: response, message: "Failed to parse reveal risk response")
         }
-
-        var params: [String: Any]
-        var sdkConfiguration = RadarSettings.sdkConfiguration
-        var anonymous = RadarSettings.anonymousTrackingEnabled
-
-        params["anonymous"] = anonymous
-
-        if anonymous {
-            params["deviceId"] = "anonymous"
-            params["placeId"] = RadarState.placeId
-            params["regionIds"] = RadarState.regionIds
-        } else {
-            params["id"] = RadarSettings.id
-            params["installId"] = RadarSettings.installId
-            params["userId"] = RadarSettings.userId
-            params["deviceId"] = RadarUtilsDeprecated.deviceId
-            params["description"] = RadarSettings.description()
-            params["metadata"] = RadarSettings.metadata()
-            params["sessionId"] = RadarSettings.sessionId
-
-            var userTags = RadarSettings.tags
-            if userTags && userTags.count() {
-                params["userTags"] = userTags
-            }
-        }
-
-        params["foreground"] = foreground
-        params["deviceType"] = RadarUtils.deviceType
-        params["deviceMake"] = RadarUtils.deviceMake
-        params["sdkVersion"] = RadarUtils.sdkVersion
-        params["deviceModel"] = RadarUtils.deviceModel
-        params["deviceOS"] = RadarUtilsDeprecated.deviceOS
-        params["country"] = RadarUtils.country
-        params["timeZoneOffset"] = RadarUtils.timeZoneOffset
-        params["lang"] = RadarSettings.userLanguage
-
-        if RadarSettings.xPlatform {
-            params["xPlatformType"] = RadarSettings.xPlatformSDKType
-            params["xPlatformSDKVersion"] = RadarSettings.xPlatformSDKVersion
-        } else {
-            params["xPlatformType"] = "Native"
-        }
-
-        params["pushNotificationToken"] = RadarSettings.pushNotificationToken
-
-        if expectedCountryCode != nil {
-            params["expectedCountryCode"] = expectedCountryCode
-        }
-
-        if expectedStateCode != nil {
-            params["expectedStateCode"] = expectedStateCode
-        }
-
-        if reason != nil {
-            params["reason"] = reason
-        }
-
-        if transactionId != nil {
-            params["transactionId"] = transactionId
-        }
-
-        if fraudPayload != nil {
-            params["fraudPayload"] = fraudPayload
-        }
-
-        params["appId"] = Bundle.main.bundleIdentifier
-
-        var appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName")
-        if appName != nil {
-            params["appName"] = appName
-        }
-
-        var appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersion")
-        if appVersion != nil {
-            params["appVersion"] = appVersion
-        }
-
-        var appBuild = Bundle.main.object(forInforDictionaryKey: "CFBundleVersion")
-        if appBuild != nil {
-            params["appBuild"] = appBuild
-        }
-
-        if anonymous {
-            return getConfigForUsage("revealRisk", verified, completionHandler(status, RadarConfig))
-        }
-
-        makeRevealRiskRequestWithParams()
-    }
-
-    func makeReviealRiskRequestWithParams(
-        params: [String: Any],
-        publishableKey: String,
-        completionHandler: RadarRevealRiskAPICompletionHandler
-    ) {
-        var host = params["host"]
-        var url = "\(host)/v1/reveal/risk".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-
-        var headers = headersWithPublishableKey(publishableKey)
-
-        let (data, response) = try await apiHelper.request("POST", url, headers, params, true, true, false, completionHandler(status, nil))
-
-        if (response.statusCode >= 200 && response.statusCode < 300) || !response {
-            var config = RadarConfig.fromDictionary(response)
-            
-            var revealRisk: RadarRevealRisk
-            let jsonData = try? JSONSerialization.data(withJSONObject: response)
-            revealRisk = try? decoder.decode([RadarPlaceSwift].self, from: jsonData)
-
-            return completionHandler(RadarStatusSuccess, revealRisk)
-        } else {
-            throw APIError(data: data, response: response, message: "Call to Reveal Risk Failed.")
-        }
+        return result
     }
 
     // TODO: implement rest of RadarAPIClient
