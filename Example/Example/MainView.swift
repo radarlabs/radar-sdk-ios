@@ -39,7 +39,7 @@ struct MainView: View {
                 Text("CSGN")
             }.tag(TabIdentifier.CSGN)
 
-            DebugView().tabItem {
+            SurveyView().tabItem {
                 Text("Survey")
             }.tag(TabIdentifier.Survey)
         }

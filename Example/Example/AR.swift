@@ -12,7 +12,7 @@ import SwiftUI
 
 // MARK: - UIViewRepresentable for ARSCNView (or ARView)
 struct ARViewContainer: UIViewRepresentable {
-    @ObservedObject var viewModel: DebugViewModel
+    @ObservedObject var viewModel: SurveyViewModel
     
     func makeUIView(context: Context) -> ARSCNView {
         let arView = ARSCNView(frame: .zero)

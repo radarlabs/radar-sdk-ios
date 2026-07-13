@@ -1,5 +1,5 @@
 //
-//  DebugView.swift
+//  SurveyView.swift
 //  Example
 //
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
@@ -16,7 +16,7 @@ import Combine
 import Gzip
 import RadarSDK
 
-class DebugViewModel: NSObject, ObservableObject {
+class SurveyViewModel: NSObject, ObservableObject {
     @Published var transform = simd_float4x4()
 
     var updated: () -> Void = {}
@@ -42,7 +42,7 @@ class DebugViewModel: NSObject, ObservableObject {
     }
 }
     
-extension DebugViewModel: ARSessionDelegate {
+extension SurveyViewModel: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         transform = frame.camera.transform
         updated()
@@ -97,7 +97,7 @@ extension CLBeacon {
     }
 }
 
-struct DebugView: View {
+struct SurveyView: View {
     
     // The example app registers a single RadarDelegate (LogStream); read the indoor ML
     // location it captured via didUpdateClientLocation rather than installing a second delegate.
@@ -143,7 +143,7 @@ struct DebugView: View {
     @State
     var surveying = false
     
-    @StateObject private var viewModel = DebugViewModel()
+    @StateObject private var viewModel = SurveyViewModel()
     
     @AppStorage("radar-prediction-average-window") var predictionAverageWindow: Int = 1
     @AppStorage("radar-measurement-drop-filter") var measurementDropFilter: Int = 0
@@ -449,7 +449,7 @@ struct DebugView: View {
 }
 
 #Preview {
-    DebugView()
+    SurveyView()
         .environmentObject(LogStream())
         .environmentObject(SettingsStore())
 }
