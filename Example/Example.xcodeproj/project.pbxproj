@@ -10,7 +10,6 @@
 		26FEF59A2ABCC0C7ED804196 /* RadarSDKIndoors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD361BF33854ED123BC40BAB /* RadarSDKIndoors.framework */; };
 		34A9408B904A8CEDF1A941EF /* AR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADD56E28546D24100452E77 /* AR.swift */; };
 		3E65616E4C3D6B6E198644B2 /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0357ED46C5457642FBDB83 /* DebugView.swift */; };
-		632EDC30C4A2245E1EE86594 /* SplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18413708F34E787463F1FD00 /* SplitView.swift */; };
 		6814D480521A0A14D7C366EF /* SurveyApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F25EB75285088BF8AFD284D /* SurveyApi.swift */; };
 		7037AD987541A35D942C1A5C /* MyMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1E2E96294A65D5419B0059 /* MyMapView.swift */; };
 		81F38217D8E76BAC4D1B0E47 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F51E8C771D4C640ADF2C8FE /* SettingsView.swift */; };
@@ -208,7 +207,6 @@
 
 /* Begin PBXFileReference section */
 		0F1E2E96294A65D5419B0059 /* MyMapView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MyMapView.swift; sourceTree = "<group>"; };
-		18413708F34E787463F1FD00 /* SplitView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SplitView.swift; sourceTree = "<group>"; };
 		1ADD56E28546D24100452E77 /* AR.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AR.swift; sourceTree = "<group>"; };
 		2F51E8C771D4C640ADF2C8FE /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		4E0357ED46C5457642FBDB83 /* DebugView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
@@ -549,7 +547,6 @@
 				1ADD56E28546D24100452E77 /* AR.swift */,
 				4E0357ED46C5457642FBDB83 /* DebugView.swift */,
 				2F51E8C771D4C640ADF2C8FE /* SettingsView.swift */,
-				18413708F34E787463F1FD00 /* SplitView.swift */,
 				5F25EB75285088BF8AFD284D /* SurveyApi.swift */,
 				ABF3B6363FE68FC4F277E3C6 /* site.swift */,
 				7092341E2C7DFCBC8F8AA810 /* RadarSite.swift */,
@@ -874,7 +871,6 @@
 				34A9408B904A8CEDF1A941EF /* AR.swift in Sources */,
 				3E65616E4C3D6B6E198644B2 /* DebugView.swift in Sources */,
 				81F38217D8E76BAC4D1B0E47 /* SettingsView.swift in Sources */,
-				632EDC30C4A2245E1EE86594 /* SplitView.swift in Sources */,
 				6814D480521A0A14D7C366EF /* SurveyApi.swift in Sources */,
 				AA21410003992AEF15A3BF62 /* site.swift in Sources */,
 				A4D42C392B4358BF5FA23797 /* RadarSite.swift in Sources */,
