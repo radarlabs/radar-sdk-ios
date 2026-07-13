@@ -342,6 +342,7 @@ struct DebugView: View {
                                 Task {
                                     let status = await SurveyApi.createSurvey(data: compressed, publishableKey: publishableKey)
                                     logStream.write(action:"createSurvey: \(status)")
+                                    await MainActor.run { success = (status == "Success") }
                                 }
                                 
                                 collectedBeaconList.removeAll()
@@ -363,6 +364,7 @@ struct DebugView: View {
             Task {
                 scanner.update = { beacons in
                     logStream.write(action:"ranged with \(beacons.count) beacons")
+                    ranged = true
                     guard let location = site?.toXY(arCoord),
                           let date = dateFormatter.string(for: Date.now) else {
                         return;
