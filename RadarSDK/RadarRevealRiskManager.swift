@@ -33,7 +33,6 @@ final class RadarRevealRiskManager: NSObject, Sendable {
                 fraudPayload: fraudPayload,
                 useSecondaryVerifiedHost: useSecondaryVerifiedHost
             )
-            print("A: ", revealRisk.dictionaryValue)
             return revealRisk
         } catch {
             return nil

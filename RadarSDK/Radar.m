@@ -457,11 +457,13 @@ BOOL _initialized = NO;
         [[RadarRevealRiskManager shared] revealRiskWithFraudPayload:fraudPayload
                                   useSecondaryVerifiedHost:NO
                                          completionHandler:^(RadarRevealRiskToken * _Nullable result) {
-            if (result) {
-                completionHandler(RadarStatusSuccess, result);
-            } else {
-                completionHandler(RadarStatusErrorServer, nil);
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (result) {
+                    completionHandler(RadarStatusSuccess, result);
+                } else {
+                    completionHandler(RadarStatusErrorServer, nil);
+                }
+            });
         }];
     }];
 }
