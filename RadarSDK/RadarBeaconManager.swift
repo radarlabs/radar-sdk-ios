@@ -15,10 +15,9 @@ class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
     
     @objc static let shared = RadarBeaconManagerSwift()
     
+    var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
+    
     private let locationManager: CLLocationManager
-    private var authorizationStatus: CLAuthorizationStatus {
-        CLLocationManager.authorizationStatus()
-    }
     private var started = false
     private var completionHandlers: [RadarBeaconCompletionHandler] = []
     private var nearbyBeaconIdentifiers: Set<String> = []
@@ -109,14 +108,14 @@ class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
         _ beacons: [RadarBeacon],
         completionHandler: @escaping RadarBeaconCompletionHandler
     ) {
-        let status = authorizationStatus
+        let status = permissionsHelper.locationAuthorizationStatus()
         guard status == .authorizedWhenInUse || status == .authorizedAlways else {
             RadarSwift.bridge?.didFail(status: .errorPermissions)
             completionHandler(.errorPermissions, nil)
             return
         }
         
-        guard CLLocationManager.isRangingAvailable() else {
+        guard permissionsHelper.isRangingAvailable() else {
             RadarSwift.bridge?.didFail(status: .errorBluetooth)
             RadarLogger.shared.log(level: .debug, message: "Bluetooth ranging not available")
             completionHandler(.errorBluetooth, nil)
@@ -161,14 +160,14 @@ class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
         _ beaconUUIDs: [String],
         completionHandler: @escaping RadarBeaconCompletionHandler
     ) {
-        let status = authorizationStatus
+        let status = permissionsHelper.locationAuthorizationStatus()
         guard status == .authorizedWhenInUse || status == .authorizedAlways else {
             RadarSwift.bridge?.didFail(status: .errorPermissions)
             completionHandler(.errorPermissions, nil)
             return
         }
         
-        guard CLLocationManager.isRangingAvailable() else {
+        guard permissionsHelper.isRangingAvailable() else {
             RadarSwift.bridge?.didFail(status: .errorBluetooth)
             RadarLogger.shared.log(level: .debug, message: "Bluetooth ranging not available")
             completionHandler(.errorBluetooth, nil)
