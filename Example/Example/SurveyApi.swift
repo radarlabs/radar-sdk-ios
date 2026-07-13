@@ -97,8 +97,8 @@ extension URLSession {
 class SurveyApi {
     // Fixtures for the hardcoded dev site in site.swift. The geofence is a distinct
     // object from the site (different id), so it is not derived from RadarSite._id.
-    private static let devGeofenceId = "69a9df58accfc20568739f59"
-    private static let devSurveyor = "ShiCheng"
+    private static let devGeofenceId = ""
+    private static let devSurveyor = ""
 
     static func createSurvey(data: Data, publishableKey: String) async -> String {
         // Host still follows the SDK (no host-override in the example app's settings);
