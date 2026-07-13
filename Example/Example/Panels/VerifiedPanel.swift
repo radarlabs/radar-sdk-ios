@@ -42,20 +42,12 @@ struct VerifiedPanel: View {
             }
             ActionButton("revealRisk") {
                 Radar.revealRisk { (status, token) in
-                    print("REVEAL RISK")
-                    
-                    print(token?.network.privacy)
-                    print(token?.network.privacy?.hosting)
-                    print(token?.network.privacy?.proxy)
-                    print(token?.network.privacy?.relay)
-//                    let tokenDesc = token?.dictionaryValue().description ?? "no token"
-                    print("C: ", token)
-//                    print("B: ", token?.dictionaryValue())
-//                    logStream.write(
-//                        status,
-//                        summary: "revealRisk: \(Radar.stringForStatus(status))",
-//                        detail: tokenDesc
-//                    )
+                    let tokenDesc = token?.dictionaryValue().description ?? "no token"
+                    logStream.write(
+                        status,
+                        summary: "revealRisk: \(Radar.stringForStatus(status))",
+                        detail: tokenDesc
+                    )
                 }
             }
         }

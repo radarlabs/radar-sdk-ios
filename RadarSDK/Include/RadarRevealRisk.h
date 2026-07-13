@@ -86,4 +86,6 @@
 @property (nonatomic, readonly, strong) RadarRevealRiskRisk * _Nonnull risk;
 @property (nonatomic, readonly, strong) RadarRevealRiskNetwork * _Nonnull network;
 @property (nonatomic, readonly, strong) RadarRevealRiskDevice * _Nonnull device;
+
+-(NSDictionary*_Nonnull) dictionaryValue;
 @end
