@@ -109,6 +109,10 @@ struct DebugView: View {
     // The example app registers a single RadarDelegate (LogStream); read the indoor ML
     // location it captured via didUpdateClientLocation rather than installing a second delegate.
     @EnvironmentObject var logStream: LogStream
+
+    // Resolves the user's publishable-key override (or the default) — the same key the app
+    // uses to initialize Radar. Drives both the map style request and the survey upload.
+    @EnvironmentObject var settingsStore: SettingsStore
     
     @State
     var image: UIImage? = nil
@@ -207,7 +211,7 @@ struct DebugView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            MyMapView(withRadar: "prj_test_pk_0000000000000000000000000000000000000000")
+            MyMapView(withRadar: settingsStore.resolvedPublishableKey)
                 .onLoaded { mapView in
                     if let center = site?.fromXY((0, 0)) {
                         mapView.setCenter(
@@ -343,8 +347,9 @@ struct DebugView: View {
                                     print("unable to compress")
                                     return
                                 }
+                                let publishableKey = settingsStore.resolvedPublishableKey
                                 Task {
-                                    let status = await SurveyApi.createSurvey(data: compressed)
+                                    let status = await SurveyApi.createSurvey(data: compressed, publishableKey: publishableKey)
                                     logStream.write(action:"createSurvey: \(status)")
                                 }
                                 
@@ -444,5 +449,7 @@ struct DebugView: View {
 }
 
 #Preview {
-    DebugView().environmentObject(LogStream())
+    DebugView()
+        .environmentObject(LogStream())
+        .environmentObject(SettingsStore())
 }
