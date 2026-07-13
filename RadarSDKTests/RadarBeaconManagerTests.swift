@@ -8,19 +8,20 @@
 
 import CoreLocation
 import Testing
+
 @testable import RadarSDK
 
 extension RadarSerializedTests {
-    
+
     @Suite("RadarBeaconManagerSwift")
     @MainActor
     struct BeaconManagerTests {
-        
+
         private static let testUUID = "2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6"
-        
+
         let beaconManager = RadarBeaconManagerSwift.shared
         let mockPermissions = MockRadarPermissionsHelper()
-        
+
         init() {
             Radar.initialize(publishableKey: "prj_test_pk_0000000000000000")
             beaconManager.permissionsHelper = mockPermissions
@@ -29,9 +30,9 @@ extension RadarSerializedTests {
                 "useRadarModifiedBeacon": false
             ])
         }
-        
+
         // MARK: - Helpers
-        
+
         private static func makeRegion(
             uuid: String = testUUID,
             major: CLBeaconMajorValue = 1,
@@ -48,7 +49,7 @@ extension RadarSerializedTests {
                 identifier: identifier
             )
         }
-        
+
         private func makeTestBeacon() -> RadarBeacon {
             let beacon = RadarSwift.bridge!.createBeacon(
                 uuid: Self.testUUID,
@@ -58,31 +59,31 @@ extension RadarSerializedTests {
             )
             return beacon
         }
-        
+
         private func setUseRadarModifiedBeacon(_ value: Bool) {
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
                 "useRadarModifiedBeacon": value
             ])
         }
-    
+
         // MARK: - rangeBeacons guard clauses
-        
+
         @Test("rangeBeacons with denied auth returns permissions error")
         func rangeBeacons_authDenied_returnsPermissionsError() {
             mockPermissions.mockAuthorizationStatus = .denied
-            
+
             var resultStatus: RadarStatus?
             var resultBeacons: [RadarBeacon]?
-            
+
             beaconManager.rangeBeacons([makeTestBeacon()]) { status, beacons in
                 resultStatus = status
                 resultBeacons = beacons
             }
-            
+
             #expect(resultStatus == .errorPermissions)
             #expect(resultBeacons == nil)
         }
-        
+
         @Test("rangeBeacons with notDetermined auth returns permissions error")
         func rangeBeacons_authNotDetermined_returnsPermissionsError() {
             mockPermissions.mockAuthorizationStatus = .notDetermined
@@ -108,7 +109,7 @@ extension RadarSerializedTests {
 
             #expect(resultStatus == .errorPermissions)
         }
-        
+
         @Test("rangeBeacons with ranging unavailable returns bluetooth error")
         func rangeBeacons_rangingUnavailable_returnsBluetoothError() {
             mockPermissions.mockRangingAvailable = false
@@ -151,7 +152,7 @@ extension RadarSerializedTests {
         }
 
         // MARK: - rangeBeaconUUIDs guard clauses
-        
+
         @Test("rangeBeaconUUIDs with denied auth returns permissions error")
         func rangeBeaconUUIDs_authDenied_returnsPermissionsError() {
             mockPermissions.mockAuthorizationStatus = .denied
@@ -177,7 +178,7 @@ extension RadarSerializedTests {
 
             #expect(resultStatus == .errorPermissions)
         }
-        
+
         @Test("rangeBeaconUUIDs with ranging unavailable returns bluetooth error")
         func rangeBeaconUUIDs_rangingUnavailable_returnsBluetoothError() {
             mockPermissions.mockRangingAvailable = false
@@ -204,16 +205,16 @@ extension RadarSerializedTests {
             #expect(resultStatus == .success)
             #expect(resultBeacons?.isEmpty == true)
         }
-        
+
         // MARK: - handleBeaconEntry
-        
+
         @Test("handleBeaconEntry adds beacon and calls completion")
         func handleBeaconEntry_addsToNearbyAndCallsCompletion() {
             let region = Self.makeRegion()
-            
+
             var resultStatus: RadarStatus?
             var resultBeacons: [RadarBeacon]?
-            
+
             beaconManager.handleBeaconEntry(for: region) { status, beacons in
                 resultStatus = status
                 resultBeacons = beacons
@@ -222,7 +223,7 @@ extension RadarSerializedTests {
             #expect(resultStatus == .success)
             #expect(resultBeacons?.isEmpty == false)
         }
-        
+
         @Test("handleBeaconEntry when already inside does not call completion again")
         func handleBeaconEntry_alreadyInside_doesNotCallCompletion() {
             let region = Self.makeRegion()
@@ -252,9 +253,9 @@ extension RadarSerializedTests {
 
             #expect(!called)
         }
-        
+
         // MARK: - handleBeaconExit
-        
+
         @Test("handleBeaconExit removes beacon and calls completion")
         func handleBeaconExit_removesFromNearbyAndCallsCompletion() {
             let region = Self.makeRegion()
@@ -274,7 +275,7 @@ extension RadarSerializedTests {
             #expect(resultStatus == .success)
             #expect(resultBeacons?.isEmpty == true)
         }
-        
+
         @Test("handleBeaconExit when already outside does not call completion")
         func handleBeaconExit_alreadyOutside_doesNotCallCompletion() {
             let region = Self.makeRegion()
@@ -286,7 +287,7 @@ extension RadarSerializedTests {
 
             #expect(!called)
         }
-        
+
         @Test("handleBeaconExit with useRadarModifiedBeacon returns early")
         func handleBeaconExit_useRadarModifiedBeacon_earlyReturn() {
             setUseRadarModifiedBeacon(true)
@@ -300,9 +301,9 @@ extension RadarSerializedTests {
 
             #expect(!called)
         }
-        
+
         // MARK: - handleBeaconUUIDEntry/Exit
-        
+
         @Test("handleBeaconUUIDEntry with useRadarModifiedBeacon returns early")
         func handleBeaconUUIDEntry_useRadarModifiedBeacon_earlyReturn() {
             setUseRadarModifiedBeacon(true)
@@ -316,7 +317,7 @@ extension RadarSerializedTests {
 
             #expect(!called)
         }
-        
+
         @Test("handleBeaconUUIDExit with useRadarModifiedBeacon returns early")
         func handleBeaconUUIDExit_useRadarModifiedBeacon_earlyReturn() {
             setUseRadarModifiedBeacon(true)
@@ -330,9 +331,9 @@ extension RadarSerializedTests {
 
             #expect(!called)
         }
-        
+
         // MARK: - stopRanging
-        
+
         @Test("stopRanging clears state and calls completion handlers")
         func stopRanging_clearsStateAndCallsHandlers() {
             var resultStatus: RadarStatus?

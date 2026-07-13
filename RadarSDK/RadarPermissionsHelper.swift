@@ -20,10 +20,10 @@ final class RadarPermissionsHelperSwift: RadarPermissionsHelping {
     func locationAuthorizationStatus() -> CLAuthorizationStatus {
         CLLocationManager.authorizationStatus()
     }
-    
+
     func isRangingAvailable() -> Bool {
         CLLocationManager.isRangingAvailable()
     }
-    
+
     // TODO: finish migrating permissions helperle
 }

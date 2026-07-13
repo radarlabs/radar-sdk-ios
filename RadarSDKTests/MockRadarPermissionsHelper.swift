@@ -7,6 +7,7 @@
 //
 
 import CoreLocation
+
 @testable import RadarSDK
 
 @MainActor
