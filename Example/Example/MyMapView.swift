@@ -5,7 +5,9 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import SwiftUI
+import UIKit
 import MapLibre
 import MapLibreSwiftUI
 import MapLibreSwiftDSL
