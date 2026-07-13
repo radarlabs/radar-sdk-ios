@@ -38,33 +38,3 @@ struct ARViewContainer: UIViewRepresentable {
         // You can implement delegate methods if you want (e.g., for debug)
     }
 }
-
-// MARK: - SwiftUI View
-struct ARView: View {
-    @StateObject private var viewModel = DebugViewModel()
-    var body: some View {
-        ZStack(alignment: .topLeading) {
-            ARViewContainer(viewModel: viewModel)
-            
-            VStack(alignment: .leading, spacing: 10) {
-                
-                Button("Reset") {
-                    viewModel.resetTracking()
-                }
-                .padding()
-                .background(Color.white.opacity(0.8))
-                .foregroundColor(.black)
-                .cornerRadius(8)
-            }
-            .padding(.top, 40)
-            .padding(.leading, 20)
-        }
-    }
-}
-
-// MARK: - Preview
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ARView()
-    }
-}

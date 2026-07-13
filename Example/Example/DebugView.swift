@@ -18,8 +18,7 @@ import RadarSDK
 
 class DebugViewModel: NSObject, ObservableObject {
     @Published var transform = simd_float4x4()
-    @Published var heading = 0.0
-    
+
     var updated: () -> Void = {}
     
     // Internal tracking
@@ -47,12 +46,6 @@ extension DebugViewModel: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         transform = frame.camera.transform
         updated()
-    }
-}
-
-extension DebugViewModel: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        self.heading = newHeading.trueHeading
     }
 }
 
@@ -203,8 +196,6 @@ struct DebugView: View {
             ])
         }
     }
-    
-    let locationManager = CLLocationManager()
     
     @State var lastUpdatedAt = Date.distantPast;
     @State var timer: AnyCancellable? = nil
