@@ -444,6 +444,13 @@ struct DebugView: View {
                 }
                 updatePoints(style: mapStyle)
             }
+        }.onDisappear {
+            // onAppear installs a fresh autoconnected timer each time; cancel it here so
+            // revisiting the tab doesn't accumulate 20 Hz timers. The beacon scanner is
+            // left running — it's driven by the explicit Start/Stop button, and tearing it
+            // down on tab-switch would silently abort an in-progress survey.
+            timer?.cancel()
+            timer = nil
         }
     }
 }
