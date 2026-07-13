@@ -105,7 +105,6 @@ class SurveyApi {
         let surveyor = "ShiCheng"
         
         // create the survey record on server
-        var uploadUrl: String? = nil
         var surveyId: String? = nil
         var uploadParams: [String: Any]? = nil
         do {
@@ -136,7 +135,6 @@ class SurveyApi {
             }
             print("Survey created")
             print(json)
-            uploadUrl = json["uploadUrl"] as? String
             surveyId = (json["indoorSurvey"] as? [String: Any])?["_id"] as? String
         } catch {
             print("SurveyService: Failed: \(error.localizedDescription)")
@@ -172,7 +170,7 @@ class SurveyApi {
             guard let urlString = uploadParams?["url"] as? String,
                   let pathString = uploadParams?["path"] as? String,
                   let url = URL(string: urlString) else {
-                return "did no receive valid upload url: \(uploadUrl)"
+                return "did not receive a valid upload url"
             }
             let request = MultipartFormDataRequest(url: url)
             guard let params = uploadParams?["fields"] as? [String: String] else {
@@ -197,7 +195,7 @@ class SurveyApi {
                 } else {
                     // The upload completed, but the server returned an error status code.
                     print("Server error: Status code \(httpResponse.statusCode)")
-                    print("Server error: \(String(data: data, encoding: .utf8))")
+                    print("Server error: \(String(data: data, encoding: .utf8) ?? "<non-utf8 response>")")
                 }
             } else {
                 // An unexpected scenario, potentially a non-HTTP response.
