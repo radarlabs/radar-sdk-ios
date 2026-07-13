@@ -17,7 +17,12 @@ class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
     
     var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
     
-    private let locationManager: CLLocationManager
+    private lazy var locationManager: CLLocationManager = {
+        let manager = CLLocationManager()
+        manager.delegate = self
+        return manager
+    }()
+
     private var started = false
     private var completionHandlers: [RadarBeaconCompletionHandler] = []
     private var nearbyBeaconIdentifiers: Set<String> = []
@@ -29,9 +34,7 @@ class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
     private static let beaconNotificationIdentifierPrefix = "radar_beacon_notification_"
     
     private override init() {
-        locationManager = CLLocationManager()
         super.init()
-        locationManager.delegate = self
     }
     
     // MARK: - Region Helpers
