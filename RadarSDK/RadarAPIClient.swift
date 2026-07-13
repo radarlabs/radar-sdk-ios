@@ -149,7 +149,7 @@ public final class RadarAPIClient: Sendable {
             "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
         ]
         
-        let (data, response) = try await apiHelper.radarRequest(method: "POST", url: "reveal/risk", body: params)
+        let (data, response) = try await apiHelper.radarVerifiedRequest(method: "POST", url: "reveal/risk", body: params)
 
         guard let result = RadarRevealRisk.fromData(data) else {
             throw APIError(data: data, response: response, message: "Failed to parse reveal risk response")

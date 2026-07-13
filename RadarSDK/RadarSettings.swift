@@ -10,9 +10,9 @@ import Foundation
 @objc(RadarSettings) @objcMembers
 internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_length
 
-    static let DefaultHost = "https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev"
-    static let DefaultVerifiedHost = "https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev"
-    static let DefaultVerifiedHostSecondary = "https://bailey-nonnebulous-nonaccidentally.ngrok-free.dev"
+    static let DefaultHost = "https://api.radar.io"
+    static let DefaultVerifiedHost = "https://api-verified.radar.io"
+    static let DefaultVerifiedHostSecondary = "https://api-verified.radar.com"
 
     public static var defaultVerifiedHostSecondary: String { DefaultVerifiedHostSecondary }
 
