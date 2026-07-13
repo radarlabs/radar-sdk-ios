@@ -456,7 +456,7 @@ BOOL _initialized = NO;
         }
         [[RadarRevealRiskManager shared] revealRiskWithFraudPayload:fraudPayload
                                   useSecondaryVerifiedHost:NO
-                                         completionHandler:^(RadarRevealRisk * _Nullable result) {
+                                         completionHandler:^(RadarRevealRiskToken * _Nullable result) {
             if (result) {
                 completionHandler(RadarStatusSuccess, result);
             } else {

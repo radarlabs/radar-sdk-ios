@@ -27,7 +27,7 @@ final class RadarRevealRiskManager: NSObject, Sendable {
     func revealRisk(
         fraudPayload: String,
         useSecondaryVerifiedHost: Bool
-    ) async -> RadarRevealRisk? {
+    ) async -> RadarRevealRiskToken? {
         do {
             let revealRisk = try await apiClient.revealRisk(
                 fraudPayload: fraudPayload,

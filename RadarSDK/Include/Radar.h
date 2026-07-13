@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RadarTripOptions;
 @class RadarInAppMessage;
-@class RadarRevealRisk;
+@class RadarRevealRiskToken;
 
 #pragma mark - Enums
 
@@ -229,7 +229,7 @@ typedef void (^_Nullable RadarTrackVerifiedCompletionHandler)(RadarStatus status
 
  @see https://radar.com/documentation/sdk/fraud
  */
-typedef void (^_Nullable RadarRevealRiskCompletionHandler)(RadarStatus status, RadarRevealRisk *_Nullable revealRisk);
+typedef void (^_Nullable RadarRevealRiskCompletionHandler)(RadarStatus status, RadarRevealRiskToken *_Nullable revealRisk);
 
 /**
  Called when a trip update succeeds, fails, or times out.

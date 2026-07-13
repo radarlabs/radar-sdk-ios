@@ -11,17 +11,17 @@ import Foundation
 /// synthesizes `init(from:)` for these `NSObject` subclasses, so there is no separate parsing
 /// struct or mapping layer to keep in sync. `CodingKeys` is only declared where a JSON key
 /// differs from the property name; the `Date` format is handled once on the decoder.
-@objc(RadarRevealRisk) @objcMembers
-final class RadarRevealRisk: NSObject, Decodable, @unchecked Sendable {
+@objc(RadarRevealRiskToken) @objcMembers
+final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
     @objc(_id)
     let id: String
     let token: String?
     let expiresAt: Date?
     let expiresIn: Double?
     @objc(expiresIn) var _expiresIn: NSNumber? { expiresIn.flatMap(NSNumber.init) }
-    let risk: RadarRevealRiskRisk
-    let network: RadarRevealRiskNetwork
-    let device: RadarRevealRiskDevice
+    let risk: RadarRevealRiskTokenRisk
+    let network: RadarRevealRiskTokenNetwork
+    let device: RadarRevealRiskTokenDevice
     
     // unchecked sendable, set on init, should not be modified afterwards
     var dictionaryValue: [String: Sendable]? = nil
@@ -38,10 +38,10 @@ final class RadarRevealRisk: NSObject, Decodable, @unchecked Sendable {
 
     /// Parses a Reveal Risk API response into an Objective-C compatible object.
     /// Returns `nil` if the data cannot be decoded.
-    static func fromData(_ data: Data) -> RadarRevealRisk? {
+    static func fromData(_ data: Data) -> RadarRevealRiskToken? {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        guard let decoded = try? decoder.decode(RadarRevealRisk.self, from: data) else {
+        guard let decoded = try? decoder.decode(RadarRevealRiskToken.self, from: data) else {
             return nil
         }
         var dict: [String: Sendable]? = (try? JSONSerialization.jsonObject(with: data)) as? [String: Sendable]
@@ -52,21 +52,21 @@ final class RadarRevealRisk: NSObject, Decodable, @unchecked Sendable {
     }
 }
 
-@objc(RadarRevealRiskRisk) @objcMembers
-final class RadarRevealRiskRisk: NSObject, Decodable, Sendable {
+@objc(RadarRevealRiskTokenRisk) @objcMembers
+final class RadarRevealRiskTokenRisk: NSObject, Decodable, Sendable {
     let level: String
     let reasons: [String]
 }
 
-@objc(RadarRevealRiskNetwork) @objcMembers
-final class RadarRevealRiskNetwork: NSObject, Decodable, Sendable {
-    let ipAddress: RadarRevealRiskNetworkIpAddress?
-    public let privacy: RadarRevealRiskNetworkPrivacy?
-    let asn: RadarRevealRiskNetworkAsn?
+@objc(RadarRevealRiskTokenNetwork) @objcMembers
+final class RadarRevealRiskTokenNetwork: NSObject, Decodable, Sendable {
+    let ipAddress: RadarRevealRiskTokenNetworkIpAddress?
+    public let privacy: RadarRevealRiskTokenNetworkPrivacy?
+    let asn: RadarRevealRiskTokenNetworkAsn?
 }
 
-@objc(RadarRevealRiskNetworkAsn) @objcMembers
-final class RadarRevealRiskNetworkAsn: NSObject, Decodable, Sendable {
+@objc(RadarRevealRiskTokenNetworkAsn) @objcMembers
+final class RadarRevealRiskTokenNetworkAsn: NSObject, Decodable, Sendable {
     let asn: String?
     let country: String?
     let domain: String?
@@ -75,8 +75,8 @@ final class RadarRevealRiskNetworkAsn: NSObject, Decodable, Sendable {
     let type: String?
 }
 
-@objc(RadarRevealRiskNetworkIpAddress) @objcMembers
-final class RadarRevealRiskNetworkIpAddress: NSObject, Decodable, Sendable {
+@objc(RadarRevealRiskTokenNetworkIpAddress) @objcMembers
+final class RadarRevealRiskTokenNetworkIpAddress: NSObject, Decodable, Sendable {
     let countryCode: String?
     let country: String?
     let countryFlag: String?
@@ -98,17 +98,17 @@ final class RadarRevealRiskNetworkIpAddress: NSObject, Decodable, Sendable {
     let countryAllowed: Bool?
     @objc(countryAllowed) var _countryAllowed: Bool { countryAllowed ?? false }
     let layer: String?
-    let geometry: RadarRevealRiskNetworkIpAddressGeometry?
+    let geometry: RadarRevealRiskTokenNetworkIpAddressGeometry?
 }
 
-@objc(RadarRevealRiskNetworkIpAddressGeometry) @objcMembers
-final class RadarRevealRiskNetworkIpAddressGeometry: NSObject, Decodable, Sendable {
+@objc(RadarRevealRiskTokenNetworkIpAddressGeometry) @objcMembers
+final class RadarRevealRiskTokenNetworkIpAddressGeometry: NSObject, Decodable, Sendable {
     let type: String
     let coordinates: [Double]
 }
 
-@objc(RadarRevealRiskNetworkPrivacy) @objcMembers
-final class RadarRevealRiskNetworkPrivacy: NSObject, Decodable, Sendable {
+@objc(RadarRevealRiskTokenNetworkPrivacy) @objcMembers
+final class RadarRevealRiskTokenNetworkPrivacy: NSObject, Decodable, Sendable {
     let hosting: Bool?
     @objc(hosting) var _hosting: Bool { hosting ?? false }
     
@@ -130,8 +130,8 @@ final class RadarRevealRiskNetworkPrivacy: NSObject, Decodable, Sendable {
     @objc(residentialProxy) var _residentialProxy: Bool { residentialProxy ?? false }
 }
 
-@objc(RadarRevealRiskDevice) @objcMembers
-final class RadarRevealRiskDevice: NSObject, Decodable, Sendable {
+@objc(RadarRevealRiskTokenDevice) @objcMembers
+final class RadarRevealRiskTokenDevice: NSObject, Decodable, Sendable {
     let deviceId: String?
     let deviceType: String?
     let deviceMake: String?

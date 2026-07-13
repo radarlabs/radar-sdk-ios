@@ -122,7 +122,7 @@ public final class RadarAPIClient: Sendable {
     func revealRisk(
         fraudPayload: String,
         useSecondaryVerifiedHost: Bool,
-    ) async throws -> RadarRevealRisk {
+    ) async throws -> RadarRevealRiskToken {
         let sdkConfiguration = RadarSettings.sdkConfiguration
         
         let params: [String: Any?] = [
@@ -151,7 +151,7 @@ public final class RadarAPIClient: Sendable {
         
         let (data, response) = try await apiHelper.radarVerifiedRequest(method: "POST", url: "reveal/risk", body: params)
 
-        guard let result = RadarRevealRisk.fromData(data) else {
+        guard let result = RadarRevealRiskToken.fromData(data) else {
             throw APIError(data: data, response: response, message: "Failed to parse reveal risk response")
         }
         return result
