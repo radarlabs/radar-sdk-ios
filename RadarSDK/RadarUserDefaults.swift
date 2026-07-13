@@ -62,6 +62,8 @@ import Foundation
         case LastPressureData = "radar-lastPressureData"
         case NotificationPermissionGranted = "radar-notificationPermissionGranted"
         case RegisteredNotifications = "radar-registeredNotifications"
+        // swiftlint:disable:next identifier_name
+        case LocationAuthorizationStatus = "radar-locationAuthorizationStatus"
     }
 
     // should be set once and then readonly

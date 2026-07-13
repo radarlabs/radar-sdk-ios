@@ -5,6 +5,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
+
 class RadarState {
     public var registeredNotifications: [NotificationValue]? {
         get {
@@ -35,6 +37,15 @@ class RadarState {
         }
         set {
             RadarUserDefaults.set(newValue, forKey: .LastHeadingData)
+        }
+    }
+
+    public var locationAuthorizationStatus: CLAuthorizationStatus {
+        get {
+            CLAuthorizationStatus(rawValue: Int32(RadarUserDefaults.integer(forKey: .LocationAuthorizationStatus))) ?? .notDetermined
+        }
+        set {
+            RadarUserDefaults.set(Int(newValue.rawValue), forKey: .LocationAuthorizationStatus)
         }
     }
 }

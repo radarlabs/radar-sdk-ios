@@ -277,4 +277,31 @@ final class RadarLocationManagerSwift: NSObject {
             "timestamp": heading.timestamp.timeIntervalSince1970,
         ]
     }
+
+    // Unused `manager` in the ObjC delegate method (it reads the persisted status), so the
+    // twin takes only `status`. `RadarState` is a non-@objc Swift class, so it's constructed
+    // inside the method rather than passed in.
+    @objc(didChangeAuthorizationStatus:)
+    static func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
+        let state = RadarState()
+        let previousStatus = state.locationAuthorizationStatus
+        state.locationAuthorizationStatus = status
+
+        guard status != previousStatus else {
+            return
+        }
+
+        let config = RadarSettings.sdkConfiguration
+        guard status == .authorizedAlways || status == .authorizedWhenInUse,
+            (config?.trackOnceOnAppOpen ?? false) || (config?.startTrackingOnInitialize ?? false)
+        else {
+            return
+        }
+
+        RadarLogger.shared.log(level: .info, message: "Location services authorized")
+        Radar.trackOnce(completionHandler: nil)
+        if config?.startTrackingOnInitialize ?? false, !RadarSettings.tracking {
+            Radar.startTracking(trackingOptions: RadarSettings.trackingOptions)
+        }
+    }
 }
