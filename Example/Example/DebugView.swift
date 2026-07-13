@@ -225,12 +225,12 @@ struct DebugView: View {
                         topRight:    CLLocationCoordinate2D(latitude: coords[0][1][1], longitude: coords[0][1][0]),
                     )
                     let imageSource = MLNImageSource(
-                        identifier: "overlay‑src",
+                        identifier: "overlay-src",
                         coordinateQuad: coordinates,
                         url: URL(string: "https://api.radar.io/api/v1/assets/\(site.floorplan.path)")!
                     )
                     style.addSource(imageSource)
-                    let rasterLayer = MLNRasterStyleLayer(identifier: "overlay‑layer", source: imageSource)
+                    let rasterLayer = MLNRasterStyleLayer(identifier: "overlay-layer", source: imageSource)
                     style.addLayer(rasterLayer)
                     
                     let pointsSource = MLNShapeSource(identifier: "points-src", shape: MLNPointFeature(coordinate: CLLocationCoordinate2D()))
