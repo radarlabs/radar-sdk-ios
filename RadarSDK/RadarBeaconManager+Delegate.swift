@@ -13,7 +13,7 @@ import UserNotifications
 // MARK: - CLLocationManagerDelegate
 
 extension RadarBeaconManagerSwift {
-    
+
     nonisolated func locationManager(
         _ manager: CLLocationManager,
         monitoringDidFailFor region: CLRegion?,
@@ -96,7 +96,7 @@ extension RadarBeaconManagerSwift {
 // MARK: - Entry/Exit Handlers
 
 extension RadarBeaconManagerSwift {
-    
+
     @objc(handleBeaconEntryForRegion:completionHandler:)
     func handleBeaconEntry(
         for region: CLBeaconRegion,
@@ -168,7 +168,7 @@ extension RadarBeaconManagerSwift {
 // MARK: - Beacon Region Notifications
 
 extension RadarBeaconManagerSwift {
-    
+
     @objc(registerBeaconRegionNotificationsFromArray:)
     func registerBeaconRegionNotifications(
         from beaconArray: [[String: Any]]
