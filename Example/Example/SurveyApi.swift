@@ -95,14 +95,19 @@ extension URLSession {
 }
 
 class SurveyApi {
+    // Fixtures for the hardcoded dev site in site.swift. The geofence is a distinct
+    // object from the site (different id), so it is not derived from RadarSite._id.
+    private static let devGeofenceId = "69a9df58accfc20568739f59"
+    private static let devSurveyor = "ShiCheng"
+
     static func createSurvey(data: Data, publishableKey: String) async -> String {
         // Host still follows the SDK (no host-override in the example app's settings);
         // the publishable key is passed in from SettingsStore.resolvedPublishableKey.
         let suite = UserDefaults.standard.string(forKey: "radar-appGroup")
         let radarHost = UserDefaults(suiteName: suite)?.string(forKey: "radar-host") ?? "https://api.radar.io"
         let description = "Office Survey 1"
-        let geofenceId = "69a9df58accfc20568739f59"
-        let surveyor = "ShiCheng"
+        let geofenceId = Self.devGeofenceId
+        let surveyor = Self.devSurveyor
         
         // create the survey record on server
         var surveyId: String? = nil
