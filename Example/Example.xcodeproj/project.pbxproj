@@ -1266,8 +1266,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/maplibre/swiftui-dsl";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = revision;
+				revision = 139e83d1487f29b42a4f5db2458594170f0ff7e3;
 			};
 		};
 		FE24227E75A3CBBD043D0665 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */ = {
