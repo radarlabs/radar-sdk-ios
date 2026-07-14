@@ -6,11 +6,6 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-/**
- Represents device and network risk signals.
-
- @see https://radar.com/documentation/fraud
- */
 @interface RadarRevealRiskTokenRisk : NSObject
 @property (nonatomic, readonly, copy) NSString * _Nonnull level;
 @property (nonatomic, readonly, copy) NSArray<NSString *> * _Nonnull reasons;
@@ -83,6 +78,11 @@
 @property (nonatomic, readonly, copy) NSString * _Nullable appBuild;
 @end
 
+/**
+ Represents device and network risk signals.
+
+ @see https://radar.com/documentation/fraud
+ */
 @interface RadarRevealRiskToken : NSObject
 @property (nonatomic, readonly, copy) NSString * _Nonnull _id;
 @property (nonatomic, readonly, copy) NSString * _Nullable token;
