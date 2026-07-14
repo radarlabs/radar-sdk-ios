@@ -149,6 +149,20 @@ public final class RadarAPIClient: Sendable {
 
         let (data, response) = try await apiHelper.radarVerifiedRequest(method: "POST", url: "reveal/risk", body: params)
 
+        if (response.statusCode == 401) {
+            throw RadarError(status: .errorUnauthorized, message: "")
+        } else if (response.statusCode == 402) {
+            throw RadarError(status: .errorPaymentRequired, message: "")
+        } else if (response.statusCode == 403) {
+            throw RadarError(status: .errorForbidden, message: "")
+        } else if (response.statusCode == 404) {
+            throw RadarError(status: .errorNotFound, message: "")
+        } else if (response.statusCode == 429) {
+            throw RadarError(status: .errorRateLimit, message: "")
+        } else if (response.statusCode >= 500 && response.statusCode <= 599) {
+            throw RadarError(status: .errorServer, message: "")
+        }
+        
         guard let result = RadarRevealRiskToken.fromData(data) else {
             throw APIError(data: data, response: response, message: "Failed to parse reveal risk response")
         }
