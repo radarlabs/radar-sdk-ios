@@ -36,9 +36,9 @@ final class MockFraudInstance: NSObject, @unchecked Sendable {
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarRevealRiskTests {
-        
+
         private static let revealRiskURL = "\(RadarSettings.verifiedHost)/v1/reveal/risk"
-        
+
         /// A fully-populated reveal/risk response mirroring the server's `RevealRiskResponse` shape.
         private static var revealRiskResponse: [String: Any] {
             [
@@ -95,19 +95,19 @@ extension RadarSerializedTests {
                 ],
             ]
         }
-        
+
         private func makeManager(fraudResult: [String: Any]?, session: MockURLSession) -> RadarRevealRiskManager {
             Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
             let apiClient = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
             let fraudSDK = RadarSDKFraud(instance: MockFraudInstance(result: fraudResult))
             return RadarRevealRiskManager(apiClient: apiClient, fraudSDK: fraudSDK)
         }
-        
+
         @Test("revealRisk gets a payload from the fraud SDK then reveals risk through the API")
         func revealRiskCallsFraudSDKThenAPI() async throws {
             let responseData = try #require(try? JSONSerialization.data(withJSONObject: RadarRevealRiskTests.revealRiskResponse))
             let session = MockURLSession()
-            
+
             // The handler both matches the reveal/risk endpoint and verifies the params the manager sent,
             // proving the fraud SDK's payload was forwarded to the API. It only returns the response
             // (letting the call succeed) when the request looks right; otherwise the call fails and the
@@ -115,18 +115,18 @@ extension RadarSerializedTests {
             session.on(
                 { request in
                     guard request.url?.absoluteString == RadarRevealRiskTests.revealRiskURL,
-                          request.httpMethod == "POST",
-                          let body = request.httpBody,
-                          let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any]
+                        request.httpMethod == "POST",
+                        let body = request.httpBody,
+                        let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any]
                     else {
                         return false
                     }
                     return json["fraudPayload"] as? String == "mock-fraud-payload"
                 }, responseData)
-            
+
             let manager = makeManager(fraudResult: ["payload": "mock-fraud-payload"], session: session)
             let token = try await manager.revealRisk(useSecondaryVerifiedHost: false)
-            
+
             // The API response was parsed into a fully-populated token.
             #expect(token.id == "risk-token-123")
             #expect(token.token == "signed-jwt-token")
@@ -141,25 +141,25 @@ extension RadarSerializedTests {
             #expect(token.device.deviceType == "iOS")
             #expect(token.device.installId == "install-xyz")
         }
-        
+
         @Test("revealRisk surfaces the token through the completion-handler API")
         func revealRiskCompletionHandlerSucceeds() async throws {
             let session = MockURLSession()
             session.on(RadarRevealRiskTests.revealRiskURL, RadarRevealRiskTests.revealRiskResponse)
-            
+
             let manager = makeManager(fraudResult: ["payload": "mock-fraud-payload"], session: session)
-            
+
             let (status, token) = await withCheckedContinuation { continuation in
                 manager.revealRisk(useSecondaryVerifiedHost: false) { status, token in
                     continuation.resume(returning: (status, token))
                 }
             }
-            
+
             #expect(status == .success)
             #expect(token?.id == "risk-token-123")
             #expect(token?.risk.level == "medium")
         }
-        
+
         @Test("revealRisk does not call the API when the fraud SDK returns an error")
         func revealRiskSkipsAPIWhenFraudFails() async throws {
             let session = MockURLSession()
@@ -169,9 +169,9 @@ extension RadarSerializedTests {
                     Issue.record("reveal/risk API should not be called when the fraud SDK fails to produce a payload")
                     return false
                 }, Data())
-            
+
             let manager = makeManager(fraudResult: ["error": "no-payload"], session: session)
-            
+
             await #expect(throws: RadarError.self) {
                 _ = try await manager.revealRisk(useSecondaryVerifiedHost: false)
             }
