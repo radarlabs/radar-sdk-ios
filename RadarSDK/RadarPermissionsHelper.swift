@@ -25,5 +25,5 @@ final class RadarPermissionsHelperSwift: RadarPermissionsHelping {
         CLLocationManager.isRangingAvailable()
     }
 
-    // TODO: finish migrating permissions helperle
+    // TODO: finish migrating permissions helper
 }

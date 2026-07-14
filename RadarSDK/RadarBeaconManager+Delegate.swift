@@ -36,7 +36,10 @@ extension RadarBeaconManagerSwift {
         didRange beacons: [CLBeacon],
         satisfying beaconConstraint: CLBeaconIdentityConstraint
     ) {
-        let identifier = beaconConstraint.uuid.uuidString
+        let constraintUUID = beaconConstraint.uuid.uuidString
+        let constraintMajor = beaconConstraint.major.map { "\($0)" }
+        let constraintMinor = beaconConstraint.minor.map { "\($0)" }
+        
         let rangedData = beacons.map { clBeacon in
             (
                 uuid: clBeacon.uuid.uuidString,
@@ -48,10 +51,17 @@ extension RadarBeaconManagerSwift {
         }
 
         MainActor.assumeIsolated {
+            let key = constraintKey(uuid: constraintUUID, major: constraintMajor, minor: constraintMinor)
+            let identifier = constraintIdentifierMap[key] ?? constraintUUID
+            
             nearbyBeaconIdentifiers.insert(identifier)
 
+            guard let bridge = RadarSwift.bridge else {
+                handleBeacons()
+                return
+            }
+            
             for entry in rangedData {
-                guard let bridge = RadarSwift.bridge else { return }
                 let newBeacon = bridge.createBeacon(
                     uuid: entry.uuid, major: entry.major,
                     minor: entry.minor, rssi: entry.rssi
@@ -83,8 +93,14 @@ extension RadarBeaconManagerSwift {
         didFailRangingFor beaconConstraint: CLBeaconIdentityConstraint,
         error: Error
     ) {
-        let identifier = beaconConstraint.uuid.uuidString
+        let constraintUUID = beaconConstraint.uuid.uuidString
+        let constraintMajor = beaconConstraint.major.map { "\($0)" }
+        let constraintMinor = beaconConstraint.minor.map { "\($0)" }
+        
         MainActor.assumeIsolated {
+            let key = constraintKey(uuid: constraintUUID, major: constraintMajor, minor: constraintMinor)
+            let identifier = constraintIdentifierMap[key] ?? constraintUUID
+            
             RadarLogger.shared.log(level: .debug, message: "Failed to range beacon | identifier = \(identifier)")
 
             failedBeaconIdentifiers.insert(identifier)
