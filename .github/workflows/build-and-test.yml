@@ -8,6 +8,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# gh (used by the Format Swift step) needs read access to the PR diff.
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   build:
     name: Build and analyse default scheme using xcodebuild command
@@ -17,9 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          # Full history so `git diff <base>...HEAD` can resolve the merge-base on
-          # stacked branches; a shallow clone may not contain it.
-          fetch-depth: 0
           submodules: recursive
           # Org level secret
           token: ${{ secrets.SUBMODULESTOKEN }}
@@ -35,15 +37,22 @@ jobs:
           swiftlint lint --strict --baseline .swiftlint-baseline.json
 
       - name: Format Swift
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          # Diff against the PR's actual base branch (github.base_ref is empty on push,
-          # so fall back to master) so stacked PRs only format-check their own changes.
-          BASE_REF="${{ github.base_ref || 'master' }}"
-          git fetch origin "$BASE_REF"
+          # Ask GitHub which files this PR changed (server-side diff — needs no local git
+          # history or merge-base, so it is correct on stacked PRs without a deep checkout).
+          # Keep the Swift files that still exist (drop deletions), then let make reformat
+          # them and fail if anything changed.
           if ! command -v swift-format >/dev/null; then
             brew install swift-format
           fi
-          make format-check FORMAT_BASE="origin/$BASE_REF"
+          CHANGED=$(gh pr diff ${{ github.event.pull_request.number }} --name-only)
+          FILES=""
+          for f in $CHANGED; do
+            case "$f" in *.swift) [ -f "$f" ] && FILES="$FILES $f" ;; esac
+          done
+          make format-check FORMAT_FILES="$FILES"
 
       - name: Pick an available iPhone simulator
         id: pick_sim
