@@ -152,7 +152,7 @@ BOOL _initialized = NO;
                                             RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
                                             Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
-                                            if (RadarSDKFraud) {
+                                            if (RadarSDKFraud && [RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
                                                 id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
                                                 if ([radarSDKFraud respondsToSelector:@selector(initializeWithOptions:)]) {
                                                     [radarSDKFraud initializeWithOptions:@{
