@@ -587,13 +587,28 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
-    if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [[RadarNotificationHelper_Swift shared] registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
+                                                                        completionHandler:^(){
+                                                                        }];
+        [RadarLocationManagerSwift replaceSyncedGeofencesOnLocationManager:self.locationManager geofences:geofences];
+        return;
+    }
+
+    // Skip notification registration under XCTest. RadarNotificationHelper_Swift.shared resolves its
+    // notification center from UNUserNotificationCenter.current(), which has no app bundle or
+    // notification entitlements in the unit-test host and misbehaves there. This call used to be
+    // gated behind the useNotificationDiffV2 flag (false in tests); removing the flag made it
+    // unconditional, so the guard preserves the prior "skip in tests" behavior. This matches the
+    // existing XCTestCase guards elsewhere in the SDK. TODO: route through the injectable
+    // NotificationCenterProtocol seam instead so tests can use a mock and this guard can be deleted.0
+    if (NSClassFromString(@"XCTestCase") == nil) {
         [[RadarNotificationHelper_Swift shared]
             registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
             completionHandler:^() {}
         ];
     }
-    
+
     if (!geofences) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Skipping replacing synced geofences"];
 
@@ -666,12 +681,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
     }
-    
-    if ([RadarSettings sdkConfiguration].useNotificationDiffV2) {
-        // we've already registered notifications before the geofences
-        return;
-    }
-    [RadarNotificationHelper updateClientSideCampaignsWithPrefix:kSyncGeofenceIdentifierPrefix notificationRequests:requests];
 }
 
 - (void)removeSyncedGeofences {

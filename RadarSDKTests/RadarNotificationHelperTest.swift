@@ -29,6 +29,7 @@ final class MockNotificationCenter: NotificationCenterProtocol, @unchecked Senda
     var pendingRequests: [UNNotificationRequest] = []
     var authorized: Bool
     var canSend: Bool
+    var addCallCount = 0
 
     init(authorized: Bool = true, canSend: Bool = true) {
         self.authorized = authorized
@@ -42,6 +43,7 @@ final class MockNotificationCenter: NotificationCenterProtocol, @unchecked Senda
 
     func add(_ request: UNNotificationRequest) async throws {
         try await Task.sleep(nanoseconds: 10_000_000)
+        addCallCount += 1
         pendingRequests.append(request)
     }
 
@@ -65,7 +67,8 @@ func makeGeofenceDict(
     restrictToOperatingHours: Bool = false,
     closeBufferMinutes: Int? = nil,
     startsAt: String? = nil,
-    endsAt: String? = nil
+    endsAt: String? = nil,
+    radius: Double = 100.0
 ) -> [String: Sendable] {
     var metadata: [String: Sendable] = [
         "radar:notificationText": "Hello from \(id)",
@@ -93,7 +96,7 @@ func makeGeofenceDict(
         "geometryCenter": [
             "coordinates": [-74.0, 40.0]
         ],
-        "geometryRadius": 100.0,
+        "geometryRadius": radius,
     ]
     if let operatingHours {
         dict["operatingHours"] = operatingHours
@@ -350,6 +353,31 @@ struct RadarNotificationHelperTest {
         )
         let geofence = decodeGeofence(dict)
         #expect(geofence?.toNotificationRequest(now: now) == nil)
+    }
+
+    @Test("requests differing only in volatile userInfo are unchanged")
+    func volatileUserInfoIsIgnoredInComparison() throws {
+        let geofence = try #require(decodeGeofence(makeGeofenceDict(id: "1")))
+        // registeredAt (and the geofenceData blob) are rebuilt on every track; they must not make
+        // an otherwise-identical notification look changed, or every track re-arms the trigger.
+        let first = try #require(geofence.toNotificationRequest(now: localDate(hour: 9)))
+        let second = try #require(geofence.toNotificationRequest(now: localDate(hour: 10)))
+        #expect(RadarNotificationHelper.isNotificationUnchanged(first, comparedTo: second))
+    }
+
+    @Test("a changed region radius is detected")
+    func changedRadiusIsDetected() throws {
+        let small = try #require(decodeGeofence(makeGeofenceDict(id: "1", radius: 100.0))?.toNotificationRequest())
+        let large = try #require(decodeGeofence(makeGeofenceDict(id: "1", radius: 250.0))?.toNotificationRequest())
+        #expect(!RadarNotificationHelper.isNotificationUnchanged(small, comparedTo: large))
+    }
+
+    @Test("changed campaign metadata is detected")
+    func changedCampaignMetadataIsDetected() throws {
+        // Same content and region — only the campaign metadata carried in userInfo differs.
+        let original = try #require(decodeGeofence(makeGeofenceDict(id: "1", campaignId: "campaign_1"))?.toNotificationRequest())
+        let updated = try #require(decodeGeofence(makeGeofenceDict(id: "1", campaignId: "campaign_2"))?.toNotificationRequest())
+        #expect(!RadarNotificationHelper.isNotificationUnchanged(original, comparedTo: updated))
     }
 
 }

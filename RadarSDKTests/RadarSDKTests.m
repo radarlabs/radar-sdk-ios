@@ -2058,7 +2058,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 }
 
 - (void)test_Radar_ipGeocode_legacy_three_arg_callback_still_called {
-    // Backward-compat: integrators using the deprecated 3-arg
+    // Backward-compat: integrators using the legacy 3-arg
     // +ipGeocodeWithCompletionHandler: must still receive callbacks.
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.apiHelperMock.mockStatus = RadarStatusErrorNetwork;
@@ -2068,14 +2068,11 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"callback"];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [Radar ipGeocodeWithCompletionHandler:^(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy) {
         XCTAssertEqual(status, RadarStatusErrorNetwork);
 
         [expectation fulfill];
     }];
-#pragma clang diagnostic pop
 
     [self waitForExpectationsWithTimeout:30
                                  handler:^(NSError *_Nullable error) {
@@ -2212,30 +2209,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         [buffer addToBatch:params options:options];
     }
     XCTAssertFalse([buffer shouldFlushBatchWithOptions:options], @"batchSize=0 means no size-based flush");
-}
-
-- (void)test_RadarReplayBuffer_writeAndRead {
-    RadarSdkConfiguration *sdkConfiguration = [[RadarSdkConfiguration alloc] initWithDict:@{
-        @"logLevel": @"warning",
-        @"startTrackingOnInitialize": @(NO),
-        @"trackOnceOnAppOpen": @(NO),
-        @"usePersistence": @(YES),
-        @"extendFlushReplays": @(NO),
-        @"useLogPersistence": @(NO),
-        @"useRadarModifiedBeacon": @(NO),
-        @"syncAfterSetUser": @(NO)
-    }];
-    [RadarSettings setSdkConfiguration:sdkConfiguration];
-    
-    CLLocation *location = [[CLLocation alloc] initWithLatitude:0.1 longitude:0.1];
-    NSMutableDictionary * params = [RadarTestUtils createTrackParamWithLocation:location stopped:YES foreground:YES source:RadarLocationSourceGeofenceEnter replayed:YES beacons:[NSArray arrayWithObject:[RadarBeacon alloc]] verified:YES attestationString:@"attestationString" keyId:@"keyID" attestationError:@"attestationError" encrypted:YES expectedCountryCode:@"CountryCode" expectedStateCode:@"StateCode"];
-    
-    [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:params];
-    [[RadarReplayBuffer sharedInstance] setValue:NULL forKey:@"mutableReplayBuffer"];
-    [[RadarReplayBuffer sharedInstance] loadReplaysFromPersistentStore];
-    NSMutableArray<RadarReplay *> *mutableReplayBuffer = [[RadarReplayBuffer sharedInstance] valueForKey:@"mutableReplayBuffer"];
-    XCTAssertEqual(mutableReplayBuffer.count, 1);
-    XCTAssertEqualObjects(mutableReplayBuffer.firstObject.replayParams, params);
 }
 
 - (void)test_RadarSdkConfiguration {

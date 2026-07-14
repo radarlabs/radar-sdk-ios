@@ -13,6 +13,7 @@
 #import <Foundation/Foundation.h>
 
 #import "RadarBeacon.h"
+#import "RadarGeofence.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
                                       location:(CLLocation *)location
                                         radius:(int)radius;
 + (void)removeBubbleGeofenceOnLocationManager:(CLLocationManager *)locationManager;
++ (void)replaceSyncedGeofencesOnLocationManager:(CLLocationManager *)locationManager
+                                      geofences:(nullable NSArray<RadarGeofence *> *)geofences;
 + (void)removeSyncedGeofencesOnLocationManager:(CLLocationManager *)locationManager;
 + (void)removeAllRegionsOnLocationManager:(CLLocationManager *)locationManager;
 
