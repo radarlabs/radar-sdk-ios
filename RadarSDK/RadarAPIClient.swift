@@ -115,7 +115,7 @@ public final class RadarAPIClient: Sendable {
         if response.statusCode >= 200 && response.statusCode < 300 {
             return
         } else {
-            throw APIError(data: data, response: response, message: "Failed to send logs")
+            throw RadarError(status: .errorServer, message: "Failed to send logs")
         }
     }
     
@@ -123,8 +123,6 @@ public final class RadarAPIClient: Sendable {
         fraudPayload: String,
         useSecondaryVerifiedHost: Bool,
     ) async throws -> RadarRevealRiskToken {
-        let sdkConfiguration = RadarSettings.sdkConfiguration
-        
         let params: [String: Any?] = [
             "installId": RadarSettings.installId,
             "userId": RadarSettings.userId,

@@ -10,5 +10,5 @@
 
 @interface RadarRevealRiskManager : NSObject
 + (RadarRevealRiskManager * _Nonnull)shared;
-- (void)revealRiskWithFraudPayload:(NSString * _Nonnull)fraudPayload useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost completionHandler:(void (^ _Nonnull)(RadarRevealRiskToken * _Nullable))completionHandler;
+- (void)revealRiskWithUseSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost completionHandler:(void (^ _Nonnull)(RadarStatus, RadarRevealRiskToken * _Nullable))completionHandler;
 @end

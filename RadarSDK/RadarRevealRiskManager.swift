@@ -12,30 +12,60 @@ import Foundation
 /// `RadarAPIClient` is a pure-Swift, `async` type that Objective-C cannot call directly.
 /// This manager wraps the async reveal risk request in a completion-handler API that can be
 /// invoked from Objective-C, hopping back to the main thread to deliver the result.
-@objc(RadarRevealRiskManager) @objcMembers
+@objc(RadarRevealRiskManager)
 final class RadarRevealRiskManager: NSObject, Sendable {
     
-    public static let shared = RadarRevealRiskManager(apiClient: RadarAPIClient.shared)
+    @objc
+    static let shared = RadarRevealRiskManager(
+        apiClient: RadarAPIClient.shared,
+        fraudSDK: RadarSDKFraud.shared,
+    )
     
     let apiClient: RadarAPIClient
+    let fraudSDK: RadarSDKFraud?
     
-    init(apiClient: RadarAPIClient) {
+    init(apiClient: RadarAPIClient, fraudSDK: RadarSDKFraud?) {
         self.apiClient = apiClient
+        self.fraudSDK = fraudSDK
     }
 
+    func revealRisk(useSecondaryVerifiedHost: Bool) async throws -> RadarRevealRiskToken {
+        guard let fraudSDK else {
+            throw RadarError(status: .errorPlugin)
+        }
+        
+        let (status, payload) = await fraudSDK.getFraudPayload(sdkConfiguration: RadarSettings.sdkConfiguration)
+        guard let payload, status == .success else {
+            throw RadarError(status: status)
+        }
+        
+        let revealRisk = try await apiClient.revealRisk(
+            fraudPayload: payload,
+            useSecondaryVerifiedHost: useSecondaryVerifiedHost
+        )
+        return revealRisk
+    }
+    
     @objc
     func revealRisk(
-        fraudPayload: String,
-        useSecondaryVerifiedHost: Bool
-    ) async -> RadarRevealRiskToken? {
-        do {
-            let revealRisk = try await apiClient.revealRisk(
-                fraudPayload: fraudPayload,
-                useSecondaryVerifiedHost: useSecondaryVerifiedHost
-            )
-            return revealRisk
-        } catch {
-            return nil
+        useSecondaryVerifiedHost: Bool,
+        completionHandler: @escaping @Sendable (RadarStatus, RadarRevealRiskToken?) -> Void
+    ) {
+        Task {
+            do {
+                let token = try await self.revealRisk(useSecondaryVerifiedHost: useSecondaryVerifiedHost)
+                completionHandler(.success, token)
+            } catch {
+                if let radarError = error as? RadarError {
+                    completionHandler(radarError.status, nil)
+                }
+                else if let _ = error as? RadarAPIClient.APIError {
+                    completionHandler(.errorServer, nil)
+                }
+                else {
+                    completionHandler(.errorServer, nil)
+                }
+            }
         }
     }
 }

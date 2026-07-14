@@ -91,7 +91,7 @@ final class RadarAPIHelper: Sendable {
 
     func addRadarHeaders(_ headers: [String: String]) async throws -> [String: String] {
         guard let publishableKey = RadarSettings.publishableKey else {
-            throw URLError(.userAuthenticationRequired)
+            throw RadarError(status: .errorPublishableKey)
         }
         
         var headers = headers
@@ -112,7 +112,7 @@ final class RadarAPIHelper: Sendable {
     
     func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
 
-        var headers = try await addRadarHeaders(headers)
+        let headers = try await addRadarHeaders(headers)
         let url = "\(RadarSettings.host)/v1/\(url)"
 
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
@@ -122,7 +122,7 @@ final class RadarAPIHelper: Sendable {
     
     func radarVerifiedRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
         
-        var headers = try await addRadarHeaders(headers)
+        let headers = try await addRadarHeaders(headers)
         let url = "\(RadarSettings.verifiedHost)/v1/\(url)"
 
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
