@@ -10,13 +10,11 @@ import Foundation
 import CoreLocation
 
 @globalActor
-@available(iOS 13.0, *)
 public actor RadarIndoorsActor {
     public static let shared = RadarIndoorsActor()
 }
 
 @RadarIndoorsActor
-@available(iOS 13.0, *)
 class RadarSDKIndoors {
     let instance: NSObject
     init?() {
@@ -80,7 +78,6 @@ class RadarSDKIndoors {
 }
 
 @RadarIndoorsActor
-@available(iOS 13.0, *)
 @objc(RadarIndoors) @objcMembers
 internal class RadarIndoors: NSObject {
     public static let shared = RadarIndoors()
@@ -180,7 +177,6 @@ internal class RadarIndoors: NSObject {
 
 // Transfers a URL from a detached download Task back to the synchronous getModelData callback.
 // The read is ordered after the write by the bridging semaphore, so unchecked Sendable is sound.
-@available(iOS 13.0, *)
 private final class RadarIndoorsModelDataBox: @unchecked Sendable {
     var url: URL?
 }

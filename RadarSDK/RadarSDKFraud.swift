@@ -1,5 +1,5 @@
 //
-//  RadarFraud.swift
+//  RadarSDKFraud.swift
 //  RadarSDK
 //
 //  Created by ShiCheng Lu on 7/13/26.

@@ -9,13 +9,11 @@ import Foundation
 import CoreLocation
 
 @globalActor
-@available(iOS 13.0, *)
 public actor RadarDelegateActor {
     public static let shared = RadarDelegateActor()
 }
 
 @RadarDelegateActor
-@available(iOS 13.0, *)
 @objc(RadarDelegateHolder_Swift)
 public class RadarDelegateHolder: NSObject {
 
