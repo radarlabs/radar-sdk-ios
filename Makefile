@@ -10,9 +10,6 @@ XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 # The example app links MapLibre (swiftui-dsl), which needs two accommodations in a
 # non-interactive build:
 #   -skipMacroValidation      skips the one-time MapLibreSwiftMacros trust prompt.
-#   (no -sdk)                 forcing -sdk iphonesimulator makes the macro compiler
-#                             plugin fail to resolve SwiftSyntax; the -destination
-#                             already selects the simulator SDK, so -sdk is omitted.
 XC_EXAMPLE_ARGS := -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) -skipMacroValidation ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 CI_SCHEME ?= RadarSDK
 CI_WORKSPACE ?= Example/Example.xcodeproj/project.xcworkspace
