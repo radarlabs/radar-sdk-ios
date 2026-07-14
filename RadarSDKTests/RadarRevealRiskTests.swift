@@ -33,6 +33,8 @@ final class MockFraudInstance: NSObject, @unchecked Sendable {
     }
 }
 
+
+@Suite
 struct RadarRevealRiskTests {
 
     private static let revealRiskURL = "\(RadarSettings.verifiedHost)/v1/reveal/risk"

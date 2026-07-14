@@ -103,7 +103,7 @@ ci-build-analyze:
 
 test-pretty:
 	@set -o pipefail; \
-	  xcodebuild $(XC_TEST_ARGS) test -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest 2>&1 \
+	  xcodebuild $(XC_TEST_ARGS) test -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest -skip-testing:RadarSDKTests/RadarRevealRiskTests 2>&1 \
 	    | tee /tmp/radar-sdk-ios-test.log \
 	    | xcpretty --report junit; \
 	  status=$$?; \
@@ -116,7 +116,7 @@ test-pretty:
 
 ci-test-pretty:
 	@set -o pipefail; \
-	  xcodebuild test $(CI_XC_ARGS) -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest 2>&1 \
+	  xcodebuild test $(CI_XC_ARGS) -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest -skip-testing:RadarSDKTests/RadarRevealRiskTests 2>&1 \
 	    | tee $(CI_TEST_LOG) \
 	    | xcpretty --report junit; \
 	  status=$$?; \
@@ -128,11 +128,11 @@ ci-test-pretty:
 	  exit $$status
 
 test-swift:
-	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest -only-testing:RadarSDKTests/RadarNotificationHelperTest
+	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest -only-testing:RadarSDKTests/RadarNotificationHelperTest -only-testing:RadarSDKTests/RadarRevealRiskTests
 
 ci-test-swift:
 	@set -o pipefail; \
-	  xcodebuild test $(CI_XC_ARGS) -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest -only-testing:RadarSDKTests/RadarNotificationHelperTest 2>&1 \
+	  xcodebuild test $(CI_XC_ARGS) -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest -only-testing:RadarSDKTests/RadarNotificationHelperTest -only-testing:RadarSDKTests/RadarRevealRiskTests 2>&1 \
 	    | tee $(CI_SWIFT_TEST_LOG); \
 	  exit $$?
 
