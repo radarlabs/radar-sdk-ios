@@ -71,7 +71,7 @@ extension RadarBeaconManagerSwift {
                     if entry.rssi != 0 && entry.rssi != existing.rssi {
                         RadarLogger.shared.log(level: .debug, message: "Overwriting stale RSSI: \(existing.rssi)")
 
-                        bridge.setRssi(entry.rssi, on: existing)
+                        bridge.setRssi(entry.rssi, onBeacon: existing)
                     }
                 } else {
                     nearbyBeacons.insert(newBeacon)

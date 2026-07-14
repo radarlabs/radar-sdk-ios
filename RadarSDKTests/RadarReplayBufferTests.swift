@@ -213,7 +213,7 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
         RadarBeacon()
     }
 
-    func setRssi(_ rssi: Int, on beacon: RadarBeacon) {}
+    func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon) {}
 
     func extractContent(fromMetadata metadata: [AnyHashable: Any]?, identifier: String?) -> UNMutableNotificationContent? {
         nil

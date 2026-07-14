@@ -33,7 +33,7 @@ protocol RadarSwiftBridgeProtocol {
     func didFail(status: RadarStatus)
     func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon
     func createBeacon(fromRegion region: CLBeaconRegion) -> RadarBeacon
-    func setRssi(_ rssi: Int, on beacon: RadarBeacon)
+    func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon)
     func extractContent(fromMetadata metadata: [AnyHashable: Any]?, identifier: String?) -> UNMutableNotificationContent?
     func updateClientSideCampaigns(withPrefix prefix: String, notificationRequests requests: [UNNotificationRequest])
 }
