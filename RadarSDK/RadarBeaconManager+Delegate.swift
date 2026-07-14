@@ -54,14 +54,14 @@ extension RadarBeaconManagerSwift {
             let key = constraintKey(uuid: constraintUUID, major: constraintMajor, minor: constraintMinor)
             let identifier = constraintIdentifierMap[key] ?? constraintUUID
 
-            nearbyBeaconIdentifiers.insert(identifier)
-
             guard let bridge = RadarSwift.bridge else {
                 handleBeacons()
                 return
             }
 
             for entry in rangedData {
+                nearbyBeaconIdentifiers.insert(identifier)
+
                 let newBeacon = bridge.createBeacon(
                     uuid: entry.uuid, major: entry.major,
                     minor: entry.minor, rssi: entry.rssi

@@ -157,7 +157,13 @@ class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
                     message: "Starting ranging beacon | _id = \(beacon._id ?? "nil"); uuid = \(beacon.uuid); major = \(beacon.major); minor = \(beacon.minor)"
                 )
 
-                let key = constraintKey(uuid: beacon.uuid, major: beacon.major, minor: beacon.minor)
+                let constraint = region.beaconIdentityConstraint
+                let key = constraintKey(
+                    uuid: constraint.uuid.uuidString,
+                    major: constraint.major.map { "\($0)" },
+                    minor: constraint.minor.map { "\($0)" }
+                )
+
                 constraintIdentifierMap[key] = beacon._id ?? beacon.uuid
 
                 locationManager.startRangingBeacons(satisfying: region.beaconIdentityConstraint)
