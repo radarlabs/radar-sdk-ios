@@ -18,13 +18,13 @@ final class RadarRevealRiskManager: NSObject, Sendable {
     @objc
     static let shared = RadarRevealRiskManager(
         apiClient: RadarAPIClient.shared,
-        fraudSDK: RadarFraud.shared,
+        fraudSDK: RadarSDKFraud.shared,
     )
     
     let apiClient: RadarAPIClient
-    let fraudSDK: RadarFraud?
+    let fraudSDK: RadarSDKFraud?
     
-    init(apiClient: RadarAPIClient, fraudSDK: RadarFraud?) {
+    init(apiClient: RadarAPIClient, fraudSDK: RadarSDKFraud?) {
         self.apiClient = apiClient
         self.fraudSDK = fraudSDK
     }

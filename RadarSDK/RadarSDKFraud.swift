@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class RadarFraud: @unchecked Sendable {
+final class RadarSDKFraud: @unchecked Sendable {
     
     let instance: NSObject
     
@@ -16,14 +16,14 @@ final class RadarFraud: @unchecked Sendable {
         self.instance = instance
     }
     
-    static let shared: RadarFraud? = {
+    static let shared: RadarSDKFraud? = {
         guard let RadarSDKFraudClass = NSClassFromString("RadarSDKFraud") as? NSObject.Type else {
             return nil
         }
         guard let instance = RadarSDKFraudClass.value(forKey: "sharedInstance") as? NSObject else {
             return nil
         }
-        return RadarFraud(instance: instance)
+        return RadarSDKFraud(instance: instance)
     }()
     
     public func initialize(options: [String: Any]) {
