@@ -78,6 +78,11 @@
 @property (nonatomic, readonly, copy) NSString * _Nullable appBuild;
 @end
 
+/**
+ Represents device and network risk signals.
+
+ @see https://radar.com/documentation/fraud
+ */
 @interface RadarRevealRiskToken : NSObject
 @property (nonatomic, readonly, copy) NSString * _Nonnull _id;
 @property (nonatomic, readonly, copy) NSString * _Nullable token;
