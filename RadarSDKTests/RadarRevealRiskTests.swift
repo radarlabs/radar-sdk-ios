@@ -33,7 +33,6 @@ final class MockFraudInstance: NSObject, @unchecked Sendable {
     }
 }
 
-
 @Suite
 struct RadarRevealRiskTests {
 
