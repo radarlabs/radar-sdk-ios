@@ -77,14 +77,15 @@ final class RadarRevealRiskTokenNetworkAsn: NSObject, Decodable, Sendable {
 
 @objc(RadarRevealRiskTokenNetworkIpAddress) @objcMembers
 final class RadarRevealRiskTokenNetworkIpAddress: NSObject, Decodable, Sendable {
+    let ip: String?
     let countryCode: String?
     let country: String?
     let countryFlag: String?
     let state: String?
     let city: String?
     let postalCode: String?
-    let lattiude: Double?
-    @objc(lattiude) var _lattiude: NSNumber? { lattiude.flatMap(NSNumber.init)  }
+    let latitude: Double?
+    @objc(latitude) var _lattiude: NSNumber? { latitude.flatMap(NSNumber.init)  }
     let longitude: Double?
     @objc(longitude) var _longitude: NSNumber? { longitude.flatMap(NSNumber.init) }
     let connectionType: String?

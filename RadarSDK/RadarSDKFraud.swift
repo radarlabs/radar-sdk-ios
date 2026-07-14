@@ -12,7 +12,11 @@ final class RadarSDKFraud: @unchecked Sendable {
     
     let instance: NSObject
     
-    init(instance: NSObject) {
+    init?(instance: NSObject) {
+        if !instance.responds(to: RadarSDKFraud.initializeSelector) ||
+           !instance.responds(to: RadarSDKFraud.getFraudPayloadSelector) {
+            return nil
+        }
         self.instance = instance
     }
     
@@ -26,13 +30,13 @@ final class RadarSDKFraud: @unchecked Sendable {
         return RadarSDKFraud(instance: instance)
     }()
     
+    static let initializeSelector = NSSelectorFromString("initializeWithOptions:")
     public func initialize(options: [String: Any]) {
-        let selector = NSSelectorFromString("initializeWithOptions:")
-        instance.perform(selector, with: options)
+        instance.perform(RadarSDKFraud.initializeSelector, with: options)
     }
     
+    static let getFraudPayloadSelector = NSSelectorFromString("getFraudPayloadWithOptions:completionHandler:")
     public func getFraudPayload(sdkConfiguration: RadarSdkConfiguration?) async -> (RadarStatus, String?) {
-        let selector = NSSelectorFromString("getFraudPayloadWithOptions:completionHandler:")
         let options = sdkConfiguration?.dictionaryValue() ?? [:]
         
         
@@ -40,7 +44,7 @@ final class RadarSDKFraud: @unchecked Sendable {
             let completionHandler: @convention(block) ([String: Sendable]?) -> Void = { payload in
                 continuation.resume(returning: payload)
             }
-            instance.perform(selector, with: options, with: completionHandler)
+            instance.perform(RadarSDKFraud.getFraudPayloadSelector, with: options, with: completionHandler)
         }
         
         let error = result?["error"] as? String
