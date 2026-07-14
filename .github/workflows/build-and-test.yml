@@ -3,8 +3,16 @@ name: Xcode - Build, Analyze, & Test
 on:
   push:
     branches: [ master, develop ]
+  # Run on pull requests targeting ANY base branch (no `branches:` filter) so that
+  # stacked PRs — whose base is an intermediate feature branch rather than master —
+  # also get CI, instead of only running once a PR is re-pointed at master/develop.
   pull_request:
-    branches: [ master, develop ]
+
+# Cancel superseded runs when a branch is re-pushed (e.g. restacking a stack of PRs),
+# scoped to pull_request events so master/release builds are never cancelled midway.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -15,6 +23,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
+          # Full history so `git diff <base>...HEAD` can resolve the merge-base on
+          # stacked branches; a shallow clone may not contain it.
+          fetch-depth: 0
           submodules: recursive
           # Org level secret
           token: ${{ secrets.SUBMODULESTOKEN }}
@@ -31,11 +42,14 @@ jobs:
 
       - name: Format Swift
         run: |
-          git fetch origin master --depth=1
+          # Diff against the PR's actual base branch (github.base_ref is empty on push,
+          # so fall back to master) so stacked PRs only format-check their own changes.
+          BASE_REF="${{ github.base_ref || 'master' }}"
+          git fetch origin "$BASE_REF"
           if ! command -v swift-format >/dev/null; then
             brew install swift-format
           fi
-          make format-check
+          make format-check FORMAT_BASE="origin/$BASE_REF"
 
       - name: Pick an available iPhone simulator
         id: pick_sim
