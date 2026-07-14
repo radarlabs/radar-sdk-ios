@@ -32,7 +32,7 @@ final class RadarRevealRiskManager: NSObject, Sendable {
     func revealRisk(useSecondaryVerifiedHost: Bool) async throws -> RadarRevealRiskToken {
         let (status, payload) = await fraudSDK.getFraudPayload(sdkConfiguration: RadarSettings.sdkConfiguration)
         guard let payload, status == .success else {
-            throw RadarError(status: status, message: "failed to get fraud payload")
+            throw RadarError(status: status)
         }
         
         let revealRisk = try await apiClient.revealRisk(
@@ -52,7 +52,6 @@ final class RadarRevealRiskManager: NSObject, Sendable {
                 let token = try await self.revealRisk(useSecondaryVerifiedHost: useSecondaryVerifiedHost)
                 completionHandler(.success, token)
             } catch {
-                print(error)
                 if let radarError = error as? RadarError {
                     completionHandler(radarError.status, nil)
                 }

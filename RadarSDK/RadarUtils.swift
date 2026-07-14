@@ -306,5 +306,14 @@ internal extension CLLocation {
 
 struct RadarError: Error {
     let status: RadarStatus
-    let message: String
+    let message: String?
+    
+    init(status: RadarStatus) {
+        self.status = status
+        self.message = nil
+    }
+    init(status: RadarStatus, message: String) {
+        self.status = status
+        self.message = message
+    }
 }

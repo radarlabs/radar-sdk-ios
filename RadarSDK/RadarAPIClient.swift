@@ -115,7 +115,7 @@ public final class RadarAPIClient: Sendable {
         if response.statusCode >= 200 && response.statusCode < 300 {
             return
         } else {
-            throw APIError(data: data, response: response, message: "Failed to send logs")
+            throw RadarError(status: .errorServer, message: "Failed to send logs")
         }
     }
     

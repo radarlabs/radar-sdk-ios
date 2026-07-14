@@ -91,7 +91,7 @@ final class RadarAPIHelper: Sendable {
 
     func addRadarHeaders(_ headers: [String: String]) async throws -> [String: String] {
         guard let publishableKey = RadarSettings.publishableKey else {
-            throw RadarError(status: .errorPublishableKey, message: "Publishable key is not set")
+            throw RadarError(status: .errorPublishableKey)
         }
         
         var headers = headers

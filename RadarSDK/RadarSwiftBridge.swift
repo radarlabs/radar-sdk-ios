@@ -11,7 +11,7 @@ import Foundation
 ///
 /// usage: RadarSwift.bridge?.<function>()
 @objc
-public protocol RadarSwiftBridgeProtocol {
+protocol RadarSwiftBridgeProtocol {
     func flushReplays()
     func logOpenedAppConversion()
     func geofenceIds() -> [String]?
