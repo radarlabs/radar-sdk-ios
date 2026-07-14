@@ -54,13 +54,17 @@ final class RadarRevealRiskManager: NSObject, Sendable {
         Task {
             do {
                 let token = try await self.revealRisk(useSecondaryVerifiedHost: useSecondaryVerifiedHost)
+                RadarLogger.shared.info("RadarRevealRiskManager: revealRisk() succeeded")
                 completionHandler(.success, token)
             } catch {
                 if let radarError = error as? RadarError {
+                    RadarLogger.shared.error("RadarRevealRiskManager: revealRisk() failed \(Radar.stringForStatus(radarError.status))")
                     completionHandler(radarError.status, nil)
-                } else if error is RadarAPIClient.APIError {
+                } else if let apiError = error as? RadarAPIClient.APIError {
+                    RadarLogger.shared.error("RadarRevealRiskManager: revealRisk() failed due to API error: \(apiError.message)")
                     completionHandler(.errorServer, nil)
                 } else {
+                    RadarLogger.shared.error("RadarRevealRiskManager: revealRisk() failed unknown error")
                     completionHandler(.errorServer, nil)
                 }
             }

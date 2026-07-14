@@ -141,7 +141,7 @@ public final class RadarAPIClient: Sendable {
             "fraudPayload": fraudPayload,
             "appId": Bundle.main.bundleIdentifier,
             "appName": Bundle.main.object(forInfoDictionaryKey: "CFBundleName"),
-            "appVersion": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersion"),
+            "appVersion": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString"),
             "appBuild": Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion"),
             "xPlatformType": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKType : "Native",
             "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
@@ -150,17 +150,17 @@ public final class RadarAPIClient: Sendable {
         let (data, response) = try await apiHelper.radarVerifiedRequest(method: "POST", url: "reveal/risk", body: params)
 
         if response.statusCode == 401 {
-            throw RadarError(status: .errorUnauthorized, message: "")
+            throw RadarError(status: .errorUnauthorized, message: "Unauthorized")
         } else if response.statusCode == 402 {
-            throw RadarError(status: .errorPaymentRequired, message: "")
+            throw RadarError(status: .errorPaymentRequired, message: "Payment required")
         } else if response.statusCode == 403 {
-            throw RadarError(status: .errorForbidden, message: "")
+            throw RadarError(status: .errorForbidden, message: "Forbidden")
         } else if response.statusCode == 404 {
-            throw RadarError(status: .errorNotFound, message: "")
+            throw RadarError(status: .errorNotFound, message: "Not found")
         } else if response.statusCode == 429 {
-            throw RadarError(status: .errorRateLimit, message: "")
+            throw RadarError(status: .errorRateLimit, message: "Ratelimited")
         } else if response.statusCode >= 500 && response.statusCode <= 599 {
-            throw RadarError(status: .errorServer, message: "")
+            throw RadarError(status: .errorServer, message: "Server error")
         }
 
         guard let result = RadarRevealRiskToken.fromData(data) else {
