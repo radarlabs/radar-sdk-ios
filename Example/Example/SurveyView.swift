@@ -236,7 +236,7 @@ struct SurveyView: View {
                     let imageSource = MLNImageSource(
                         identifier: "overlay-src",
                         coordinateQuad: coordinates,
-                        url: URL(string: "https://api.radar.io/api/v1/assets/\(site.floorplan.path)")!
+                        url: URL(string: "\(Utils.radarHost)/api/v1/assets/\(site.floorplan.path)")!
                     )
                     style.addSource(imageSource)
                     let rasterLayer = MLNRasterStyleLayer(identifier: "overlay-layer", source: imageSource)

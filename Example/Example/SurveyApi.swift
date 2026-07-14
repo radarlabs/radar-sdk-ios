@@ -96,11 +96,9 @@ extension URLSession {
 
 class SurveyApi {
     static func createSurvey(data: Data, publishableKey: String) async -> String {
-        // Host still follows the SDK (no host-override in the example app's settings);
-        // the publishable key is passed in from SettingsStore.resolvedPublishableKey.
-        // Everything else comes from SurveyConfig.
-        let suite = UserDefaults.standard.string(forKey: "radar-appGroup")
-        let radarHost = UserDefaults(suiteName: suite)?.string(forKey: "radar-host") ?? "https://api.radar.io"
+        // Host follows the SDK (see Utils.radarHost); the publishable key is passed in from
+        // SettingsStore.resolvedPublishableKey. Everything else comes from SurveyConfig.
+        let radarHost = Utils.radarHost
         let description = SurveyConfig.surveyDescription
         let geofenceId = SurveyConfig.geofenceId
         let surveyor = SurveyConfig.surveyor

@@ -9,7 +9,16 @@ import Foundation
 import RadarSDK
 
 class Utils {
-    
+
+    /// The Radar API host the SDK is configured with. The SDK persists `radar-host` into the
+    /// app-group suite (see RadarUserDefaults); falls back to production if unset. Use this
+    /// everywhere instead of hardcoding `https://api.radar.io` so map, assets, and API calls
+    /// all target the same host.
+    static var radarHost: String {
+        let suite = UserDefaults.standard.string(forKey: "radar-appGroup")
+        return UserDefaults(suiteName: suite)?.string(forKey: "radar-host") ?? "https://api.radar.io"
+    }
+
     static func stringForRadarEvent(_ event: RadarEvent) -> String {
         let confidenceStr = Utils.stringForRadarEventConfidence(event.confidence)
         

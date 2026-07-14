@@ -106,11 +106,7 @@ struct MyMapView: UIViewRepresentable {
     }
     
     func makeUIView(context: Context) -> MLNMapView {
-        // The SDK persists radar-host into the app-group suite when one is configured
-        // (see RadarUserDefaults.userDefaults), so resolve it the same way SurveyApi does
-        // — otherwise the map style loads from a different host than the survey API.
-        let suite = UserDefaults.standard.string(forKey: "radar-appGroup")
-        let host = UserDefaults(suiteName: suite)?.string(forKey: "radar-host") ?? "https://api.radar.io"
+        let host = Utils.radarHost
         let style = "radar-default-v1"
         let publishableKey = withRadar
         let styleURL = URL(string: "\(host)/maps/styles/\(style)?publishableKey=\(publishableKey)")
