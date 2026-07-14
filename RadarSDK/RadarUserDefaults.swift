@@ -7,7 +7,7 @@
 
 import Foundation
 
-class RadarUserDefaults: NSObject {
+@objc(RadarUserDefaults) class RadarUserDefaults: NSObject {
 
     public enum Key: String, CaseIterable {
         // RadarSettings
@@ -76,6 +76,12 @@ class RadarUserDefaults: NSObject {
                 return UserDefaults.standard
             }
         }()
+
+    /// The backing store the SDK persists to — the app-group suite when one is configured
+    /// via `Radar.initializeWithAppGroup:`, otherwise `UserDefaults.standard`. Exposed to
+    /// ObjC so accessors not yet migrated to the `Key`-typed API (e.g. `RadarState`'s
+    /// heading data) read and write the same store this funnel uses.
+    @objc static var sharedUserDefaults: UserDefaults { userDefaults }
 
     private static let flushQueue = DispatchQueue(
         label: "io.radar.userdefaults.flush",

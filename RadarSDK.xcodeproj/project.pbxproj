@@ -149,10 +149,13 @@
 		B0A0F0022FBC000100111111 /* RadarLocationManager+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0062FBC000100111111 /* RadarLocationManager+Swift.swift */; };
 		B0A0F0032FBC000100111111 /* RadarLocationManagerSwiftSeamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0072FBC000100111111 /* RadarLocationManagerSwiftSeamTests.swift */; };
 		B0A0F0082FBC000100111111 /* RadarLocationManagerSwift.h in Headers */ = {isa = PBXBuildFile; fileRef = B0A0F0092FBC000100111111 /* RadarLocationManagerSwift.h */; };
+		B0A0F0262FBC000100111111 /* RadarUserDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = B0A0F0272FBC000100111111 /* RadarUserDefaults.h */; };
 		B0A0F0142FBC000100111111 /* RadarLocationManagerSwiftTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0152FBC000100111111 /* RadarLocationManagerSwiftTestHelpers.swift */; };
 		B0A0F0162FBC000100111111 /* TrackingCLLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0172FBC000100111111 /* TrackingCLLocationManager.swift */; };
 		B0A0F0182FBC000100111111 /* RadarLocationManagerSwiftBeaconSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0192FBC000100111111 /* RadarLocationManagerSwiftBeaconSyncTests.swift */; };
 		B0A0F0202FBC000100111111 /* RadarLocationManagerSwiftRegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0212FBC000100111111 /* RadarLocationManagerSwiftRegionTests.swift */; };
+		B0A0F0222FBC000100111111 /* StubCLHeading.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0232FBC000100111111 /* StubCLHeading.swift */; };
+		B0A0F0242FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0252FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift */; };
 		BA264CFB2FF3158B000EDFE6 /* RadarReplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA264CFA2FF31582000EDFE6 /* RadarReplay.swift */; };
 		BA264CFD2FF31BD9000EDFE6 /* RadarReplay.h in Headers */ = {isa = PBXBuildFile; fileRef = BA264CFC2FF31BD5000EDFE6 /* RadarReplay.h */; };
 		BA264CFF2FF31FB6000EDFE6 /* RadarReplayBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA264CFE2FF31FAF000EDFE6 /* RadarReplayBuffer.swift */; };
@@ -343,10 +346,13 @@
 		B0A0F0062FBC000100111111 /* RadarLocationManager+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+Swift.swift"; sourceTree = "<group>"; };
 		B0A0F0072FBC000100111111 /* RadarLocationManagerSwiftSeamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftSeamTests.swift; sourceTree = "<group>"; };
 		B0A0F0092FBC000100111111 /* RadarLocationManagerSwift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarLocationManagerSwift.h; sourceTree = "<group>"; };
+		B0A0F0272FBC000100111111 /* RadarUserDefaults.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarUserDefaults.h; sourceTree = "<group>"; };
 		B0A0F0152FBC000100111111 /* RadarLocationManagerSwiftTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftTestHelpers.swift; sourceTree = "<group>"; };
 		B0A0F0172FBC000100111111 /* TrackingCLLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingCLLocationManager.swift; sourceTree = "<group>"; };
 		B0A0F0192FBC000100111111 /* RadarLocationManagerSwiftBeaconSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftBeaconSyncTests.swift; sourceTree = "<group>"; };
 		B0A0F0212FBC000100111111 /* RadarLocationManagerSwiftRegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftRegionTests.swift; sourceTree = "<group>"; };
+		B0A0F0232FBC000100111111 /* StubCLHeading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubCLHeading.swift; sourceTree = "<group>"; };
+		B0A0F0252FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftHeadingTests.swift; sourceTree = "<group>"; };
 		BA264CFA2FF31582000EDFE6 /* RadarReplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarReplay.swift; sourceTree = "<group>"; };
 		BA264CFC2FF31BD5000EDFE6 /* RadarReplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarReplay.h; sourceTree = "<group>"; };
 		BA264CFE2FF31FAF000EDFE6 /* RadarReplayBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarReplayBuffer.swift; sourceTree = "<group>"; };
@@ -656,6 +662,7 @@
 				DD236CF723088F8400EB88F9 /* RadarLocationManager.h */,
 				DD236CF823088F8400EB88F9 /* RadarLocationManager.m */,
 				B0A0F0092FBC000100111111 /* RadarLocationManagerSwift.h */,
+				B0A0F0272FBC000100111111 /* RadarUserDefaults.h */,
 				B0A0F0062FBC000100111111 /* RadarLocationManager+Swift.swift */,
 				DD236D66230A0D6700EB88F9 /* RadarLogger.h */,
 				F64FF0DC2E4D2BEA00DF3926 /* RadarLogger.swift */,
@@ -728,6 +735,8 @@
 				B0A0F0172FBC000100111111 /* TrackingCLLocationManager.swift */,
 				B0A0F0192FBC000100111111 /* RadarLocationManagerSwiftBeaconSyncTests.swift */,
 				B0A0F0212FBC000100111111 /* RadarLocationManagerSwiftRegionTests.swift */,
+				B0A0F0232FBC000100111111 /* StubCLHeading.swift */,
+				B0A0F0252FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift */,
 				F6A0DAC72EF087A100BC10B4 /* RadarSettingsTest.swift */,
 				F6FA1101000000000000A001 /* RadarVerifiedHostOverrideTests.swift */,
 				F6B7E3BC2F758A0D006A5A24 /* MockRadarState.swift */,
@@ -911,6 +920,7 @@
 				96A5A10A27AD9F7F007B960B /* RadarAddress.h in Headers */,
 				0107AA1926220052008AB52F /* RadarLocationManager.h in Headers */,
 				B0A0F0082FBC000100111111 /* RadarLocationManagerSwift.h in Headers */,
+				B0A0F0262FBC000100111111 /* RadarUserDefaults.h in Headers */,
 				96A5A10127AD9F7F007B960B /* RadarRoute.h in Headers */,
 				BA264CFD2FF31BD9000EDFE6 /* RadarReplay.h in Headers */,
 				96A5A0FE27AD9F7F007B960B /* RadarTrip.h in Headers */,
@@ -1172,6 +1182,8 @@
 				B0A0F0162FBC000100111111 /* TrackingCLLocationManager.swift in Sources */,
 				B0A0F0182FBC000100111111 /* RadarLocationManagerSwiftBeaconSyncTests.swift in Sources */,
 				B0A0F0202FBC000100111111 /* RadarLocationManagerSwiftRegionTests.swift in Sources */,
+				B0A0F0222FBC000100111111 /* StubCLHeading.swift in Sources */,
+				B0A0F0242FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift in Sources */,
 				BA8647B92F6C7DB700F1A199 /* RadarSyncManagerTests.swift in Sources */,
 				96B465BC27D6732500D7119B /* CLLocation+RadarTests.m in Sources */,
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
