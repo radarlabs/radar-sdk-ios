@@ -7,9 +7,13 @@ SCHEME_EXAMPLE := Example
 SWIFTLINT := $(firstword $(wildcard .tools/swiftlint) swiftlint)
 XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
-# -skipMacroValidation: MapLibreSwiftMacros (via swiftui-dsl) is otherwise gated behind a
-# one-time macro-trust prompt that can't be answered in a non-interactive build.
-XC_EXAMPLE_ARGS := -sdk $(SDK) -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) -skipMacroValidation ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
+# The example app links MapLibre (swiftui-dsl), which needs two accommodations in a
+# non-interactive build:
+#   -skipMacroValidation      skips the one-time MapLibreSwiftMacros trust prompt.
+#   (no -sdk)                 forcing -sdk iphonesimulator makes the macro compiler
+#                             plugin fail to resolve SwiftSyntax; the -destination
+#                             already selects the simulator SDK, so -sdk is omitted.
+XC_EXAMPLE_ARGS := -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) -skipMacroValidation ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 CI_SCHEME ?= RadarSDK
 CI_WORKSPACE ?= Example/Example.xcodeproj/project.xcworkspace
 CI_DESTINATION ?= platform=iOS Simulator,name=iPhone 17,OS=26.4.1
@@ -148,7 +152,7 @@ build-example-pretty:
 
 ci-build-example:
 	@set -o pipefail; \
-	  xcodebuild -sdk iphonesimulator -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination "$(CI_DESTINATION)" -skipMacroValidation ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode" 2>&1 \
+	  xcodebuild -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination "$(CI_DESTINATION)" -skipMacroValidation ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode" 2>&1 \
 	    | tee /tmp/radar-sdk-ios-ci-build-example.log \
 	    | xcpretty; \
 	  exit $$?
