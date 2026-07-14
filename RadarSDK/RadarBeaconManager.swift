@@ -64,11 +64,11 @@ class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
             identifier: uuidString
         )
     }
-    
+
     func constraintKey(uuid: String, major: String? = nil, minor: String? = nil) -> String {
         var key = uuid
-        if let major  { key += "-\(major)" }
-        if let minor  { key += "-\(minor)" }
+        if let major { key += "-\(major)" }
+        if let minor { key += "-\(minor)" }
         return key
     }
 
@@ -156,7 +156,7 @@ class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
                     level: .debug,
                     message: "Starting ranging beacon | _id = \(beacon._id ?? "nil"); uuid = \(beacon.uuid); major = \(beacon.major); minor = \(beacon.minor)"
                 )
-                
+
                 let key = constraintKey(uuid: beacon.uuid, major: beacon.major, minor: beacon.minor)
                 constraintIdentifierMap[key] = beacon._id ?? beacon.uuid
 
