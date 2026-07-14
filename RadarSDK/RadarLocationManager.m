@@ -1506,6 +1506,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift didUpdateHeading:newHeading];
+        return;
+    }
+
     [RadarState setLastHeadingData:@{
         @"magneticHeading" : @(newHeading.magneticHeading),
         @"trueHeading" : @(newHeading.trueHeading),
