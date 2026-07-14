@@ -15,16 +15,15 @@ enum SurveyConfig {
 
     /// Beacon UUIDs the survey ranges.
     static let beaconUUIDs = [
-        "160C2FE2-0FA8-4A03-B31B-D772318C12F5",
-        "DEB7A751-58E9-470C-B02F-E0A0E0CB131D",
+        "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
     ]
 
     /// Geofence the survey attaches to. Must match a geofence in `siteJSON` below.
-    static let geofenceId = "69a9df58accfc20568739f59"
+    static let geofenceId = ""
 
     /// Sent to the API with the survey record.
-    static let surveyor = ""                          // TODO: set the surveyor's name
-    static let surveyDescription = "Office Survey 1"
+    static let surveyor = ""
+    static let surveyDescription = ""
 
     /// The site being surveyed (floorplan image, geometry, calibration, geofence).
     static let siteJSON = """

@@ -41,7 +41,7 @@ final class SettingsStore: ObservableObject {
     // MARK: - Defaults
 
     /// Hardcoded publishable key used when no override is set.
-    static let defaultPublishableKey = "prj_test_pk_0000000000000000000000000000000000000000"
+    static let defaultPublishableKey = "prj_test_pk_9469eca3762c311d8c0a34f1995f2ee3531528c0"
 
     private enum Keys {
         static let publishableKeyOverride = "settings.publishableKeyOverride"
