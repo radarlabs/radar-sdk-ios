@@ -163,7 +163,7 @@ struct RadarRevealRiskTests {
         let session = MockURLSession()
         // If the manager reaches the API despite the fraud SDK failing, the handler records an issue.
         session.on(
-            { request in
+            { _ in
                 Issue.record("reveal/risk API should not be called when the fraud SDK fails to produce a payload")
                 return false
             }, Data())
