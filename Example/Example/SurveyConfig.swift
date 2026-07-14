@@ -1,12 +1,33 @@
 //
-//  site.swift
+//  SurveyConfig.swift
 //  Example
 //
 //  Created by ShiCheng Lu on 10/30/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-let siteString = """
+/// The single place to configure an indoor survey. Edit these values to point the Survey
+/// tab at a different site, beacons, or geofence.
+///
+/// Note: there is no survey-record id to set here — the server generates it when
+/// `SurveyApi.createSurvey` runs. What you configure is the geofence the survey attaches to.
+enum SurveyConfig {
+
+    /// Beacon UUIDs the survey ranges.
+    static let beaconUUIDs = [
+        "160C2FE2-0FA8-4A03-B31B-D772318C12F5",
+        "DEB7A751-58E9-470C-B02F-E0A0E0CB131D",
+    ]
+
+    /// Geofence the survey attaches to. Must match a geofence in `siteJSON` below.
+    static let geofenceId = "69a9df58accfc20568739f59"
+
+    /// Sent to the API with the survey record.
+    static let surveyor = ""                          // TODO: set the surveyor's name
+    static let surveyDescription = "Office Survey 1"
+
+    /// The site being surveyed (floorplan image, geometry, calibration, geofence).
+    static let siteJSON = """
 {
     "meta": {
         "code": 200
@@ -131,3 +152,4 @@ let siteString = """
     }
 }
 """
+}

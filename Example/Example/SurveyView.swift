@@ -132,7 +132,7 @@ struct SurveyView: View {
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .formatted(dateFormatter)
             
-            let siteResponse = try decoder.decode(RadarSiteResponse.self, from: Data(siteString.utf8))
+            let siteResponse = try decoder.decode(RadarSiteResponse.self, from: Data(SurveyConfig.siteJSON.utf8))
             return siteResponse.site
         } catch {
             return nil
@@ -160,10 +160,7 @@ struct SurveyView: View {
     @AppStorage("radar-raw-prediction") var rawPrediction: Bool = false
     @AppStorage("radar-prediction-confidence") var predictionConfidence: Bool = false
 
-    let scanner = RadarIndoorScan(uuids: [
-        "160C2FE2-0FA8-4A03-B31B-D772318C12F5",
-        "DEB7A751-58E9-470C-B02F-E0A0E0CB131D",
-    ])
+    let scanner = RadarIndoorScan(uuids: SurveyConfig.beaconUUIDs)
 //    let model = RadarBeaconRSSIModel()
     
     @State
