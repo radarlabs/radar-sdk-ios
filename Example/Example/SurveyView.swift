@@ -261,7 +261,7 @@ struct SurveyView: View {
                 .onTapMapGesture { value in
                     tapCoord = value.coordinate
                     updatePoints(style: value.mapView.style)
-                }.frame(height: calibrationMode ? 400 : 1000)
+                }.frame(maxHeight: calibrationMode ? 400 : .infinity)
             
             if (calibrationMode) {
                 HStack {
