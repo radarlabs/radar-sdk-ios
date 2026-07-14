@@ -5,6 +5,8 @@
 
 import Foundation
 
+// swiftlint:disable identifier_name
+
 /// Objective-C compatible model for the Reveal Risk API response.
 ///
 /// Each type is both the `@objc` interface and the `Decodable` parser: the compiler
@@ -18,13 +20,13 @@ final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
     let token: String?
     let expiresAt: Date?
     let expiresIn: Double?
-    @objc(expiresIn) var _expiresIn: NSNumber? { expiresIn.flatMap(NSNumber.init) }
+    @objc(expiresIn) var _expiresIn: NSNumber? { expiresIn.map { NSNumber(value: $0) } }
     let risk: RadarRevealRiskTokenRisk
     let network: RadarRevealRiskTokenNetwork
     let device: RadarRevealRiskTokenDevice
-    
+
     // unchecked sendable, set on init, should not be modified afterwards
-    var dictionaryValue: [String: Sendable]? = nil
+    var dictionaryValue: [String: Sendable]?
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -85,9 +87,9 @@ final class RadarRevealRiskTokenNetworkIpAddress: NSObject, Decodable, Sendable 
     let city: String?
     let postalCode: String?
     let latitude: Double?
-    @objc(latitude) var _lattiude: NSNumber? { latitude.flatMap(NSNumber.init)  }
+    @objc(latitude) var _latitude: NSNumber? { latitude.map { NSNumber(value: $0) } }
     let longitude: Double?
-    @objc(longitude) var _longitude: NSNumber? { longitude.flatMap(NSNumber.init) }
+    @objc(longitude) var _longitude: NSNumber? { longitude.map { NSNumber(value: $0) } }
     let connectionType: String?
     let stateCode: String?
     let stateConfidence: String?
@@ -99,11 +101,11 @@ final class RadarRevealRiskTokenNetworkIpAddress: NSObject, Decodable, Sendable 
     let countryAllowed: Bool?
     @objc(countryAllowed) var _countryAllowed: Bool { countryAllowed ?? false }
     let layer: String?
-    let geometry: RadarRevealRiskTokenNetworkIpAddressGeometry?
+    let geometry: RadarRevealRiskIpGeometry?
 }
 
-@objc(RadarRevealRiskTokenNetworkIpAddressGeometry) @objcMembers
-final class RadarRevealRiskTokenNetworkIpAddressGeometry: NSObject, Decodable, Sendable {
+@objc(RadarRevealRiskIpGeometry) @objcMembers
+final class RadarRevealRiskIpGeometry: NSObject, Decodable, Sendable {
     let type: String
     let coordinates: [Double]
 }
@@ -112,21 +114,21 @@ final class RadarRevealRiskTokenNetworkIpAddressGeometry: NSObject, Decodable, S
 final class RadarRevealRiskTokenNetworkPrivacy: NSObject, Decodable, Sendable {
     let hosting: Bool?
     @objc(hosting) var _hosting: Bool { hosting ?? false }
-    
+
     let proxy: Bool?
     @objc(proxy) var _proxy: Bool { proxy ?? false }
-    
+
     let relay: Bool?
     @objc(relay) var _relay: Bool { relay ?? false }
-    
+
     let service: String?
-    
+
     let tor: Bool?
     @objc(tor) var _tor: Bool { tor ?? false }
-    
+
     let vpn: Bool?
     @objc(vpn) var _vpn: Bool { vpn ?? false }
-    
+
     let residentialProxy: Bool?
     @objc(residentialProxy) var _residentialProxy: Bool { residentialProxy ?? false }
 }
@@ -148,3 +150,4 @@ final class RadarRevealRiskTokenDevice: NSObject, Decodable, Sendable {
     let appBuild: String?
 }
 
+// swiftlint:enable identifier_name

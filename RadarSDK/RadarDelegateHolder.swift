@@ -5,8 +5,8 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 
 @globalActor
 public actor RadarDelegateActor {

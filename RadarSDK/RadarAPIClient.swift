@@ -118,7 +118,7 @@ public final class RadarAPIClient: Sendable {
             throw RadarError(status: .errorServer, message: "Failed to send logs")
         }
     }
-    
+
     func revealRisk(
         fraudPayload: String,
         useSecondaryVerifiedHost: Bool,
@@ -146,7 +146,7 @@ public final class RadarAPIClient: Sendable {
             "xPlatformType": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKType : "Native",
             "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
         ]
-        
+
         let (data, response) = try await apiHelper.radarVerifiedRequest(method: "POST", url: "reveal/risk", body: params)
 
         guard let result = RadarRevealRiskToken.fromData(data) else {

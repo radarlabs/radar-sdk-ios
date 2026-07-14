@@ -20,7 +20,7 @@
 @property (nonatomic, readonly, copy) NSString * _Nullable type;
 @end
 
-@interface RadarRevealRiskTokenNetworkIpAddressGeometry : NSObject
+@interface RadarRevealRiskIpGeometry : NSObject
 @property (nonatomic, readonly, copy) NSString * _Nonnull type;
 @property (nonatomic, readonly, copy) NSArray<NSNumber *> * _Nonnull coordinates;
 @end
@@ -43,7 +43,7 @@
 @property (nonatomic, readonly) BOOL stateAllowed;
 @property (nonatomic, readonly) BOOL countryAllowed;
 @property (nonatomic, readonly, copy) NSString * _Nullable layer;
-@property (nonatomic, readonly, strong) RadarRevealRiskTokenNetworkIpAddressGeometry * _Nullable geometry;
+@property (nonatomic, readonly, strong) RadarRevealRiskIpGeometry * _Nullable geometry;
 @end
 
 @interface RadarRevealRiskTokenNetworkPrivacy : NSObject

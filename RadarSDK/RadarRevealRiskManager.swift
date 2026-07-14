@@ -14,16 +14,16 @@ import Foundation
 /// invoked from Objective-C, hopping back to the main thread to deliver the result.
 @objc(RadarRevealRiskManager)
 final class RadarRevealRiskManager: NSObject, Sendable {
-    
+
     @objc
     static let shared = RadarRevealRiskManager(
         apiClient: RadarAPIClient.shared,
         fraudSDK: RadarSDKFraud.shared,
     )
-    
+
     let apiClient: RadarAPIClient
     let fraudSDK: RadarSDKFraud?
-    
+
     init(apiClient: RadarAPIClient, fraudSDK: RadarSDKFraud?) {
         self.apiClient = apiClient
         self.fraudSDK = fraudSDK
@@ -33,19 +33,19 @@ final class RadarRevealRiskManager: NSObject, Sendable {
         guard let fraudSDK else {
             throw RadarError(status: .errorPlugin)
         }
-        
+
         let (status, payload) = await fraudSDK.getFraudPayload(sdkConfiguration: RadarSettings.sdkConfiguration)
         guard let payload, status == .success else {
             throw RadarError(status: status)
         }
-        
+
         let revealRisk = try await apiClient.revealRisk(
             fraudPayload: payload,
             useSecondaryVerifiedHost: useSecondaryVerifiedHost
         )
         return revealRisk
     }
-    
+
     @objc
     func revealRisk(
         useSecondaryVerifiedHost: Bool,
@@ -58,11 +58,9 @@ final class RadarRevealRiskManager: NSObject, Sendable {
             } catch {
                 if let radarError = error as? RadarError {
                     completionHandler(radarError.status, nil)
-                }
-                else if let _ = error as? RadarAPIClient.APIError {
+                } else if error is RadarAPIClient.APIError {
                     completionHandler(.errorServer, nil)
-                }
-                else {
+                } else {
                     completionHandler(.errorServer, nil)
                 }
             }

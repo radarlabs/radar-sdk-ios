@@ -6,8 +6,8 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 
 @globalActor
 public actor RadarIndoorsActor {
@@ -138,7 +138,7 @@ internal class RadarIndoors: NSObject {
                 semaphore.signal()
             }
 
-            semaphore.wait() // Blocks the calling (framework) thread until the download resolves
+            semaphore.wait()  // Blocks the calling (framework) thread until the download resolves
             return box.url
         }
         await sdk.useModel(model: "\(modelId).mlmodel", getModelData: getModelData)
