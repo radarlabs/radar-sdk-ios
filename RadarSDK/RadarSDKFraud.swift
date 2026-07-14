@@ -24,7 +24,10 @@ final class RadarSDKFraud: @unchecked Sendable {
         guard let RadarSDKFraudClass = NSClassFromString("RadarSDKFraud") as? NSObject.Type else {
             return nil
         }
-        guard let instance = RadarSDKFraudClass.value(forKey: "sharedInstance") as? NSObject else {
+        let sharedInstanceSelector = NSSelectorFromString("sharedInstance")
+        guard RadarSDKFraudClass.responds(to: sharedInstanceSelector),
+              let result = RadarSDKFraudClass.perform(sharedInstanceSelector),
+              let instance = result.takeRetainedValue() as? NSObject else {
             return nil
         }
         return RadarSDKFraud(instance: instance)
