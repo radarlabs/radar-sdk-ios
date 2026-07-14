@@ -27,18 +27,26 @@ class SurveyViewModel: NSObject, ObservableObject {
     
     override init() {
         super.init()
-        
         session.delegate = self
+        // Do NOT start the session here. The camera + world tracking is the most
+        // power/thermal-intensive work on the device; start it only while the AR view
+        // is actually on screen (see ARViewContainer) so the Survey tab doesn't run the
+        // camera invisibly.
+    }
+
+    func startSession() {
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = []
         session.run(config, options: [.resetTracking, .removeExistingAnchors])
     }
-    
+
+    func pauseSession() {
+        session.pause()
+    }
+
     func resetTracking() {
         startPosition = nil
-        let config = ARWorldTrackingConfiguration()
-        config.planeDetection = []
-        session.run(config, options: [.resetTracking, .removeExistingAnchors])
+        startSession()
     }
 }
     
@@ -202,6 +210,10 @@ struct SurveyView: View {
     
     var body: some View {
         VStack(spacing: 10) {
+            // Gates the AR calibration + beacon-ranging workflow (and the camera). Off by
+            // default so the tab is just the map until you opt in.
+            Toggle("Calibration mode", isOn: $calibrationMode)
+                .padding(.horizontal)
             MyMapView(withRadar: settingsStore.resolvedPublishableKey)
                 .onLoaded { mapView in
                     if let center = site?.fromXY((0, 0)) {
@@ -444,6 +456,9 @@ struct SurveyView: View {
             // down on tab-switch would silently abort an in-progress survey.
             timer?.cancel()
             timer = nil
+            // Belt-and-suspenders: stop the camera when leaving the tab, even if the AR
+            // view didn't get dismantled first.
+            viewModel.pauseSession()
         }
     }
 }

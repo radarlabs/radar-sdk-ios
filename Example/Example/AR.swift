@@ -19,11 +19,19 @@ struct ARViewContainer: UIViewRepresentable {
         arView.session = viewModel.session
         arView.delegate = context.coordinator
         arView.autoenablesDefaultLighting = true
+        // Start the camera/world-tracking session only now that the AR view is on screen.
+        viewModel.startSession()
         return arView
     }
-    
+
     func updateUIView(_ uiView: ARSCNView, context: Context) {
         // Nothing to update for now
+    }
+
+    // Pause the session when the AR view leaves the hierarchy (e.g. calibration mode is
+    // switched off) so the camera stops running.
+    static func dismantleUIView(_ uiView: ARSCNView, coordinator: Coordinator) {
+        uiView.session.pause()
     }
     
     func makeCoordinator() -> Coordinator {
