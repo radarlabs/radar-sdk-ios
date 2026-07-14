@@ -605,7 +605,7 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(completionHandler:));
 
 /**
- Gets a reveal risk assessment for the current device, including device, network, and risk signals.
+ Reveals device and network risk signals for this device.
 
  @warning Note that you must configure SSL pinning before calling this method.
 
