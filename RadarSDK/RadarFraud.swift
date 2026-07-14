@@ -8,48 +8,41 @@
 
 import Foundation
 
-
-class RadarSDKFraud: @unchecked Sendable {
+final class RadarFraud: @unchecked Sendable {
     
-    static let shared = RadarSDKFraud(shared: true)
+    let instance: NSObject
     
-    let instance: NSObject?
-    init(shared: Bool = false) {
-        guard let cls = NSClassFromString("RadarSDKFraud") as? NSObject.Type else {
-            instance = nil
-            return
-        }
-        if shared {
-            guard let bridge = RadarSwift.bridge else {
-                instance = nil
-                return
-            }
-            instance = bridge.getSharedInstance(target: cls)
-        } else {
-            instance = cls.init()
-        }
+    init(instance: NSObject) {
+        self.instance = instance
     }
     
+    static let shared: RadarFraud? = {
+        guard let RadarSDKFraudClass = NSClassFromString("RadarSDKFraud") as? NSObject.Type else {
+            return nil
+        }
+        guard let instance = RadarSDKFraudClass.value(forKey: "sharedInstance") as? NSObject else {
+            return nil
+        }
+        return RadarFraud(instance: instance)
+    }()
+    
     public func initialize(options: [String: Any]) {
-        guard let bridge = RadarSwift.bridge, let instance else { return }
-        
         let selector = NSSelectorFromString("initializeWithOptions:")
-        bridge.invoke(target:instance, selector:selector, args: [options])
+        instance.perform(selector, with: options)
     }
     
     public func getFraudPayload(sdkConfiguration: RadarSdkConfiguration?) async -> (RadarStatus, String?) {
-        guard let bridge = RadarSwift.bridge, let instance else {
-            return (.errorPlugin, nil)
-        }
+        let selector = NSSelectorFromString("getFraudPayloadWithOptions:completionHandler:")
         let options = sdkConfiguration?.dictionaryValue() ?? [:]
+        
+        
         let result = await withCheckedContinuation { continuation in
-            let completion: @convention(block) ([String: Sendable]?) -> Void = { result in
-                continuation.resume(returning: result)
+            let completionHandler: @convention(block) ([String: Sendable]?) -> Void = { payload in
+                continuation.resume(returning: payload)
             }
-            let selector = NSSelectorFromString("getFraudPayloadWithOptions:completionHandler:")
-            bridge.invoke(target:instance, selector:selector, args: [options, completion])
+            instance.perform(selector, with: options, with: completionHandler)
         }
-
+        
         let error = result?["error"] as? String
         let payload = result?["payload"] as? String
         

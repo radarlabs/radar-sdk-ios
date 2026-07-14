@@ -27,8 +27,6 @@ protocol RadarSwiftBridgeProtocol {
     func isForeground() -> Bool
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser)
     func radarUser() -> RadarUser?
-    func invoke(target: NSObject, selector: Selector, args: [Any])
-    func getSharedInstance(target: NSObject.Type) -> NSObject?
 }
 
 @objc(RadarSwift) @objcMembers

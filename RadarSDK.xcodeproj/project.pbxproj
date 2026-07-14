@@ -469,6 +469,7 @@
 		F6843C37300188BC00213092 /* RadarRevealRiskToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRevealRiskToken.h; sourceTree = "<group>"; };
 		F6843C393005538D00213092 /* RadarRevealRiskManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRevealRiskManager.h; sourceTree = "<group>"; };
 		F6843C4F3005A79E00213092 /* RadarFraud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFraud.swift; sourceTree = "<group>"; };
+		F6843C51300602BE00213092 /* RadarSDKFraud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKFraud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F686B72C2E4D27EB00D3D614 /* RadarInAppMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarInAppMessage.swift; sourceTree = "<group>"; };
 		F686B7302E4D29C400D3D614 /* RadarInAppMessageDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarInAppMessageDelegate.h; sourceTree = "<group>"; };
 		F686B7362E4D2AFC00D3D614 /* RadarAPIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelper.swift; sourceTree = "<group>"; };
@@ -817,6 +818,7 @@
 		DDC637F2238C7F9C00747FD4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F6843C51300602BE00213092 /* RadarSDKFraud.framework */,
 				0113020E2AE1467800EFC377 /* Network.framework */,
 			);
 			name = Frameworks;

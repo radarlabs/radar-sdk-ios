@@ -18,18 +18,22 @@ final class RadarRevealRiskManager: NSObject, Sendable {
     @objc
     static let shared = RadarRevealRiskManager(
         apiClient: RadarAPIClient.shared,
-        fraudSDK: RadarSDKFraud(shared: true),
+        fraudSDK: RadarFraud.shared,
     )
     
     let apiClient: RadarAPIClient
-    let fraudSDK: RadarSDKFraud
+    let fraudSDK: RadarFraud?
     
-    init(apiClient: RadarAPIClient, fraudSDK: RadarSDKFraud) {
+    init(apiClient: RadarAPIClient, fraudSDK: RadarFraud?) {
         self.apiClient = apiClient
         self.fraudSDK = fraudSDK
     }
 
     func revealRisk(useSecondaryVerifiedHost: Bool) async throws -> RadarRevealRiskToken {
+        guard let fraudSDK else {
+            throw RadarError(status: .errorPlugin)
+        }
+        
         let (status, payload) = await fraudSDK.getFraudPayload(sdkConfiguration: RadarSettings.sdkConfiguration)
         guard let payload, status == .success else {
             throw RadarError(status: status)
