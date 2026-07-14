@@ -1,15 +1,11 @@
 name: Xcode - Build, Analyze, & Test
 
 on:
-  push:
-    branches: [ master, develop ]
-  # Run on pull requests targeting ANY base branch (no `branches:` filter) so that
-  # stacked PRs — whose base is an intermediate feature branch rather than master —
-  # also get CI, instead of only running once a PR is re-pointed at master/develop.
+  # No base-branch filter: every PR runs CI, including stacked PRs whose base is an
+  # intermediate feature branch. PR-only (no `push`) — PRs cover all branch CI.
   pull_request:
 
-# Cancel superseded runs when a branch is re-pushed (e.g. restacking a stack of PRs),
-# scoped to pull_request events so master/release builds are never cancelled midway.
+# Cancel superseded runs when a PR branch is re-pushed (e.g. restacking a stack of PRs).
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
