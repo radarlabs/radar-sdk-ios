@@ -432,39 +432,11 @@ BOOL _initialized = NO;
 
 + (void)revealRiskWithCompletionHandler:(RadarRevealRiskCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"revealRisk()"];
-
-    Class radarSDKFraud = NSClassFromString(@"RadarSDKFraud");
-    if (!radarSDKFraud) {
-        if (completionHandler) {
-            completionHandler(RadarStatusErrorPlugin, nil);
-        }
-        return;
-    }
-
-    // RadarAPIClient is pure Swift; gather the fraud payload here (Objective-C plugin) and
-    // hand it to RadarRevealRiskManager, which bridges to the async Swift API client.
-    NSMutableDictionary *options = [NSMutableDictionary dictionary];
-    [[radarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
-        NSString *fraudPayload = result[@"payload"];
-        if (!result || result[@"error"] || !fraudPayload) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (completionHandler) {
-                    completionHandler(RadarStatusErrorUnknown, nil);
-                }
-            });
-            return;
-        }
-        [[RadarRevealRiskManager shared] revealRiskWithFraudPayload:fraudPayload
-                                  useSecondaryVerifiedHost:NO
-                                         completionHandler:^(RadarRevealRiskToken * _Nullable result) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (result) {
-                    completionHandler(RadarStatusSuccess, result);
-                } else {
-                    completionHandler(RadarStatusErrorServer, nil);
-                }
-            });
-        }];
+    [[RadarRevealRiskManager shared] revealRiskWithUseSecondaryVerifiedHost:NO
+                                                          completionHandler:^(RadarStatus status, RadarRevealRiskToken * _Nullable result) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completionHandler(status, result);
+        });
     }];
 }
 

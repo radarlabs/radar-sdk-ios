@@ -303,3 +303,8 @@ internal extension CLLocation {
         return location
     }
 }
+
+struct RadarError: Error {
+    let status: RadarStatus
+    let message: String
+}

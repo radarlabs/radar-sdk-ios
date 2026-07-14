@@ -123,8 +123,6 @@ public final class RadarAPIClient: Sendable {
         fraudPayload: String,
         useSecondaryVerifiedHost: Bool,
     ) async throws -> RadarRevealRiskToken {
-        let sdkConfiguration = RadarSettings.sdkConfiguration
-        
         let params: [String: Any?] = [
             "installId": RadarSettings.installId,
             "userId": RadarSettings.userId,
