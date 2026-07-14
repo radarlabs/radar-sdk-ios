@@ -19,6 +19,12 @@ class Utils {
         return UserDefaults(suiteName: suite)?.string(forKey: "radar-host") ?? "https://api.radar.io"
     }
 
+    /// URL for a Radar-hosted asset (e.g. a floorplan image) at the given asset path,
+    /// resolved against `radarHost`.
+    static func assetURL(path: String) -> URL? {
+        URL(string: "\(radarHost)/api/v1/assets/\(path)")
+    }
+
     static func stringForRadarEvent(_ event: RadarEvent) -> String {
         let confidenceStr = Utils.stringForRadarEventConfidence(event.confidence)
         
