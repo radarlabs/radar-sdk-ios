@@ -1786,7 +1786,4 @@ BOOL _initialized = NO;
     }
 }
 
-+ (void)revealRisk {
-}
-
 @end
