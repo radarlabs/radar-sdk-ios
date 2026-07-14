@@ -44,7 +44,7 @@ extension RadarSerializedTests {
             [
                 "_id": "risk-token-123",
                 "token": "signed-jwt-token",
-                "expiresAt": "2026-07-14T12:00:00.000Z",
+                "expiresAt": "2026-07-14T12:00:00Z",
                 "expiresIn": 3600,
                 "risk": [
                     "level": "medium",
