@@ -211,7 +211,7 @@ extension RadarBeaconManagerSwift {
 
             let majorValue = (beaconDict["major"] as? String).flatMap(CLBeaconMajorValue.init)
             let minorValue = (beaconDict["minor"] as? String).flatMap(CLBeaconMinorValue.init)
-            
+
             let constraint: CLBeaconIdentityConstraint
             if let majorValue, let minorValue {
                 constraint = CLBeaconIdentityConstraint(uuid: uuid, major: majorValue, minor: minorValue)
