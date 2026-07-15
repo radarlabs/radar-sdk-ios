@@ -45,7 +45,7 @@ class RadarUtils: NSObject {
 
     static let country = Locale.current.regionCode
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
-    static let sdkVersion = "3.37.1"
+    static let sdkVersion = "3.38.0"
 
     static var deviceId: String? {
         get async {
