@@ -176,5 +176,26 @@ extension RadarSerializedTests {
                 _ = try await manager.revealRisk(useSecondaryVerifiedHost: false)
             }
         }
+
+        @Test("revealRisk throws .errorPlugin when the fraud SDK is not available")
+        func revealRiskThrowsPluginErrorWhenFraudSDKIsNil() async throws {
+            let session = MockURLSession()
+            // Without a fraud SDK the manager should short-circuit before ever reaching the API.
+            session.on(
+                { _ in
+                    Issue.record("reveal/risk API should not be called when the fraud SDK is nil")
+                    return false
+                }, Data())
+
+            Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
+            let apiClient = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
+            let manager = RadarRevealRiskManager(apiClient: apiClient, fraudSDK: nil)
+
+            await #expect {
+                _ = try await manager.revealRisk(useSecondaryVerifiedHost: false)
+            } throws: { error in
+                (error as? RadarError)?.status == .errorPlugin
+            }
+        }
     }
 }
