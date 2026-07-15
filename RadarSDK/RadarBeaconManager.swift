@@ -41,8 +41,8 @@ class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
     // MARK: - Region Helpers
 
     private func region(for beacon: RadarBeacon) -> CLBeaconRegion? {
-        guard let uuid = UUID(uuidString: beacon.uuid) else { return nil }
-        guard let major = CLBeaconMajorValue(beacon.major),
+        guard let uuid = UUID(uuidString: beacon.uuid),
+            let major = CLBeaconMajorValue(beacon.major),
             let minor = CLBeaconMinorValue(beacon.minor)
         else { return nil }
 
@@ -67,8 +67,8 @@ class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
 
     func constraintKey(uuid: String, major: String? = nil, minor: String? = nil) -> String {
         var key = uuid
-        if let major { key += "-\(major)" }
-        if let minor { key += "-\(minor)" }
+        if let major { key += "-major\(major)" }
+        if let minor { key += "-minor\(minor)" }
         return key
     }
 

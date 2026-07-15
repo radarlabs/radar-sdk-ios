@@ -118,7 +118,7 @@ extension RadarBeaconManagerSwift {
         for region: CLBeaconRegion,
         completionHandler: @escaping RadarBeaconCompletionHandler
     ) {
-        guard !RadarSettings.useRadarModifiedBeacon else { return }
+        if RadarSettings.useRadarModifiedBeacon { return }
 
         let identifier = region.identifier
         if nearbyBeaconIdentifiers.contains(identifier) {
@@ -140,7 +140,7 @@ extension RadarBeaconManagerSwift {
         for region: CLBeaconRegion,
         completionHandler: @escaping RadarBeaconCompletionHandler
     ) {
-        guard !RadarSettings.useRadarModifiedBeacon else { return }
+        if RadarSettings.useRadarModifiedBeacon { return }
 
         let identifier = region.identifier
         if !nearbyBeaconIdentifiers.contains(identifier) {
@@ -163,7 +163,7 @@ extension RadarBeaconManagerSwift {
         for region: CLBeaconRegion,
         completionHandler: @escaping RadarBeaconCompletionHandler
     ) {
-        guard !RadarSettings.useRadarModifiedBeacon else { return }
+        if RadarSettings.useRadarModifiedBeacon { return }
 
         let uuids = RadarSettings.beaconUUIDs ?? []
         rangeBeaconUUIDs(uuids, completionHandler: completionHandler)
@@ -174,7 +174,7 @@ extension RadarBeaconManagerSwift {
         for region: CLBeaconRegion,
         completionHandler: @escaping RadarBeaconCompletionHandler
     ) {
-        guard !RadarSettings.useRadarModifiedBeacon else { return }
+        if RadarSettings.useRadarModifiedBeacon { return }
 
         let uuids = RadarSettings.beaconUUIDs ?? []
         rangeBeaconUUIDs(uuids, completionHandler: completionHandler)
@@ -209,15 +209,13 @@ extension RadarBeaconManagerSwift {
                 continue
             }
 
-            let major = beaconDict["major"] as? String
-            let minor = beaconDict["minor"] as? String
-
+            let majorValue = (beaconDict["major"] as? String).flatMap(CLBeaconMajorValue.init)
+            let minorValue = (beaconDict["minor"] as? String).flatMap(CLBeaconMinorValue.init)
+            
             let constraint: CLBeaconIdentityConstraint
-            if let majorString = major, let majorValue = CLBeaconMajorValue(majorString),
-                let minorString = minor, let minorValue = CLBeaconMinorValue(minorString)
-            {
+            if let majorValue, let minorValue {
                 constraint = CLBeaconIdentityConstraint(uuid: uuid, major: majorValue, minor: minorValue)
-            } else if let majorString = major, let majorValue = CLBeaconMajorValue(majorString) {
+            } else if let majorValue {
                 constraint = CLBeaconIdentityConstraint(uuid: uuid, major: majorValue)
             } else {
                 constraint = CLBeaconIdentityConstraint(uuid: uuid)
