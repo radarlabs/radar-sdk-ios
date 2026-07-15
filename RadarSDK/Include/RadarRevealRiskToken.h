@@ -6,8 +6,15 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+typedef NS_ENUM(NSInteger, RadarRevealRiskLevel) {
+    RadarRevealRiskLevelNone = 0,
+    RadarRevealRiskLevelLow,
+    RadarRevealRiskLevelMedium,
+    RadarRevealRiskLevelHigh,
+};
+
 @interface RadarRevealRiskTokenRisk : NSObject
-@property (nonatomic, readonly, copy) NSString * _Nonnull level;
+@property (nonatomic, readonly) RadarRevealRiskLevel level;
 @property (nonatomic, readonly, copy) NSArray<NSString *> * _Nonnull reasons;
 @end
 

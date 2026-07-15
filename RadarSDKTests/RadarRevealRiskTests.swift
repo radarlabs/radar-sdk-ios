@@ -131,7 +131,7 @@ extension RadarSerializedTests {
             #expect(token.id == "risk-token-123")
             #expect(token.token == "signed-jwt-token")
             #expect(token.expiresIn == 3600)
-            #expect(token.risk.level == "medium")
+            #expect(token.risk.level == .medium)
             #expect(token.risk.reasons == ["proxy_detected", "vpn_detected"])
             #expect(token.network.ipAddress?.countryCode == "US")
             #expect(token.network.ipAddress?.city == "New York")
@@ -157,7 +157,7 @@ extension RadarSerializedTests {
 
             #expect(status == .success)
             #expect(token?.id == "risk-token-123")
-            #expect(token?.risk.level == "medium")
+            #expect(token?.risk.level == .medium)
         }
 
         @Test("revealRisk does not call the API when the fraud SDK returns an error")

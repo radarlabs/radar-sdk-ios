@@ -54,9 +54,33 @@ final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
     }
 }
 
+/// Risk level for a Reveal Risk token, ordered from lowest to highest.
+@objc(RadarRevealRiskLevel)
+enum RadarRevealRiskLevel: Int, Sendable, Decodable {
+    case none
+    case low
+    case medium
+    case high
+
+    init(string: String) {
+        switch string {
+        case "low": self = .low
+        case "medium": self = .medium
+        case "high": self = .high
+        default: self = .none
+        }
+    }
+
+    init(from decoder: Decoder) throws {
+        let value = try decoder.singleValueContainer()
+        let string = try value.decode(String.self)
+        self.init(string: string)
+    }
+}
+
 @objc(RadarRevealRiskTokenRisk) @objcMembers
 final class RadarRevealRiskTokenRisk: NSObject, Decodable, Sendable {
-    let level: String
+    let level: RadarRevealRiskLevel
     let reasons: [String]
 }
 
