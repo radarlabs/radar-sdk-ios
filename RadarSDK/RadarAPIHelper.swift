@@ -106,6 +106,9 @@ final class RadarAPIHelper: Sendable {
         headers["X-Radar-Mobile-Origin"] = Bundle.main.bundleIdentifier
         headers["X-Radar-Network-Type"] = RadarUtils.networkType.rawValue
         headers["X-Radar-App-Info"] = RadarUtils.escapeNonAsciiCharacters(RadarUtils.dictionaryToJson(RadarUtils.appInfo))
+        if let product = RadarSettings.product {
+            headers["X-Radar-Product"] = product
+        }
 
         return headers
     }

@@ -160,6 +160,47 @@ extension RadarSerializedTests {
             #expect(token?.risk.level == .medium)
         }
 
+        @Test("revealRisk passes the product up in the X-Radar-Product header when it is set")
+        func revealRiskSendsProductHeader() async throws {
+            RadarSettings.product = "trip-tracking"
+            defer { RadarSettings.product = nil }
+
+            let responseData = try #require(try? JSONSerialization.data(withJSONObject: RadarRevealRiskTests.revealRiskResponse))
+            let session = MockURLSession()
+
+            // Only return the response (letting the call succeed and produce a token) when the request
+            // carries the product in the X-Radar-Product header; otherwise the call fails.
+            session.on(
+                { request in
+                    request.url?.absoluteString == RadarRevealRiskTests.revealRiskURL
+                        && request.value(forHTTPHeaderField: "X-Radar-Product") == "trip-tracking"
+                }, responseData)
+
+            let manager = makeManager(fraudResult: ["payload": "mock-fraud-payload"], session: session)
+            let token = try await manager.revealRisk(useSecondaryVerifiedHost: false)
+
+            #expect(token.id == "risk-token-123")
+        }
+
+        @Test("revealRisk does not send the X-Radar-Product header when the product is not set")
+        func revealRiskOmitsProductHeaderWhenUnset() async throws {
+            RadarSettings.product = nil
+
+            let responseData = try #require(try? JSONSerialization.data(withJSONObject: RadarRevealRiskTests.revealRiskResponse))
+            let session = MockURLSession()
+
+            session.on(
+                { request in
+                    request.url?.absoluteString == RadarRevealRiskTests.revealRiskURL
+                        && request.value(forHTTPHeaderField: "X-Radar-Product") == nil
+                }, responseData)
+
+            let manager = makeManager(fraudResult: ["payload": "mock-fraud-payload"], session: session)
+            let token = try await manager.revealRisk(useSecondaryVerifiedHost: false)
+
+            #expect(token.id == "risk-token-123")
+        }
+
         @Test("revealRisk does not call the API when the fraud SDK returns an error")
         func revealRiskSkipsAPIWhenFraudFails() async throws {
             let session = MockURLSession()
