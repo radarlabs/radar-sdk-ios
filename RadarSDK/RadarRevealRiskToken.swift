@@ -38,11 +38,41 @@ final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
         case device
     }
 
+    nonisolated(unsafe) private static let isoFormatter: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }()
+
+    nonisolated(unsafe) private static let isoFormatterNoFractional: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime]
+        return f
+    }()
+    
     /// Parses a Reveal Risk API response into an Objective-C compatible object.
     /// Returns `nil` if the data cannot be decoded.
     static func fromData(_ data: Data) -> RadarRevealRiskToken? {
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        let formatterNoFractional = ISO8601DateFormatter()
+        formatterNoFractional.formatOptions = [.withInternetDateTime]
+
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let string = try container.decode(String.self)
+            if let date = isoFormatter.date(from: string) {
+                return date
+            }
+            if let date = isoFormatterNoFractional.date(from: string) {
+                return date
+            }
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(string)")
+        }
+        
         guard let decoded = try? decoder.decode(RadarRevealRiskToken.self, from: data) else {
             return nil
         }
