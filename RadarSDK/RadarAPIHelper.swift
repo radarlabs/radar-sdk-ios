@@ -89,9 +89,9 @@ final class RadarAPIHelper: Sendable {
         return (data, httpResponse)
     }
 
-    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
+    func addRadarHeaders(_ headers: [String: String]) async throws -> [String: String] {
         guard let publishableKey = RadarSettings.publishableKey else {
-            throw URLError(.userAuthenticationRequired)
+            throw RadarError(status: .errorPublishableKey)
         }
 
         var headers = headers
@@ -107,7 +107,23 @@ final class RadarAPIHelper: Sendable {
         headers["X-Radar-Network-Type"] = RadarUtils.networkType.rawValue
         headers["X-Radar-App-Info"] = RadarUtils.escapeNonAsciiCharacters(RadarUtils.dictionaryToJson(RadarUtils.appInfo))
 
+        return headers
+    }
+
+    func radarRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
+
+        let headers = try await addRadarHeaders(headers)
         let url = "\(RadarSettings.host)/v1/\(url)"
+
+        let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
+
+        return (data, response)
+    }
+
+    func radarVerifiedRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
+
+        let headers = try await addRadarHeaders(headers)
+        let url = "\(RadarSettings.verifiedHost)/v1/\(url)"
 
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
 
