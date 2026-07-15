@@ -25,6 +25,7 @@
 #import "RadarInAppMessageDelegate.h"
 #import "RadarSDKFraudProtocol.h"
 #import "RadarSwiftBridge.h"
+#import "RadarRevealRiskManager.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -151,7 +152,7 @@ BOOL _initialized = NO;
                                             RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
 
                                             Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
-                                            if (RadarSDKFraud) {
+                                            if (RadarSDKFraud && [RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
                                                 id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
                                                 if ([radarSDKFraud respondsToSelector:@selector(initializeWithOptions:)]) {
                                                     [radarSDKFraud initializeWithOptions:@{
@@ -427,6 +428,16 @@ BOOL _initialized = NO;
 + (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *)reason transactionId:(NSString *)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackVerified()"];
     [[RadarVerificationManager sharedInstance] trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy reason:reason transactionId:transactionId completionHandler:completionHandler];
+}
+
++ (void)revealRiskWithCompletionHandler:(RadarRevealRiskCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"revealRisk()"];
+    [[RadarRevealRiskManager shared] revealRiskWithUseSecondaryVerifiedHost:NO
+                                                          completionHandler:^(RadarStatus status, RadarRevealRiskToken * _Nullable result) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completionHandler(status, result);
+        });
+    }];
 }
 
 + (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons {

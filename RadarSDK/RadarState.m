@@ -12,6 +12,7 @@
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
 #import "RadarLogger.h"
+#import "RadarUserDefaults.h"
 
 @implementation RadarState
 
@@ -179,11 +180,13 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 }
 
 + (NSDictionary *)lastHeadingData {
-    return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastHeadingData];
+    // Reads through the app-group-aware store so it stays consistent with the Swift
+    // RadarLocationManager twin, which writes heading via RadarUserDefaults.
+    return [[RadarUserDefaults sharedUserDefaults] dictionaryForKey:kLastHeadingData];
 }
 
 + (void)setLastHeadingData:(NSDictionary *_Nullable)lastHeadingData {
-    [[NSUserDefaults standardUserDefaults] setObject:lastHeadingData forKey:kLastHeadingData];
+    [[RadarUserDefaults sharedUserDefaults] setObject:lastHeadingData forKey:kLastHeadingData];
 }
 
 + (NSDictionary *)lastMotionActivityData {
