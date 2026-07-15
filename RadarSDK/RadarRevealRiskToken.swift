@@ -49,7 +49,7 @@ final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
         f.formatOptions = [.withInternetDateTime]
         return f
     }()
-    
+
     /// Parses a Reveal Risk API response into an Objective-C compatible object.
     /// Returns `nil` if the data cannot be decoded.
     static func fromData(_ data: Data) -> RadarRevealRiskToken? {
@@ -72,7 +72,7 @@ final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
             }
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(string)")
         }
-        
+
         guard let decoded = try? decoder.decode(RadarRevealRiskToken.self, from: data) else {
             return nil
         }
