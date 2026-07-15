@@ -24,7 +24,6 @@
 		0107A9FF26220037008AB52F /* RadarSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C782308797B00EB88F9 /* RadarSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0107AA0726220040008AB52F /* RadarAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C9823087F9200EB88F9 /* RadarAPIClient.h */; };
 		0107AA0C26220045008AB52F /* RadarAPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC1237C5B800026C91A /* RadarAPIHelper.h */; };
-		0107AA0F26220047008AB52F /* RadarBeaconManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DD6F4F662573174400AFA38B /* RadarBeaconManager.h */; };
 		0107AA1626220050008AB52F /* RadarLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D66230A0D6700EB88F9 /* RadarLogger.h */; };
 		0107AA1926220052008AB52F /* RadarLocationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CF723088F8400EB88F9 /* RadarLocationManager.h */; };
 		0107AA1C26220055008AB52F /* RadarPermissionsHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */; };
@@ -55,7 +54,6 @@
 		0107AB05262201CB008AB52F /* Radar.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236C9023087A3500EB88F9 /* Radar.m */; };
 		0107AB08262201CE008AB52F /* RadarAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236C9923087F9200EB88F9 /* RadarAPIClient.m */; };
 		0107AB0B262201D1008AB52F /* RadarAPIHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DD633EC2237C5B800026C91A /* RadarAPIHelper.m */; };
-		0107AB0E262201D5008AB52F /* RadarBeaconManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */; };
 		0107AB17262201DE008AB52F /* RadarDelegateHolder.m in Sources */ = {isa = PBXBuildFile; fileRef = DD4C104925D87E3E009C2E36 /* RadarDelegateHolder.m */; };
 		0107AB1D262201E5008AB52F /* RadarLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CF823088F8400EB88F9 /* RadarLocationManager.m */; };
 		0107AB20262201E9008AB52F /* RadarPermissionsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */; };
@@ -451,8 +449,6 @@
 		DD633EC2237C5B800026C91A /* RadarAPIHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAPIHelper.m; sourceTree = "<group>"; };
 		DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarPermissionsHelper.h; sourceTree = "<group>"; };
 		DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarPermissionsHelper.m; sourceTree = "<group>"; };
-		DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarBeaconManager.m; sourceTree = "<group>"; };
-		DD6F4F662573174400AFA38B /* RadarBeaconManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarBeaconManager.h; sourceTree = "<group>"; };
 		DD6F4F8525741B1700AFA38B /* RadarBeacon.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarBeacon.m; sourceTree = "<group>"; };
 		DD87B873247E955B0065A36D /* RadarRouteGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarRouteGeometry.m; sourceTree = "<group>"; };
 		DD8CCDF7246872360011690D /* RadarTripOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarTripOptions.m; sourceTree = "<group>"; };
@@ -672,8 +668,6 @@
 				DD633EC1237C5B800026C91A /* RadarAPIHelper.h */,
 				DD633EC2237C5B800026C91A /* RadarAPIHelper.m */,
 				F686B7362E4D2AFC00D3D614 /* RadarAPIHelper.swift */,
-				DD6F4F662573174400AFA38B /* RadarBeaconManager.h */,
-				DD64416E25B398A7003C3E63 /* RadarBeaconManager.m */,
 				BABC4B90300190E10035CBDB /* RadarBeaconManager.swift */,
 				BA8D14CC3005A30200022EB3 /* RadarBeaconManager+Delegate.swift */,
 				BABC4B923001AE860035CBDB /* RadarBeaconManagerSwift.h */,
@@ -934,7 +928,6 @@
 				0107AA1C26220055008AB52F /* RadarPermissionsHelper.h in Headers */,
 				96A5A11227AD9F7F007B960B /* Radar.h in Headers */,
 				96A5A10827AD9F7F007B960B /* RadarSegment.h in Headers */,
-				0107AA0F26220047008AB52F /* RadarBeaconManager.h in Headers */,
 				96A5A0D027AD9F41007B960B /* RadarRouteGeometry+Internal.h in Headers */,
 				0107AA1626220050008AB52F /* RadarLogger.h in Headers */,
 				828D1A562E295FD400663787 /* RadarTripOrder.h in Headers */,
@@ -1184,7 +1177,6 @@
 				0107AAB626220172008AB52F /* RadarPolygonGeometry.m in Sources */,
 				BABC4B9D3005494E0035CBDB /* RadarPermissionsHelper.swift in Sources */,
 				BA46C1682F4CF46600031891 /* RadarTripLeg.m in Sources */,
-				0107AB0E262201D5008AB52F /* RadarBeaconManager.m in Sources */,
 				0107AADA26220195008AB52F /* RadarRouteMatrix.m in Sources */,
 				F64C83552F6B54EF00943B7A /* RadarState.swift in Sources */,
 				0107AA7A26220128008AB52F /* RadarAddress.m in Sources */,
