@@ -118,7 +118,7 @@ internal class RadarIndoors: NSObject {
         super.init()
     }
 
-    public func updateTracking(user: RadarUser) async {
+    public func updateTracking(geofences: [RadarGeofence]?) async {
         guard let sdk else {
             if Radar.getTrackingOptions().useIndoorScan {
                 // if using indoor scan, we're expecting the IndoorSDK to be available, so log a warning if it's not available
@@ -134,11 +134,11 @@ internal class RadarIndoors: NSObject {
             }
             return
         }
-        if user.geofences?.contains(where: { $0.activeIndoorModelId != nil && ($0.activeIndoorModelId == currentModelId) }) == true {
+        if geofences?.contains(where: { $0.activeIndoorModelId != nil && ($0.activeIndoorModelId == currentModelId) }) == true {
             RadarLogger.shared.debug("model already in use")
             return
         }
-        guard let modelId = user.geofences?.first(where: { $0.activeIndoorModelId != nil })?.activeIndoorModelId else {
+        guard let modelId = geofences?.first(where: { $0.activeIndoorModelId != nil })?.activeIndoorModelId else {
             // no model id in current geofences
             RadarLogger.shared.debug("found no model id in current geofences")
             return

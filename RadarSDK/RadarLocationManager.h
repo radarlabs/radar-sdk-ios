@@ -34,8 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateTracking;
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta;
 - (void)updateTrackingFromInitialize;
-- (void)getIndoorLocationIfConfiguredWithBeacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-                               completionHandler:(void (^)(NSArray<RadarBeacon *> *_Nullable, CLLocation *_Nullable))completionHandler;
+- (void)getIndoorLocationIfConfiguredWithCompletionHandler:(void (^)(CLLocation *_Nullable))completionHandler;
 
 /**
  If `[RadarSettings previousTrackingOptions]` is not `nil`, remove them and
