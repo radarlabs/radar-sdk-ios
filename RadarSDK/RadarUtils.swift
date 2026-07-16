@@ -45,7 +45,7 @@ class RadarUtils: NSObject {
 
     static let country = Locale.current.regionCode
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
-    static let sdkVersion = "3.37.1"
+    static let sdkVersion = "3.38.0"
 
     static var deviceId: String? {
         get async {
@@ -301,5 +301,19 @@ internal extension CLLocation {
         let location = CLLocation(coordinate: coordinate, altitude: 0, horizontalAccuracy: horizontalAccuracy, verticalAccuracy: verticalAccuracy, timestamp: timestamp)
 
         return location
+    }
+}
+
+struct RadarError: Error {
+    let status: RadarStatus
+    let message: String?
+
+    init(status: RadarStatus) {
+        self.status = status
+        self.message = nil
+    }
+    init(status: RadarStatus, message: String) {
+        self.status = status
+        self.message = message
     }
 }

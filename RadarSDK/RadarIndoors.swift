@@ -6,17 +6,15 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 
 @globalActor
-@available(iOS 13.0, *)
 public actor RadarIndoorsActor {
     public static let shared = RadarIndoorsActor()
 }
 
 @RadarIndoorsActor
-@available(iOS 13.0, *)
 class RadarSDKIndoors {
     // Write-once in the nonisolated initializer, only read from actor-isolated methods afterwards,
     // so nonisolated(unsafe) is sound and lets the init run off the actor.
@@ -103,7 +101,6 @@ class RadarSDKIndoors {
 }
 
 @RadarIndoorsActor
-@available(iOS 13.0, *)
 @objc(RadarIndoors) @objcMembers
 internal class RadarIndoors: NSObject {
     // `shared` and `init()` are nonisolated so the Objective-C tracking code can obtain the
@@ -179,7 +176,7 @@ internal class RadarIndoors: NSObject {
                 semaphore.signal()
             }
 
-            semaphore.wait() // Blocks the calling (framework) thread until the download resolves
+            semaphore.wait()  // Blocks the calling (framework) thread until the download resolves
             return box.url
         }
         await sdk.useModel(model: "\(modelId).mlmodel", getModelData: getModelData)
@@ -218,7 +215,6 @@ internal class RadarIndoors: NSObject {
 
 // Transfers a URL from a detached download Task back to the synchronous getModelData callback.
 // The read is ordered after the write by the bridging semaphore, so unchecked Sendable is sound.
-@available(iOS 13.0, *)
 private final class RadarIndoorsModelDataBox: @unchecked Sendable {
     var url: URL?
 }

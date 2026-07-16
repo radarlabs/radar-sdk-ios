@@ -134,6 +134,15 @@
             if (config.nonce) {
                 options[@"nonce"] = config.nonce;
             }
+            // TODO: migrate to swift and use RadarSDKFraud in swift.
+            if (![RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
+                completionHandler(RadarStatusErrorPlugin, nil);
+                return;
+            }
+            if (![[RadarSDKFraud sharedInstance] respondsToSelector:@selector(getFraudPayloadWithOptions:completionHandler:)]) {
+                completionHandler(RadarStatusErrorPlugin, nil);
+                return;
+            }
             [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
                 if (!result) {
                     [RadarUtilsDeprecated runOnMainThread:^{
@@ -403,6 +412,9 @@
     if (!RadarSDKFraud) {
         return NO;
     }
+    if (![RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
+        return NO;
+    }
     id sharedInstance = [RadarSDKFraud sharedInstance];
     SEL selector = @selector(isSharing);
     if (![sharedInstance respondsToSelector:selector]) {
@@ -421,6 +433,9 @@
 - (void)clearSharing {
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
+        return;
+    }
+    if (![RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
         return;
     }
     id sharedInstance = [RadarSDKFraud sharedInstance];

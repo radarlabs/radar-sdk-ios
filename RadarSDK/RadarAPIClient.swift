@@ -115,8 +115,58 @@ public final class RadarAPIClient: Sendable {
         if response.statusCode >= 200 && response.statusCode < 300 {
             return
         } else {
-            throw APIError(data: data, response: response, message: "Failed to send logs")
+            throw RadarError(status: .errorServer, message: "Failed to send logs")
         }
+    }
+
+    func revealRisk(
+        fraudPayload: String,
+        useSecondaryVerifiedHost: Bool,
+    ) async throws -> RadarRevealRiskToken {
+        let params: [String: Any?] = [
+            "installId": RadarSettings.installId,
+            "userId": RadarSettings.userId,
+            "deviceId": await RadarUtils.deviceId,
+            "description": RadarSettings.description,
+            "metadata": RadarSettings.metadata,
+            "sessionId": RadarSettings.sessionId,
+            "deviceType": RadarUtils.deviceType,
+            "deviceMake": RadarUtils.deviceMake,
+            "sdkVersion": RadarUtils.sdkVersion,
+            "deviceModel": RadarUtils.deviceModel,
+            "deviceOS": await RadarUtils.deviceOS,
+            "country": RadarUtils.country,
+            "timeZoneOffset": RadarUtils.timeZoneOffset,
+            "lang": RadarSettings.userLanguage,
+            "fraudPayload": fraudPayload,
+            "appId": Bundle.main.bundleIdentifier,
+            "appName": Bundle.main.object(forInfoDictionaryKey: "CFBundleName"),
+            "appVersion": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString"),
+            "appBuild": Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion"),
+            "xPlatformType": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKType : "Native",
+            "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
+        ]
+
+        let (data, response) = try await apiHelper.radarVerifiedRequest(method: "POST", url: "reveal/risk", body: params)
+
+        if response.statusCode == 401 {
+            throw RadarError(status: .errorUnauthorized, message: "Unauthorized")
+        } else if response.statusCode == 402 {
+            throw RadarError(status: .errorPaymentRequired, message: "Payment required")
+        } else if response.statusCode == 403 {
+            throw RadarError(status: .errorForbidden, message: "Forbidden")
+        } else if response.statusCode == 404 {
+            throw RadarError(status: .errorNotFound, message: "Not found")
+        } else if response.statusCode == 429 {
+            throw RadarError(status: .errorRateLimit, message: "Ratelimited")
+        } else if response.statusCode >= 500 && response.statusCode <= 599 {
+            throw RadarError(status: .errorServer, message: "Server error")
+        }
+
+        guard let result = RadarRevealRiskToken.fromData(data) else {
+            throw APIError(data: data, response: response, message: "Failed to parse reveal risk response")
+        }
+        return result
     }
 
     // TODO: implement rest of RadarAPIClient
