@@ -188,7 +188,6 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
 
     func flushReplays() {}
     func logOpenedAppConversion() {}
-    func invoke(target: NSObject, selector: Selector, args: [Any]) {}
     func geofenceIds() -> [String]? { nil }
     func beaconIds() -> [String]? { nil }
     func placeId() -> String? { nil }

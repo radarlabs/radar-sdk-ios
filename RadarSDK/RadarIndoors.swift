@@ -32,54 +32,73 @@ class RadarSDKIndoors {
         instance = cls.init()
     }
 
+    // Calls into the dynamically-loaded RadarSDKIndoors framework via `NSObject.perform`, mirroring
+    // how the main SDK invokes RadarSDKFraud. Each framework method now takes at most one data
+    // argument plus its generated completion handler (≤ 2 args), which is exactly what
+    // `perform(_:with:with:)` supports — so no NSInvocation bridge is needed. Selectors are looked up
+    // by name because the optional framework isn't visible to the compiler; `responds(to:)` guards
+    // each call so a missing selector resumes the continuation instead of trapping.
     public func useModel(model: String, getModelData: @convention(block) @escaping @Sendable () -> URL?) async {
-        guard let bridge = RadarSwift.bridge else { return }
         await withCheckedContinuation { continuation in
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
-            let selector = NSSelectorFromString("useModelWithName:getModelData:completionHandler:")
-            bridge.invoke(target: instance, selector: selector, args: [model, getModelData, completion])
+            let config: [String: Any] = ["name": model, "getModelData": getModelData]
+            let selector = NSSelectorFromString("useModelWithConfig:completionHandler:")
+            guard instance.responds(to: selector) else {
+                continuation.resume()
+                return
+            }
+            instance.perform(selector, with: config, with: completion)
         }
     }
 
     func getLocation() async -> CLLocation? {
-        guard let bridge = RadarSwift.bridge else { return nil }
         return await withCheckedContinuation { continuation in
             let completion: @convention(block) (CLLocation?) -> Void = { result in
                 continuation.resume(returning: result)
             }
             let selector = NSSelectorFromString("getLocationWithCompletionHandler:")
-            bridge.invoke(target: instance, selector: selector, args: [completion])
+            guard instance.responds(to: selector) else {
+                continuation.resume(returning: nil)
+                return
+            }
+            instance.perform(selector, with: completion)
         }
     }
 
     func start() async {
-        guard let bridge = RadarSwift.bridge else { return }
         await withCheckedContinuation { continuation in
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
             let selector = NSSelectorFromString("startWithCompletionHandler:")
-            bridge.invoke(target: instance, selector: selector, args: [completion])
+            guard instance.responds(to: selector) else {
+                continuation.resume()
+                return
+            }
+            instance.perform(selector, with: completion)
         }
     }
 
     func stop() async {
-        guard let bridge = RadarSwift.bridge else { return }
         await withCheckedContinuation { continuation in
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
             let selector = NSSelectorFromString("stopWithCompletionHandler:")
-            bridge.invoke(target: instance, selector: selector, args: [completion])
+            guard instance.responds(to: selector) else {
+                continuation.resume()
+                return
+            }
+            instance.perform(selector, with: completion)
         }
     }
 
     public func setOnLocationUpdate(_ block: @convention(block) @escaping @Sendable (CLLocation) -> Void) {
-        guard let bridge = RadarSwift.bridge else { return }
         let selector = NSSelectorFromString("setOnLocationUpdate:")
-        bridge.invoke(target: instance, selector: selector, args: [block])
+        guard instance.responds(to: selector) else { return }
+        instance.perform(selector, with: block)
     }
 }
 

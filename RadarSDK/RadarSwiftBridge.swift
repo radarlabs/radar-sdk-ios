@@ -15,7 +15,6 @@ protocol RadarSwiftBridgeProtocol {
     func flushReplays()
     func flushReplaysRequest(_ replays: [[AnyHashable: Any]], completionHandler: ((RadarStatus, [AnyHashable: Any]?) -> Void)?)
     func logOpenedAppConversion()
-    func invoke(target: NSObject, selector: Selector, args: [Any])
     func geofenceIds() -> [String]?
     func beaconIds() -> [String]?
     func placeId() -> String?
