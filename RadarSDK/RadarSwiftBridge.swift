@@ -30,6 +30,12 @@ protocol RadarSwiftBridgeProtocol {
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser)
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource)
     func radarUser() -> RadarUser?
+    func didFail(status: RadarStatus)
+    func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon
+    func createBeacon(fromRegion region: CLBeaconRegion) -> RadarBeacon
+    func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon)
+    func extractContent(fromMetadata metadata: [AnyHashable: Any]?, identifier: String?) -> UNMutableNotificationContent?
+    func updateClientSideCampaigns(withPrefix prefix: String, notificationRequests requests: [UNNotificationRequest])
 }
 
 @objc(RadarSwift) @objcMembers
