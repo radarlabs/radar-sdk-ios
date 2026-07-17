@@ -6,10 +6,14 @@
 //
 
 #import "RadarDelegateHolder.h"
-
 #import "RadarLogger.h"
 #import "RadarNotificationHelper.h"
 #import "RadarUtils.h"
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
 
 @implementation RadarDelegateHolder
 
@@ -31,7 +35,7 @@
         [self.delegate didReceiveEvents:events user:user];
     }
     
-    [RadarNotificationHelper showNotificationsForEvents:events];
+    [RadarEventNotifications showNotificationsFor:events];
 
     for (RadarEvent *event in events) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo
