@@ -69,12 +69,17 @@ lint-swift-fix:
 	echo "$$SWIFT_FILES" | tr '\n' ' '; echo; \
 	echo "$$SWIFT_FILES" | xargs $(SWIFTLINT) lint --strict --fix --baseline .swiftlint-baseline.json
 
+# CI passes the changed Swift files explicitly via FORMAT_FILES (from `gh pr diff`).
+# When it is empty (local use), fall back to diffing against FORMAT_BASE.
 format-check:
 	@if ! command -v swift-format >/dev/null; then \
 		echo "swift-format not installed; run 'make bootstrap' or 'brew install swift-format'"; \
 		exit 1; \
 	fi
-	@SWIFT_FILES=$$(git diff --diff-filter=ACM --name-only $(FORMAT_BASE)...HEAD -- '*.swift' 2>/dev/null); \
+	@SWIFT_FILES="$(FORMAT_FILES)"; \
+	if [ -z "$$SWIFT_FILES" ]; then \
+		SWIFT_FILES=$$(git diff --diff-filter=ACM --name-only $(FORMAT_BASE)...HEAD -- '*.swift' 2>/dev/null); \
+	fi; \
 	if [ -z "$$SWIFT_FILES" ]; then \
 		echo "No Swift files changed; skipping format check."; \
 		exit 0; \
