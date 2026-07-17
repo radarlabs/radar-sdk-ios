@@ -23,7 +23,17 @@ final class RadarAPIHelper: Sendable {
             let config = URLSessionConfiguration.default
             config.timeoutIntervalForRequest = 10
             config.timeoutIntervalForResource = 10
+            #if DEBUG
+            // Installs a trust-override delegate so debug builds accept a self-signed cert
+            // (e.g. a LAN server). Compiled out of release builds.
+            self.session = URLSession(
+                configuration: config,
+                delegate: RadarInsecureTrustDelegate(),
+                delegateQueue: nil
+            )
+            #else
             self.session = URLSession(configuration: config)
+            #endif
         }
     }
 

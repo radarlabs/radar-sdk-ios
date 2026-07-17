@@ -13,6 +13,14 @@
 
 #import <math.h>
 
+#if DEBUG
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
+#endif
+
 static NSTimeInterval RadarAPIHelperStandardNetworkTimeoutInterval(void) {
     RadarInitializeOptions *opts = [RadarSettings initializeOptions];
     NSTimeInterval interval = opts ? opts.networkTimeoutInterval : 10;
@@ -58,12 +66,21 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
         NSURLSessionConfiguration *standardConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
         standardConfig.timeoutIntervalForRequest = standardTimeout;
         standardConfig.timeoutIntervalForResource = standardTimeout;
-        _standardSession = [NSURLSession sessionWithConfiguration:standardConfig];
 
         NSURLSessionConfiguration *extendedConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
         extendedConfig.timeoutIntervalForRequest = extendedTimeout;
         extendedConfig.timeoutIntervalForResource = extendedTimeout;
+
+#if DEBUG
+        // Installs a trust-override delegate so debug builds accept a self-signed cert
+        // (e.g. a LAN server). Compiled out of release builds.
+        RadarInsecureTrustDelegate *trustDelegate = [RadarInsecureTrustDelegate new];
+        _standardSession = [NSURLSession sessionWithConfiguration:standardConfig delegate:trustDelegate delegateQueue:nil];
+        _extendedTimeoutSession = [NSURLSession sessionWithConfiguration:extendedConfig delegate:trustDelegate delegateQueue:nil];
+#else
+        _standardSession = [NSURLSession sessionWithConfiguration:standardConfig];
         _extendedTimeoutSession = [NSURLSession sessionWithConfiguration:extendedConfig];
+#endif
     }
     return self;
 }

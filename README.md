@@ -21,6 +21,10 @@ See migration guides in `MIGRATION.md`.
 
 Run `make bootstrap` to set up your environment for development and allow you to use the other `make` commands. It will call `sudo` to install some gems.
 
+## Targeting a local server
+
+To point the SDK at a server on your LAN during development, set `DebugHost` in `RadarSDK/RadarSettings.swift` to your machine's address (e.g. `https://192.168.1.10`). It overrides both `host` and `verifiedHost`, and debug builds accept the server's self-signed TLS certificate. Leave it empty to use the normal hosts. This only applies to debug builds — it's compiled out of release builds.
+
 ## Examples
 
 See a Swift example app in `Example/`.
