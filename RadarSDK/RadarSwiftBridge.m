@@ -16,6 +16,7 @@
 #import "RadarUtils.h"
 #import "RadarDelegateHolder.h"
 #import "RadarAPIClient.h"
+#import "RadarNotificationHelper.h"
 
 @implementation RadarSwiftBridge
 
@@ -93,6 +94,30 @@
             completionHandler(status, res);
         }
     }];
+}
+
+- (void)didFailWithStatus:(RadarStatus)status {
+    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+}
+
+- (RadarBeacon * _Nonnull)createBeaconWithUuid:(NSString *)uuid major:(NSString *)major minor:(NSString *)minor rssi:(NSInteger)rssi {
+    return [[RadarBeacon alloc] initWithUUID:uuid major:major minor:minor rssi:rssi];
+}
+
+- (RadarBeacon * _Nonnull)createBeaconFromRegion:(CLBeaconRegion *)region {
+    return [RadarBeacon fromCLBeaconRegion:region];
+}
+
+- (void)setRssi:(NSInteger)rssi onBeacon:(RadarBeacon *)beacon {
+    [beacon setRssi:rssi];
+}
+
+- (nullable UNMutableNotificationContent *)extractContentFromMetadata:(nullable NSDictionary *)metadata identifier:(nullable NSString *)identifier {
+    return [RadarNotificationHelper extractContentFromMetadata:metadata identifier:identifier];
+}
+
+- (void)updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests {
+    [RadarNotificationHelper updateClientSideCampaignsWithPrefix:prefix notificationRequests:requests];
 }
 
 @end

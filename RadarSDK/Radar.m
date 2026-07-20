@@ -8,7 +8,7 @@
 #import "Radar.h"
 #include "RadarSdkConfiguration.h"
 #import "RadarAPIClient.h"
-#import "RadarBeaconManager.h"
+#import "RadarBeaconManagerSwift.h"
 #import "RadarConfig.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
@@ -356,7 +356,7 @@ BOOL _initialized = NO;
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
 
                                          [RadarUtilsDeprecated runOnMainThread:^{
-                                             [[RadarBeaconManager sharedInstance] rangeBeaconUUIDs:beaconUUIDs
+                                             [[RadarBeaconManagerSwift shared] rangeBeaconUUIDs:beaconUUIDs
                                                                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                      if (status != RadarStatusSuccess || !beacons) {
                                                                                          performIndoorScanThenTrack(nil);
@@ -371,7 +371,7 @@ BOOL _initialized = NO;
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
 
                                          [RadarUtilsDeprecated runOnMainThread:^{
-                                             [[RadarBeaconManager sharedInstance] rangeBeacons:beacons
+                                             [[RadarBeaconManagerSwift shared] rangeBeacons:beacons
                                                                              completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                  if (status != RadarStatusSuccess || !beacons) {
                                                                                      performIndoorScanThenTrack(nil);
