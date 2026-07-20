@@ -188,10 +188,6 @@ internal class RadarIndoors: NSObject {
         }
     }
 
-    // Returns the indoor location only when it carries a usable coordinate, so callers can gate on
-    // `indoorLocation != nil` alone. CLLocationCoordinate2DIsValid accepts (0,0) ("null island"),
-    // which is what a default/placeholder CLLocation reports, so also reject the origin — otherwise a
-    // placeholder would overwrite the real device coordinate downstream.
     nonisolated static func validIndoorLocation(_ location: CLLocation?) -> CLLocation? {
         guard let location else {
             return nil

@@ -110,10 +110,6 @@ final class RadarIndoorLocationTrackParamsTests: XCTestCase {
         XCTAssertNil(params["locationMetadata"], "no locationMetadata should be sent when indoor is off and motion/pressure are off")
     }
 
-    // Note: the invalid / null-island coordinate guard now lives in
-    // `RadarIndoors.validIndoorLocation` (see RadarIndoorLocationValidationTests) rather than in
-    // `trackWithLocation:`, which trusts a non-nil `indoorLocation`.
-
     // MARK: - indoor on but no prediction available
 
     func test_indoorOn_withNilIndoorLocation_leavesCoordinatesUntouched() {
@@ -128,9 +124,6 @@ final class RadarIndoorLocationTrackParamsTests: XCTestCase {
     }
 }
 
-/// Covers `RadarIndoors.validIndoorLocation`, which gates the indoor prediction before it reaches
-/// the track pipeline: it returns the location only when the coordinate is usable, so downstream
-/// callers can rely on a plain `indoorLocation != nil` check. Pure function, no framework needed.
 final class RadarIndoorLocationValidationTests: XCTestCase {
 
     func test_validIndoorLocation_passesThroughUsableCoordinate() {
