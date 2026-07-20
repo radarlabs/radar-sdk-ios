@@ -177,7 +177,7 @@
                  source:RadarLocationSourceForegroundLocation
                  replayed:NO
                  beacons:beacons
-                 indoorScan:nil
+                 indoorLocation:nil
                  verified:YES
                  fraudPayload:fraudPayload
                  expectedCountryCode:self.expectedCountryCode
