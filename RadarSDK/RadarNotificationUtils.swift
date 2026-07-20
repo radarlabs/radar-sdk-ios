@@ -10,9 +10,9 @@ import Foundation
 @preconcurrency import UserNotifications
 
 @objc public final class RadarNotificationUtils: NSObject {
-    
+
     private static let semaphore = DispatchSemaphore(value: 1)
-    
+
     // Checks current notification authorization and persists the result.
     // Called from Radar.m during intialization.
     @objc public static func checkNotificationPermissions(completionHandler: (@Sendable (Bool) -> Void)?) {
@@ -20,7 +20,7 @@ import Foundation
             completionHandler?(false)
             return
         }
-        
+
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             let granted = settings.authorizationStatus == .authorized
             RadarUserDefaults.set(granted, forKey: .NotificationPermissionGranted)
@@ -30,7 +30,7 @@ import Foundation
             completionHandler?(granted)
         }
     }
-    
+
     /// Returns delivered notifications (registered minus still-pending).
     /// Called from RadarAPIClient.m before each track request.
     @objc public static func getNotificationDiff(completionHandler: @Sendable @escaping ([[String: Any]], [Any]) -> Void) {
@@ -44,7 +44,7 @@ import Foundation
             completionHandler(delivered, [])
         }
     }
-    
+
     @objc public static func updateClientSideCampaigns(
         withPrefix prefix: String,
         notificationRequests requests: [UNNotificationRequest]
@@ -56,7 +56,7 @@ import Foundation
             }
         }
     }
-    
+
     private static func removePendingNotifications(
         withPrefix prefix: String,
         completionHandler: @Sendable @escaping () -> Void
@@ -64,10 +64,10 @@ import Foundation
         let center = UNUserNotificationCenter.current()
         center.getPendingNotificationRequests { pending in
             RadarLogger.shared.log(level: .debug, message: "Found \(pending.count) pending notifications")
-            
+
             var identifiersToRemove: [String] = []
             var userInfosToKeep: [[AnyHashable: Any]] = []
-            
+
             for request in pending {
                 if request.identifier.hasPrefix(prefix) {
                     identifiersToRemove.append(request.identifier)
@@ -75,7 +75,7 @@ import Foundation
                     userInfosToKeep.append(request.content.userInfo)
                 }
             }
-            
+
             RadarLogger.shared.log(level: .debug, message: "Found \(identifiersToRemove.count) pending notifications to remove")
             UserDefaults.standard.set(userInfosToKeep, forKey: "radar-registeredNotifications")
 
@@ -83,11 +83,11 @@ import Foundation
                 center.removePendingNotificationRequests(withIdentifiers: identifiersToRemove)
                 RadarLogger.shared.log(level: .debug, message: "Removed pending notifications")
             }
-            
+
             completionHandler()
         }
     }
-    
+
     private static func addNotificationRequests(_ requests: [UNNotificationRequest]) {
         checkNotificationPermissions { granted in
             guard granted else {
@@ -95,10 +95,10 @@ import Foundation
                 semaphore.signal()
                 return
             }
-            
+
             let center = UNUserNotificationCenter.current()
             let group = DispatchGroup()
-            
+
             for request in requests {
                 group.enter()
                 center.add(request) { error in
@@ -112,8 +112,8 @@ import Foundation
                     }
                     group.leave()
                 }
-             }
-            
+            }
+
             group.notify(queue: .global()) {
                 semaphore.signal()
             }

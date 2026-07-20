@@ -12,9 +12,9 @@ import UIKit
 import UserNotifications
 
 @objc public final class RadarNotificationSwizzling: NSObject {
-    
+
     // MARK: - Public setup
-    
+
     /// Swizzle UNUserNotificationCenterDelegate.didReceiveNotificationResponse
     /// to handle deep links and conversion logging
     @MainActor
@@ -26,34 +26,33 @@ import UserNotifications
             replacement: #selector(RadarNotificationSwizzling.swizzled_userNotificationCenter(_:didReceive:withCompletionHandler:))
         )
     }
-    
+
     /// Swizzle UIApplicationDelegate methods for silent push and device token capture.
     @MainActor
     @objc public static func swizzleApplicationDelegate() {
         guard let delegate = UIApplication.shared.delegate else { return }
         let delegateClass: AnyClass = type(of: delegate)
-        
+
         swizzle(
             on: delegateClass,
             original: #selector(UIApplicationDelegate.application(_:didReceiveRemoteNotification:fetchCompletionHandler:)),
             replacement: #selector(RadarNotificationSwizzling.swizzled_application(_:didReceiveRemoteNotification:fetchCompletionHandler:))
         )
-        
+
         swizzle(
             on: delegateClass,
             original: #selector(UIApplicationDelegate.application(_:didRegisterForRemoteNotificationsWithDeviceToken:)),
             replacement: #selector(RadarNotificationSwizzling.swizzled_application(_:didRegisterForRemoteNotificationsWithDeviceToken:))
         )
     }
-    
-    
+
     // MARK: - Swizzle mechanics
-    
+
     private static func swizzle(on targetClass: AnyClass, original originalSelector: Selector, replacement swizzledSelector: Selector) {
         guard let swizzledMethod = class_getInstanceMethod(RadarNotificationSwizzling.self, swizzledSelector) else { return }
-        
+
         let originalMethod = class_getInstanceMethod(targetClass, originalSelector)
-        
+
         // If the target doesn't implement the original, inject our implementation directly.
         if originalMethod == nil {
             class_addMethod(
@@ -64,7 +63,7 @@ import UserNotifications
             )
             return
         }
-        
+
         // Add our method under the swizzled selector on the target class, then exchange.
         let didAdd = class_addMethod(
             targetClass,
@@ -76,9 +75,9 @@ import UserNotifications
             method_exchangeImplementations(originalMethod!, newMethod)
         }
     }
-    
+
     // MARK: - Swizzled handlers
-    
+
     /// Handles notification taps: deep links + conversion logging.
     @objc func swizzled_userNotificationCenter(
         _ center: UNUserNotificationCenter,
@@ -86,14 +85,14 @@ import UserNotifications
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let options = RadarSettings.initializeOptions
-        
+
         if options?.autoHandleNotificationDeepLinks == true {
             RadarNotificationSwizzling.openURL(from: response.notification)
         }
         if options?.autoLogNotificationConversions == true {
             Radar.logConversion(response: response)
         }
-        
+
         // Call the original (now swizzled) implementation if it exists.
         if responds(to: #selector(swizzled_userNotificationCenter(_:didReceive:withCompletionHandler:))) {
             swizzled_userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
@@ -101,7 +100,7 @@ import UserNotifications
             completionHandler()
         }
     }
-    
+
     /// Handles silent push: fires Radar.didReceivePushNotificationPayload in parallel with the original.
     @objc func swizzled_application(
         _ application: UIApplication,
@@ -110,16 +109,16 @@ import UserNotifications
     ) {
         let group = DispatchGroup()
         var finalResult: UIBackgroundFetchResult = .newData
-        
+
         let options = RadarSettings.initializeOptions
-        
+
         if options?.silentPush == true {
             group.enter()
             Radar.didReceivePushNotificationPayload(userInfo) {
                 group.leave()
             }
         }
-        
+
         // Call the original if it exists.
         if responds(to: #selector(swizzled_application(_:didReceiveRemoteNotification:fetchCompletionHandler:))) {
             group.enter()
@@ -133,7 +132,7 @@ import UserNotifications
             completionHandler(finalResult)
         }
     }
-    
+
     /// Captures the APNS device token.
     @objc func swizzled_application(
         _ application: UIApplication,
@@ -141,19 +140,19 @@ import UserNotifications
     ) {
         let hexString = deviceToken.map { String(format: "%02x", $0) }.joined()
         RadarSettings.pushNotificationToken = hexString
-        
+
         // Call the original if it exists.
         if responds(to: #selector(swizzled_application(_:didRegisterForRemoteNotificationsWithDeviceToken:))) {
             swizzled_application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
         }
     }
-    
+
     // MARK: - Deep link handling
 
     @objc(openURLFromNotification:) public static func openURL(from notification: UNNotification) {
         guard notification.request.identifier.hasPrefix(RADAR_NOTIFICATION_PREFIX),
-              let urlString = notification.request.content.userInfo["url"] as? String,
-              let url = URL(string: urlString)
+            let urlString = notification.request.content.userInfo["url"] as? String,
+            let url = URL(string: urlString)
         else { return }
 
         DispatchQueue.main.async {
