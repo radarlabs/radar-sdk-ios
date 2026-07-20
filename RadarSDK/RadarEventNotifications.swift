@@ -105,19 +105,20 @@ private let kEventNotificationIdentifierPrefix = "radar_event_notification_"
     /// Extracts the legacy notification text and source metadata for an event,
     /// based on event type and the associated geofence/beacon/trip metadata.
     static func legacyNotificationText(for event: RadarEvent) -> ([AnyHashable: Any], String)? {
-        let pair: ([AnyHashable: Any]?, String)? = switch event.type {
-        case .userEnteredGeofence:  (event.geofence?.metadata, "radar:entryNotificationText")
-        case .userExitedGeofence:   (event.geofence?.metadata, "radar:exitNotificationText")
-        case .userEnteredBeacon:    (event.beacon?.metadata, "radar:entryNotificationText")
-        case .userExitedBeacon:     (event.beacon?.metadata, "radar:exitNotificationText")
-        case .userApproachingTripDestination: (event.trip?.metadata, "radar:approachingNotificationText")
-        case .userArrivedAtTripDestination:   (event.trip?.metadata, "radar:arrivalNotificationText")
-        default: nil
-        }
+        let pair: ([AnyHashable: Any]?, String)? =
+            switch event.type {
+            case .userEnteredGeofence: (event.geofence?.metadata, "radar:entryNotificationText")
+            case .userExitedGeofence: (event.geofence?.metadata, "radar:exitNotificationText")
+            case .userEnteredBeacon: (event.beacon?.metadata, "radar:entryNotificationText")
+            case .userExitedBeacon: (event.beacon?.metadata, "radar:exitNotificationText")
+            case .userApproachingTripDestination: (event.trip?.metadata, "radar:approachingNotificationText")
+            case .userArrivedAtTripDestination: (event.trip?.metadata, "radar:arrivalNotificationText")
+            default: nil
+            }
 
         guard let pair,
-              let metadata = pair.0,
-              let text = metadata[pair.1] as? String
+            let metadata = pair.0,
+            let text = metadata[pair.1] as? String
         else { return nil }
 
         return (metadata, text)
