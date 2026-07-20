@@ -19,35 +19,42 @@ class RadarSDKIndoors {
     // Write-once in the nonisolated initializer, only read from actor-isolated methods afterwards,
     // so nonisolated(unsafe) is sound and lets the init run off the actor.
     nonisolated(unsafe) let instance: NSObject
-    // nonisolated so it can be constructed from RadarIndoors' nonisolated initializer. The body
-    // only does an Objective-C runtime class lookup and touches no actor-isolated state.
+
+    nonisolated static let useModelSelector = NSSelectorFromString("useModelWithConfig:completionHandler:")
+    nonisolated static let getLocationSelector = NSSelectorFromString("getLocationWithCompletionHandler:")
+    nonisolated static let startSelector = NSSelectorFromString("startWithCompletionHandler:")
+    nonisolated static let stopSelector = NSSelectorFromString("stopWithCompletionHandler:")
+    nonisolated static let setOnLocationUpdateSelector = NSSelectorFromString("setOnLocationUpdate:")
+
     nonisolated init?() {
         // Fail the initializer when the optional RadarSDKIndoors framework isn't linked, so
         // `RadarSDKIndoors()` is nil and the `guard let sdk` checks downstream mean what they say.
         guard let cls = NSClassFromString("RadarSDKIndoors") as? NSObject.Type else {
             return nil
         }
-        instance = cls.init()
+        let instance = cls.init()
+        // Verify the linked class actually is our RadarSDKIndoors by requiring it to respond to
+        // every selector we call, matching RadarSDKFraud.init?(instance:). If any is missing the
+        // framework is the wrong shape (or an older release), so fail rather than trap at perform.
+        guard instance.responds(to: RadarSDKIndoors.useModelSelector),
+            instance.responds(to: RadarSDKIndoors.getLocationSelector),
+            instance.responds(to: RadarSDKIndoors.startSelector),
+            instance.responds(to: RadarSDKIndoors.stopSelector),
+            instance.responds(to: RadarSDKIndoors.setOnLocationUpdateSelector)
+        else {
+            return nil
+        }
+        self.instance = instance
     }
 
-    // Calls into the dynamically-loaded RadarSDKIndoors framework via `NSObject.perform`, mirroring
-    // how the main SDK invokes RadarSDKFraud. Each framework method now takes at most one data
-    // argument plus its generated completion handler (≤ 2 args), which is exactly what
-    // `perform(_:with:with:)` supports — so no NSInvocation bridge is needed. Selectors are looked up
-    // by name because the optional framework isn't visible to the compiler; `responds(to:)` guards
-    // each call so a missing selector resumes the continuation instead of trapping.
+    // All selectors are validated in init?, so no per-call `responds(to:)` guard is needed here.
     public func useModel(model: String, getModelData: @convention(block) @escaping @Sendable () -> URL?) async {
         await withCheckedContinuation { continuation in
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
             let config: [String: Any] = ["name": model, "getModelData": getModelData]
-            let selector = NSSelectorFromString("useModelWithConfig:completionHandler:")
-            guard instance.responds(to: selector) else {
-                continuation.resume()
-                return
-            }
-            instance.perform(selector, with: config, with: completion)
+            instance.perform(RadarSDKIndoors.useModelSelector, with: config, with: completion)
         }
     }
 
@@ -56,12 +63,7 @@ class RadarSDKIndoors {
             let completion: @convention(block) (CLLocation?) -> Void = { result in
                 continuation.resume(returning: result)
             }
-            let selector = NSSelectorFromString("getLocationWithCompletionHandler:")
-            guard instance.responds(to: selector) else {
-                continuation.resume(returning: nil)
-                return
-            }
-            instance.perform(selector, with: completion)
+            instance.perform(RadarSDKIndoors.getLocationSelector, with: completion)
         }
     }
 
@@ -70,12 +72,7 @@ class RadarSDKIndoors {
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
-            let selector = NSSelectorFromString("startWithCompletionHandler:")
-            guard instance.responds(to: selector) else {
-                continuation.resume()
-                return
-            }
-            instance.perform(selector, with: completion)
+            instance.perform(RadarSDKIndoors.startSelector, with: completion)
         }
     }
 
@@ -84,19 +81,12 @@ class RadarSDKIndoors {
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
-            let selector = NSSelectorFromString("stopWithCompletionHandler:")
-            guard instance.responds(to: selector) else {
-                continuation.resume()
-                return
-            }
-            instance.perform(selector, with: completion)
+            instance.perform(RadarSDKIndoors.stopSelector, with: completion)
         }
     }
 
     public func setOnLocationUpdate(_ block: @convention(block) @escaping @Sendable (CLLocation) -> Void) {
-        let selector = NSSelectorFromString("setOnLocationUpdate:")
-        guard instance.responds(to: selector) else { return }
-        instance.perform(selector, with: block)
+        instance.perform(RadarSDKIndoors.setOnLocationUpdateSelector, with: block)
     }
 }
 
@@ -187,11 +177,15 @@ internal class RadarIndoors: NSObject {
         currentModelId = modelId
     }
 
-    public func getLocation() async -> CLLocation? {
-        guard let sdk else {
-            return nil
+    nonisolated public func getLocation(completionHandler: @escaping @Sendable (CLLocation?) -> Void) {
+        Task { @RadarIndoorsActor in
+            guard let sdk else {
+                await MainActor.run { completionHandler(nil) }
+                return
+            }
+            let location = await sdk.getLocation()
+            await MainActor.run { completionHandler(location) }
         }
-        return await sdk.getLocation()
     }
 
     // Downloads the mlmodel asset for a geofence's active indoor model to a temp file.

@@ -1049,38 +1049,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self sendLocation:sendLocation stopped:stopped source:source replayed:replayed beacons:beacons forceTrack:YES];
 }
 
-// Fetches the indoor ML location (nil when indoor positioning is not configured or the
-// RadarSDKIndoors framework is absent). RadarIndoors decides internally whether indoor
-// positioning is active based on trackingOptions/model state.
-- (void)getIndoorLocationIfConfiguredWithCompletionHandler:(void (^)(CLLocation *_Nullable))completionHandler {
-    // RadarIndoors resolves the location on the RadarIndoorsActor's (background) executor, so its
-    // completion fires off the main thread. The downstream track pipeline touches main-actor-isolated
-    // state (e.g. RadarInAppMessageManager), and the real RadarAPIHelper already delivers its
-    // callbacks on the main queue, so marshal back to main to keep that contract and avoid a
-    // main-actor executor assertion. getLocation also has no bounded duration (unlike the old
-    // fixed-length indoor scan), so guard the completion to fire exactly once — whichever of the
-    // RadarIndoors callback or the 5s timeout wins — so a hung bridge can't leave the track pipeline
-    // (self.sending) stuck. The guard is only touched on the main thread, so no lock is needed.
-    __block BOOL completed = NO;
-    void (^finish)(CLLocation *_Nullable) = ^(CLLocation *_Nullable indoorLocation) {
-        [RadarUtilsDeprecated runOnMainThread:^{
-            if (completed) {
-                return;
-            }
-            completed = YES;
-            completionHandler(indoorLocation);
-        }];
-    };
-
-    [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
-        finish(indoorLocation);
-    }];
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        finish(nil);
-    });
-}
-
 - (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed beacons:(NSArray<RadarBeacon *> *_Nullable)beacons forceTrack:(BOOL)forceTrack {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Sending location | source = %@; location = %@; stopped = %d; replayed = %d; beacons = %@; forceTrack = %d",
@@ -1092,7 +1060,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     
     if ([RadarSettings useRadarModifiedBeacon]) {
         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-            [self getIndoorLocationIfConfiguredWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
+            [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
                 [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                            stopped:stopped
                                                         foreground:[RadarUtilsDeprecated foreground]
@@ -1245,7 +1213,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                     if ([RadarSyncManager hasBeaconStateChangedWithRangedBeaconIds:rangedIds]) {
                                         [RadarState updateLastSentAt];
                                         [RadarSyncManager saveBeaconStateWithBeaconIds:matchedIds2];
-                                        [self getIndoorLocationIfConfiguredWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
+                                        [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
                                             [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                                                        stopped:stopped
                                                                                     foreground:[RadarUtilsDeprecated foreground]
@@ -1304,7 +1272,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         }
 
-        [self getIndoorLocationIfConfiguredWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
+        [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
             [[RadarAPIClient sharedInstance] trackWithLocation:location
                                                        stopped:stopped
                                                     foreground:[RadarUtilsDeprecated foreground]
