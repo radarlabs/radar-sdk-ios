@@ -213,7 +213,7 @@ struct IsCampaignTests {
 
 // MARK: - legacyNotificationText Tests
 
-@Suite("RadarEventNotifications - legacyNotifictionText")
+@Suite("RadarEventNotifications - legacyNotificationText")
 struct LegacyNotificationTextTests {
     @Test("geofence entry returns entryNotificationText")
     func geofenceEntry() {

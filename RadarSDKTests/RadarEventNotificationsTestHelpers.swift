@@ -6,8 +6,11 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-let testLocation = CLLocation(latitude: 40.0, longitude: -74.0)
-let testDate = Date(timeIntervalSince1970: 1_000_000)
+import CoreLocation
+import Foundation
+
+@testable import RadarSDK
+
 let testDateString = "2026-07-20T12:00:00.000Z"
 
 func makeCampaignMetadata(
