@@ -11,14 +11,14 @@ import ObjectiveC
 import UIKit
 import UserNotifications
 
-@objc final class RadarNotificationSwizzling: NSObject {
+@objc public final class RadarNotificationSwizzling: NSObject {
     
     // MARK: - Public setup
     
     /// Swizzle UNUserNotificationCenterDelegate.didReceiveNotificationResponse
     /// to handle deep links and conversion logging
     @MainActor
-    @objc static func swizzleNotificationCenterDelegate() {
+    @objc public static func swizzleNotificationCenterDelegate() {
         guard let delegate = UNUserNotificationCenter.current().delegate else { return }
         swizzle(
             on: type(of: delegate),
@@ -29,7 +29,7 @@ import UserNotifications
     
     /// Swizzle UIApplicationDelegate methods for silent push and device token capture.
     @MainActor
-    @objc static func swizzleApplicationDelegate() {
+    @objc public static func swizzleApplicationDelegate() {
         guard let delegate = UIApplication.shared.delegate else { return }
         let delegateClass: AnyClass = type(of: delegate)
         
@@ -150,7 +150,7 @@ import UserNotifications
     
     // MARK: - Deep link handling
 
-    @objc static func openURL(from notification: UNNotification) {
+    @objc(openURLFromNotification:) public static func openURL(from notification: UNNotification) {
         guard notification.request.identifier.hasPrefix(RADAR_NOTIFICATION_PREFIX),
               let urlString = notification.request.content.userInfo["url"] as? String,
               let url = URL(string: urlString)

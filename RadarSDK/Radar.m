@@ -59,10 +59,10 @@ BOOL _initialized = NO;
     dispatch_once(&onceToken, ^{
         [RadarSettings setInitializeOptions:options];
         if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
-            [RadarNotificationHelper swizzleNotificationCenterDelegate];
+            [RadarNotificationSwizzling swizzleNotificationCenterDelegate];
         }
         if (options.silentPush) {
-            [RadarNotificationHelper swizzleApplicationDelegate];
+            [RadarNotificationSwizzling swizzleNotificationCenterDelegate];
         }
     });
 }
@@ -135,7 +135,7 @@ BOOL _initialized = NO;
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
 
-    [RadarNotificationHelper checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
+    [RadarNotificationUtils checkNotificationPermissionsWithCompletionHandler:^(BOOL granted) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"initialize"
                                                   verified:NO
                                          completionHandler:^(RadarStatus status, RadarConfig *config) {
@@ -731,7 +731,17 @@ BOOL _initialized = NO;
 }
 
 + (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response {
-    [RadarNotificationHelper logConversionWithNotificationResponse:response];
+    if ([RadarSettings useOpenedAppConversion]) {
+        [RadarSettings updateLastAppOpenTime];
+
+        NSString *source = [response.notification.request.identifier hasPrefix:@"radar_"]
+            ? @"radar_notification"
+            : @"notification";
+
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:@"Conversion from notification tap"];
+        [self logOpenedAppConversionWithNotification:response.notification.request conversionSource:source];
+    }
 }
 
 #pragma mark - Trips
@@ -1737,7 +1747,7 @@ BOOL _initialized = NO;
 }
 
 + (void)openURLFromNotification:(UNNotification *)notification {
-    [RadarNotificationHelper openURLFromNotification:notification];
+    [RadarNotificationSwizzling openURLFromNotification:notification];
 }
 
 + (void)setInAppMessageDelegate:(id)delegate {

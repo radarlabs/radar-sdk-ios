@@ -471,7 +471,7 @@
                                         }];
     }
 
-    [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
+    [RadarNotificationUtils getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
         if (notificationsDelivered) {
             params[@"notificationDiff"] = notificationsDelivered;
         }
