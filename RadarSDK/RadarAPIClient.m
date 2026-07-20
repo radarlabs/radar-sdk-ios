@@ -450,9 +450,9 @@
         }
     }
 
-    if (options.useIndoorScan && indoorLocation &&
-        CLLocationCoordinate2DIsValid(indoorLocation.coordinate) &&
-        (indoorLocation.coordinate.latitude != 0.0 || indoorLocation.coordinate.longitude != 0.0)) {
+    // RadarIndoors.getLocation only returns a location with a usable (valid, non-origin) coordinate,
+    // so the nil check alone is enough here.
+    if (options.useIndoorScan && indoorLocation) {
         locationMetadata[@"indoorMLLatitude"] = @(indoorLocation.coordinate.latitude);
         locationMetadata[@"indoorMLLongitude"] = @(indoorLocation.coordinate.longitude);
         locationMetadata[@"deviceLatitude"] = params[@"latitude"];
