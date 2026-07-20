@@ -27,7 +27,7 @@ class Utils {
 
     static func stringForRadarEvent(_ event: RadarEvent) -> String {
         let confidenceStr = Utils.stringForRadarEventConfidence(event.confidence)
-        
+
         switch event.type {
         case .userEnteredGeofence:
             return "Entered geofence \(event.geofence!.__description) with \(confidenceStr)"
@@ -57,7 +57,7 @@ class Utils {
             return "Unknown"
         }
     }
-    
+
     static func stringForRadarEventConfidence(_ confidence: RadarEventConfidence) -> String {
         switch confidence {
         case .high:
@@ -70,7 +70,7 @@ class Utils {
             return "no confidence"
         }
     }
-    
+
     static func stringForRadarLocationSource(_ source: RadarLocationSource) -> String {
         switch source {
         case .foregroundLocation:
@@ -91,5 +91,5 @@ class Utils {
             return "unknown"
         }
     }
-    
+
 }

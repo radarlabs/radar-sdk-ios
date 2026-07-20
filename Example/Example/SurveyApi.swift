@@ -19,11 +19,11 @@ struct SurveyData {
 }
 
 extension NSMutableData {
-  func append(_ string: String) {
-    if let data = string.data(using: .utf8) {
-      self.append(data)
+    func append(_ string: String) {
+        if let data = string.data(using: .utf8) {
+            self.append(data)
+        }
     }
-  }
 }
 
 struct MultipartFormDataRequest {
@@ -54,9 +54,11 @@ struct MultipartFormDataRequest {
         httpBody.append(dataFormField(named: name, data: data, mimeType: mimeType))
     }
 
-    private func dataFormField(named name: String,
-                               data: Data,
-                               mimeType: String) -> Data {
+    private func dataFormField(
+        named name: String,
+        data: Data,
+        mimeType: String
+    ) -> Data {
         let fieldData = NSMutableData()
 
         fieldData.append("--\(boundary)\r\n")
@@ -68,7 +70,7 @@ struct MultipartFormDataRequest {
 
         return fieldData as Data
     }
-    
+
     func asURLRequest() -> URLRequest {
         var request = URLRequest(url: url)
 
@@ -81,14 +83,16 @@ struct MultipartFormDataRequest {
     }
 }
 
-
 extension URLSession {
-    func dataTask(with request: MultipartFormDataRequest,
-                  completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void)
-    -> URLSessionDataTask {
+    func dataTask(
+        with request: MultipartFormDataRequest,
+        completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void
+    )
+        -> URLSessionDataTask
+    {
         return dataTask(with: request.asURLRequest(), completionHandler: completionHandler)
     }
-    
+
     func data(for request: MultipartFormDataRequest) async throws -> (Data, URLResponse) {
         return try await data(for: request.asURLRequest())
     }
@@ -102,7 +106,7 @@ class SurveyApi {
         let description = SurveyConfig.surveyDescription
         let geofenceId = SurveyConfig.geofenceId
         let surveyor = SurveyConfig.surveyor
-        
+
         // create the survey record on server
         var surveyId: String? = nil
         var uploadParams: [String: Any]? = nil
@@ -111,24 +115,23 @@ class SurveyApi {
             guard let url = URL(string: urlString) else {
                 return "SurveyService: Invalid URL: \(urlString)"
             }
-            
+
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue("application/json", forHTTPHeaderField: "Accept")
             request.setValue(publishableKey, forHTTPHeaderField: "Authorization")
-            
-            
+
             let body = [
                 "description": description,
                 "geofenceId": geofenceId,
-                "surveyor": surveyor
+                "surveyor": surveyor,
             ]
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
-            
+
             // send the request
             let (data, _) = try await URLSession.shared.data(for: request)
-            
+
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                 return "Failed to json serialize response"
             }
@@ -138,7 +141,7 @@ class SurveyApi {
         } catch {
             print("SurveyService: Failed: \(error.localizedDescription)")
         }
-        
+
         do {
             guard let surveyId else {
                 return "SurveyService: no survey id"
@@ -147,13 +150,13 @@ class SurveyApi {
             guard let url = URL(string: urlString) else {
                 return "SurveyService: Invalid URL: \(urlString)"
             }
-            
+
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
             request.setValue(publishableKey, forHTTPHeaderField: "Authorization")
-            
+
             let (data, _) = try await URLSession.shared.data(for: request)
-            
+
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                 return "Failed to json serialize response"
             }
@@ -163,12 +166,13 @@ class SurveyApi {
         } catch {
             print("SurveyService: Error getting asset upload url")
         }
-        
+
         // upload to s3 via presigned url
         do {
             guard let urlString = uploadParams?["url"] as? String,
-                  let pathString = uploadParams?["path"] as? String,
-                  let url = URL(string: urlString) else {
+                let pathString = uploadParams?["path"] as? String,
+                let url = URL(string: urlString)
+            else {
                 return "did not receive a valid upload url"
             }
             let request = MultipartFormDataRequest(url: url)
@@ -183,9 +187,9 @@ class SurveyApi {
             }
             request.addTextField(named: "key", value: pathString)
             request.addDataField(named: "file", data: data, mimeType: "application/octet-stream")
-            
+
             let (data, response) = try await URLSession.shared.data(for: request)
-            
+
             if let httpResponse = response as? HTTPURLResponse {
                 if (200...299).contains(httpResponse.statusCode) {
                     // The upload was successful and the server returned a success status code.
@@ -203,26 +207,27 @@ class SurveyApi {
         } catch {
             return "Failed to upload"
         }
-        
+
         // update status to completed
         do {
             guard let surveyId,
-                  let url = URL(string: "\(radarHost)/v1/indoor/surveys/\(surveyId)") else {
+                let url = URL(string: "\(radarHost)/v1/indoor/surveys/\(surveyId)")
+            else {
                 return "no survey id"
             }
             print("requesting update at \(url.absoluteURL)")
             var request = URLRequest(url: url)
-            
+
             request.httpMethod = "PATCH"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue("application/json", forHTTPHeaderField: "Accept")
             request.setValue(publishableKey, forHTTPHeaderField: "Authorization")
-            
+
             let body: [String: Any] = [
                 "status": "completed"
             ]
             request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
-            
+
             let (data, _) = try await URLSession.shared.data(for: request)
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                 return "failed to json serialize response"

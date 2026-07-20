@@ -9,11 +9,10 @@
 import ARKit
 import SwiftUI
 
-
 // MARK: - UIViewRepresentable for ARSCNView (or ARView)
 struct ARViewContainer: UIViewRepresentable {
     @ObservedObject var viewModel: SurveyViewModel
-    
+
     func makeUIView(context: Context) -> ARSCNView {
         let arView = ARSCNView(frame: .zero)
         arView.session = viewModel.session
@@ -33,11 +32,11 @@ struct ARViewContainer: UIViewRepresentable {
     static func dismantleUIView(_ uiView: ARSCNView, coordinator: Coordinator) {
         uiView.session.pause()
     }
-    
+
     func makeCoordinator() -> Coordinator {
         return Coordinator(self)
     }
-    
+
     class Coordinator: NSObject, ARSCNViewDelegate {
         var container: ARViewContainer
         init(_ container: ARViewContainer) {

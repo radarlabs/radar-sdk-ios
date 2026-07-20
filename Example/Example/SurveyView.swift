@@ -5,26 +5,26 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import SwiftUI
-import CoreML
-import RadarSDKIndoors
-import CoreLocation
-import MapLibre
 import ARKit
-import CoreMotion
 import Combine
+import CoreLocation
+import CoreML
+import CoreMotion
 import Gzip
+import MapLibre
 import RadarSDK
+import RadarSDKIndoors
+import SwiftUI
 
 class SurveyViewModel: NSObject, ObservableObject {
     @Published var transform = simd_float4x4()
 
     var updated: () -> Void = {}
-    
+
     // Internal tracking
     var session: ARSession = ARSession()
     var startPosition: simd_float3?
-    
+
     override init() {
         super.init()
         session.delegate = self
@@ -49,7 +49,7 @@ class SurveyViewModel: NSObject, ObservableObject {
         startSession()
     }
 }
-    
+
 extension SurveyViewModel: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         transform = frame.camera.transform
@@ -61,15 +61,15 @@ extension RadarSite {
     func toXY(_ coords: CLLocationCoordinate2D) -> (Double, Double) {
         let rel_lat = coords.latitude - geometry.coordinates[1]
         let rel_lng = coords.longitude - geometry.coordinates[0]
-        
+
         return (rel_lng * cos(geometry.coordinates[1] * .pi / 180.0) * 111320, rel_lat * 111132)
     }
-    
+
     func fromXY(_ xy: (Double, Double)) -> CLLocationCoordinate2D {
         let (x, y) = xy
         let rel_lat = y / 111132.0
         let rel_lng = x / (cos(geometry.coordinates[1] * .pi / 180.0) * 111320.0)
-        
+
         return CLLocationCoordinate2D(latitude: rel_lat + geometry.coordinates[1], longitude: rel_lng + geometry.coordinates[0])
     }
 }
@@ -100,13 +100,13 @@ extension CLBeacon {
             "uuid": uuid.uuidString,
             "major": major,
             "minor": minor,
-            "rssi": rssi
+            "rssi": rssi,
         ]
     }
 }
 
 struct SurveyView: View {
-    
+
     // The example app registers a single RadarDelegate (LogStream); read the indoor ML
     // location it captured via didUpdateClientLocation rather than installing a second delegate.
     @EnvironmentObject var logStream: LogStream
@@ -114,45 +114,45 @@ struct SurveyView: View {
     // Resolves the user's publishable-key override (or the default) — the same key the app
     // uses to initialize Radar. Drives both the map style request and the survey upload.
     @EnvironmentObject var settingsStore: SettingsStore
-    
+
     @State
     var image: UIImage? = nil
-    
+
     @State
     var ranged = false
-    
+
     @State
     var success = false
-    
+
     let site: RadarSite? = {
         do {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-            
+
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .formatted(dateFormatter)
-            
+
             let siteResponse = try decoder.decode(RadarSiteResponse.self, from: Data(SurveyConfig.siteJSON.utf8))
             return siteResponse.site
         } catch {
             return nil
         }
     }()
-    
+
     @State
     var mapStyle: MLNStyle? = nil
-    
+
     @State
     var calibration: (Double, Double) = (0, 0)
-    
+
     @State
     var rotation: Double = 0
-    
+
     @State
     var surveying = false
-    
+
     @StateObject private var viewModel = SurveyViewModel()
-    
+
     @AppStorage("radar-prediction-average-window") var predictionAverageWindow: Int = 1
     @AppStorage("radar-measurement-drop-filter") var measurementDropFilter: Int = 0
     @AppStorage("radar-calibration-mode") var calibrationMode: Bool = false
@@ -161,13 +161,13 @@ struct SurveyView: View {
     @AppStorage("radar-prediction-confidence") var predictionConfidence: Bool = false
 
     let scanner = RadarIndoorScan(uuids: SurveyConfig.beaconUUIDs)
-//    let model = RadarBeaconRSSIModel()
-    
+    //    let model = RadarBeaconRSSIModel()
+
     @State
     var collectedData: [SurveyData] = []
     @State
     var collectedBeaconList = Set<String>()
-    
+
     @State
     var tapCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     @State
@@ -178,10 +178,11 @@ struct SurveyView: View {
     var lastPredCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     @State
     var displayPredCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)
-    
+
     func updatePoints(style: MLNStyle?) {
         if let source = style?.source(withIdentifier: "points-src"),
-           let shape = source as? MLNShapeSource {
+            let shape = source as? MLNShapeSource
+        {
             shape.shape = MLNShapeCollectionFeature(shapes: [
                 MLNPointFeature(coordinate: tapCoord) { f in
                     f.attributes["color"] = "#00FF00"
@@ -192,19 +193,19 @@ struct SurveyView: View {
                 MLNPointFeature(coordinate: displayPredCoord) { f in
                     f.attributes["color"] = "#0000FF"
                 },
-//                MLNPointFeature(coordinate: predCoord) { f in
-//                    f.attributes["color"] = "#00FFFF"
-//                },
-//                MLNPointFeature(coordinate: lastPredCoord) { f in
-//                    f.attributes["color"] = "#FF0000"
-//                },
+                //                MLNPointFeature(coordinate: predCoord) { f in
+                //                    f.attributes["color"] = "#00FFFF"
+                //                },
+                //                MLNPointFeature(coordinate: lastPredCoord) { f in
+                //                    f.attributes["color"] = "#FF0000"
+                //                },
             ])
         }
     }
-    
-    @State var lastUpdatedAt = Date.distantPast;
+
+    @State var lastUpdatedAt = Date.distantPast
     @State var timer: AnyCancellable? = nil
-    
+
     var body: some View {
         VStack(spacing: 10) {
             // Gates the AR calibration + beacon-ranging workflow (and the camera). Off by
@@ -228,10 +229,10 @@ struct SurveyView: View {
                     mapStyle = style
                     let coords = site.floorplan.geometry.coordinates
                     let coordinates = MLNCoordinateQuad(
-                        topLeft:     CLLocationCoordinate2D(latitude: coords[0][0][1], longitude: coords[0][0][0]),
-                        bottomLeft:  CLLocationCoordinate2D(latitude: coords[0][3][1], longitude: coords[0][3][0]),
+                        topLeft: CLLocationCoordinate2D(latitude: coords[0][0][1], longitude: coords[0][0][0]),
+                        bottomLeft: CLLocationCoordinate2D(latitude: coords[0][3][1], longitude: coords[0][3][0]),
                         bottomRight: CLLocationCoordinate2D(latitude: coords[0][2][1], longitude: coords[0][2][0]),
-                        topRight:    CLLocationCoordinate2D(latitude: coords[0][1][1], longitude: coords[0][1][0]),
+                        topRight: CLLocationCoordinate2D(latitude: coords[0][1][1], longitude: coords[0][1][0]),
                     )
                     let imageSource = MLNImageSource(
                         identifier: "overlay-src",
@@ -241,14 +242,14 @@ struct SurveyView: View {
                     style.addSource(imageSource)
                     let rasterLayer = MLNRasterStyleLayer(identifier: "overlay-layer", source: imageSource)
                     style.addLayer(rasterLayer)
-                    
+
                     let pointsSource = MLNShapeSource(identifier: "points-src", shape: MLNPointFeature(coordinate: CLLocationCoordinate2D()))
                     style.addSource(pointsSource)
                     let pointsLayer = MLNCircleStyleLayer(identifier: "points-layer", source: pointsSource)
-//                    pointsLayer.circleRadius = NSExpression(forConstantValue: 5)
+                    //                    pointsLayer.circleRadius = NSExpression(forConstantValue: 5)
                     pointsLayer.circleColor = NSExpression(forKeyPath: "color")
                     style.addLayer(pointsLayer)
-                    
+
                     let coverageSource = MLNShapeSource(identifier: "coverage-src", shape: MLNMultiPolygonFeature(polygons: []))
                     style.addSource(coverageSource)
                     let coverageLayer = MLNFillStyleLayer(identifier: "coverage-layer", source: coverageSource)
@@ -259,8 +260,8 @@ struct SurveyView: View {
                     tapCoord = value.coordinate
                     updatePoints(style: value.mapView.style)
                 }.frame(maxHeight: calibrationMode ? 400 : .infinity)
-            
-            if (calibrationMode) {
+
+            if calibrationMode {
                 HStack {
                     ARViewContainer(viewModel: viewModel).frame(width: 200)
                     Spacer()
@@ -275,10 +276,10 @@ struct SurveyView: View {
                         if let xy = site?.toXY(tapCoord) {
                             Text(String(format: "%.1f, %.1f", xy.0, xy.1))
                         }
-                        
+
                         let xyz = viewModel.transform.columns.3
                         Text(String(format: "%.1f, %.1f, %.1f", xyz.x, xyz.y, xyz.z))
-                        
+
                         HStack {
                             Circle()
                                 .fill((ranged) ? Color.green : Color.gray)
@@ -287,7 +288,7 @@ struct SurveyView: View {
                                 .fill((success) ? Color.green : Color.gray)
                                 .frame(width: 20, height: 20)
                         }
-                        
+
                         HStack {
                             Button(action: {
                                 viewModel.resetTracking()
@@ -302,14 +303,14 @@ struct SurveyView: View {
                                     .background(Color.yellow)
                                     .clipShape(Circle())
                             }
-                            
+
                             Button(action: {
                                 surveying = !surveying
                                 if surveying {
-                                    logStream.write(action:"start scanning")
+                                    logStream.write(action: "start scanning")
                                     scanner.start()
                                 } else {
-                                    logStream.write(action:"stop scanning")
+                                    logStream.write(action: "stop scanning")
                                     scanner.stop()
                                 }
                             }) {
@@ -324,11 +325,11 @@ struct SurveyView: View {
                         HStack {
                             Button(action: {
                                 if collectedData.isEmpty {
-                                    logStream.write(action:"Send data: no data collected")
+                                    logStream.write(action: "Send data: no data collected")
                                     return
                                 }
-                                logStream.write(action:"Send data: \(collectedData.count) points of data with \(collectedBeaconList.count) beacons")
-                                
+                                logStream.write(action: "Send data: \(collectedData.count) points of data with \(collectedBeaconList.count) beacons")
+
                                 // convert collected data into csv
                                 let beacons = collectedBeaconList.sorted()
                                 // header
@@ -338,7 +339,7 @@ struct SurveyView: View {
                                     csv.append(beacons.map { "\(data.rssi[$0] ?? 0)" }.joined(separator: ","))
                                     csv.append("\n")
                                 }
-                                
+
                                 guard let data = csv.data(using: .utf8) else {
                                     print("invalid conversion to Data")
                                     return
@@ -350,10 +351,10 @@ struct SurveyView: View {
                                 let publishableKey = settingsStore.resolvedPublishableKey
                                 Task {
                                     let status = await SurveyApi.createSurvey(data: compressed, publishableKey: publishableKey)
-                                    logStream.write(action:"createSurvey: \(status)")
+                                    logStream.write(action: "createSurvey: \(status)")
                                     await MainActor.run { success = (status == "Success") }
                                 }
-                                
+
                                 collectedBeaconList.removeAll()
                                 collectedData.removeAll()
                             }) {
@@ -365,20 +366,21 @@ struct SurveyView: View {
                                     .clipShape(Circle())
                             }
                         }
-                        
+
                     }.frame(width: 200)
                 }
             }
         }.onAppear {
             Task {
                 scanner.update = { beacons in
-                    logStream.write(action:"ranged with \(beacons.count) beacons")
+                    logStream.write(action: "ranged with \(beacons.count) beacons")
                     ranged = true
                     guard let location = site?.toXY(arCoord),
-                          let date = dateFormatter.string(for: Date.now) else {
-                        return;
+                        let date = dateFormatter.string(for: Date.now)
+                    else {
+                        return
                     }
-                    
+
                     var rssi = [String: Int]()
                     beacons.forEach { beacon in
                         let id = "\(beacon.major)_\(beacon.minor)"
@@ -391,13 +393,14 @@ struct SurveyView: View {
                         y: location.1,
                         rssi: rssi
                     )
-                    
+
                     if surveying {
                         collectedData.append(data)
                     }
-                    
+
                     if let source = mapStyle?.source(withIdentifier: "coverage-src"),
-                       let shape = source as? MLNShapeSource {
+                        let shape = source as? MLNShapeSource
+                    {
                         let polygons = collectedData.compactMap { data in
                             let coords = circleFor(site: site!, x: data.x, y: data.y, r: 0.5)
                             return MLNPolygonFeature(coordinates: coords, count: UInt(coords.count))
@@ -405,28 +408,28 @@ struct SurveyView: View {
                         shape.shape = MLNShapeCollectionFeature(shapes: polygons)
                     }
                 }
-                
+
                 // update 20 times a second
                 timer = Timer.publish(every: 0.05, on: .main, in: .common)
                     .autoconnect()
                     .sink { _ in
-                    // linear interpolation based on time to next location (1s)
+                        // linear interpolation based on time to next location (1s)
                         let now = Date.now
                         let timeToNextUpdate = max(1 - now.timeIntervalSince(lastUpdatedAt), 0)
                         let lerp = min(timeToNextUpdate, 1)
                         let latitude = lastPredCoord.latitude * lerp + predCoord.latitude * (1 - lerp)
                         let longitude = lastPredCoord.longitude * lerp + predCoord.longitude * (1 - lerp)
                         displayPredCoord = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                        
+
                         let coord = (logStream.lastClientSource == .indoors ? logStream.lastClientLocation : nil)?.coordinate
                         if coord != nil && coord != predCoord {
                             lastPredCoord = predCoord
                             predCoord = coord!
                             lastUpdatedAt = now
                         }
-                }
+                    }
             }
-            
+
             viewModel.updated = {
                 if !calibrationMode {
                     tapCoord = CLLocationCoordinate2D(latitude: 0, longitude: 0)

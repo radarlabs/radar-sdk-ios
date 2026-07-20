@@ -1,3 +1,4 @@
+// swift-format-ignore-file
 //
 //  SurveyConfig.swift
 //  Example
@@ -5,6 +6,8 @@
 //  Created by ShiCheng Lu on 10/30/25.
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
+// This file is a hand-edited configuration fixture (a large embedded site-JSON string);
+// it is exempted from swift-format so pasting a new site doesn't fight the formatter.
 
 /// The single place to configure an indoor survey. Edit these values to point the Survey
 /// tab at a different site, beacons, or geofence.

@@ -7,6 +7,7 @@
 //
 import Foundation
 import RadarSDK
+
 //
 @objc protocol GeoJSON {
     var type: String { get }
@@ -44,7 +45,7 @@ import RadarSDK
     //let geofences: [RadarGeofence]
     //let beacons: [RadarBeacon]
     let floorplan: RadarFloorplan
-    
+
     enum CodingKeys: String, CodingKey {
         case id = "_id"
         case createdAt
