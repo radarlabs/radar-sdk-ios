@@ -189,8 +189,6 @@ extension RadarBeaconManagerSwift {
     func registerBeaconRegionNotifications(
         from beaconArray: [[String: Any]]
     ) {
-        guard let bridge = RadarSwift.bridge else { return }
-
         var requests: [UNNotificationRequest] = []
 
         for beaconDict in beaconArray {

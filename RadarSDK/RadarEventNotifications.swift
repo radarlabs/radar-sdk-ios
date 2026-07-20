@@ -96,14 +96,14 @@ private let kEventNotificationIdentifierPrefix = "radar_event_notification_"
     
     // MARK: - Helpers
     
-    private static func isCampaign(_ metadata: [String: Any]) -> Bool {
+    static func isCampaign(_ metadata: [String: Any]) -> Bool {
         guard let campaignType = metadata["radar:campaignType"] as? String else { return false }
         return campaignType == "clientSide" || campaignType == "eventBased"
     }
     
     /// Extracts the legacy notification text and source metadata for an event,
     /// based on event type and the associated geofence/beacon/trip metadata.
-    private static func legacyNotificationText(for event: RadarEvent) -> ([AnyHashable: Any], String)? {
+    static func legacyNotificationText(for event: RadarEvent) -> ([AnyHashable: Any], String)? {
         switch event.type {
         case .userEnteredGeofence:
             guard let metadata = event.geofence?.metadata,

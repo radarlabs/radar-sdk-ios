@@ -10,3 +10,6 @@
 #import "../RadarSDK/RadarPolygonGeometry+Internal.h"
 #import "RadarAPIHelperMock.h"
 #import "RadarPermissionsHelperMock.h"
+#import "../RadarSDK/RadarEvent+Internal.h"
+#import "../RadarSDK/RadarTrip+Internal.h"
+#import "../RadarSDK/RadarBeacon+Internal.h"
