@@ -39,10 +39,6 @@ jobs:
       - name: Format Swift
         env:
           GH_TOKEN: ${{ github.token }}
-          # Pin swift-format so formatting is reproducible across the runner and contributors.
-          # swift-format output changes between versions, so an unpinned `brew install` (which
-          # tracks latest) would reformat files and fail CI whenever Homebrew bumps the version.
-          # To upgrade intentionally: bump this, run `make format`, and commit the result.
           SWIFT_FORMAT_VERSION: "603.0.0"
         run: |
           if ! command -v swift-format >/dev/null; then
