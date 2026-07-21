@@ -13,6 +13,10 @@ actor RadarLogBuffer {
 
     var logs = [RadarLog]()
 
+    // Retains the async persistence load started in init so callers (and tests) can await
+    // it deterministically instead of racing it with wall-clock sleeps.
+    private var loadLogsTask: Task<Void, Never>?
+
     // the logs file is a full reflection of the logs
     let logsFile: RadarFileStorage?
 
@@ -36,9 +40,22 @@ actor RadarLogBuffer {
         self.useLogPersistenceOverride = logPersistence
         self.apiClient = apiClient
 
+        // Kick off the initial persistence load. Routed through waitForInitialLoad so the
+        // load Task is created (and can be awaited) from an isolated context.
         Task { [weak self] in
-            await self?.loadLogs()
+            await self?.waitForInitialLoad()
         }
+    }
+
+    // Starts the persistence load once (idempotent) and awaits its completion. Deterministic
+    // alternative to sleeping and hoping the async load kicked off in init has finished.
+    func waitForInitialLoad() async {
+        if loadLogsTask == nil {
+            loadLogsTask = Task { [weak self] in
+                await self?.loadLogs()
+            }
+        }
+        await loadLogsTask?.value
     }
 
     func loadLogs() async {
