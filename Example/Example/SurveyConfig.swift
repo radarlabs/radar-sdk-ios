@@ -10,12 +10,10 @@
 /// The single place to configure an indoor survey. Edit these values to point the Survey
 /// tab at a different site, beacons, or geofence.
 ///
-/// Note: there is no survey-record id to set here — the server generates it when
-/// `SurveyApi.createSurvey` runs. What you configure is the geofence the survey attaches to.
 enum SurveyConfig {
 
     /// iBeacon proximity UUID(s) the survey ranges. One UUID matches every beacon with it;
-    /// individual beacons are distinguished downstream by major/minor. 
+    /// individual beacons are distinguished downstream by major/minor.
     static let beaconUUIDs = [
         "F7826DA6-4FA2-4E98-8024-BC5B71E0893E"
     ]

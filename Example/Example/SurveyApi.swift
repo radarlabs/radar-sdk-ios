@@ -179,11 +179,7 @@ class SurveyApi {
             guard let params = uploadParams?["fields"] as? [String: String] else {
                 return "Param is not a dict"
             }
-            // Forward every field the presigned POST returned. In particular this includes
-            // X-Amz-Security-Token when the server signs with temporary STS credentials
-            // (access keys starting with "ASIA") — dropping it makes S3 reject the upload
-            // with 403 InvalidAccessKeyId. `key` and `file` are added after, with `file`
-            // last as S3 requires.
+
             for (fieldName, value) in params {
                 request.addTextField(named: fieldName, value: value)
             }
