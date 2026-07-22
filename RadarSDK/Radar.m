@@ -62,7 +62,7 @@ BOOL _initialized = NO;
             [RadarNotificationSwizzling swizzleNotificationCenterDelegate];
         }
         if (options.silentPush) {
-            [RadarNotificationSwizzling swizzleNotificationCenterDelegate];
+            [RadarNotificationSwizzling swizzleApplicationDelegate];
         }
     });
 }
