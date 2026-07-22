@@ -38,7 +38,7 @@ CI runs SwiftLint, the swift-format check, a build + analyze, and the test suite
 
 ## Code style
 
-- **New code must be Swift.** The SDK has an Objective-C foundation that is actively being migrated to Swift — new classes, structs, enums, extensions, and tests should be Swift only. Don't migrate an existing Objective-C file without checking with the Radar team first.
+- **New code must be Swift.** The SDK has an Objective-C foundation that is actively being migrated to Swift — new classes, structs, enums, extensions, and tests should be Swift only. Don't migrate an existing Objective-C file without checking with the Radar team first (the one exception is the nightly `objc-to-swift-nightly` workflow, whose migration PRs are checked with the team at review time).
 - Swift is linted with SwiftLint and formatted with `swift-format`; Objective-C is formatted with `clang-format`. Config lives in `.swiftlint.yml`, `.swift-format`, and `.clang-format`.
 - When you add a Swift file, add it to `RadarSDK.xcodeproj` (`project.pbxproj`) so it gets compiled. When migrating a class, remove the old `.m`/`.h` from the project.
 

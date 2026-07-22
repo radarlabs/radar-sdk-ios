@@ -1,0 +1,92 @@
+name: Nightly ObjC to Swift migration
+
+# Converts ONE safe Objective-C file to Swift per run and opens a PR for human
+# review. Approval happens at PR review (see AGENTS.md "Language Policy") — the
+# agent only picks conservative leaf files, and skips the run entirely while a
+# previous migration PR is still open. The PR's own CI (build-and-test.yml on
+# macOS) is the build/test verifier; this job runs on Linux and does not build.
+
+on:
+  schedule:
+    # ~1-2am ET, Monday-Friday nights
+    - cron: "0 6 * * 2-6"
+  workflow_dispatch:
+
+concurrency:
+  group: objc-to-swift-nightly
+  cancel-in-progress: false
+
+# Pushes and PR creation use MIGRATION_GH_TOKEN (a PAT), NOT the default
+# GITHUB_TOKEN — PRs opened with GITHUB_TOKEN would not trigger the
+# build-and-test.yml pull_request workflow that verifies the migration.
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Skip if a migration PR is already open (WIP cap = 1)
+        id: guard
+        env:
+          GH_TOKEN: ${{ secrets.MIGRATION_GH_TOKEN }}
+        run: |
+          OPEN=$(gh pr list --repo "$GITHUB_REPOSITORY" --label swift-migration --state open --json number --jq 'length')
+          echo "open=$OPEN" >> "$GITHUB_OUTPUT"
+          if [ "$OPEN" != "0" ]; then
+            echo "::notice::Skipping — $OPEN swift-migration PR(s) still open. Review/merge/close them to resume."
+          fi
+
+      - name: Checkout radar-sdk-ios
+        if: steps.guard.outputs.open == '0'
+        uses: actions/checkout@v5
+        with:
+          # PAT (not GITHUB_TOKEN) so the pushed branch + PR trigger CI.
+          token: ${{ secrets.MIGRATION_GH_TOKEN }}
+          # No submodules: the conversion only touches RadarSDK sources + pbxproj.
+
+      - name: Checkout the objc-to-swift skill (radarlabs/clankers)
+        if: steps.guard.outputs.open == '0'
+        uses: actions/checkout@v5
+        with:
+          repository: radarlabs/clankers
+          token: ${{ secrets.MIGRATION_GH_TOKEN }}
+          path: clankers-skill
+
+      - name: Install the skill for this run
+        if: steps.guard.outputs.open == '0'
+        run: |
+          mkdir -p .claude/skills
+          cp -R clankers-skill/skills/objc-to-swift .claude/skills/objc-to-swift
+          rm -rf clankers-skill
+
+      - name: Install Swift formatting tools (best effort)
+        if: steps.guard.outputs.open == '0'
+        run: |
+          # Linux bottles exist for these most of the time; the skill's batch
+          # mode degrades gracefully (PR CI checks formatting) if they don't.
+          brew install swift-format || echo "::warning::swift-format unavailable on this runner; PR CI will check formatting"
+
+      - name: Run the migration agent
+        if: steps.guard.outputs.open == '0'
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.MIGRATION_GH_TOKEN }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.MIGRATION_GH_TOKEN }}
+          prompt: |
+            /objc-to-swift batch
+
+            This is the unattended nightly migration run. Follow the skill's
+            "Batch mode (unattended CI runs)" section exactly:
+            - Convert exactly one eligible tier-0/1 flag-free candidate
+              (Strategy D or A only). If none is eligible, print why and exit
+              WITHOUT editing anything or opening a PR.
+            - You are on a Linux runner: skip make build/test; PR CI verifies.
+            - Branch claude/migrate-<FileName> off master, commit, push, and
+              open a PR labeled swift-migration using gh (GH_TOKEN is set),
+              filling .github/PULL_REQUEST_TEMPLATE.md.
+          claude_args: '--allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 80'
