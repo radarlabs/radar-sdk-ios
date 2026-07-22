@@ -85,7 +85,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-             indoorScan:(NSString *_Nullable)indoorScan
+           indoorLocation:(CLLocation *_Nullable)indoorLocation
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
@@ -94,7 +94,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-             indoorScan:(NSString *_Nullable)indoorScan
+           indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
             fraudPayload:(NSString *_Nullable)fraudPayload
          // -- payload encryption --
@@ -111,7 +111,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-             indoorScan:(NSString *_Nullable)indoorScan
+           indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
             fraudPayload:(NSString *_Nullable)fraudPayload
       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
