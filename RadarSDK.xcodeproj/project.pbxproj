@@ -83,7 +83,6 @@
 		82D04ABD29722ED20036619F /* RadarReplayBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D04ABA29722ED20036619F /* RadarReplayBuffer.h */; };
 		82DF18792C58324600301B17 /* RadarActivityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 82DF18772C5830C300301B17 /* RadarActivityManager.h */; };
 		82DF187A2C58324900301B17 /* RadarActivityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 82DF18782C5830C300301B17 /* RadarActivityManager.m */; };
-		82F7FAEB2A65FDD50055AA4B /* RadarNotificationHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 01DDC7C529FC387400C0D039 /* RadarNotificationHelper.m */; };
 		82F7FAEE2A65FE030055AA4B /* RadarVerificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 82F7FAEC2A65FE030055AA4B /* RadarVerificationManager.h */; };
 		82F7FAEF2A65FE030055AA4B /* RadarVerificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */; };
 		966D8860288F7404008C0D00 /* conversion_event.json in Resources */ = {isa = PBXBuildFile; fileRef = 966D885F288F7404008C0D00 /* conversion_event.json */; };
@@ -189,6 +188,13 @@
 		BA8647B92F6C7DB700F1A199 /* RadarSyncManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8647B82F6C7DAD00F1A199 /* RadarSyncManagerTests.swift */; };
 		BA8647BB2F6C8F0E00F1A199 /* SyncRegionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8647BA2F6C8F0600F1A199 /* SyncRegionResponse.swift */; };
 		BA8D14CD3005A30C00022EB3 /* RadarBeaconManager+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8D14CC3005A30200022EB3 /* RadarBeaconManager+Delegate.swift */; };
+		BA8D1531300ACB3900022EB3 /* RadarNotificationSwizzling.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8D1530300ACB3000022EB3 /* RadarNotificationSwizzling.swift */; };
+		BA8D1533300AD80C00022EB3 /* RadarEventNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8D1532300AD80100022EB3 /* RadarEventNotifications.swift */; };
+		BA8D1539300AE5C000022EB3 /* RadarNotificationUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8D1538300AE5B700022EB3 /* RadarNotificationUtils.swift */; };
+		BA8D153B300E9BDE00022EB3 /* RadarEventNotificationsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8D153A300E9BD100022EB3 /* RadarEventNotificationsTest.swift */; };
+		BA8D153D300EA41900022EB3 /* RadarEventNotificationsTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8D153C300EA40D00022EB3 /* RadarEventNotificationsTestHelpers.swift */; };
+		BA8D15C230100DF600022EB3 /* RadarSwizzleHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = BA8D15C130100DE800022EB3 /* RadarSwizzleHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BA8D15C430100E0500022EB3 /* RadarSwizzleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = BA8D15C330100E0100022EB3 /* RadarSwizzleHelper.m */; };
 		BABC4B91300190E50035CBDB /* RadarBeaconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABC4B90300190E10035CBDB /* RadarBeaconManager.swift */; };
 		BABC4B933001AE9B0035CBDB /* RadarBeaconManagerSwift.h in Sources */ = {isa = PBXBuildFile; fileRef = BABC4B923001AE860035CBDB /* RadarBeaconManagerSwift.h */; };
 		BABC4B9D3005494E0035CBDB /* RadarPermissionsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABC4B9C3005494A0035CBDB /* RadarPermissionsHelper.swift */; };
@@ -269,7 +275,6 @@
 		019514352BD077D10031ABA2 /* RadarVerifiedLocationToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedLocationToken.h; sourceTree = "<group>"; };
 		019514372BD081630031ABA2 /* RadarVerifiedLocationToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarVerifiedLocationToken.m; sourceTree = "<group>"; };
 		019514382BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarVerifiedLocationToken+Internal.h"; sourceTree = "<group>"; };
-		01DDC7C529FC387400C0D039 /* RadarNotificationHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarNotificationHelper.m; sourceTree = "<group>"; };
 		01DDC7C629FC387400C0D039 /* RadarNotificationHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarNotificationHelper.h; sourceTree = "<group>"; };
 		01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedDelegate.h; sourceTree = "<group>"; };
 		01F99CFA2965C182004E8CF3 /* RadarConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarConfig.h; sourceTree = "<group>"; };
@@ -401,6 +406,13 @@
 		BA8647B82F6C7DAD00F1A199 /* RadarSyncManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSyncManagerTests.swift; sourceTree = "<group>"; };
 		BA8647BA2F6C8F0600F1A199 /* SyncRegionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncRegionResponse.swift; sourceTree = "<group>"; };
 		BA8D14CC3005A30200022EB3 /* RadarBeaconManager+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarBeaconManager+Delegate.swift"; sourceTree = "<group>"; };
+		BA8D1530300ACB3000022EB3 /* RadarNotificationSwizzling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarNotificationSwizzling.swift; sourceTree = "<group>"; };
+		BA8D1532300AD80100022EB3 /* RadarEventNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarEventNotifications.swift; sourceTree = "<group>"; };
+		BA8D1538300AE5B700022EB3 /* RadarNotificationUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarNotificationUtils.swift; sourceTree = "<group>"; };
+		BA8D153A300E9BD100022EB3 /* RadarEventNotificationsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarEventNotificationsTest.swift; sourceTree = "<group>"; };
+		BA8D153C300EA40D00022EB3 /* RadarEventNotificationsTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarEventNotificationsTestHelpers.swift; sourceTree = "<group>"; };
+		BA8D15C130100DE800022EB3 /* RadarSwizzleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSwizzleHelper.h; sourceTree = "<group>"; };
+		BA8D15C330100E0100022EB3 /* RadarSwizzleHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSwizzleHelper.m; sourceTree = "<group>"; };
 		BABC4B90300190E10035CBDB /* RadarBeaconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarBeaconManager.swift; sourceTree = "<group>"; };
 		BABC4B923001AE860035CBDB /* RadarBeaconManagerSwift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarBeaconManagerSwift.h; sourceTree = "<group>"; };
 		BABC4B9C3005494A0035CBDB /* RadarPermissionsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarPermissionsHelper.swift; sourceTree = "<group>"; };
@@ -650,6 +662,11 @@
 		DD236C772308797B00EB88F9 /* RadarSDK */ = {
 			isa = PBXGroup;
 			children = (
+				BA8D15C330100E0100022EB3 /* RadarSwizzleHelper.m */,
+				BA8D15C130100DE800022EB3 /* RadarSwizzleHelper.h */,
+				BA8D1538300AE5B700022EB3 /* RadarNotificationUtils.swift */,
+				BA8D1532300AD80100022EB3 /* RadarEventNotifications.swift */,
+				BA8D1530300ACB3000022EB3 /* RadarNotificationSwizzling.swift */,
 				BA7794B82FAD195E00E197CA /* RadarLog.swift */,
 				BA7794B92FAD195E00E197CA /* RadarLogBuffer.swift */,
 				BA3540212F90020900E553A1 /* RadarOfflineEventManager.h */,
@@ -697,7 +714,6 @@
 				9683FD6227B36C26009EBB6B /* RadarMeta.m */,
 				F64FF0D42E4D2B4700DF3926 /* RadarInAppMessageDelegate.m */,
 				01DDC7C629FC387400C0D039 /* RadarNotificationHelper.h */,
-				01DDC7C529FC387400C0D039 /* RadarNotificationHelper.m */,
 				F65A50752F5B771200DAB9C7 /* RadarNotificationHelper.swift */,
 				F6B7E3482F745E44006A5A24 /* RadarNotification.swift */,
 				DD633EC5237C5B9C0026C91A /* RadarPermissionsHelper.h */,
@@ -743,6 +759,8 @@
 		DD236C822308797B00EB88F9 /* RadarSDKTests */ = {
 			isa = PBXGroup;
 			children = (
+				BA8D153C300EA40D00022EB3 /* RadarEventNotificationsTestHelpers.swift */,
+				BA8D153A300E9BD100022EB3 /* RadarEventNotificationsTest.swift */,
 				BABC4BA03005996B0035CBDB /* RadarBeaconManagerTests.swift */,
 				BABC4B9E3005978E0035CBDB /* MockRadarPermissionsHelper.swift */,
 				BAC932F12FF45B3C00503C2C /* RadarReplayTests.swift */,
@@ -913,6 +931,7 @@
 				F686B7312E4D29C400D3D614 /* RadarInAppMessageDelegate.h in Headers */,
 				96A5A11127AD9F7F007B960B /* RadarBeacon.h in Headers */,
 				019514362BD078D90031ABA2 /* RadarVerifiedLocationToken.h in Headers */,
+				BA8D15C230100DF600022EB3 /* RadarSwizzleHelper.h in Headers */,
 				96A5A10B27AD9F7F007B960B /* RadarTripOptions.h in Headers */,
 				E698B6502C6112FA00084371 /* RadarMotionProtocol.h in Headers */,
 				E658DB072CB46277004E0F01 /* RadarOperatingHours.h in Headers */,
@@ -1132,11 +1151,13 @@
 				0107AB0B262201D1008AB52F /* RadarAPIHelper.m in Sources */,
 				BA8647B72F6C5C0A00F1A199 /* RadarBeacon.swift in Sources */,
 				8227EF0C2CDAB69B00C47290 /* RadarRouteMode.m in Sources */,
+				BA8D1539300AE5C000022EB3 /* RadarNotificationUtils.swift in Sources */,
 				F6E0D8B62E79FA4500DB4C73 /* RadarSwiftBridge.swift in Sources */,
 				F6E0D8B72E79FA4500DB4C73 /* RadarSwiftBridge.m in Sources */,
 				F6A2DDE62EE8A71800ABA650 /* RadarIndoors.swift in Sources */,
 				F60D65E92F15805000CE1D73 /* RadarDelegateHolder.swift in Sources */,
 				BA8647B12F6C583300F1A199 /* RadarGeofence.swift in Sources */,
+				BA8D1531300ACB3900022EB3 /* RadarNotificationSwizzling.swift in Sources */,
 				F6513DDC2E54F63100523472 /* RadarAPIClient.swift in Sources */,
 				9683FD6527B36C26009EBB6B /* RadarMeta.m in Sources */,
 				F686B7372E4D2AFC00D3D614 /* RadarAPIHelper.swift in Sources */,
@@ -1144,9 +1165,11 @@
 				F64FF0D52E4D2B4700DF3926 /* RadarInAppMessageDelegate.m in Sources */,
 				F65F79372EF4560B00399E84 /* RadarInAppMessage.m in Sources */,
 				0107AAAA26220165008AB52F /* RadarGeofenceGeometry.m in Sources */,
+				BA8D15C430100E0500022EB3 /* RadarSwizzleHelper.m in Sources */,
 				BA8647AD2F6C527B00F1A199 /* RadarSyncState.swift in Sources */,
 				BA7794BA2FAD195E00E197CA /* RadarLog.swift in Sources */,
 				BA7794BB2FAD195E00E197CA /* RadarLogBuffer.swift in Sources */,
+				BA8D1533300AD80C00022EB3 /* RadarEventNotifications.swift in Sources */,
 				BABC4B933001AE9B0035CBDB /* RadarBeaconManagerSwift.h in Sources */,
 				0107AAEC262201A6008AB52F /* RadarTrip.m in Sources */,
 				9679F4A327CD8DE200800797 /* CLLocation+Radar.m in Sources */,
@@ -1178,7 +1201,6 @@
 				82F7FAEF2A65FE030055AA4B /* RadarVerificationManager.m in Sources */,
 				0107AA832622013A008AB52F /* RadarBeacon.m in Sources */,
 				BA8D14CD3005A30C00022EB3 /* RadarBeaconManager+Delegate.swift in Sources */,
-				82F7FAEB2A65FDD50055AA4B /* RadarNotificationHelper.m in Sources */,
 				BA264CFF2FF31FB6000EDFE6 /* RadarReplayBuffer.swift in Sources */,
 				0107AAB626220172008AB52F /* RadarPolygonGeometry.m in Sources */,
 				BABC4B9D3005494E0035CBDB /* RadarPermissionsHelper.swift in Sources */,
@@ -1213,6 +1235,7 @@
 			files = (
 				BA561CDA2FD3869500D7A3E3 /* RadarOperatingHoursEvaluatorTest.swift in Sources */,
 				F6A0DAC82EF087AC00BC10B4 /* RadarSettingsTest.swift in Sources */,
+				BA8D153D300EA41900022EB3 /* RadarEventNotificationsTestHelpers.swift in Sources */,
 				F6843C87300696A200213092 /* RadarRevealRiskTests.swift in Sources */,
 				F6FA1102000000000000A001 /* RadarVerifiedHostOverrideTests.swift in Sources */,
 				F6FA1104000000000000A001 /* RadarIndoorLocationTrackParamsTests.swift in Sources */,
@@ -1249,6 +1272,7 @@
 				BA7794C12FAD198B00E197CA /* RadarFileStorageTests.swift in Sources */,
 				BA7794C22FAD198B00E197CA /* RadarLoggerTests.swift in Sources */,
 				BA7794C32FAD198B00E197CA /* RadarLogBufferTests.swift in Sources */,
+				BA8D153B300E9BDE00022EB3 /* RadarEventNotificationsTest.swift in Sources */,
 				BABC4B9F300597970035CBDB /* MockRadarPermissionsHelper.swift in Sources */,
 				9DACF4A7161A400A81B6B370 /* RadarAPIHelperTests.swift in Sources */,
 				BA7180552FB3D33100A28DD4 /* RadarUtilsTests.swift in Sources */,

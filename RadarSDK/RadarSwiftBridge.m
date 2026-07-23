@@ -16,7 +16,6 @@
 #import "RadarUtils.h"
 #import "RadarDelegateHolder.h"
 #import "RadarAPIClient.h"
-#import "RadarNotificationHelper.h"
 
 @implementation RadarSwiftBridge
 
@@ -110,14 +109,6 @@
 
 - (void)setRssi:(NSInteger)rssi onBeacon:(RadarBeacon *)beacon {
     [beacon setRssi:rssi];
-}
-
-- (nullable UNMutableNotificationContent *)extractContentFromMetadata:(nullable NSDictionary *)metadata identifier:(nullable NSString *)identifier {
-    return [RadarNotificationHelper extractContentFromMetadata:metadata identifier:identifier];
-}
-
-- (void)updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests {
-    [RadarNotificationHelper updateClientSideCampaignsWithPrefix:prefix notificationRequests:requests];
 }
 
 @end

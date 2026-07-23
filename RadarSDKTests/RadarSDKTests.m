@@ -2278,43 +2278,4 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     }];
     XCTAssertTrue(explicitTrue.skipForegroundCheck);
 }
-
-#pragma mark - RadarNotificationHelper isNotificationActiveForMetadata
-
-- (void)testIsNotificationActiveForMetadataDayOfWeek {
-    NSArray<NSString *> *abbr = @[ @"Sun", @"Mon", @"Tue", @"Wed", @"Thu", @"Fri", @"Sat" ];
-    NSDate *now = [NSDate date];
-    NSInteger todayIndex = [[NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian] component:NSCalendarUnitWeekday fromDate:now] - 1;
-    NSString *today = abbr[todayIndex];
-    NSString *notToday = abbr[(todayIndex + 3) % 7];
-
-    XCTAssertTrue([RadarNotificationHelper isNotificationActiveForMetadata:@{@"radar:daysOfWeek": today} now:now],
-                  @"today included should be active");
-    XCTAssertFalse([RadarNotificationHelper isNotificationActiveForMetadata:@{@"radar:daysOfWeek": notToday} now:now],
-                   @"today excluded should be inactive");
-    XCTAssertTrue([RadarNotificationHelper isNotificationActiveForMetadata:@{@"radar:daysOfWeek": @""} now:now],
-                  @"empty list means every day");
-    XCTAssertTrue([RadarNotificationHelper isNotificationActiveForMetadata:@{} now:now],
-                  @"absent key means every day");
-    NSString *messy = [NSString stringWithFormat:@" %@ , xyz ", [today lowercaseString]];
-    XCTAssertTrue([RadarNotificationHelper isNotificationActiveForMetadata:@{@"radar:daysOfWeek": messy} now:now],
-                  @"case-insensitive, whitespace-trimmed, unknown tokens ignored");
-}
-
-- (void)testIsNotificationActiveForMetadataSchedulingWindow {
-    NSDate *now = [NSDate date];
-    NSString *past = @"2000-01-01T00:00:00.000";
-    NSString *future = @"2999-01-01T00:00:00.000";
-
-    XCTAssertFalse([RadarNotificationHelper isNotificationActiveForMetadata:@{@"radar:endsAt": past} now:now],
-                   @"after the window end should be inactive");
-    XCTAssertFalse([RadarNotificationHelper isNotificationActiveForMetadata:@{@"radar:startsAt": future} now:now],
-                   @"before the window start should be inactive");
-    // Hoisted to a local: a multi-entry dictionary literal's comma would otherwise split the XCTAssert macro args.
-    NSDictionary *withinWindow = @{@"radar:startsAt": past, @"radar:endsAt": future};
-    XCTAssertTrue([RadarNotificationHelper isNotificationActiveForMetadata:withinWindow now:now],
-                  @"within the window should be active");
-    XCTAssertTrue([RadarNotificationHelper isNotificationActiveForMetadata:@{} now:now],
-                  @"no window means always active");
-}
 @end
