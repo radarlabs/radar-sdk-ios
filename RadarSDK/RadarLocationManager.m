@@ -1480,6 +1480,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift didChangeAuthorizationStatus:status];
+        return;
+    }
+
     CLAuthorizationStatus previousStatus = [RadarState locationAuthorizationStatus];
     [RadarState setLocationAuthorizationStatus:status];
 

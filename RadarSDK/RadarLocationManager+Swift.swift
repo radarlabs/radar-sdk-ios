@@ -277,4 +277,30 @@ final class RadarLocationManagerSwift: NSObject {
             "timestamp": heading.timestamp.timeIntervalSince1970,
         ]
     }
+
+    @objc(didChangeAuthorizationStatus:)
+    static func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
+        let state = RadarState()
+        let previousStatus = state.locationAuthorizationStatus
+        state.locationAuthorizationStatus = status
+
+        if status == previousStatus {
+            return
+        }
+
+        guard let config = RadarSettings.sdkConfiguration else {
+            return
+        }
+        guard status == .authorizedAlways || status == .authorizedWhenInUse,
+            config.trackOnceOnAppOpen || config.startTrackingOnInitialize
+        else {
+            return
+        }
+
+        RadarLogger.shared.log(level: .info, message: "🦅 Location services authorized")
+        Radar.trackOnce(completionHandler: nil)
+        if config.startTrackingOnInitialize, !RadarSettings.tracking {
+            Radar.startTracking(trackingOptions: RadarSettings.trackingOptions)
+        }
+    }
 }
