@@ -288,16 +288,18 @@ final class RadarLocationManagerSwift: NSObject {
             return
         }
 
-        let config = RadarSettings.sdkConfiguration
+        guard let config = RadarSettings.sdkConfiguration else {
+            return
+        }
         guard status == .authorizedAlways || status == .authorizedWhenInUse,
-            (config?.trackOnceOnAppOpen ?? false) || (config?.startTrackingOnInitialize ?? false)
+            config.trackOnceOnAppOpen || config.startTrackingOnInitialize
         else {
             return
         }
 
         RadarLogger.shared.log(level: .info, message: "🦅 Location services authorized")
         Radar.trackOnce(completionHandler: nil)
-        if config?.startTrackingOnInitialize ?? false, !RadarSettings.tracking {
+        if config.startTrackingOnInitialize, !RadarSettings.tracking {
             Radar.startTracking(trackingOptions: RadarSettings.trackingOptions)
         }
     }
