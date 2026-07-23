@@ -14,13 +14,6 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
     static let DefaultVerifiedHost = "https://api-verified.radar.io"
     static let DefaultVerifiedHostSecondary = "https://api-verified.radar.com"
 
-    #if DEBUG
-    /// Host used in debug builds to point the SDK at a server on your LAN (applied to both
-    /// `host` and `verifiedHost`). Set to your machine's address to override; leave empty to
-    /// use the normal hosts. Only compiled into debug builds.
-    static let DebugHost = ""
-    #endif
-
     public static var defaultVerifiedHostSecondary: String { DefaultVerifiedHostSecondary }
 
     public static func setAppGroup(_ appGroup: String?) {
@@ -254,11 +247,6 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
     }
 
     public static var host: String {
-        #if DEBUG
-        if !DebugHost.isEmpty {
-            return DebugHost
-        }
-        #endif
         return RadarUserDefaults.string(forKey: .Host) ?? DefaultHost
     }
 
@@ -268,12 +256,7 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
     }
 
     public static var verifiedHost: String {
-        #if DEBUG
-        if !DebugHost.isEmpty {
-            return DebugHost
-        }
-        #endif
-        return RadarUserDefaults.string(forKey: .VerifiedHost) ?? DefaultVerifiedHost
+        RadarUserDefaults.string(forKey: .VerifiedHost) ?? DefaultVerifiedHost
     }
 
     public static var userDebug: Bool {
