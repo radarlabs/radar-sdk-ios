@@ -82,9 +82,10 @@ jobs:
 
             This is the unattended nightly migration run. Follow the skill's
             "Batch mode (unattended CI runs)" section exactly:
-            - Convert exactly one eligible tier-0/1 flag-free candidate
-              (Strategy D or A only). If none is eligible, print why and exit
-              WITHOUT editing anything or opening a PR.
+            - The finder ranks most-trivial-first. Convert the single top
+              flag-free candidate (smallest, least-coupled; Strategy D or A
+              only), skipping Route*/Trip* clusters. If none is eligible, print
+              why and exit WITHOUT editing anything or opening a PR.
             - You are on a Linux runner: skip make build/test; PR CI verifies.
             - Branch claude/migrate-<FileName> off master, commit, push, and
               open a PR labeled swift-migration using gh (GH_TOKEN is set),
