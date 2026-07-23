@@ -14,7 +14,7 @@ import Foundation
     private static let semaphore = DispatchSemaphore(value: 1)
 
     // Checks current notification authorization and persists the result.
-    // Called from Radar.m during intialization.
+    // Called from Radar.m during initialization.
     @objc public static func checkNotificationPermissions(completionHandler: (@Sendable (Bool) -> Void)?) {
         guard NSClassFromString("XCTestCase") == nil else {
             completionHandler?(false)
@@ -41,7 +41,8 @@ import Foundation
 
         Task {
             let delivered = await RadarNotificationHelper.shared.getDeliveredNotifications()
-            completionHandler(delivered, [])
+            let converted = delivered.map { $0 as [String: Any] }
+            completionHandler(converted, [])
         }
     }
 
@@ -108,7 +109,7 @@ import Foundation
                         RadarLogger.shared.log(level: .error, message: "Error adding local notification | identifier = \(request.identifier); error = \(error)")
                     } else {
                         if let value = NotificationValue(from: request) {
-                            collectQueue.async {
+                            collectQueue.sync {
                                 added.append(value)
                             }
                         }
