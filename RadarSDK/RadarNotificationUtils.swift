@@ -23,7 +23,7 @@ import Foundation
 
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             let granted = settings.authorizationStatus == .authorized
-            RadarUserDefaults.set(granted, forKey: .NotificationPermissionGranted)
+            RadarUserDefaults.set(granted, forKey: .notificationPermissionGranted)
             if !granted {
                 RadarLogger.shared.log(level: .debug, message: "Notification permissions not granted.")
             }
