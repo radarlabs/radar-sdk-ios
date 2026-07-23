@@ -11,66 +11,65 @@ import Foundation
 
     public enum Key: String, CaseIterable {
         // RadarSettings
-        case PublishableKey = "radar-publishableKey"
-        case InstallId = "radar-installId"
-        case SessionId = "radar-sessionId"
-        case Id = "radar-_id"
-        case UserId = "radar-userId"
+        case publishableKey = "radar-publishableKey"
+        case installId = "radar-installId"
+        case sessionId = "radar-sessionId"
+        case id = "radar-_id"
+        case userId = "radar-userId"
         case userLanguage = "radar-userLanguage"
-        case Description = "radar-description"
-        case Product = "radar-product"
-        case Metadata = "radar-metadata"
-        case Anonymous = "radar-anonymous"
-        case Tracking = "radar-tracking"
-        case TrackingOptions = "radar-trackingOptions"
-        case PreviousTrackingOptions = "radar-previousTrackingOptions"
-        case RemoteTrackingOptions = "radar-remoteTrackingOptions"
-        case ClientSdkConfiguration = "radar-clientSdkConfiguration"
-        case SdkConfiguration = "radar-sdkConfiguration"
-        case TripOptions = "radar-tripOptions"
-        case Trip = "radar-trip"
-        case LogLevel = "radar-logLevel"
-        case BeaconUUIDs = "radar-beaconUUIDs"
-        case Host = "radar-host"
-        case LastTrackedTime = "radar-lastTrackedTime"
-        case VerifiedHost = "radar-verifiedHost"
-        case LastAppOpenTime = "radar-lastAppOpenTime"
-        case UserDebug = "radar-userDebug"
-        case XPlatformSDKType = "radar-xPlatformSDKType"
-        case XPlatformSDKVersion = "radar-xPlatformSDKVersion"
-        case InitializeOptions = "radar-initializeOptions"
-        case UserTags = "radar-userTags"
-        case PushNotificationToken = "radar-pushNotificationToken"
-        case LocationExtensionToken = "radar-locationExtensionToken"
-        case InSurveyMode = "radar-inSurveyMode"
-        case AppGroup = "radar-appGroup"
+        case description = "radar-description"
+        case product = "radar-product"
+        case metadata = "radar-metadata"
+        case anonymous = "radar-anonymous"
+        case tracking = "radar-tracking"
+        case trackingOptions = "radar-trackingOptions"
+        case previousTrackingOptions = "radar-previousTrackingOptions"
+        case remoteTrackingOptions = "radar-remoteTrackingOptions"
+        case clientSdkConfiguration = "radar-clientSdkConfiguration"
+        case sdkConfiguration = "radar-sdkConfiguration"
+        case tripOptions = "radar-tripOptions"
+        case trip = "radar-trip"
+        case logLevel = "radar-logLevel"
+        case beaconUUIDs = "radar-beaconUUIDs"
+        case host = "radar-host"
+        case lastTrackedTime = "radar-lastTrackedTime"
+        case verifiedHost = "radar-verifiedHost"
+        case lastAppOpenTime = "radar-lastAppOpenTime"
+        case userDebug = "radar-userDebug"
+        case xPlatformSDKType = "radar-xPlatformSDKType"
+        case xPlatformSDKVersion = "radar-xPlatformSDKVersion"
+        case initializeOptions = "radar-initializeOptions"
+        case userTags = "radar-userTags"
+        case pushNotificationToken = "radar-pushNotificationToken"
+        case locationExtensionToken = "radar-locationExtensionToken"
+        case inSurveyMode = "radar-inSurveyMode"
+        case appGroup = "radar-appGroup"
 
         // RadarState
-        case LastLocation = "radar-lastLocation"
-        case LastMovedLocation = "radar-lastMovedLocation"
-        case LastMovedAt = "radar-lastMovedAt"
-        case Stopped = "radar-stopped"
-        case LastSentAt = "radar-lastSentAt"
-        case CanExit = "radar-canExit"
-        case LastFailedStoppedLocation = "radar-lastFailedStoppedLocation"
-        case GeofenceIds = "radar-geofenceIds"
-        case PlaceId = "radar-placeId"
-        case RegionIds = "radar-regionIds"
-        case BeaconIds = "radar-beaconIds"
-        case LastHeadingData = "radar-lastHeadingData"
-        case LastMotionActivityData = "radar-lastMotionActivityData"
-        case LastPressureData = "radar-lastPressureData"
-        case NotificationPermissionGranted = "radar-notificationPermissionGranted"
-        case RegisteredNotifications = "radar-registeredNotifications"
-        // swiftlint:disable:next identifier_name
-        case LocationAuthorizationStatus = "radar-locationAuthorizationStatus"
+        case lastLocation = "radar-lastLocation"
+        case lastMovedLocation = "radar-lastMovedLocation"
+        case lastMovedAt = "radar-lastMovedAt"
+        case stopped = "radar-stopped"
+        case lastSentAt = "radar-lastSentAt"
+        case canExit = "radar-canExit"
+        case lastFailedStoppedLocation = "radar-lastFailedStoppedLocation"
+        case geofenceIds = "radar-geofenceIds"
+        case placeId = "radar-placeId"
+        case regionIds = "radar-regionIds"
+        case beaconIds = "radar-beaconIds"
+        case lastHeadingData = "radar-lastHeadingData"
+        case lastMotionActivityData = "radar-lastMotionActivityData"
+        case lastPressureData = "radar-lastPressureData"
+        case notificationPermissionGranted = "radar-notificationPermissionGranted"
+        case registeredNotifications = "radar-registeredNotifications"
+        case locationAuthorizationStatus = "radar-locationAuthorizationStatus"
     }
 
     // should be set once and then readonly
     nonisolated(unsafe)
         static var userDefaults: UserDefaults = {
             // initialized with the appGroup value of UserDefaults.standard
-            if let appGroup = UserDefaults.standard.string(forKey: Key.AppGroup.rawValue),
+            if let appGroup = UserDefaults.standard.string(forKey: Key.appGroup.rawValue),
                 let appGroupSuite = UserDefaults(suiteName: appGroup)
             {
                 return appGroupSuite
@@ -94,10 +93,10 @@ import Foundation
     nonisolated(unsafe)
         private static var pendingFlushTargets: [ObjectIdentifier: UserDefaults] = [:]
 
-    public static func clone(from: UserDefaults, to: UserDefaults) {
+    public static func clone(from source: UserDefaults, to target: UserDefaults) {
         for key in Key.allCases {
-            let value = from.value(forKey: key.rawValue)
-            to.set(value, forKey: key.rawValue)
+            let value = source.value(forKey: key.rawValue)
+            target.set(value, forKey: key.rawValue)
         }
     }
 

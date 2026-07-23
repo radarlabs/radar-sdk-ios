@@ -10,7 +10,7 @@ import CoreLocation
 class RadarState {
     public var registeredNotifications: [NotificationValue]? {
         get {
-            if let obj = RadarUserDefaults.object(forKey: .RegisteredNotifications),
+            if let obj = RadarUserDefaults.object(forKey: .registeredNotifications),
                 JSONSerialization.isValidJSONObject(obj),
                 let data = try? JSONSerialization.data(withJSONObject: obj),
                 let value = try? JSONDecoder().decode([NotificationValue].self, from: data)
@@ -23,29 +23,29 @@ class RadarState {
             if let data = try? JSONEncoder().encode(newValue),
                 let obj = try? JSONSerialization.jsonObject(with: data)
             {
-                RadarUserDefaults.set(obj, forKey: .RegisteredNotifications)
+                RadarUserDefaults.set(obj, forKey: .registeredNotifications)
             }
         }
     }
 
     public var lastHeadingData: [String: Double]? {
         get {
-            guard let dict = RadarUserDefaults.dictionary(forKey: .LastHeadingData) else {
+            guard let dict = RadarUserDefaults.dictionary(forKey: .lastHeadingData) else {
                 return nil
             }
             return dict.compactMapValues { heading in (heading as? NSNumber)?.doubleValue }
         }
         set {
-            RadarUserDefaults.set(newValue, forKey: .LastHeadingData)
+            RadarUserDefaults.set(newValue, forKey: .lastHeadingData)
         }
     }
 
     public var locationAuthorizationStatus: CLAuthorizationStatus {
         get {
-            CLAuthorizationStatus(rawValue: Int32(RadarUserDefaults.integer(forKey: .LocationAuthorizationStatus))) ?? .notDetermined
+            CLAuthorizationStatus(rawValue: Int32(RadarUserDefaults.integer(forKey: .locationAuthorizationStatus))) ?? .notDetermined
         }
         set {
-            RadarUserDefaults.set(Int(newValue.rawValue), forKey: .LocationAuthorizationStatus)
+            RadarUserDefaults.set(Int(newValue.rawValue), forKey: .locationAuthorizationStatus)
         }
     }
 }

@@ -22,9 +22,9 @@ extension RadarSerializedTests {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer {
                 RadarLocationManagerSwiftTestHelpers.clearState()
-                RadarUserDefaults.set(nil, forKey: .LocationAuthorizationStatus)
+                RadarUserDefaults.set(nil, forKey: .locationAuthorizationStatus)
             }
-            RadarUserDefaults.set(nil, forKey: .LocationAuthorizationStatus)
+            RadarUserDefaults.set(nil, forKey: .locationAuthorizationStatus)
 
             // Flags off so the authorized branch takes no tracking side effect.
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
@@ -42,7 +42,7 @@ extension RadarSerializedTests {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer {
                 RadarLocationManagerSwiftTestHelpers.clearState()
-                RadarUserDefaults.set(nil, forKey: .LocationAuthorizationStatus)
+                RadarUserDefaults.set(nil, forKey: .locationAuthorizationStatus)
             }
 
             // Seed the persisted status so the incoming status matches it.
@@ -65,9 +65,9 @@ extension RadarSerializedTests {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer {
                 RadarLocationManagerSwiftTestHelpers.clearState()
-                RadarUserDefaults.set(nil, forKey: .LocationAuthorizationStatus)
+                RadarUserDefaults.set(nil, forKey: .locationAuthorizationStatus)
             }
-            RadarUserDefaults.set(nil, forKey: .LocationAuthorizationStatus)
+            RadarUserDefaults.set(nil, forKey: .locationAuthorizationStatus)
 
             RadarLocationManagerSwiftTestHelpers.installAuthorizedPermissions()
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
@@ -86,9 +86,9 @@ extension RadarSerializedTests {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer {
                 RadarLocationManagerSwiftTestHelpers.clearState()
-                RadarUserDefaults.set(nil, forKey: .LocationAuthorizationStatus)
+                RadarUserDefaults.set(nil, forKey: .locationAuthorizationStatus)
             }
-            RadarUserDefaults.set(nil, forKey: .LocationAuthorizationStatus)
+            RadarUserDefaults.set(nil, forKey: .locationAuthorizationStatus)
 
             RadarLocationManagerSwiftTestHelpers.installAuthorizedPermissions()
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [

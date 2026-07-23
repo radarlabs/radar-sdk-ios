@@ -22,7 +22,7 @@ extension RadarSerializedTests {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer {
                 RadarLocationManagerSwiftTestHelpers.clearState()
-                RadarUserDefaults.set(nil, forKey: .LastHeadingData)
+                RadarUserDefaults.set(nil, forKey: .lastHeadingData)
             }
 
             let stub = StubCLHeading(
@@ -52,7 +52,7 @@ extension RadarSerializedTests {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer {
                 RadarLocationManagerSwiftTestHelpers.clearState()
-                RadarUserDefaults.set(nil, forKey: .LastHeadingData)
+                RadarUserDefaults.set(nil, forKey: .lastHeadingData)
             }
 
             RadarLocationManagerSwift.didUpdateHeading(
