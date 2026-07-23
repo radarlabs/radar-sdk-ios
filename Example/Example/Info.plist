@@ -41,8 +41,13 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
+		<!-- Allows plaintext HTTP to any host so developers can point RADAR_DEBUG_HOST at a
+		     dev server on any LAN IP (e.g. http://192.168.1.10:8081) without adding a
+		     per-developer ATS exception. The NSPinnedDomains entries below still enforce
+		     certificate pinning for the Radar verified hosts. This is a convenience for the
+		     example app only. -->
 		<key>NSAllowsArbitraryLoads</key>
-		<false/>
+		<true/>
 		<key>NSPinnedDomains</key>
 		<dict>
 			<key>api-verified.radar.io</key>

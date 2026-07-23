@@ -21,6 +21,15 @@ See migration guides in `MIGRATION.md`.
 
 Run `make bootstrap` to set up your environment for development and allow you to use the other `make` commands. It will call `sudo` to install some gems.
 
+## Targeting a local server
+
+To point the SDK at a dev server during development, set `TARGET_HOST` at the top of `AppDelegate` in `Example/Example/AppDelegate.swift` to its address:
+
+- **Simulator:** `http://localhost:8081` — the simulator reaches your Mac over loopback.
+- **Device:** `http://192.168.1.10:8081` — your server's LAN IP.
+
+The Example app writes it to the SDK's API and verified hosts on launch; leave it blank to use the SDK defaults. The Example `Info.plist` sets `NSAllowsArbitraryLoads` so plaintext HTTP to any dev-server IP works without a per-developer ATS exception; certificate pinning for the Radar verified hosts is preserved via `NSPinnedDomains`.
+
 ## Examples
 
 See a Swift example app in `Example/`.
