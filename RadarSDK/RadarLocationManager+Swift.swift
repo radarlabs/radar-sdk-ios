@@ -298,7 +298,7 @@ final class RadarLocationManagerSwift: NSObject {
             return
         }
 
-        RadarLogger.shared.log(level: .info, message: "Location services authorized")
+        RadarLogger.shared.log(level: .info, message: "🦅 Location services authorized")
         Radar.trackOnce(completionHandler: nil)
         if config?.startTrackingOnInitialize ?? false, !RadarSettings.tracking {
             Radar.startTracking(trackingOptions: RadarSettings.trackingOptions)
