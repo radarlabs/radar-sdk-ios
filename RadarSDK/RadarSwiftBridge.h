@@ -21,7 +21,6 @@
 - (void)flushReplaysRequest:(NSArray<NSDictionary *> * _Nonnull)replays
           completionHandler:(void (^_Nullable)(RadarStatus status, NSDictionary * _Nullable res))completionHandler;
 - (void)logOpenedAppConversion;
-- (void)invokeWithTarget:(NSObject * _Nonnull)target selector:(SEL _Nonnull)selector args:(NSArray * _Nonnull)args;
 
 - (NSArray<NSString *> * _Nullable)geofenceIds;
 - (NSArray<NSString *> * _Nullable)beaconIds;
@@ -36,6 +35,13 @@
 - (RadarUser * _Nullable)radarUser;
 - (void)didReceiveEvents:(NSArray<RadarEvent *> * _Nonnull)events user:(RadarUser * _Nonnull)user;
 - (void)didUpdateClientLocation:(CLLocation * _Nonnull)location stopped:(BOOL)stopped source:(RadarLocationSource)source;
+- (void)didFailWithStatus:(RadarStatus)status;
+- (RadarBeacon * _Nonnull)createBeaconWithUuid:(NSString * _Nonnull)uuid major:(NSString * _Nonnull)major minor:(NSString * _Nonnull)minor rssi:(NSInteger)rssi;
+- (RadarBeacon * _Nonnull)createBeaconFromRegion:(CLBeaconRegion * _Nonnull)region;
+- (void)setRssi:(NSInteger)rssi onBeacon:(RadarBeacon * _Nonnull)beacon;
+- (nullable UNMutableNotificationContent *)extractContentFromMetadata:(nullable NSDictionary *)metadata identifier:(nullable NSString *)identifier;
+- (void)updateClientSideCampaignsWithPrefix:(NSString * _Nonnull)prefix notificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull)requests;
+
 @end
 
 @interface RadarSwiftBridge: NSObject<RadarSwiftBridgeProtocol>

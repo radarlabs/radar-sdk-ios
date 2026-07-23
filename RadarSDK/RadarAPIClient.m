@@ -11,7 +11,7 @@
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
-#import "RadarBeaconManager.h"
+#import "RadarBeaconManagerSwift.h"
 #import "RadarConfig.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
@@ -204,7 +204,7 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-             indoorScan:(NSString *_Nullable)indoorScan
+           indoorLocation:(CLLocation *_Nullable)indoorLocation
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     [self trackWithLocation:location
                     stopped:stopped
@@ -212,7 +212,7 @@
                      source:source
                    replayed:replayed
                     beacons:beacons
-               indoorScan:indoorScan
+               indoorLocation:indoorLocation
                    verified:NO
               fraudPayload:nil
         expectedCountryCode:nil
@@ -228,7 +228,7 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-             indoorScan:(NSString *_Nullable)indoorScan
+           indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
             fraudPayload:(NSString *_Nullable)fraudPayload
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
@@ -242,7 +242,7 @@
                      source:source
                    replayed:replayed
                     beacons:beacons
-                 indoorScan:indoorScan
+                 indoorLocation:indoorLocation
                    verified:verified
                fraudPayload:fraudPayload
         expectedCountryCode:expectedCountryCode
@@ -259,7 +259,7 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-             indoorScan:(NSString *_Nullable)indoorScan
+           indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
             fraudPayload:(NSString * _Nullable)fraudPayload
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
@@ -362,9 +362,6 @@
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
     }
-    if (indoorScan) {
-        params[@"indoorScan"] = indoorScan;
-    }
     NSString *locationAuthorization = [RadarUtils locationAuthorization];
     if (locationAuthorization) {
         params[@"locationAuthorization"] = locationAuthorization;
@@ -453,7 +450,19 @@
         }
     }
 
-    if (options.usePressure || options.useMotion) {
+    // RadarIndoors.getLocation only returns a location with a usable (valid, non-origin) coordinate,
+    // so the nil check alone is enough here.
+    if (options.useIndoorScan && indoorLocation) {
+        locationMetadata[@"indoorMLLatitude"] = @(indoorLocation.coordinate.latitude);
+        locationMetadata[@"indoorMLLongitude"] = @(indoorLocation.coordinate.longitude);
+        locationMetadata[@"deviceLatitude"] = params[@"latitude"];
+        locationMetadata[@"deviceLongitude"] = params[@"longitude"];
+        // CRITICAL: Overwrite the reported coordinates with the indoor ML model's prediction.
+        params[@"latitude"] = @(indoorLocation.coordinate.latitude);
+        params[@"longitude"] = @(indoorLocation.coordinate.longitude);
+    }
+
+    if (locationMetadata.count > 0) {
         params[@"locationMetadata"] = locationMetadata;
     }
 
@@ -724,7 +733,7 @@
                                 id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
                                 if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
                                     NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
-                                    [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
+                                    [[RadarBeaconManagerSwift shared] registerBeaconRegionNotificationsFromArray:beaconRegions];
                                 }
                                 
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);

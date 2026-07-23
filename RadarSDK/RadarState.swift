@@ -33,7 +33,7 @@ class RadarState {
             guard let dict = RadarUserDefaults.dictionary(forKey: .LastHeadingData) else {
                 return nil
             }
-            return dict.compactMapValues { ($0 as? NSNumber)?.doubleValue }
+            return dict.compactMapValues { heading in (heading as? NSNumber)?.doubleValue }
         }
         set {
             RadarUserDefaults.set(newValue, forKey: .LastHeadingData)

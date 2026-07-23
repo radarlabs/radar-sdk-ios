@@ -6,100 +6,125 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 
 @globalActor
-@available(iOS 13.0, *)
 public actor RadarIndoorsActor {
     public static let shared = RadarIndoorsActor()
 }
 
 @RadarIndoorsActor
-@available(iOS 13.0, *)
 class RadarSDKIndoors {
-    let instance: NSObject
-    init?() {
+    // Write-once in the nonisolated initializer, only read from actor-isolated methods afterwards,
+    // so nonisolated(unsafe) is sound and lets the init run off the actor.
+    nonisolated(unsafe) let instance: NSObject
+
+    nonisolated static let useModelSelector = NSSelectorFromString("useModelWithConfig:completionHandler:")
+    nonisolated static let getLocationSelector = NSSelectorFromString("getLocationWithCompletionHandler:")
+    nonisolated static let startSelector = NSSelectorFromString("startWithCompletionHandler:")
+    nonisolated static let stopSelector = NSSelectorFromString("stopWithCompletionHandler:")
+    nonisolated static let setOnLocationUpdateSelector = NSSelectorFromString("setOnLocationUpdate:")
+
+    nonisolated init?() {
         // Fail the initializer when the optional RadarSDKIndoors framework isn't linked, so
         // `RadarSDKIndoors()` is nil and the `guard let sdk` checks downstream mean what they say.
         guard let cls = NSClassFromString("RadarSDKIndoors") as? NSObject.Type else {
             return nil
         }
-        instance = cls.init()
+        let instance = cls.init()
+        // Verify the linked class actually is our RadarSDKIndoors by requiring it to respond to
+        // every selector we call, matching RadarSDKFraud.init?(instance:). If any is missing the
+        // framework is the wrong shape (or an older release), so fail rather than trap at perform.
+        guard instance.responds(to: RadarSDKIndoors.useModelSelector),
+            instance.responds(to: RadarSDKIndoors.getLocationSelector),
+            instance.responds(to: RadarSDKIndoors.startSelector),
+            instance.responds(to: RadarSDKIndoors.stopSelector),
+            instance.responds(to: RadarSDKIndoors.setOnLocationUpdateSelector)
+        else {
+            return nil
+        }
+        self.instance = instance
     }
 
+    // All selectors are validated in init?, so no per-call `responds(to:)` guard is needed here.
     public func useModel(model: String, getModelData: @convention(block) @escaping @Sendable () -> URL?) async {
-        guard let bridge = RadarSwift.bridge else { return }
         await withCheckedContinuation { continuation in
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
-            let selector = NSSelectorFromString("useModelWithName:getModelData:completionHandler:")
-            bridge.invoke(target: instance, selector: selector, args: [model, getModelData, completion])
+            let config: [String: Any] = ["name": model, "getModelData": getModelData]
+            instance.perform(RadarSDKIndoors.useModelSelector, with: config, with: completion)
         }
     }
 
     func getLocation() async -> CLLocation? {
-        guard let bridge = RadarSwift.bridge else { return nil }
         return await withCheckedContinuation { continuation in
             let completion: @convention(block) (CLLocation?) -> Void = { result in
                 continuation.resume(returning: result)
             }
-            let selector = NSSelectorFromString("getLocationWithCompletionHandler:")
-            bridge.invoke(target: instance, selector: selector, args: [completion])
+            instance.perform(RadarSDKIndoors.getLocationSelector, with: completion)
         }
     }
 
     func start() async {
-        guard let bridge = RadarSwift.bridge else { return }
         await withCheckedContinuation { continuation in
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
-            let selector = NSSelectorFromString("startWithCompletionHandler:")
-            bridge.invoke(target: instance, selector: selector, args: [completion])
+            instance.perform(RadarSDKIndoors.startSelector, with: completion)
         }
     }
 
     func stop() async {
-        guard let bridge = RadarSwift.bridge else { return }
         await withCheckedContinuation { continuation in
             let completion: @convention(block) () -> Void = {
                 continuation.resume()
             }
-            let selector = NSSelectorFromString("stopWithCompletionHandler:")
-            bridge.invoke(target: instance, selector: selector, args: [completion])
+            instance.perform(RadarSDKIndoors.stopSelector, with: completion)
         }
     }
 
     public func setOnLocationUpdate(_ block: @convention(block) @escaping @Sendable (CLLocation) -> Void) {
-        guard let bridge = RadarSwift.bridge else { return }
-        let selector = NSSelectorFromString("setOnLocationUpdate:")
-        bridge.invoke(target: instance, selector: selector, args: [block])
+        instance.perform(RadarSDKIndoors.setOnLocationUpdateSelector, with: block)
     }
 }
 
 @RadarIndoorsActor
-@available(iOS 13.0, *)
 @objc(RadarIndoors) @objcMembers
 internal class RadarIndoors: NSObject {
-    public static let shared = RadarIndoors()
+    // `shared` and `init()` are nonisolated so the Objective-C tracking code can obtain the
+    // singleton without running on the RadarIndoorsActor executor. Accessing an actor-isolated
+    // member synchronously from off-actor traps at runtime ("Incorrect actor executor
+    // assumption"), which is what `[[RadarIndoors shared] ...]` was doing. The async methods
+    // below stay actor-isolated; their generated completion-handler thunks hop onto the actor.
+    public nonisolated static let shared = RadarIndoors()
 
     var currentModelId: String?
 
     /**
      RadarSDKIndoors calls
      */
-    let sdk = RadarSDKIndoors()
+    let sdk: RadarSDKIndoors?
 
-    let onLocationUpdate: @Sendable @convention(block) (CLLocation) -> Void = { location in
-        Task {
-            await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
-            RadarLogger.shared.debug("indoor location update")
+    let onLocationUpdate: @Sendable @convention(block) (CLLocation) -> Void
+
+    // Initialized entirely from nonisolated, Sendable expressions so the singleton can be built
+    // off the actor. The stored properties are only read again from actor-isolated methods.
+    nonisolated override init() {
+        self.sdk = RadarSDKIndoors()
+        self.onLocationUpdate = { location in
+            Task {
+                await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
+                RadarLogger.shared.debug(
+                    "Indoor location update | latitude = \(location.coordinate.latitude); longitude = \(location.coordinate.longitude); horizontalAccuracy = \(location.horizontalAccuracy); floor = \(location.floor.map { String($0.level) } ?? "nil"); timestamp = \(location.timestamp)"
+                )
+            }
         }
+        super.init()
     }
 
-    public func updateTracking(user: RadarUser) async {
+    public func updateTracking(geofences: [RadarGeofence]?) async {
         guard let sdk else {
             if Radar.getTrackingOptions().useIndoorScan {
                 // if using indoor scan, we're expecting the IndoorSDK to be available, so log a warning if it's not available
@@ -115,11 +140,11 @@ internal class RadarIndoors: NSObject {
             }
             return
         }
-        if user.geofences?.contains(where: { $0.activeIndoorModelId != nil && ($0.activeIndoorModelId == currentModelId) }) == true {
+        if geofences?.contains(where: { $0.activeIndoorModelId != nil && ($0.activeIndoorModelId == currentModelId) }) == true {
             RadarLogger.shared.debug("model already in use")
             return
         }
-        guard let modelId = user.geofences?.first(where: { $0.activeIndoorModelId != nil })?.activeIndoorModelId else {
+        guard let modelId = geofences?.first(where: { $0.activeIndoorModelId != nil })?.activeIndoorModelId else {
             // no model id in current geofences
             RadarLogger.shared.debug("found no model id in current geofences")
             return
@@ -141,7 +166,7 @@ internal class RadarIndoors: NSObject {
                 semaphore.signal()
             }
 
-            semaphore.wait() // Blocks the calling (framework) thread until the download resolves
+            semaphore.wait()  // Blocks the calling (framework) thread until the download resolves
             return box.url
         }
         await sdk.useModel(model: "\(modelId).mlmodel", getModelData: getModelData)
@@ -152,11 +177,28 @@ internal class RadarIndoors: NSObject {
         currentModelId = modelId
     }
 
-    public func getLocation() async -> CLLocation? {
-        guard let sdk else {
+    nonisolated public func getLocation(completionHandler: @escaping @Sendable (CLLocation?) -> Void) {
+        Task { @RadarIndoorsActor in
+            guard let sdk else {
+                await MainActor.run { completionHandler(nil) }
+                return
+            }
+            let location = RadarIndoors.validIndoorLocation(await sdk.getLocation())
+            await MainActor.run { completionHandler(location) }
+        }
+    }
+
+    nonisolated static func validIndoorLocation(_ location: CLLocation?) -> CLLocation? {
+        guard let location else {
             return nil
         }
-        return await sdk.getLocation()
+        let coordinate = location.coordinate
+        guard CLLocationCoordinate2DIsValid(coordinate),
+            coordinate.latitude != 0.0 || coordinate.longitude != 0.0
+        else {
+            return nil
+        }
+        return location
     }
 
     // Downloads the mlmodel asset for a geofence's active indoor model to a temp file.
@@ -180,7 +222,6 @@ internal class RadarIndoors: NSObject {
 
 // Transfers a URL from a detached download Task back to the synchronous getModelData callback.
 // The read is ordered after the write by the bridging semaphore, so unchecked Sendable is sound.
-@available(iOS 13.0, *)
 private final class RadarIndoorsModelDataBox: @unchecked Sendable {
     var url: URL?
 }

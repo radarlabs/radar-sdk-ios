@@ -188,7 +188,6 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
 
     func flushReplays() {}
     func logOpenedAppConversion() {}
-    func invoke(target: NSObject, selector: Selector, args: [Any]) {}
     func geofenceIds() -> [String]? { nil }
     func beaconIds() -> [String]? { nil }
     func placeId() -> String? { nil }
@@ -203,4 +202,21 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {}
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {}
     func radarUser() -> RadarUser? { nil }
+    func didFail(status: RadarStatus) {}
+
+    func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon {
+        RadarBeacon()
+    }
+
+    func createBeacon(fromRegion region: CLBeaconRegion) -> RadarBeacon {
+        RadarBeacon()
+    }
+
+    func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon) {}
+
+    func extractContent(fromMetadata metadata: [AnyHashable: Any]?, identifier: String?) -> UNMutableNotificationContent? {
+        nil
+    }
+
+    func updateClientSideCampaigns(withPrefix prefix: String, notificationRequests: [UNNotificationRequest]) {}
 }
