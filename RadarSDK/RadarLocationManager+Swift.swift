@@ -284,7 +284,7 @@ final class RadarLocationManagerSwift: NSObject {
         let previousStatus = state.locationAuthorizationStatus
         state.locationAuthorizationStatus = status
 
-        guard status != previousStatus else {
+        if status == previousStatus {
             return
         }
 
