@@ -59,11 +59,20 @@ BOOL _initialized = NO;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [RadarSettings setInitializeOptions:options];
-        if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
-            [RadarNotificationSwizzling swizzleNotificationCenterDelegate];
-        }
-        if (options.silentPush) {
-            [RadarNotificationSwizzling swizzleApplicationDelegate];
+
+        void (^installSwizzles)(void) = ^{
+            if (options.autoLogNotificationConversions || options.autoHandleNotificationDeepLinks) {
+                [RadarNotificationSwizzling swizzleNotificationCenterDelegate];
+            }
+            if (options.silentPush) {
+                [RadarNotificationSwizzling swizzleApplicationDelegate];
+            }
+        };
+
+        if ([NSThread isMainThread]) {
+            installSwizzles();
+        } else {
+            dispatch_async(dispatch_get_main_queue(), installSwizzles);
         }
     });
 }

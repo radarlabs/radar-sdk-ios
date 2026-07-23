@@ -9,7 +9,7 @@
 import Foundation
 import UserNotifications
 
-private let kEventNotificationIdentifierPrefix = "radar_event_notification_"
+private let eventNotificationIdentifierPrefix = "radar_event_notification_"
 
 @objc public final class RadarEventNotifications: NSObject {
 
@@ -19,7 +19,7 @@ private let kEventNotificationIdentifierPrefix = "radar_event_notification_"
         guard !events.isEmpty else { return }
 
         for event in events {
-            let identifier = "\(kEventNotificationIdentifierPrefix)\(event._id)"
+            let identifier = "\(eventNotificationIdentifierPrefix)\(event._id)"
             let categoryIdentifier = RadarEvent.string(for: event.type) ?? ""
 
             // Campaign path: rich content from event metadata (title, subtitle, url, campaignId, etc.)
@@ -70,7 +70,7 @@ private let kEventNotificationIdentifierPrefix = "radar_event_notification_"
         content.body = NSString.localizedUserNotificationString(forKey: notificationText, arguments: nil)
 
         var userInfo = metadata
-        userInfo["registeredAt"] = "\(Date().timeIntervalSince1970)"
+        userInfo["registeredAt"] = Date().timeIntervalSince1970
 
         if let url = metadata["radar:notificationURL"] as? String {
             userInfo["url"] = url
@@ -128,7 +128,7 @@ private let kEventNotificationIdentifierPrefix = "radar_event_notification_"
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request) { error in
             if let error {
-                RadarLogger.shared.log(level: .debug, message: "Error adding local notification | identifier = \(identifier); error = \(error)")
+                RadarLogger.shared.log(level: .error, message: "Error adding local notification | identifier = \(identifier); error = \(error)")
             } else {
                 RadarLogger.shared.log(level: .debug, message: "Added local notification | identifier = \(identifier)")
             }

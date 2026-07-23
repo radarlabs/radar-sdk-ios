@@ -122,7 +122,7 @@ struct ExtractCampaignContentTests {
     func includesRegisteredAt() {
         let meta = makeCampaignMetadata() as [AnyHashable: Any]
         let content = RadarEventNotifications.extractCampaignContent(from: meta, identifier: "test_id")
-        #expect(content?.userInfo["registeredAt"] is String)
+        #expect(content?.userInfo["registeredAt"] is Double)
     }
 
     @Test("sets identifier in userInfo")
@@ -178,6 +178,33 @@ struct ExtractCampaignContentTests {
         meta["customKey"] = "customValue"
         let content = RadarEventNotifications.extractCampaignContent(from: meta, identifier: "test_id")
         #expect(content?.userInfo["customKey"] as? String == "customValue")
+    }
+
+    @Test("extractCampaignContent output round-trips through NotificationValue")
+    func campaignContentRoundTripsToNotificationValue() {
+        let meta = makeCampaignMetadata(campaignId: "camp_1") as [AnyHashable: Any]
+        let content = RadarEventNotifications.extractCampaignContent(from: meta, identifier: "radar_geofence_abc")
+
+        #expect(content != nil)
+
+        let request = UNNotificationRequest(
+            identifier: "radar_geofence_abc",
+            content: content!,
+            trigger: nil
+        )
+        let value = NotificationValue(from: request)
+
+        #expect(value != nil)
+        #expect(value?.campaignId == "camp_1")
+        #expect(value?.geofenceId == "abc")
+    }
+
+    @Test("NotificationValue rejects a request missing numeric registeredAt")
+    func notificationValueRejectsBadRegisteredAt() {
+        let content = UNMutableNotificationContent()
+        content.userInfo = ["registeredAt": "not-a-number"]
+        let request = UNNotificationRequest(identifier: "radar_test", content: content, trigger: nil)
+        #expect(NotificationValue(from: request) == nil)
     }
 }
 

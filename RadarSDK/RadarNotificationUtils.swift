@@ -66,18 +66,18 @@ import Foundation
             RadarLogger.shared.log(level: .debug, message: "Found \(pending.count) pending notifications")
 
             var identifiersToRemove: [String] = []
-            var userInfosToKeep: [[AnyHashable: Any]] = []
+            var notificationsToKeep: [NotificationValue] = []
 
             for request in pending {
                 if request.identifier.hasPrefix(prefix) {
                     identifiersToRemove.append(request.identifier)
-                } else {
-                    userInfosToKeep.append(request.content.userInfo)
+                } else if let value = NotificationValue(from: request) {
+                    notificationsToKeep.append(value)
                 }
             }
 
             RadarLogger.shared.log(level: .debug, message: "Found \(identifiersToRemove.count) pending notifications to remove")
-            UserDefaults.standard.set(userInfosToKeep, forKey: "radar-registeredNotifications")
+            RadarState().registeredNotifications = notificationsToKeep
 
             if !identifiersToRemove.isEmpty {
                 center.removePendingNotificationRequests(withIdentifiers: identifiersToRemove)
@@ -98,6 +98,8 @@ import Foundation
 
             let center = UNUserNotificationCenter.current()
             let group = DispatchGroup()
+            let collectQueue = DispatchQueue(label: "com.radar.notificationRegister")
+            nonisolated(unsafe) var added: [NotificationValue] = []
 
             for request in requests {
                 group.enter()
@@ -105,9 +107,11 @@ import Foundation
                     if let error {
                         RadarLogger.shared.log(level: .error, message: "Error adding local notification | identifier = \(request.identifier); error = \(error)")
                     } else {
-                        var registered = UserDefaults.standard.array(forKey: "radar-registeredNotifications") as? [[AnyHashable: Any]] ?? []
-                        registered.append(request.content.userInfo)
-                        UserDefaults.standard.set(registered, forKey: "radar-registeredNotifications")
+                        if let value = NotificationValue(from: request) {
+                            collectQueue.async {
+                                added.append(value)
+                            }
+                        }
                         RadarLogger.shared.log(level: .debug, message: "Added local notification | identifier = \(request.identifier)")
                     }
                     group.leave()
@@ -115,6 +119,12 @@ import Foundation
             }
 
             group.notify(queue: .global()) {
+                if !added.isEmpty {
+                    let state = RadarState()
+                    var registered = state.registeredNotifications ?? []
+                    registered.append(contentsOf: added)
+                    state.registeredNotifications = registered
+                }
                 semaphore.signal()
             }
         }
