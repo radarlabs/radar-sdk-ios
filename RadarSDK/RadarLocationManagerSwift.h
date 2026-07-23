@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)removeAllRegionsOnLocationManager:(CLLocationManager *)locationManager;
 
 + (void)didUpdateHeading:(CLHeading *)newHeading;
++ (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
 
 @end
 
