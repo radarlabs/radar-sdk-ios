@@ -278,9 +278,6 @@ final class RadarLocationManagerSwift: NSObject {
         ]
     }
 
-    // Unused `manager` in the ObjC delegate method (it reads the persisted status), so the
-    // twin takes only `status`. `RadarState` is a non-@objc Swift class, so it's constructed
-    // inside the method rather than passed in.
     @objc(didChangeAuthorizationStatus:)
     static func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
         let state = RadarState()
