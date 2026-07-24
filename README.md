@@ -30,6 +30,8 @@ To point the SDK at a dev server during development, set `TARGET_HOST` at the to
 
 The Example app writes it to the SDK's API and verified hosts on launch; leave it blank to use the SDK defaults. The Example `Info.plist` sets `NSAllowsArbitraryLoads` so plaintext HTTP to any dev-server IP works without a per-developer ATS exception; certificate pinning for the Radar verified hosts is preserved via `NSPinnedDomains`.
 
+> **Note:** `NSAllowsArbitraryLoads` disables App Transport Security app-wide and exists here only to make local development convenient in this sample app. Do not copy it into a production app — it lets your app make insecure cleartext connections. Real apps should keep ATS enabled and add a narrowly-scoped `NSExceptionDomains` entry only if a specific host truly requires it.
+
 ## Examples
 
 See a Swift example app in `Example/`.
