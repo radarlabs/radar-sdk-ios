@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		26FEF59A2ABCC0C7ED804196 /* RadarSDKIndoors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD361BF33854ED123BC40BAB /* RadarSDKIndoors.framework */; };
+		34A9408B904A8CEDF1A941EF /* AR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADD56E28546D24100452E77 /* AR.swift */; };
+		3E65616E4C3D6B6E198644B2 /* SurveyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0357ED46C5457642FBDB83 /* SurveyView.swift */; };
+		6814D480521A0A14D7C366EF /* SurveyApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F25EB75285088BF8AFD284D /* SurveyApi.swift */; };
+		7037AD987541A35D942C1A5C /* MyMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1E2E96294A65D5419B0059 /* MyMapView.swift */; };
+		890A4EA0E15F879C71E7BB3A /* RadarSDKIndoors.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD361BF33854ED123BC40BAB /* RadarSDKIndoors.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		92EE46B98361FE7ADF80EBB4 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = 70D59073A64C5F1081FC94EF /* Gzip */; };
+		9D429469133C2C5D325676C6 /* MapLibre in Frameworks */ = {isa = PBXBuildFile; productRef = A4F03C41A11D2CFE2E0E2D3F /* MapLibre */; };
+		A4D42C392B4358BF5FA23797 /* RadarSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7092341E2C7DFCBC8F8AA810 /* RadarSite.swift */; };
+		A7B49EA1855BAFB10D29D5DF /* MapLibreSwiftDSL in Frameworks */ = {isa = PBXBuildFile; productRef = 167832DFB208AE3AEE2C50A4 /* MapLibreSwiftDSL */; };
+		AA21410003992AEF15A3BF62 /* SurveyConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF3B6363FE68FC4F277E3C6 /* SurveyConfig.swift */; };
 		BA51987C2ED10AEA004A3B35 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA51987B2ED10AEA004A3B35 /* WidgetKit.framework */; };
 		BA51987E2ED10AEA004A3B35 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA51987D2ED10AEA004A3B35 /* SwiftUI.framework */; };
 		BA51988D2ED10AEB004A3B35 /* TripActivityExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BA51987A2ED10AEA004A3B35 /* TripActivityExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -58,6 +69,8 @@
 		BAB2ACD72FB66E3800560332 /* RecentActivityStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACD62FB66E3000560332 /* RecentActivityStream.swift */; };
 		BAB2ACD92FB66E6D00560332 /* TripDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACD82FB66E6900560332 /* TripDestination.swift */; };
 		BAB2ACDB2FB66E8500560332 /* TripEventMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACDA2FB66E8200560332 /* TripEventMarker.swift */; };
+		BFDBBE1F3E6C402A81D9974D /* MapLibreSwiftMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 090D43D2135B97E59ADD36FC /* MapLibreSwiftMacros */; };
+		D3F016BC2A5F0CB1AF06D2E5 /* MapLibreSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = ACA55EE3D3751E4829549D22 /* MapLibreSwiftUI */; };
 		DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD236D26230A006700EB88F9 /* AppDelegate.swift */; };
 		DD291169230D0AF900049D3A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291168230D0AF900049D3A /* Utils.swift */; };
 		DDB861D32385FC3E00770661 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDB861D22385FC3E00770661 /* Default-568h@2x.png */; };
@@ -82,6 +95,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5B085ACBE42C1F343A80AFB6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9414F72E0DE3E6008ECBEB;
+			remoteInfo = RadarSDKIndoors;
+		};
 		BA51988B2ED10AEB004A3B35 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DD236D1B230A006700EB88F9 /* Project object */;
@@ -143,6 +163,7 @@
 				F64C80D72F64876500943B7A /* RadarSDKFraud.framework in Embed Frameworks */,
 				F64C7F442F64568E00943B7A /* RadarSDKMotion.framework in Embed Frameworks */,
 				F64C7F422F64568E00943B7A /* RadarSDK.framework in Embed Frameworks */,
+				890A4EA0E15F879C71E7BB3A /* RadarSDKIndoors.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -184,6 +205,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0F1E2E96294A65D5419B0059 /* MyMapView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MyMapView.swift; sourceTree = "<group>"; };
+		1ADD56E28546D24100452E77 /* AR.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AR.swift; sourceTree = "<group>"; };
+		4E0357ED46C5457642FBDB83 /* SurveyView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SurveyView.swift; sourceTree = "<group>"; };
+		5F25EB75285088BF8AFD284D /* SurveyApi.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SurveyApi.swift; sourceTree = "<group>"; };
+		7092341E2C7DFCBC8F8AA810 /* RadarSite.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RadarSite.swift; sourceTree = "<group>"; };
+		ABF3B6363FE68FC4F277E3C6 /* SurveyConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SurveyConfig.swift; sourceTree = "<group>"; };
 		BA51987A2ED10AEA004A3B35 /* TripActivityExtensionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TripActivityExtensionExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA51987B2ED10AEA004A3B35 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		BA51987D2ED10AEA004A3B35 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -242,6 +269,7 @@
 		DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = SOURCE_ROOT; };
 		DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		DDB861D22385FC3E00770661 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKIndoors.xcodeproj; path = ../RadarSDKIndoors/RadarSDKIndoors.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E632FA1C2CAC366C00E86C85 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKMotion.xcodeproj; path = ../RadarSDKMotion/RadarSDKMotion.xcodeproj; sourceTree = "<group>"; };
 		F61886B92EA7DB180072E87C /* TestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsView.swift; sourceTree = "<group>"; };
@@ -257,14 +285,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		BA51988E2ED10AEB004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		BA51988E2ED10AEB004A3B35 /* Exceptions for "TripActivityExtension" folder in "TripActivityExtensionExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = BA5198792ED10AEA004A3B35 /* TripActivityExtensionExtension */;
 		};
-		BA5198982EDE1106004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		BA5198982EDE1106004A3B35 /* Exceptions for "TripActivityExtension" folder in "Example" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"Extensions/UIColor+Hex.swift",
@@ -278,7 +306,7 @@
 			);
 			target = DD236D22230A006700EB88F9 /* Example */;
 		};
-		F6513E7A2E60A5F600523472 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		F6513E7A2E60A5F600523472 /* Exceptions for "LocationPushExtension" folder in "LocationPushExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -288,8 +316,31 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		BA51987F2ED10AEA004A3B35 /* TripActivityExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BA5198982EDE1106004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, BA51988E2ED10AEB004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = TripActivityExtension; sourceTree = "<group>"; };
-		F6513E732E60A5F600523472 /* LocationPushExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6513E7A2E60A5F600523472 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = LocationPushExtension; sourceTree = "<group>"; };
+		BA51987F2ED10AEA004A3B35 /* TripActivityExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BA5198982EDE1106004A3B35 /* Exceptions for "TripActivityExtension" folder in "Example" target */,
+				BA51988E2ED10AEB004A3B35 /* Exceptions for "TripActivityExtension" folder in "TripActivityExtensionExtension" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = TripActivityExtension;
+			sourceTree = "<group>";
+		};
+		F6513E732E60A5F600523472 /* LocationPushExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F6513E7A2E60A5F600523472 /* Exceptions for "LocationPushExtension" folder in "LocationPushExtension" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = LocationPushExtension;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -310,6 +361,12 @@
 				F64C80D62F64876500943B7A /* RadarSDKFraud.framework in Frameworks */,
 				F64C7F432F64568E00943B7A /* RadarSDKMotion.framework in Frameworks */,
 				F64C7F412F64568E00943B7A /* RadarSDK.framework in Frameworks */,
+				9D429469133C2C5D325676C6 /* MapLibre in Frameworks */,
+				A7B49EA1855BAFB10D29D5DF /* MapLibreSwiftDSL in Frameworks */,
+				D3F016BC2A5F0CB1AF06D2E5 /* MapLibreSwiftUI in Frameworks */,
+				BFDBBE1F3E6C402A81D9974D /* MapLibreSwiftMacros in Frameworks */,
+				92EE46B98361FE7ADF80EBB4 /* Gzip in Frameworks */,
+				26FEF59A2ABCC0C7ED804196 /* RadarSDKIndoors.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,6 +381,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6FD78D530E6296330B1235BA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FD361BF33854ED123BC40BAB /* RadarSDKIndoors.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		BA7792E72FA3D1D200E197CA /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -438,6 +503,7 @@
 				BA51987F2ED10AEA004A3B35 /* TripActivityExtension */,
 				DD236D24230A006700EB88F9 /* Products */,
 				DD86FD03239185FB003225F6 /* Frameworks */,
+				DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -476,6 +542,12 @@
 				DD291168230D0AF900049D3A /* Utils.swift */,
 				F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */,
 				BA7793282FAA62CC00E197CA /* Panels */,
+				1ADD56E28546D24100452E77 /* AR.swift */,
+				4E0357ED46C5457642FBDB83 /* SurveyView.swift */,
+				5F25EB75285088BF8AFD284D /* SurveyApi.swift */,
+				ABF3B6363FE68FC4F277E3C6 /* SurveyConfig.swift */,
+				7092341E2C7DFCBC8F8AA810 /* RadarSite.swift */,
+				0F1E2E96294A65D5419B0059 /* MyMapView.swift */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -536,8 +608,6 @@
 				BA51987F2ED10AEA004A3B35 /* TripActivityExtension */,
 			);
 			name = TripActivityExtensionExtension;
-			packageProductDependencies = (
-			);
 			productName = TripActivityExtensionExtension;
 			productReference = BA51987A2ED10AEA004A3B35 /* TripActivityExtensionExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -560,6 +630,11 @@
 			);
 			name = Example;
 			packageProductDependencies = (
+				A4F03C41A11D2CFE2E0E2D3F /* MapLibre */,
+				167832DFB208AE3AEE2C50A4 /* MapLibreSwiftDSL */,
+				ACA55EE3D3751E4829549D22 /* MapLibreSwiftUI */,
+				090D43D2135B97E59ADD36FC /* MapLibreSwiftMacros */,
+				70D59073A64C5F1081FC94EF /* Gzip */,
 			);
 			productName = Example;
 			productReference = DD236D23230A006700EB88F9 /* Example.app */;
@@ -582,8 +657,6 @@
 				F6513E732E60A5F600523472 /* LocationPushExtension */,
 			);
 			name = LocationPushExtension;
-			packageProductDependencies = (
-			);
 			productName = LocationPushExtension;
 			productReference = F6513E722E60A5F600523472 /* LocationPushExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -620,6 +693,9 @@
 			);
 			mainGroup = DD236D1A230A006700EB88F9;
 			packageReferences = (
+				FE24227E75A3CBBD043D0665 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */,
+				532ED89F93A3AE9389875457 /* XCRemoteSwiftPackageReference "swiftui-dsl" */,
+				38278D06FA886DCFA9773EC3 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 			);
 			productRefGroup = DD236D24230A006700EB88F9 /* Products */;
 			projectDirPath = "";
@@ -635,6 +711,10 @@
 				{
 					ProductGroup = F64C7F0C2F64564F00943B7A /* Products */;
 					ProjectRef = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
+				},
+				{
+					ProductGroup = 6FD78D530E6296330B1235BA /* Products */;
+					ProjectRef = DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -680,6 +760,13 @@
 			fileType = wrapper.framework;
 			path = RadarSDKFraud.framework;
 			remoteRef = F64C80432F645C3E00943B7A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FD361BF33854ED123BC40BAB /* RadarSDKIndoors.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDKIndoors.framework;
+			remoteRef = 5B085ACBE42C1F343A80AFB6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -778,6 +865,12 @@
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
 				BAB2ACCD2FB66C7100560332 /* PermissionsSectionView.swift in Sources */,
 				BA7792FA2FA9088F00E197CA /* ActionButton.swift in Sources */,
+				34A9408B904A8CEDF1A941EF /* AR.swift in Sources */,
+				3E65616E4C3D6B6E198644B2 /* SurveyView.swift in Sources */,
+				6814D480521A0A14D7C366EF /* SurveyApi.swift in Sources */,
+				AA21410003992AEF15A3BF62 /* SurveyConfig.swift in Sources */,
+				A4D42C392B4358BF5FA23797 /* RadarSite.swift in Sources */,
+				7037AD987541A35D942C1A5C /* MyMapView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1006,7 +1099,7 @@
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Example;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1038,7 +1131,7 @@
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/RadarSDK";
 				INFOPLIST_FILE = Example/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Example;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1159,6 +1252,61 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		38278D06FA886DCFA9773EC3 /* XCRemoteSwiftPackageReference "GzipSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/1024jp/GzipSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.1.0;
+			};
+		};
+		532ED89F93A3AE9389875457 /* XCRemoteSwiftPackageReference "swiftui-dsl" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maplibre/swiftui-dsl";
+			requirement = {
+				kind = revision;
+				revision = 139e83d1487f29b42a4f5db2458594170f0ff7e3;
+			};
+		};
+		FE24227E75A3CBBD043D0665 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maplibre/maplibre-gl-native-distribution";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.19.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		090D43D2135B97E59ADD36FC /* MapLibreSwiftMacros */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 532ED89F93A3AE9389875457 /* XCRemoteSwiftPackageReference "swiftui-dsl" */;
+			productName = MapLibreSwiftMacros;
+		};
+		167832DFB208AE3AEE2C50A4 /* MapLibreSwiftDSL */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 532ED89F93A3AE9389875457 /* XCRemoteSwiftPackageReference "swiftui-dsl" */;
+			productName = MapLibreSwiftDSL;
+		};
+		70D59073A64C5F1081FC94EF /* Gzip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 38278D06FA886DCFA9773EC3 /* XCRemoteSwiftPackageReference "GzipSwift" */;
+			productName = Gzip;
+		};
+		A4F03C41A11D2CFE2E0E2D3F /* MapLibre */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FE24227E75A3CBBD043D0665 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
+			productName = MapLibre;
+		};
+		ACA55EE3D3751E4829549D22 /* MapLibreSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 532ED89F93A3AE9389875457 /* XCRemoteSwiftPackageReference "swiftui-dsl" */;
+			productName = MapLibreSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DD236D1B230A006700EB88F9 /* Project object */;
 }

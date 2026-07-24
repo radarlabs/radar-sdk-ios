@@ -16,6 +16,7 @@ struct MainView: View {
         case Logs
         case Tests
         case CSGN
+        case Survey
     }
 
     @State private var selectedTab: TabIdentifier = .Tests
@@ -37,6 +38,10 @@ struct MainView: View {
             CSGNInspectorView().tabItem {
                 Text("CSGN")
             }.tag(TabIdentifier.CSGN)
+
+            SurveyView().tabItem {
+                Text("Survey")
+            }.tag(TabIdentifier.Survey)
         }
     }
 }

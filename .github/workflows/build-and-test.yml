@@ -39,14 +39,21 @@ jobs:
       - name: Format Swift
         env:
           GH_TOKEN: ${{ github.token }}
+          SWIFT_FORMAT_VERSION: "603.0.0"
         run: |
+          if ! command -v swift-format >/dev/null; then
+            brew install swift-format
+          fi
+          INSTALLED_SWIFT_FORMAT_VERSION="$(swift-format --version)"
+          if [ "$INSTALLED_SWIFT_FORMAT_VERSION" != "$SWIFT_FORMAT_VERSION" ]; then
+            echo "::error::swift-format $INSTALLED_SWIFT_FORMAT_VERSION is installed, but CI is pinned to $SWIFT_FORMAT_VERSION."
+            echo "Install swift-format $SWIFT_FORMAT_VERSION and run 'make format', or bump SWIFT_FORMAT_VERSION in this workflow if upgrading on purpose."
+            exit 1
+          fi
           # Ask GitHub which files this PR changed (server-side diff — needs no local git
           # history or merge-base, so it is correct on stacked PRs without a deep checkout).
           # Keep the Swift files that still exist (drop deletions), then let make reformat
           # them and fail if anything changed.
-          if ! command -v swift-format >/dev/null; then
-            brew install swift-format
-          fi
           CHANGED=$(gh pr diff ${{ github.event.pull_request.number }} --name-only)
           FILES=""
           for f in $CHANGED; do
