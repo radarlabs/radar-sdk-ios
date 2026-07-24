@@ -15,7 +15,6 @@ protocol RadarSwiftBridgeProtocol {
     func flushReplays()
     func flushReplaysRequest(_ replays: [[AnyHashable: Any]], completionHandler: ((RadarStatus, [AnyHashable: Any]?) -> Void)?)
     func logOpenedAppConversion()
-    func invoke(target: NSObject, selector: Selector, args: [Any])
     func geofenceIds() -> [String]?
     func beaconIds() -> [String]?
     func placeId() -> String?
@@ -30,6 +29,12 @@ protocol RadarSwiftBridgeProtocol {
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser)
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource)
     func radarUser() -> RadarUser?
+    func didFail(status: RadarStatus)
+    func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon
+    func createBeacon(fromRegion region: CLBeaconRegion) -> RadarBeacon
+    func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon)
+    func extractContent(fromMetadata metadata: [AnyHashable: Any]?, identifier: String?) -> UNMutableNotificationContent?
+    func updateClientSideCampaigns(withPrefix prefix: String, notificationRequests requests: [UNNotificationRequest])
 }
 
 @objc(RadarSwift) @objcMembers
