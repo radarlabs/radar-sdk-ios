@@ -31,7 +31,7 @@
     return self;
 }
 
-- (instancetype _Nullable)initWithObject:(NSObject *)object {
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object {
     if (!object || ![object isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
