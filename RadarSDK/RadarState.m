@@ -271,11 +271,13 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 }
 
 + (void)setLocationAuthorizationStatus:(CLAuthorizationStatus)status {
-    [[NSUserDefaults standardUserDefaults] setInteger:status forKey:kLocationAuthorizationStatus];
+    // Writes through the app-group-aware store so it stays consistent with the Swift
+    // RadarLocationManager twin, which persists auth status via RadarUserDefaults.
+    [[RadarUserDefaults sharedUserDefaults] setInteger:status forKey:kLocationAuthorizationStatus];
 }
 
 + (CLAuthorizationStatus)locationAuthorizationStatus {
-    return (CLAuthorizationStatus)[[NSUserDefaults standardUserDefaults] integerForKey:kLocationAuthorizationStatus];
+    return (CLAuthorizationStatus)[[RadarUserDefaults sharedUserDefaults] integerForKey:kLocationAuthorizationStatus];
 }
 
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications {

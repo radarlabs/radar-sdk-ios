@@ -41,8 +41,16 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
+		<!-- Allows plaintext HTTP to any host so developers can point TARGET_HOST at a dev
+		     server on any LAN IP (e.g. http://192.168.1.10:8081) without adding a
+		     per-developer ATS exception. The NSPinnedDomains entries below still enforce
+		     certificate pinning for the Radar verified hosts.
+
+		     WARNING: this disables App Transport Security app-wide and exists only for local
+		     development in this public sample app. DO NOT copy it into a real app — keep ATS
+		     enabled and, if needed, add a narrowly-scoped NSExceptionDomains entry instead. -->
 		<key>NSAllowsArbitraryLoads</key>
-		<false/>
+		<true/>
 		<key>NSPinnedDomains</key>
 		<dict>
 			<key>api-verified.radar.io</key>
