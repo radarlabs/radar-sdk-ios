@@ -15,7 +15,6 @@
 
 @implementation RadarInAppMessageDelegate
 
-API_AVAILABLE(ios(13.0))
 RadarInAppMessageDelegate_Swift* radarIAMDelegate = nil;
 
 - (instancetype) init {

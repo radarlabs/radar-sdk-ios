@@ -1,10 +1,17 @@
 name: Xcode - Build, Analyze, & Test
 
 on:
-  push:
-    branches: [ master, develop ]
   pull_request:
-    branches: [ master, develop ]
+
+# Cancel superseded runs when a PR branch is re-pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# gh (used by the Format Swift step) needs read access to the PR diff.
+permissions:
+  contents: read
+  pull-requests: read
 
 jobs:
   build:
@@ -30,12 +37,22 @@ jobs:
           swiftlint lint --strict --baseline .swiftlint-baseline.json
 
       - name: Format Swift
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          git fetch origin master --depth=1
+          # Ask GitHub which files this PR changed (server-side diff — needs no local git
+          # history or merge-base, so it is correct on stacked PRs without a deep checkout).
+          # Keep the Swift files that still exist (drop deletions), then let make reformat
+          # them and fail if anything changed.
           if ! command -v swift-format >/dev/null; then
             brew install swift-format
           fi
-          make format-check
+          CHANGED=$(gh pr diff ${{ github.event.pull_request.number }} --name-only)
+          FILES=""
+          for f in $CHANGED; do
+            case "$f" in *.swift) [ -f "$f" ] && FILES="$FILES $f" ;; esac
+          done
+          make format-check FORMAT_FILES="$FILES"
 
       - name: Pick an available iPhone simulator
         id: pick_sim

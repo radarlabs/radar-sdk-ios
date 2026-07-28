@@ -261,4 +261,46 @@ final class RadarLocationManagerSwift: NSObject {
             locationManager.stopMonitoring(for: region)
         }
     }
+
+    // Takes the heading rather than the location manager, so it uses a plain selector
+    // instead of the `...OnLocationManager:` convention. `RadarState` is a non-@objc Swift
+    // class and can't appear in an @objc signature, so it's constructed inside the method.
+    @objc(didUpdateHeading:)
+    static func didUpdateHeading(_ heading: CLHeading) {
+        RadarState().lastHeadingData = [
+            "magneticHeading": heading.magneticHeading,
+            "trueHeading": heading.trueHeading,
+            "headingAccuracy": heading.headingAccuracy,
+            "x": heading.x,
+            "y": heading.y,
+            "z": heading.z,
+            "timestamp": heading.timestamp.timeIntervalSince1970,
+        ]
+    }
+
+    @objc(didChangeAuthorizationStatus:)
+    static func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
+        let state = RadarState()
+        let previousStatus = state.locationAuthorizationStatus
+        state.locationAuthorizationStatus = status
+
+        if status == previousStatus {
+            return
+        }
+
+        guard let config = RadarSettings.sdkConfiguration else {
+            return
+        }
+        guard status == .authorizedAlways || status == .authorizedWhenInUse,
+            config.trackOnceOnAppOpen || config.startTrackingOnInitialize
+        else {
+            return
+        }
+
+        RadarLogger.shared.log(level: .info, message: "🦅 Location services authorized")
+        Radar.trackOnce(completionHandler: nil)
+        if config.startTrackingOnInitialize, !RadarSettings.tracking {
+            Radar.startTracking(trackingOptions: RadarSettings.trackingOptions)
+        }
+    }
 }

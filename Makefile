@@ -69,12 +69,17 @@ lint-swift-fix:
 	echo "$$SWIFT_FILES" | tr '\n' ' '; echo; \
 	echo "$$SWIFT_FILES" | xargs $(SWIFTLINT) lint --strict --fix --baseline .swiftlint-baseline.json
 
+# CI passes the changed Swift files explicitly via FORMAT_FILES (from `gh pr diff`).
+# When it is empty (local use), fall back to diffing against FORMAT_BASE.
 format-check:
 	@if ! command -v swift-format >/dev/null; then \
 		echo "swift-format not installed; run 'make bootstrap' or 'brew install swift-format'"; \
 		exit 1; \
 	fi
-	@SWIFT_FILES=$$(git diff --diff-filter=ACM --name-only $(FORMAT_BASE)...HEAD -- '*.swift' 2>/dev/null); \
+	@SWIFT_FILES="$(FORMAT_FILES)"; \
+	if [ -z "$$SWIFT_FILES" ]; then \
+		SWIFT_FILES=$$(git diff --diff-filter=ACM --name-only $(FORMAT_BASE)...HEAD -- '*.swift' 2>/dev/null); \
+	fi; \
 	if [ -z "$$SWIFT_FILES" ]; then \
 		echo "No Swift files changed; skipping format check."; \
 		exit 0; \
@@ -103,7 +108,7 @@ ci-build-analyze:
 
 test-pretty:
 	@set -o pipefail; \
-	  xcodebuild $(XC_TEST_ARGS) test -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest 2>&1 \
+	  xcodebuild $(XC_TEST_ARGS) test -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest -skip-testing:RadarSDKTests/RadarRevealRiskTests 2>&1 \
 	    | tee /tmp/radar-sdk-ios-test.log \
 	    | xcpretty --report junit; \
 	  status=$$?; \
@@ -116,7 +121,7 @@ test-pretty:
 
 ci-test-pretty:
 	@set -o pipefail; \
-	  xcodebuild test $(CI_XC_ARGS) -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest 2>&1 \
+	  xcodebuild test $(CI_XC_ARGS) -skip-testing:RadarSDKTests/InAppMessageTest -skip-testing:RadarSDKTests/RadarSettingsTest -skip-testing:RadarSDKTests/RadarNotificationHelperTest -skip-testing:RadarSDKTests/RadarRevealRiskTests 2>&1 \
 	    | tee $(CI_TEST_LOG) \
 	    | xcpretty --report junit; \
 	  status=$$?; \
@@ -128,11 +133,11 @@ ci-test-pretty:
 	  exit $$status
 
 test-swift:
-	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest -only-testing:RadarSDKTests/RadarNotificationHelperTest
+	xcodebuild $(XC_TEST_ARGS) test -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest -only-testing:RadarSDKTests/RadarNotificationHelperTest -only-testing:RadarSDKTests/RadarRevealRiskTests
 
 ci-test-swift:
 	@set -o pipefail; \
-	  xcodebuild test $(CI_XC_ARGS) -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest -only-testing:RadarSDKTests/RadarNotificationHelperTest 2>&1 \
+	  xcodebuild test $(CI_XC_ARGS) -only-testing:RadarSDKTests/InAppMessageTest -only-testing:RadarSDKTests/RadarSettingsTest -only-testing:RadarSDKTests/RadarNotificationHelperTest -only-testing:RadarSDKTests/RadarRevealRiskTests 2>&1 \
 	    | tee $(CI_SWIFT_TEST_LOG); \
 	  exit $$?
 

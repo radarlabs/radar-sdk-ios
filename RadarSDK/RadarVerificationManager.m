@@ -13,7 +13,7 @@
 
 #import "Radar+Internal.h"
 #import "RadarAPIClient.h"
-#import "RadarBeaconManager.h"
+#import "RadarBeaconManagerSwift.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
@@ -134,6 +134,15 @@
             if (config.nonce) {
                 options[@"nonce"] = config.nonce;
             }
+            // TODO: migrate to swift and use RadarSDKFraud in swift.
+            if (![RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
+                completionHandler(RadarStatusErrorPlugin, nil);
+                return;
+            }
+            if (![[RadarSDKFraud sharedInstance] respondsToSelector:@selector(getFraudPayloadWithOptions:completionHandler:)]) {
+                completionHandler(RadarStatusErrorPlugin, nil);
+                return;
+            }
             [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
                 if (!result) {
                     [RadarUtilsDeprecated runOnMainThread:^{
@@ -168,7 +177,7 @@
                  source:RadarLocationSourceForegroundLocation
                  replayed:NO
                  beacons:beacons
-                 indoorScan:nil
+                 indoorLocation:nil
                  verified:YES
                  fraudPayload:fraudPayload
                  expectedCountryCode:self.expectedCountryCode
@@ -210,7 +219,7 @@
                                          NSArray<NSString *> *_Nullable beaconUUIDs) {
                         if (beaconUUIDs && beaconUUIDs.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
-                                [[RadarBeaconManager sharedInstance]
+                                [[RadarBeaconManagerSwift shared]
                                  rangeBeaconUUIDs:beaconUUIDs
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                     if (status != RadarStatusSuccess || !beacons) {
@@ -224,7 +233,7 @@
                             }];
                         } else if (beacons && beacons.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
-                                [[RadarBeaconManager sharedInstance]
+                                [[RadarBeaconManagerSwift shared]
                                  rangeBeacons:beacons
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                     if (status != RadarStatusSuccess || !beacons) {
@@ -403,6 +412,9 @@
     if (!RadarSDKFraud) {
         return NO;
     }
+    if (![RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
+        return NO;
+    }
     id sharedInstance = [RadarSDKFraud sharedInstance];
     SEL selector = @selector(isSharing);
     if (![sharedInstance respondsToSelector:selector]) {
@@ -421,6 +433,9 @@
 - (void)clearSharing {
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
+        return;
+    }
+    if (![RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
         return;
     }
     id sharedInstance = [RadarSDKFraud sharedInstance];

@@ -15,6 +15,11 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarVerifiedDelegate {
 
+    /// Point the SDK at a dev server by setting this to its address, e.g.
+    /// "http://192.168.1.10:8081" (device) or "http://localhost:8081" (simulator). Overrides
+    /// the API + verified hosts on launch; leave blank to use the SDK defaults.
+    static let TARGET_HOST = ""
+
     let locationManager = CLLocationManager()
     var window: UIWindow?  // required for UIWindowSceneDelegate
 
@@ -42,6 +47,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.trackVerifiedAutoFailover = true
 
         Radar.setAppGroup("group.waypoint.data")
+        // Point the SDK at a dev server (see `TARGET_HOST`). Writes the API + verified hosts
+        // to UserDefaults, or clears the overrides when `TARGET_HOST` is blank.
+        let radarDefaults = UserDefaults(suiteName: "group.waypoint.data") ?? .standard
+        if Self.TARGET_HOST.isEmpty {
+            radarDefaults.removeObject(forKey: "radar-host")
+            radarDefaults.removeObject(forKey: "radar-verifiedHost")
+        } else {
+            radarDefaults.set(Self.TARGET_HOST, forKey: "radar-host")
+            radarDefaults.set(Self.TARGET_HOST, forKey: "radar-verifiedHost")
+        }
         Radar.initialize(publishableKey: settingsStore.resolvedPublishableKey, options: radarInitializeOptions)
         Radar.setDelegate(logStream)
         wireLiveActivitySubscriptions()
