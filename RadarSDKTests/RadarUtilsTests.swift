@@ -101,4 +101,27 @@ struct RadarUtilsTests {
         let decoded = try JSONSerialization.jsonObject(with: Data("\"\(escaped)\"".utf8), options: [.allowFragments]) as? String
         #expect(decoded == "😀")
     }
+
+    @Test func locationAuthorizationReturnsKnownValue() {
+        let valid: Set<String> = [
+            "GRANTED_FOREGROUND", "GRANTED_BACKGROUND", "DENIED", "NOT_DETERMINED",
+        ]
+        #expect(valid.contains(RadarUtils.locationAuthorization))
+    }
+
+    @Test func locationAccuracyAuthorizationReturnsKnownValue() {
+        #expect(["FULL", "REDUCED"].contains(RadarUtils.locationAccuracyAuthorization))
+    }
+
+    // These getters run on every config fetch and track payload build, so they are
+    // called repeatedly. Reading them many times must stay stable and must not
+    // allocate a new CLLocationManager per call (the source of the reported leak).
+    @Test func authorizationGettersAreStableAcrossRepeatedCalls() {
+        let auth = RadarUtils.locationAuthorization
+        let accuracy = RadarUtils.locationAccuracyAuthorization
+        for _ in 0..<1_000 {
+            #expect(RadarUtils.locationAuthorization == auth)
+            #expect(RadarUtils.locationAccuracyAuthorization == accuracy)
+        }
+    }
 }

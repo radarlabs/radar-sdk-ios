@@ -169,7 +169,13 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)locationAccuracyAuthorization {
-    CLLocationManager *locationManager = [CLLocationManager new];
+    // Reused for authorization reads. Allocating a new CLLocationManager per call
+    // leaks the underlying CoreLocation client (CLClientCreateWithBundleIdentifier).
+    static CLLocationManager *locationManager;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        locationManager = [CLLocationManager new];
+    });
     if (@available(iOS 14.0, *)) {
         CLAccuracyAuthorization accuracyAuthorization = locationManager.accuracyAuthorization;
         switch (accuracyAuthorization) {
