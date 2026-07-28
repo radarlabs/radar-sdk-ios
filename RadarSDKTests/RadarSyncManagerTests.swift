@@ -23,7 +23,7 @@ extension RadarSerializedTests {
         init() {
             Radar.initialize(publishableKey: "prj_test_pk_0000000000000000")
             RadarSyncManager.stop()
-            RadarUserDefaults.set(nil, forKey: .LastLocation)
+            RadarUserDefaults.set(nil, forKey: .lastLocation)
             RadarSyncManager.syncStore.clear()
             RadarSyncManager.rejectedPlaceIds = []
             RadarSyncManager.rejectedAtLocation = nil
