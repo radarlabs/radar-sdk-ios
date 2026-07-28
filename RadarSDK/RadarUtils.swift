@@ -129,9 +129,6 @@ class RadarUtils: NSObject {
         return backgroundModes.contains("location")
     }()
 
-    // Reused for authorization reads. Allocating a new CLLocationManager per call
-    // leaks the underlying CoreLocation client (CLClientCreateWithBundleIdentifier),
-    // and these getters run on every config fetch and track payload build.
     nonisolated(unsafe) private static let authLocationManager = CLLocationManager()
 
     static var locationAuthorization: String {

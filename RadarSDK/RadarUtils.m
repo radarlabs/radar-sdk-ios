@@ -169,8 +169,6 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)locationAccuracyAuthorization {
-    // Reused for authorization reads. Allocating a new CLLocationManager per call
-    // leaks the underlying CoreLocation client (CLClientCreateWithBundleIdentifier).
     static CLLocationManager *locationManager;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
