@@ -129,11 +129,12 @@ class RadarUtils: NSObject {
         return backgroundModes.contains("location")
     }()
 
+    nonisolated(unsafe) private static let authLocationManager = CLLocationManager()
+
     static var locationAuthorization: String {
         let status: CLAuthorizationStatus
         if #available(iOS 14.0, *) {
-            let locationManager = CLLocationManager()
-            status = locationManager.authorizationStatus
+            status = authLocationManager.authorizationStatus
         } else {
             status = CLLocationManager.authorizationStatus()
         }
@@ -155,8 +156,7 @@ class RadarUtils: NSObject {
 
     static var locationAccuracyAuthorization: String {
         if #available(iOS 14.0, *) {
-            let locationManager = CLLocationManager()
-            let accuracy = locationManager.accuracyAuthorization
+            let accuracy = authLocationManager.accuracyAuthorization
             switch accuracy {
             case .reducedAccuracy:
                 return "REDUCED"
