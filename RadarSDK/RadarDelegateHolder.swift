@@ -5,17 +5,15 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 
 @globalActor
-@available(iOS 13.0, *)
 public actor RadarDelegateActor {
     public static let shared = RadarDelegateActor()
 }
 
 @RadarDelegateActor
-@available(iOS 13.0, *)
 @objc(RadarDelegateHolder_Swift)
 public class RadarDelegateHolder: NSObject {
 
