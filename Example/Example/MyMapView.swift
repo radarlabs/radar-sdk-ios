@@ -162,20 +162,20 @@ struct MyMapView: UIViewRepresentable {
     }
 
     func onTapMapGesture(_ onTap: @escaping (GestureContext) -> Void) -> MyMapView {
-        var copy = self
-        copy.onTap = onTap
-        return copy
+        modifying { $0.onTap = onTap }
     }
 
     func onStyleLoaded(_ onStyleLoaded: @escaping (MLNStyle) -> Void) -> MyMapView {
-        var copy = self
-        copy.onStyleLoaded = onStyleLoaded
-        return copy
+        modifying { $0.onStyleLoaded = onStyleLoaded }
     }
 
     func onLoaded(_ onLoaded: @escaping (MLNMapView) -> Void) -> MyMapView {
+        modifying { $0.onLoaded = onLoaded }
+    }
+
+    private func modifying(_ mutate: (inout MyMapView) -> Void) -> MyMapView {
         var copy = self
-        copy.onLoaded = onLoaded
+        mutate(&copy)
         return copy
     }
 }
