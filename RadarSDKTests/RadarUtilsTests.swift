@@ -115,7 +115,7 @@ struct RadarUtilsTests {
 
     // These getters run on every config fetch and track payload build, so they are
     // called repeatedly. Reading them many times must stay stable and must not
-    // allocate a new CLLocationManager per call (see  FENCE-2947)
+    // allocate a new CLLocationManager per call (see FENCE-2947)
     @Test func authorizationGettersAreStableAcrossRepeatedCalls() {
         let auth = RadarUtils.locationAuthorization
         let accuracy = RadarUtils.locationAccuracyAuthorization
