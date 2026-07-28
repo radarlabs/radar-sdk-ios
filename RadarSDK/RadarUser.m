@@ -18,6 +18,58 @@
 #import "RadarUser+Internal.h"
 #import "RadarLogger.h"
 
+@implementation RadarUserLocationInsights
+
+- (instancetype _Nullable)initWithAtHome:(BOOL)atHome atWork:(BOOL)atWork traveling:(BOOL)traveling commuting:(NSNumber *_Nullable)commuting {
+    self = [super init];
+    if (self) {
+        _atHome = atHome;
+        _atWork = atWork;
+        _traveling = traveling;
+        _commuting = commuting;
+    }
+    return self;
+}
+
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object {
+    if (!object || ![object isKindOfClass:[NSDictionary class]]) {
+        return nil;
+    }
+
+    NSDictionary *dict = (NSDictionary *)object;
+    NSNumber *commuting = nil;
+    id commutingObj = dict[@"commuting"];
+    if (commutingObj && [commutingObj isKindOfClass:[NSNumber class]]) {
+        commuting = (NSNumber *)commutingObj;
+    }
+
+    return [[RadarUserLocationInsights alloc] initWithAtHome:[self asBool:dict[@"atHome"]]
+                                                      atWork:[self asBool:dict[@"atWork"]]
+                                                   traveling:[self asBool:dict[@"traveling"]]
+                                                   commuting:commuting];
+}
+
+- (NSDictionary *)dictionaryValue {
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:@(self.atHome) forKey:@"atHome"];
+    [dict setValue:@(self.atWork) forKey:@"atWork"];
+    [dict setValue:@(self.traveling) forKey:@"traveling"];
+    [dict setValue:self.commuting forKey:@"commuting"];
+    return dict;
+}
+
+- (BOOL)asBool:(NSObject *)object {
+    if (object && [object isKindOfClass:[NSNumber class]]) {
+        NSNumber *number = (NSNumber *)object;
+
+        return [number boolValue];
+    } else {
+        return false;
+    }
+}
+
+@end
+
 @implementation RadarUser
 
 - (instancetype _Nullable)initWithId:(NSString *)_id
@@ -43,6 +95,7 @@
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
                                fraud:(RadarFraud *_Nullable)fraud 
+                   locationInsights:(RadarUserLocationInsights *_Nullable)locationInsights
                             altitude:(double)altitude {
     self = [super init];
     if (self) {
@@ -69,6 +122,7 @@
         _trip = trip;
         _debug = debug;
         _fraud = fraud;
+        _locationInsights = locationInsights;
         _altitude = altitude;
     }
     return self;
@@ -103,6 +157,7 @@
     RadarLocationSource source = RadarLocationSourceUnknown;
     RadarTrip *trip;
     RadarFraud *fraud;
+    RadarUserLocationInsights *locationInsights;
     BOOL debug = NO;
     double altitude = NAN;
 
@@ -302,6 +357,9 @@
     id fraudObj = dict[@"fraud"];
     fraud = [[RadarFraud alloc] initWithObject:fraudObj];
 
+    id locationInsightsObj = dict[@"locationInsights"];
+    locationInsights = [[RadarUserLocationInsights alloc] initWithObject:locationInsightsObj];
+
     id barometricAltitudeObj = dict[@"barometricAltitude"];
     if (barometricAltitudeObj && [barometricAltitudeObj isKindOfClass:[NSNumber class]]) {
         altitude = [((NSNumber *)barometricAltitudeObj) doubleValue];
@@ -336,6 +394,7 @@
                                         trip:trip
                                        debug:debug
                                        fraud:fraud
+                            locationInsights:locationInsights
                                     altitude:altitude];
     }
 
@@ -396,6 +455,9 @@
     [dict setValue:@(self.debug) forKey:@"debug"];
     if (self.fraud) {
         [dict setValue:[self.fraud dictionaryValue] forKey:@"fraud"];
+    }
+    if (self.locationInsights) {
+        [dict setValue:[self.locationInsights dictionaryValue] forKey:@"locationInsights"];
     }
     if (!isnan(self.altitude)) {
         [dict setValue:@(self.altitude) forKey:@"altitude"];
