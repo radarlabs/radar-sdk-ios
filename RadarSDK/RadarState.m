@@ -255,11 +255,11 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 }
 
 + (void)setNotificationPermissionGranted:(BOOL)notificationPermissionGranted {
-    [[NSUserDefaults standardUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
+    [[RadarUserDefaults sharedUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
 }
 
 + (BOOL)notificationPermissionGranted {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
+    return [[RadarUserDefaults sharedUserDefaults] boolForKey:kNotificationPermissionGranted];
 }
 
 + (void)setMotionAuthorizationString:(NSString *)status {

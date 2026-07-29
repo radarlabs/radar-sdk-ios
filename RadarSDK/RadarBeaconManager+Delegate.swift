@@ -189,8 +189,6 @@ extension RadarBeaconManagerSwift {
     func registerBeaconRegionNotifications(
         from beaconArray: [[String: Any]]
     ) {
-        guard let bridge = RadarSwift.bridge else { return }
-
         var requests: [UNNotificationRequest] = []
 
         for beaconDict in beaconArray {
@@ -228,9 +226,7 @@ extension RadarBeaconManagerSwift {
 
             let notificationId = "\(Self.beaconNotificationIdentifierPrefix)\(uuidString)"
 
-            if let content = bridge.extractContent(
-                fromMetadata: metadata, identifier: notificationId
-            ) {
+            if let content = RadarEventNotifications.extractCampaignContent(from: metadata, identifier: notificationId) {
                 let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
 
                 let request = UNNotificationRequest(
@@ -243,7 +239,7 @@ extension RadarBeaconManagerSwift {
             }
         }
 
-        bridge.updateClientSideCampaigns(
+        RadarNotificationUtils.updateClientSideCampaigns(
             withPrefix: Self.beaconNotificationIdentifierPrefix,
             notificationRequests: requests
         )
