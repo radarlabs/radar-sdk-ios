@@ -13,6 +13,15 @@ When working in an existing Objective-C file, consider migrating the file to Swi
 - New classes, structs, enums, and extensions → Swift only
 - New tests → Swift only
 
+**Sanctioned exception — the nightly batch migration.** The scheduled workflow
+`.github/workflows/objc-to-swift-nightly.yml` runs the `objc-to-swift` skill (from
+`radarlabs/clankers`) in its unattended batch mode: each run picks the most trivial
+remaining leaf file (smallest, least-coupled, no risky flags), converts that one file, and
+opens a PR labeled `swift-migration`. In that context the
+"ask the user" requirement is satisfied by human review of that PR — nothing merges without
+an explicit approval — and at most one such PR may be open at a time. Interactive sessions
+must still ask before migrating.
+
 ## Build & Test
 
 ```bash
