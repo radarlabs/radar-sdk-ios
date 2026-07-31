@@ -9,10 +9,25 @@ import Foundation
 import RadarSDK
 
 class Utils {
-    
+
+    /// The Radar API host the SDK is configured with. The SDK persists `radar-host` into the
+    /// app-group suite (see RadarUserDefaults); falls back to production if unset. Use this
+    /// everywhere instead of hardcoding `https://api.radar.io` so map, assets, and API calls
+    /// all target the same host.
+    static var radarHost: String {
+        let suite = UserDefaults.standard.string(forKey: "radar-appGroup")
+        return UserDefaults(suiteName: suite)?.string(forKey: "radar-host") ?? "https://api.radar.io"
+    }
+
+    /// URL for a Radar-hosted asset (e.g. a floorplan image) at the given asset path,
+    /// resolved against `radarHost`.
+    static func assetURL(path: String) -> URL? {
+        URL(string: "\(radarHost)/api/v1/assets/\(path)")
+    }
+
     static func stringForRadarEvent(_ event: RadarEvent) -> String {
         let confidenceStr = Utils.stringForRadarEventConfidence(event.confidence)
-        
+
         switch event.type {
         case .userEnteredGeofence:
             return "Entered geofence \(event.geofence!.__description) with \(confidenceStr)"
@@ -42,7 +57,7 @@ class Utils {
             return "Unknown"
         }
     }
-    
+
     static func stringForRadarEventConfidence(_ confidence: RadarEventConfidence) -> String {
         switch confidence {
         case .high:
@@ -55,7 +70,7 @@ class Utils {
             return "no confidence"
         }
     }
-    
+
     static func stringForRadarLocationSource(_ source: RadarLocationSource) -> String {
         switch source {
         case .foregroundLocation:
@@ -76,5 +91,5 @@ class Utils {
             return "unknown"
         }
     }
-    
+
 }
