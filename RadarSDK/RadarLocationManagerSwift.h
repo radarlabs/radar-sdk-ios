@@ -42,6 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
 
++ (void)shutDownOnLocationManager:(CLLocationManager *)locationManager
+          lowPowerLocationManager:(CLLocationManager *)lowPowerLocationManager;
++ (void)requestLocationOnLocationManager:(CLLocationManager *)locationManager;
+
 @end
 
 NS_ASSUME_NONNULL_END
