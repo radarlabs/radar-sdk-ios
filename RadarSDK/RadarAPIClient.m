@@ -75,7 +75,7 @@
         @"X-Radar-Config": @"true",
         @"X-Radar-Device-Make": [RadarUtils deviceMake],
         @"X-Radar-Device-Model": [RadarUtils deviceModel],
-        @"X-Radar-Device-OS": [RadarUtilsDeprecated deviceOS],
+        @"X-Radar-Device-OS": [RadarUtilsDeprecated deviceOS], // this is the OS version
         @"X-Radar-Device-Type": [RadarUtils deviceType],
         @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
         @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
@@ -329,7 +329,7 @@
     params[@"deviceMake"] = [RadarUtils deviceMake];
     params[@"sdkVersion"] = [RadarUtils sdkVersion];
     params[@"deviceModel"] = [RadarUtils deviceModel];
-    params[@"deviceOS"] = [RadarUtilsDeprecated deviceOS];
+    params[@"deviceOS"] = [RadarUtilsDeprecated deviceOS]; // this is the OS version
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
     params[@"source"] = [Radar stringForLocationSource:source];

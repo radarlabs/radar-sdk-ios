@@ -82,7 +82,7 @@
     params[@"deviceMake"] = [RadarUtils deviceMake];
     params[@"sdkVersion"] = [RadarUtils sdkVersion];
     params[@"deviceModel"] = [RadarUtils deviceModel];
-    params[@"deviceOS"] = [RadarUtilsDeprecated deviceOS];
+    params[@"deviceOS"] = [RadarUtilsDeprecated deviceOS]; // this is the OS version
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
     params[@"source"] = [Radar stringForLocationSource:source];

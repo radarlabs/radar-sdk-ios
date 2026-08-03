@@ -134,7 +134,7 @@ public final class RadarAPIClient: Sendable {
             "deviceMake": RadarUtils.deviceMake,
             "sdkVersion": RadarUtils.sdkVersion,
             "deviceModel": RadarUtils.deviceModel,
-            "deviceOS": await RadarUtils.deviceOS,
+            "deviceOS": await RadarUtils.deviceOSVersion,
             "country": RadarUtils.country,
             "timeZoneOffset": RadarUtils.timeZoneOffset,
             "lang": RadarSettings.userLanguage,
