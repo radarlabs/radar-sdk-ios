@@ -278,6 +278,21 @@ final class RadarLocationManagerSwift: NSObject {
         ]
     }
 
+    @objc(shutDownOnLocationManager:lowPowerLocationManager:)
+    static func shutDown(locationManager: CLLocationManager, lowPowerLocationManager: CLLocationManager) {
+        RadarLogger.shared.debug("🦅 Shutting down")
+
+        locationManager.stopUpdatingLocation()
+        lowPowerLocationManager.stopUpdatingLocation()
+    }
+
+    @objc(requestLocationOnLocationManager:)
+    static func requestLocation(locationManager: CLLocationManager) {
+        RadarLogger.shared.debug("🦅 Requesting location")
+
+        locationManager.requestLocation()
+    }
+
     @objc(didChangeAuthorizationStatus:)
     static func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
         let state = RadarState()
