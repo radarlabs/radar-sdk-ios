@@ -154,6 +154,7 @@
 		B0A0F0222FBC000100111111 /* StubCLHeading.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0232FBC000100111111 /* StubCLHeading.swift */; };
 		B0A0F0242FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0252FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift */; };
 		B0A0F0282FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0292FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift */; };
+		B0A0F02A2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F02B2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift */; };
 		BA264CFB2FF3158B000EDFE6 /* RadarReplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA264CFA2FF31582000EDFE6 /* RadarReplay.swift */; };
 		BA264CFD2FF31BD9000EDFE6 /* RadarReplay.h in Headers */ = {isa = PBXBuildFile; fileRef = BA264CFC2FF31BD5000EDFE6 /* RadarReplay.h */; };
 		BA264CFF2FF31FB6000EDFE6 /* RadarReplayBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA264CFE2FF31FAF000EDFE6 /* RadarReplayBuffer.swift */; };
@@ -373,6 +374,7 @@
 		B0A0F0232FBC000100111111 /* StubCLHeading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubCLHeading.swift; sourceTree = "<group>"; };
 		B0A0F0252FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftHeadingTests.swift; sourceTree = "<group>"; };
 		B0A0F0292FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftAuthTests.swift; sourceTree = "<group>"; };
+		B0A0F02B2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftLifecycleTests.swift; sourceTree = "<group>"; };
 		BA264CFA2FF31582000EDFE6 /* RadarReplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarReplay.swift; sourceTree = "<group>"; };
 		BA264CFC2FF31BD5000EDFE6 /* RadarReplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarReplay.h; sourceTree = "<group>"; };
 		BA264CFE2FF31FAF000EDFE6 /* RadarReplayBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarReplayBuffer.swift; sourceTree = "<group>"; };
@@ -793,6 +795,7 @@
 				B0A0F0232FBC000100111111 /* StubCLHeading.swift */,
 				B0A0F0252FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift */,
 				B0A0F0292FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift */,
+				B0A0F02B2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift */,
 				F6AF00002FE1000000000001 /* RadarLocationInsightsModelTests.swift */,
 				F6A0DAC72EF087A100BC10B4 /* RadarSettingsTest.swift */,
 				F6FA1101000000000000A001 /* RadarVerifiedHostOverrideTests.swift */,
@@ -1263,6 +1266,7 @@
 				B0A0F0222FBC000100111111 /* StubCLHeading.swift in Sources */,
 				B0A0F0242FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift in Sources */,
 				B0A0F0282FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift in Sources */,
+				B0A0F02A2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift in Sources */,
 				BA8647B92F6C7DB700F1A199 /* RadarSyncManagerTests.swift in Sources */,
 				52C9956B8416B72B2F5C9A5A /* CLLocation+RadarTests.swift in Sources */,
 				DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */,
@@ -1431,7 +1435,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 3.39.0;
+				MARKETING_VERSION = 3.39.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1489,7 +1493,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 3.39.0;
+				MARKETING_VERSION = 3.39.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";
