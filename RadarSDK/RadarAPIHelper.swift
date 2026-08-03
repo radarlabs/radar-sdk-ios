@@ -100,7 +100,7 @@ final class RadarAPIHelper: Sendable {
         headers["X-Radar-Config"] = "true"
         headers["X-Radar-Device-Make"] = RadarUtils.deviceMake
         headers["X-Radar-Device-Model"] = RadarUtils.deviceModel
-        headers["X-Radar-Device-OS"] = await RadarUtils.deviceOS
+        headers["X-Radar-Device-OS"] = await RadarUtils.deviceOSVersion
         headers["X-Radar-Device-Type"] = RadarUtils.deviceType
         headers["X-Radar-SDK-Version"] = RadarUtils.sdkVersion
         headers["X-Radar-Mobile-Origin"] = Bundle.main.bundleIdentifier
