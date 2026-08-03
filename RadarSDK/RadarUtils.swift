@@ -35,10 +35,18 @@ class RadarUtils: NSObject {
         return identifier
     }()
 
-    static var deviceOS: String {
+    static var deviceOSName: String {
         get async {
             return await MainActor.run(resultType: String.self) {
                 UIDevice.current.systemName
+            }
+        }
+    }
+
+    static var deviceOSVersion: String {
+        get async {
+            return await MainActor.run(resultType: String.self) {
+                UIDevice.current.systemVersion
             }
         }
     }
