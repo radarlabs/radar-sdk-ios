@@ -335,7 +335,11 @@ BOOL _initialized = NO;
                                          if (config != nil) {
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          }
-                                         if (user) {
+                                         // Only start/refresh indoor scanning here when continuous tracking is
+                                         // also active. A bare trackOnce() has nothing that will ever stop the
+                                         // beacon ranging this would kick off, so it would run forever after a
+                                         // call meant to be single-shot.
+                                         if (user && [RadarSettings tracking]) {
                                              [[RadarIndoors shared] updateTrackingWithGeofences:user.geofences completionHandler:^{}];
                                          }
                                      }
@@ -418,7 +422,11 @@ BOOL _initialized = NO;
                                                 if (config != nil) {
                                                     [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                                 }
-                                                if (user) {
+                                                // Only start/refresh indoor scanning here when continuous tracking is
+                                                // also active. A bare trackOnce() has nothing that will ever stop the
+                                                // beacon ranging this would kick off, so it would run forever after a
+                                                // call meant to be single-shot.
+                                                if (user && [RadarSettings tracking]) {
                                                     [[RadarIndoors shared] updateTrackingWithGeofences:user.geofences completionHandler:^{}];
                                                 }
                                             }
