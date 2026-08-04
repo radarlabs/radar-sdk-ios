@@ -71,6 +71,12 @@ extension RadarSerializedTests {
             return (RadarIndoors(sdk: sdk), mock)
         }
 
+        private func makeIndoors(idleTimeoutNanoseconds: UInt64) -> (indoors: RadarIndoors, mock: MockIndoorsInstance) {
+            let mock = MockIndoorsInstance()
+            let sdk = RadarSDKIndoors(instance: mock)!
+            return (RadarIndoors(sdk: sdk, idleTimeoutNanoseconds: idleTimeoutNanoseconds), mock)
+        }
+
         private func setIndoorScanEnabled(_ enabled: Bool) {
             let options = RadarTrackingOptions.presetContinuous
             options.useIndoorScan = enabled
@@ -177,6 +183,71 @@ extension RadarSerializedTests {
 
             #expect(mock.startCallCount == 2)
             #expect(mock.lastModelName == "model-2.mlmodel")
+        }
+
+        // MARK: - idle-expiry: the safety net that lets trackOnce() reuse indoor scanning
+        // without leaving it running forever when nothing calls updateTracking again.
+
+        @Test("idle-expiry stops the scan once nothing refreshes it before the timeout")
+        func idleExpiryStopsScan() async {
+            setIndoorScanEnabled(true)
+            let (indoors, mock) = makeIndoors(idleTimeoutNanoseconds: 5_000_000)  // 5ms
+
+            await indoors.updateTracking(geofences: [geofence(id: "g1", activeIndoorModelId: "model-1")])
+            #expect(mock.startCallCount == 1)
+
+            // Awaits the exact scheduled task rather than sleeping/polling in the test.
+            await indoors.idleExpiryTask?.value
+
+            #expect(mock.stopCallCount == 1, "idle expiry should stop scanning after the injected timeout")
+            #expect(await indoors.currentModelId == nil)
+        }
+
+        @Test("an updateTracking call before expiry cancels the stale timer instead of letting it fire")
+        func updateTrackingResetsIdleDeadline() async {
+            setIndoorScanEnabled(true)
+            // Long enough that it will not fire during this test.
+            let (indoors, mock) = makeIndoors(idleTimeoutNanoseconds: 5_000_000_000)
+
+            await indoors.updateTracking(geofences: [geofence(id: "g1", activeIndoorModelId: "model-1")])
+            let firstTimer = await indoors.idleExpiryTask
+
+            // Still in the same geofence/model: the "model already in use" branch reschedules.
+            await indoors.updateTracking(geofences: [geofence(id: "g1", activeIndoorModelId: "model-1")])
+
+            #expect(firstTimer?.isCancelled == true, "the earlier timer must be cancelled, not left to fire independently")
+            #expect(mock.stopCallCount == 0, "the scan must stay running across the reschedule")
+        }
+
+        @Test("disabling useIndoorScan cancels any pending idle-expiry")
+        func disablingFlagCancelsIdleExpiry() async {
+            setIndoorScanEnabled(true)
+            let (indoors, mock) = makeIndoors(idleTimeoutNanoseconds: 5_000_000_000)
+
+            await indoors.updateTracking(geofences: [geofence(id: "g1", activeIndoorModelId: "model-1")])
+            let pendingTimer = await indoors.idleExpiryTask
+
+            setIndoorScanEnabled(false)
+            await indoors.updateTracking(geofences: [geofence(id: "g1", activeIndoorModelId: "model-1")])
+
+            #expect(pendingTimer?.isCancelled == true)
+            #expect(await indoors.idleExpiryTask == nil)
+            #expect(mock.stopCallCount == 1, "the explicit disable itself still stops the scan")
+        }
+
+        @Test("no model in current geofences cancels any pending idle-expiry")
+        func noModelInGeofencesCancelsIdleExpiry() async {
+            setIndoorScanEnabled(true)
+            let (indoors, mock) = makeIndoors(idleTimeoutNanoseconds: 5_000_000_000)
+
+            await indoors.updateTracking(geofences: [geofence(id: "g1", activeIndoorModelId: "model-1")])
+            let pendingTimer = await indoors.idleExpiryTask
+
+            await indoors.updateTracking(geofences: [geofence(id: "g2", activeIndoorModelId: nil)])
+
+            #expect(pendingTimer?.isCancelled == true)
+            #expect(await indoors.idleExpiryTask == nil)
+            #expect(mock.stopCallCount == 1)
         }
     }
 }

@@ -106,6 +106,17 @@ internal class RadarIndoors: NSObject {
 
     var currentModelId: String?
 
+    // Not `private` so tests can inspect/await the scheduled task directly.
+    var idleExpiryTask: Task<Void, Never>?
+
+    private let idleTimeoutNanoseconds: UInt64
+    // trackOnce()'s /track responses load/start the model exactly like continuous tracking's do,
+    // but a bare trackOnce() has no stopTracking() to ever clean it up. This is the safety net: if
+    // nothing calls updateTracking(geofences:) to confirm the scan is still wanted within this
+    // window, stop it on our own.
+    // `nonisolated` so it can be used as a default parameter value from the `nonisolated` inits below.
+    nonisolated private static let defaultIdleTimeoutNanoseconds: UInt64 = 5 * 60 * 1_000_000_000  // 5 minutes
+
     /**
      RadarSDKIndoors calls
      */
@@ -129,16 +140,42 @@ internal class RadarIndoors: NSObject {
     nonisolated override init() {
         self.sdk = RadarSDKIndoors()
         self.onLocationUpdate = RadarIndoors.makeOnLocationUpdate()
+        self.idleTimeoutNanoseconds = RadarIndoors.defaultIdleTimeoutNanoseconds
         super.init()
     }
 
     // Testable initializer: lets tests exercise `updateTracking(geofences:)` against an injected
     // mock `RadarSDKIndoors` without the optional framework being linked, and without mutating
-    // the process-wide `shared` singleton.
-    nonisolated init(sdk: RadarSDKIndoors?) {
+    // the process-wide `shared` singleton. `idleTimeoutNanoseconds` lets tests use a short timeout
+    // instead of waiting out the real default.
+    nonisolated init(sdk: RadarSDKIndoors?, idleTimeoutNanoseconds: UInt64 = RadarIndoors.defaultIdleTimeoutNanoseconds) {
         self.sdk = sdk
         self.onLocationUpdate = RadarIndoors.makeOnLocationUpdate()
+        self.idleTimeoutNanoseconds = idleTimeoutNanoseconds
         super.init()
+    }
+
+    private func scheduleIdleExpiry() {
+        idleExpiryTask?.cancel()
+        let timeout = idleTimeoutNanoseconds
+        idleExpiryTask = Task { @RadarIndoorsActor [weak self] in
+            try? await Task.sleep(nanoseconds: timeout)
+            guard !Task.isCancelled else { return }
+            await self?.idleExpiryFired()
+        }
+    }
+
+    private func cancelIdleExpiry() {
+        idleExpiryTask?.cancel()
+        idleExpiryTask = nil
+    }
+
+    private func idleExpiryFired() async {
+        guard let sdk, currentModelId != nil else { return }
+        RadarLogger.shared.debug("indoor scan idle-expired with no further updateTracking activity, stopping")
+        await sdk.stop()
+        currentModelId = nil
+        idleExpiryTask = nil
     }
 
     public func updateTracking(geofences: [RadarGeofence]?) async {
@@ -151,6 +188,7 @@ internal class RadarIndoors: NSObject {
         }
         if !Radar.getTrackingOptions().useIndoorScan {
             // stop indoor updates if it's on
+            cancelIdleExpiry()
             if currentModelId != nil {
                 await sdk.stop()
                 currentModelId = nil
@@ -159,10 +197,12 @@ internal class RadarIndoors: NSObject {
         }
         if geofences?.contains(where: { $0.activeIndoorModelId != nil && ($0.activeIndoorModelId == currentModelId) }) == true {
             RadarLogger.shared.debug("model already in use")
+            scheduleIdleExpiry()
             return
         }
         guard let modelId = geofences?.first(where: { $0.activeIndoorModelId != nil })?.activeIndoorModelId else {
             // no model id in current geofences - stop any active indoor scan
+            cancelIdleExpiry()
             if currentModelId != nil {
                 RadarLogger.shared.debug("found no model id in current geofences, stopping indoor scan")
                 await sdk.stop()
@@ -198,6 +238,7 @@ internal class RadarIndoors: NSObject {
         // Record the active model only once start() has returned, so a failure earlier in the
         // chain doesn't leave currentModelId set and short-circuit the next updateTracking pass.
         currentModelId = modelId
+        scheduleIdleExpiry()
     }
 
     nonisolated public func getLocation(completionHandler: @escaping @Sendable (CLLocation?) -> Void) {

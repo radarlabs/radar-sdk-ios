@@ -335,11 +335,13 @@ BOOL _initialized = NO;
                                          if (config != nil) {
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          }
-                                         // Only start/refresh indoor scanning here when continuous tracking is
-                                         // also active. A bare trackOnce() has nothing that will ever stop the
-                                         // beacon ranging this would kick off, so it would run forever after a
-                                         // call meant to be single-shot.
-                                         if (user && [RadarSettings tracking]) {
+                                         // Loads/refreshes the indoor model exactly like continuous tracking's
+                                         // responses do. This trackOnce() call is too early to benefit itself
+                                         // (the model can't start until this response tells us the geofence),
+                                         // but the next trackOnce()/track() call reuses whatever's already
+                                         // ranging. RadarIndoors' own idle-expiry timer is what keeps this from
+                                         // running forever if nothing calls updateTracking again.
+                                         if (user) {
                                              [[RadarIndoors shared] updateTrackingWithGeofences:user.geofences completionHandler:^{}];
                                          }
                                      }
@@ -422,11 +424,13 @@ BOOL _initialized = NO;
                                                 if (config != nil) {
                                                     [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                                 }
-                                                // Only start/refresh indoor scanning here when continuous tracking is
-                                                // also active. A bare trackOnce() has nothing that will ever stop the
-                                                // beacon ranging this would kick off, so it would run forever after a
-                                                // call meant to be single-shot.
-                                                if (user && [RadarSettings tracking]) {
+                                                // Loads/refreshes the indoor model exactly like continuous tracking's
+                                                // responses do. This trackOnce() call is too early to benefit itself
+                                                // (the model can't start until this response tells us the geofence),
+                                                // but the next trackOnce()/track() call reuses whatever's already
+                                                // ranging. RadarIndoors' own idle-expiry timer is what keeps this from
+                                                // running forever if nothing calls updateTracking again.
+                                                if (user) {
                                                     [[RadarIndoors shared] updateTrackingWithGeofences:user.geofences completionHandler:^{}];
                                                 }
                                             }
