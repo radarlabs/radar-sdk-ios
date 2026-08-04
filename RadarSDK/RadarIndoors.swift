@@ -200,6 +200,16 @@ internal class RadarIndoors: NSObject {
         currentModelId = modelId
     }
 
+    /// Stops indoor scanning outright, regardless of geofences or tracking options.
+    public func stop() async {
+        guard let sdk, currentModelId != nil else {
+            return
+        }
+        RadarLogger.shared.debug("stopping indoor scan")
+        await sdk.stop()
+        currentModelId = nil
+    }
+
     nonisolated public func getLocation(completionHandler: @escaping @Sendable (CLLocation?) -> Void) {
         Task { @RadarIndoorsActor in
             guard let sdk else {

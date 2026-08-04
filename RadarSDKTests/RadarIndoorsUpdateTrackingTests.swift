@@ -10,13 +10,6 @@ import Testing
 
 @testable import RadarSDK
 
-/// A stand-in for the optional `RadarSDKIndoors` framework's instance.
-///
-/// `RadarSDKIndoors` (the Swift wrapper in RadarIndoors.swift) reaches into its wrapped
-/// `NSObject` via `perform(...)`, so a mock only needs to respond to the five selectors the
-/// wrapper calls. It records start/stop/useModel calls so tests can assert exactly what
-/// `RadarIndoors.updateTracking(geofences:)` does with beacon ranging, mirroring
-/// `MockFraudInstance` in RadarRevealRiskTests.swift.
 final class MockIndoorsInstance: NSObject, @unchecked Sendable {
     private(set) var startCallCount = 0
     private(set) var stopCallCount = 0
@@ -51,13 +44,13 @@ final class MockIndoorsInstance: NSObject, @unchecked Sendable {
     func setOnLocationUpdate(_ block: @escaping (CLLocation) -> Void) {}
 }
 
-/// Covers `RadarIndoors.updateTracking(geofences:)`, in particular the fix for indoor beacon
-/// ranging that never stopped once started (it kept running, and logging, after the user left
-/// the indoor geofence or called `Radar.stopTracking()`). Exercises the real actor-isolated
-/// method against an injected mock, via the testable `RadarIndoors(sdk:)` / `RadarSDKIndoors
-/// (instance:)` initializers, rather than the process-wide `RadarIndoors.shared` singleton (whose
-/// `sdk` is always nil in this test target since the optional RadarSDKIndoors framework isn't
-/// linked).
+/// Covers `RadarIndoors.updateTracking(geofences:)` and `RadarIndoors.stop()`, in particular the fix
+/// for indoor beacon ranging that never stopped once started (it kept running, and logging, after
+/// the user left the indoor geofence or called `Radar.stopTracking()`). Exercises the real
+/// actor-isolated methods against an injected mock, via the testable `RadarIndoors(sdk:)` /
+/// `RadarSDKIndoors(instance:)` initializers, rather than the process-wide `RadarIndoors.shared`
+/// singleton (whose `sdk` is always nil in this test target since the optional RadarSDKIndoors
+/// framework isn't linked).
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarIndoorsUpdateTrackingTests {
@@ -96,8 +89,6 @@ extension RadarSerializedTests {
             )!
         }
 
-        // MARK: - the fix: leaving the indoor geofence stops the scan
-
         @Test("stops indoor scanning once the current geofences no longer include an active indoor model")
         func stopsWhenGeofenceLosesModel() async {
             setIndoorScanEnabled(true)
@@ -114,7 +105,7 @@ extension RadarSerializedTests {
             #expect(mock.stopCallCount == 1, "leaving the indoor geofence must stop beacon ranging")
         }
 
-        @Test("stops indoor scanning when the next geofence list is nil (e.g. stopTracking's forced refresh)")
+        @Test("stops indoor scanning when the next geofence list is nil")
         func stopsWhenGeofencesAreNil() async {
             setIndoorScanEnabled(true)
             let (indoors, mock) = makeIndoors()
@@ -122,9 +113,42 @@ extension RadarSerializedTests {
             await indoors.updateTracking(geofences: [geofence(id: "g1", activeIndoorModelId: "model-1")])
             #expect(mock.startCallCount == 1)
 
-            // Mirrors what `RadarLocationManager.stopTracking` now does: force a re-evaluation with
-            // no geofences.
             await indoors.updateTracking(geofences: nil)
+
+            #expect(mock.stopCallCount == 1)
+        }
+
+        @Test("stop() stops an active scan, which is what stopTracking calls")
+        func stopStopsActiveScan() async {
+            setIndoorScanEnabled(true)
+            let (indoors, mock) = makeIndoors()
+            await indoors.updateTracking(geofences: [geofence(id: "g1", activeIndoorModelId: "model-1")])
+            #expect(mock.startCallCount == 1)
+
+            await indoors.stop()
+
+            #expect(mock.stopCallCount == 1)
+            #expect(await indoors.currentModelId == nil)
+        }
+
+        @Test("stop() is a no-op when no scan is running")
+        func stopNoOpWhenIdle() async {
+            setIndoorScanEnabled(true)
+            let (indoors, mock) = makeIndoors()
+
+            await indoors.stop()
+
+            #expect(mock.stopCallCount == 0)
+        }
+
+        @Test("stop() stops scanning even when useIndoorScan is still enabled")
+        func stopIgnoresTrackingOptions() async {
+            // stopTracking leaves the useIndoorScan option untouched, so stop() must not depend on it.
+            setIndoorScanEnabled(true)
+            let (indoors, mock) = makeIndoors()
+            await indoors.updateTracking(geofences: [geofence(id: "g1", activeIndoorModelId: "model-1")])
+
+            await indoors.stop()
 
             #expect(mock.stopCallCount == 1)
         }
@@ -139,8 +163,6 @@ extension RadarSerializedTests {
             #expect(mock.stopCallCount == 0, "there is nothing to stop if ranging was never started")
             #expect(mock.startCallCount == 0)
         }
-
-        // MARK: - regression guards for existing behavior
 
         @Test("disabling useIndoorScan stops an active scan")
         func disablingFlagStopsActiveScan() async {

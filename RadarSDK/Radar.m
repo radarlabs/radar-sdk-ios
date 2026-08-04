@@ -336,9 +336,8 @@ BOOL _initialized = NO;
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          }
                                          // Only start/refresh indoor scanning here when continuous tracking is
-                                         // also active. A bare trackOnce() has nothing that will ever stop the
-                                         // beacon ranging this would kick off, so it would run forever after a
-                                         // call meant to be single-shot.
+                                         // also active. Indoor scan with only trackOnce is not supported
+                                         // This just updates the indoor scanning with the current geofences
                                          if (user && [RadarSettings tracking]) {
                                              [[RadarIndoors shared] updateTrackingWithGeofences:user.geofences completionHandler:^{}];
                                          }
@@ -423,9 +422,8 @@ BOOL _initialized = NO;
                                                     [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                                 }
                                                 // Only start/refresh indoor scanning here when continuous tracking is
-                                                // also active. A bare trackOnce() has nothing that will ever stop the
-                                                // beacon ranging this would kick off, so it would run forever after a
-                                                // call meant to be single-shot.
+                                                // also active. Indoor scan with only trackOnce is not supported
+                                                // This just updates the indoor scanning with the current geofences
                                                 if (user && [RadarSettings tracking]) {
                                                     [[RadarIndoors shared] updateTrackingWithGeofences:user.geofences completionHandler:^{}];
                                                 }
