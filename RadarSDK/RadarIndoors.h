@@ -14,6 +14,7 @@
 + (RadarIndoors * _Nonnull)shared;
 
 - (void)updateTrackingWithGeofences:(NSArray<RadarGeofence *> * _Nullable)geofences completionHandler:(void (^ _Nonnull)(void))completionHandler;
+- (void)stopWithCompletionHandler:(void (^ _Nonnull)(void))completionHandler;
 - (void)getLocationWithCompletionHandler:(void (^ _Nonnull)(CLLocation * _Nullable))completionHandler;
 - (nonnull instancetype)init;
 @end

@@ -335,7 +335,10 @@ BOOL _initialized = NO;
                                          if (config != nil) {
                                              [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                          }
-                                         if (user) {
+                                         // Only start/refresh indoor scanning here when continuous tracking is
+                                         // also active. Indoor scan with only trackOnce is not supported
+                                         // This just updates the indoor scanning with the current geofences
+                                         if (user && [RadarSettings tracking]) {
                                              [[RadarIndoors shared] updateTrackingWithGeofences:user.geofences completionHandler:^{}];
                                          }
                                      }
@@ -418,7 +421,10 @@ BOOL _initialized = NO;
                                                 if (config != nil) {
                                                     [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                                                 }
-                                                if (user) {
+                                                // Only start/refresh indoor scanning here when continuous tracking is
+                                                // also active. Indoor scan with only trackOnce is not supported
+                                                // This just updates the indoor scanning with the current geofences
+                                                if (user && [RadarSettings tracking]) {
                                                     [[RadarIndoors shared] updateTrackingWithGeofences:user.geofences completionHandler:^{}];
                                                 }
                                             }

@@ -26,16 +26,11 @@ class RadarSDKIndoors {
     nonisolated static let stopSelector = NSSelectorFromString("stopWithCompletionHandler:")
     nonisolated static let setOnLocationUpdateSelector = NSSelectorFromString("setOnLocationUpdate:")
 
-    nonisolated init?() {
-        // Fail the initializer when the optional RadarSDKIndoors framework isn't linked, so
-        // `RadarSDKIndoors()` is nil and the `guard let sdk` checks downstream mean what they say.
-        guard let cls = NSClassFromString("RadarSDKIndoors") as? NSObject.Type else {
-            return nil
-        }
-        let instance = cls.init()
-        // Verify the linked class actually is our RadarSDKIndoors by requiring it to respond to
-        // every selector we call, matching RadarSDKFraud.init?(instance:). If any is missing the
-        // framework is the wrong shape (or an older release), so fail rather than trap at perform.
+    // Verifies that `instance` responds to every selector we call, matching
+    // RadarSDKFraud.init?(instance:). Split out from discovery below so tests can wrap a mock
+    // `NSObject` directly, without the optional RadarSDKIndoors framework being linked into the
+    // test target.
+    nonisolated init?(instance: NSObject) {
         guard instance.responds(to: RadarSDKIndoors.useModelSelector),
             instance.responds(to: RadarSDKIndoors.getLocationSelector),
             instance.responds(to: RadarSDKIndoors.startSelector),
@@ -45,6 +40,15 @@ class RadarSDKIndoors {
             return nil
         }
         self.instance = instance
+    }
+
+    // Fails when the optional RadarSDKIndoors framework isn't linked, so `RadarSDKIndoors()` is
+    // nil and the `guard let sdk` checks downstream mean what they say.
+    nonisolated convenience init?() {
+        guard let cls = NSClassFromString("RadarSDKIndoors") as? NSObject.Type else {
+            return nil
+        }
+        self.init(instance: cls.init())
     }
 
     // All selectors are validated in init?, so no per-call `responds(to:)` guard is needed here.
@@ -109,11 +113,8 @@ internal class RadarIndoors: NSObject {
 
     let onLocationUpdate: @Sendable @convention(block) (CLLocation) -> Void
 
-    // Initialized entirely from nonisolated, Sendable expressions so the singleton can be built
-    // off the actor. The stored properties are only read again from actor-isolated methods.
-    nonisolated override init() {
-        self.sdk = RadarSDKIndoors()
-        self.onLocationUpdate = { location in
+    nonisolated private static func makeOnLocationUpdate() -> @Sendable @convention(block) (CLLocation) -> Void {
+        return { location in
             Task {
                 await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
                 RadarLogger.shared.debug(
@@ -121,6 +122,22 @@ internal class RadarIndoors: NSObject {
                 )
             }
         }
+    }
+
+    // Initialized entirely from nonisolated, Sendable expressions so the singleton can be built
+    // off the actor. The stored properties are only read again from actor-isolated methods.
+    nonisolated override init() {
+        self.sdk = RadarSDKIndoors()
+        self.onLocationUpdate = RadarIndoors.makeOnLocationUpdate()
+        super.init()
+    }
+
+    // Testable initializer: lets tests exercise `updateTracking(geofences:)` against an injected
+    // mock `RadarSDKIndoors` without the optional framework being linked, and without mutating
+    // the process-wide `shared` singleton.
+    nonisolated init(sdk: RadarSDKIndoors?) {
+        self.sdk = sdk
+        self.onLocationUpdate = RadarIndoors.makeOnLocationUpdate()
         super.init()
     }
 
@@ -133,11 +150,7 @@ internal class RadarIndoors: NSObject {
             return
         }
         if !Radar.getTrackingOptions().useIndoorScan {
-            // stop indoor updates if it's on
-            if currentModelId != nil {
-                await sdk.stop()
-                currentModelId = nil
-            }
+            await stop()
             return
         }
         if geofences?.contains(where: { $0.activeIndoorModelId != nil && ($0.activeIndoorModelId == currentModelId) }) == true {
@@ -145,8 +158,8 @@ internal class RadarIndoors: NSObject {
             return
         }
         guard let modelId = geofences?.first(where: { $0.activeIndoorModelId != nil })?.activeIndoorModelId else {
-            // no model id in current geofences
             RadarLogger.shared.debug("found no model id in current geofences")
+            await stop()
             return
         }
         // This callback is invoked synchronously by the RadarSDKIndoors framework, and only on a
@@ -175,6 +188,16 @@ internal class RadarIndoors: NSObject {
         // Record the active model only once start() has returned, so a failure earlier in the
         // chain doesn't leave currentModelId set and short-circuit the next updateTracking pass.
         currentModelId = modelId
+    }
+
+    /// Stops indoor scanning outright, regardless of geofences or tracking options.
+    public func stop() async {
+        guard let sdk, currentModelId != nil else {
+            return
+        }
+        RadarLogger.shared.debug("stopping indoor scan")
+        await sdk.stop()
+        currentModelId = nil
     }
 
     nonisolated public func getLocation(completionHandler: @escaping @Sendable (CLLocation?) -> Void) {
