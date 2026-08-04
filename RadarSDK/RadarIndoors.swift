@@ -150,11 +150,7 @@ internal class RadarIndoors: NSObject {
             return
         }
         if !Radar.getTrackingOptions().useIndoorScan {
-            // stop indoor updates if it's on
-            if currentModelId != nil {
-                await sdk.stop()
-                currentModelId = nil
-            }
+            await stop()
             return
         }
         if geofences?.contains(where: { $0.activeIndoorModelId != nil && ($0.activeIndoorModelId == currentModelId) }) == true {
@@ -162,14 +158,8 @@ internal class RadarIndoors: NSObject {
             return
         }
         guard let modelId = geofences?.first(where: { $0.activeIndoorModelId != nil })?.activeIndoorModelId else {
-            // no model id in current geofences - stop any active indoor scan
-            if currentModelId != nil {
-                RadarLogger.shared.debug("found no model id in current geofences, stopping indoor scan")
-                await sdk.stop()
-                currentModelId = nil
-            } else {
-                RadarLogger.shared.debug("found no model id in current geofences")
-            }
+            RadarLogger.shared.debug("found no model id in current geofences")
+            await stop()
             return
         }
         // This callback is invoked synchronously by the RadarSDKIndoors framework, and only on a
