@@ -14,10 +14,13 @@
 
 #import "RadarBeacon.h"
 #import "RadarGeofence.h"
+#import "RadarTrackingOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLocationManagerSwift : NSObject
+
++ (CLLocationAccuracy)clLocationAccuracyForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
 
 + (void)restartPreviousTrackingOptions;
 

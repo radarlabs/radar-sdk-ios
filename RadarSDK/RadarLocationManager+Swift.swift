@@ -319,3 +319,19 @@ final class RadarLocationManagerSwift: NSObject {
         }
     }
 }
+
+extension RadarLocationManagerSwift {
+    @objc(clLocationAccuracyForDesiredAccuracy:)
+    static func clLocationAccuracy(for desiredAccuracy: RadarTrackingOptionsDesiredAccuracy) -> CLLocationAccuracy {
+        switch desiredAccuracy {
+        case .high:
+            return kCLLocationAccuracyBest
+        case .medium:
+            return kCLLocationAccuracyHundredMeters
+        case .low:
+            return kCLLocationAccuracyKilometer
+        @unknown default:
+            return kCLLocationAccuracyHundredMeters
+        }
+    }
+}
