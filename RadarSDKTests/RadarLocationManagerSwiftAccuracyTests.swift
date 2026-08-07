@@ -11,25 +11,23 @@ import Testing
 
 @testable import RadarSDK
 
-extension RadarSerializedTests {
-    @Suite(.serialized)
-    actor RadarLocationManagerSwiftAccuracyTests {
+@Suite("RadarLocationManagerSwiftAccuracyTests")
+struct RadarLocationManagerSwiftAccuracyTests {
 
-        // MARK: - clLocationAccuracy(for:)
+    // MARK: - clLocationAccuracy(for:)
 
-        @Test("high maps to kCLLocationAccuracyBest")
-        func highMapsToBest() {
-            #expect(RadarLocationManagerSwift.clLocationAccuracy(for: .high) == kCLLocationAccuracyBest)
-        }
+    @Test("high maps to kCLLocationAccuracyBest")
+    func highMapsToBest() {
+        #expect(RadarLocationManagerSwift.clLocationAccuracy(for: .high) == kCLLocationAccuracyBest)
+    }
 
-        @Test("medium maps to kCLLocationAccuracyHundredMeters")
-        func mediumMapsToHundredMeters() {
-            #expect(RadarLocationManagerSwift.clLocationAccuracy(for: .medium) == kCLLocationAccuracyHundredMeters)
-        }
+    @Test("medium maps to kCLLocationAccuracyHundredMeters")
+    func mediumMapsToHundredMeters() {
+        #expect(RadarLocationManagerSwift.clLocationAccuracy(for: .medium) == kCLLocationAccuracyHundredMeters)
+    }
 
-        @Test("low maps to kCLLocationAccuracyKilometer")
-        func lowMapsToKilometer() {
-            #expect(RadarLocationManagerSwift.clLocationAccuracy(for: .low) == kCLLocationAccuracyKilometer)
-        }
+    @Test("low maps to kCLLocationAccuracyKilometer")
+    func lowMapsToKilometer() {
+        #expect(RadarLocationManagerSwift.clLocationAccuracy(for: .low) == kCLLocationAccuracyKilometer)
     }
 }
