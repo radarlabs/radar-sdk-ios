@@ -334,4 +334,10 @@ extension RadarLocationManagerSwift {
             return kCLLocationAccuracyHundredMeters
         }
     }
+
+    @objc(didFailWithError:)
+    static func didFail(error: NSError) {
+        RadarLogger.shared.debug("🦅 CLLocation manager error | error = \(error)")
+        RadarSwift.bridge?.didFail(status: .errorLocation)
+    }
 }

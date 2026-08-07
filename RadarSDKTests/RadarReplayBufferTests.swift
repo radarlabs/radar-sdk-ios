@@ -202,7 +202,8 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {}
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {}
     func radarUser() -> RadarUser? { nil }
-    func didFail(status: RadarStatus) {}
+    private(set) var lastFailStatus: RadarStatus?
+    func didFail(status: RadarStatus) { lastFailStatus = status }
 
     func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon {
         RadarBeacon()
