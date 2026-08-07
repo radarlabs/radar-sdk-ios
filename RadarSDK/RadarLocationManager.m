@@ -1337,7 +1337,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location;
-    if (manager.location.isValid) {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        location = [RadarLocationManagerSwift effectiveLocationForLocationManager:manager];
+    } else if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
@@ -1377,7 +1379,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location;
-    if (manager.location.isValid) {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        location = [RadarLocationManagerSwift effectiveLocationForLocationManager:manager];
+    } else if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
@@ -1408,7 +1412,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location;
-    if (manager.location.isValid) {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        location = [RadarLocationManagerSwift effectiveLocationForLocationManager:manager];
+    } else if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];

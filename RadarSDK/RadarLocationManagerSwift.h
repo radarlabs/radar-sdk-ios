@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)removeSyncedGeofencesOnLocationManager:(CLLocationManager *)locationManager;
 + (void)removeAllRegionsOnLocationManager:(CLLocationManager *)locationManager;
 
++ (nullable CLLocation *)effectiveLocationForLocationManager:(CLLocationManager *)locationManager;
+
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
 + (void)didFailWithError:(NSError *)error;

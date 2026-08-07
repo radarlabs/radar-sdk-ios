@@ -191,7 +191,8 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func geofenceIds() -> [String]? { nil }
     func beaconIds() -> [String]? { nil }
     func placeId() -> String? { nil }
-    func lastLocation() -> CLLocation? { nil }
+    var mockLastLocation: CLLocation?
+    func lastLocation() -> CLLocation? { mockLastLocation }
     func isStopped() -> Bool { false }
     func getTripOptions() -> RadarTripOptions? { nil }
     func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?) {}
