@@ -11,9 +11,6 @@ import UserNotifications
 
 @testable import RadarSDK
 
-/// Shared `RadarSwiftBridgeProtocol` test double. Install via `RadarSwift.bridge = mock` and
-/// restore the original in a `defer` block. Originally written for `RadarReplayBufferTests`;
-/// now reused by the `RadarLocationManagerSwift*Tests` suites too, so it lives in its own file.
 final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked Sendable {
     var flushStatus: RadarStatus = .success
     private(set) var lastFlushedReplays: [[AnyHashable: Any]]?
