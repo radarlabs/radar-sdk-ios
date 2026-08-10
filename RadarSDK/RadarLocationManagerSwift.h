@@ -46,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)applyRemoteTrackingOptions:(nullable RadarTrackingOptions *)trackingOptions;
 
++ (BOOL)shouldHandleRegionWithIdentifier:(NSString *)identifier action:(NSString *)action;
+
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
 + (void)didFailWithError:(NSError *)error;
