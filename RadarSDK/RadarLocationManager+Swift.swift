@@ -351,4 +351,20 @@ extension RadarLocationManagerSwift {
         }
         return RadarSwift.bridge?.lastLocation()
     }
+
+    // Applies the remote tracking options carried by a `/config` or `/track` response's `meta`.
+    // `RadarMeta.h` is a project-visibility header, so `RadarMeta` can't appear in an @objc
+    // signature — the caller unwraps `meta.trackingOptions` (a public type) and keeps the
+    // nil-meta guard, so a nil argument here means "meta present, no remote options" and
+    // clears the stored options. The `updateTrackingFromInitialize` tail also stays in ObjC.
+    @objc(applyRemoteTrackingOptions:)
+    static func applyRemoteTrackingOptions(_ trackingOptions: RadarTrackingOptions?) {
+        if let trackingOptions {
+            RadarLogger.shared.debug("🦅 Setting remote tracking options | trackingOptions = \(trackingOptions)")
+            RadarSettings.remoteTrackingOptions = trackingOptions
+        } else {
+            RadarSettings.remoteTrackingOptions = nil
+            RadarLogger.shared.debug("🦅 Removed remote tracking options | trackingOptions = \(Radar.getTrackingOptions())")
+        }
+    }
 }

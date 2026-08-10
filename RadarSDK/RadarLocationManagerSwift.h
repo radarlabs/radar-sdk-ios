@@ -44,6 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable CLLocation *)effectiveLocationForLocationManager:(CLLocationManager *)locationManager;
 
++ (void)applyRemoteTrackingOptions:(nullable RadarTrackingOptions *)trackingOptions;
+
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
 + (void)didFailWithError:(NSError *)error;

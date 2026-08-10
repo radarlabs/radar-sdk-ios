@@ -539,7 +539,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta {
     if (meta) {
-        if ([meta trackingOptions]) {
+        if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+            [RadarLocationManagerSwift applyRemoteTrackingOptions:[meta trackingOptions]];
+        } else if ([meta trackingOptions]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", meta.trackingOptions]];
             [RadarSettings setRemoteTrackingOptions:[meta trackingOptions]];
@@ -550,7 +552,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
     [self updateTrackingFromInitialize];
-
 }
 
 - (void)restartPreviousTrackingOptions {

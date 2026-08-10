@@ -156,6 +156,7 @@
 		B0A0F0282FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0292FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift */; };
 		B0A0F02A2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F02B2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift */; };
 		B0A0F02C2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F02D2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift */; };
+		B0A0F0342FBC000100111111 /* RadarLocationManagerSwiftRTOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0352FBC000100111111 /* RadarLocationManagerSwiftRTOTests.swift */; };
 		B0A0F02E2FBC000100111111 /* RadarLocationManagerSwiftFailureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F02F2FBC000100111111 /* RadarLocationManagerSwiftFailureTests.swift */; };
 		B0A0F0302FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0312FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift */; };
 		BA264CFB2FF3158B000EDFE6 /* RadarReplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA264CFA2FF31582000EDFE6 /* RadarReplay.swift */; };
@@ -380,6 +381,7 @@
 		B0A0F0292FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftAuthTests.swift; sourceTree = "<group>"; };
 		B0A0F02B2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftLifecycleTests.swift; sourceTree = "<group>"; };
 		B0A0F02D2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftAccuracyTests.swift; sourceTree = "<group>"; };
+		B0A0F0352FBC000100111111 /* RadarLocationManagerSwiftRTOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftRTOTests.swift; sourceTree = "<group>"; };
 		B0A0F02F2FBC000100111111 /* RadarLocationManagerSwiftFailureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftFailureTests.swift; sourceTree = "<group>"; };
 		B0A0F0312FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftLocationTests.swift; sourceTree = "<group>"; };
 		BA264CFA2FF31582000EDFE6 /* RadarReplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarReplay.swift; sourceTree = "<group>"; };
@@ -806,6 +808,7 @@
 				B0A0F0292FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift */,
 				B0A0F02B2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift */,
 				B0A0F02D2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift */,
+				B0A0F0352FBC000100111111 /* RadarLocationManagerSwiftRTOTests.swift */,
 				B0A0F02F2FBC000100111111 /* RadarLocationManagerSwiftFailureTests.swift */,
 				B0A0F0312FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift */,
 				F6AF00002FE1000000000001 /* RadarLocationInsightsModelTests.swift */,
@@ -1280,6 +1283,7 @@
 				B0A0F0282FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift in Sources */,
 				B0A0F02A2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift in Sources */,
 				B0A0F02C2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift in Sources */,
+				B0A0F0342FBC000100111111 /* RadarLocationManagerSwiftRTOTests.swift in Sources */,
 				B0A0F02E2FBC000100111111 /* RadarLocationManagerSwiftFailureTests.swift in Sources */,
 				B0A0F0302FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift in Sources */,
 				BA8647B92F6C7DB700F1A199 /* RadarSyncManagerTests.swift in Sources */,
