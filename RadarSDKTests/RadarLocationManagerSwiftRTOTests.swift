@@ -21,26 +21,27 @@ extension RadarSerializedTests {
 
         // MARK: - applyRemoteTrackingOptions
 
-        @Test("Stores the remote tracking options it is given")
+        @Test("Stores the remote tracking options carried by a meta with trackingOptions set")
         func storesGivenOptions() {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer { RadarLocationManagerSwiftTestHelpers.clearState() }
 
             let options = RadarLocationManagerSwiftTestHelpers.trackingOptions(beacons: true)
+            let meta = RadarMeta.from(dictionary: ["trackingOptions": options.dictionaryValue()])
 
-            RadarLocationManagerSwift.applyRemoteTrackingOptions(options)
+            RadarLocationManagerSwift.applyRemoteTrackingOptions(meta)
 
             #expect(RadarSettings.remoteTrackingOptions == options)
         }
 
-        @Test("Clears previously stored remote tracking options when given nil")
-        func clearsStoredOptionsWhenGivenNil() {
+        @Test("Clears previously stored remote tracking options when meta has none")
+        func clearsStoredOptionsWhenMetaHasNone() {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer { RadarLocationManagerSwiftTestHelpers.clearState() }
 
             RadarSettings.remoteTrackingOptions = RadarLocationManagerSwiftTestHelpers.trackingOptions(beacons: true)
 
-            RadarLocationManagerSwift.applyRemoteTrackingOptions(nil)
+            RadarLocationManagerSwift.applyRemoteTrackingOptions(RadarMeta.from(dictionary: [:]))
 
             #expect(RadarSettings.remoteTrackingOptions == nil)
         }
@@ -53,6 +54,19 @@ extension RadarSerializedTests {
             RadarLocationManagerSwift.applyRemoteTrackingOptions(nil)
 
             #expect(RadarSettings.remoteTrackingOptions == nil)
+        }
+
+        @Test("Given nil with something stored, leaves the stored options untouched")
+        func nilWithSomethingStoredIsANoOp() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+
+            let options = RadarLocationManagerSwiftTestHelpers.trackingOptions(beacons: true)
+            RadarSettings.remoteTrackingOptions = options
+
+            RadarLocationManagerSwift.applyRemoteTrackingOptions(nil)
+
+            #expect(RadarSettings.remoteTrackingOptions == options)
         }
     }
 }

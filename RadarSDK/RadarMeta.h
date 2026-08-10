@@ -2,12 +2,17 @@
 //  RadarMeta.h
 //  RadarSDK
 //
-//  Created by Jeff Kao on 10/1/21.
-//  Copyright © 2021 Radar Labs, Inc. All rights reserved.
+//  Copyright © 2026 Radar Labs, Inc. All rights reserved.
+//
+//  ObjC-visible interface for RadarMeta. The implementation lives in RadarMeta.swift.
+//  RadarSDK-Swift.h only exposes public Swift declarations (BUILD_LIBRARY_FOR_DISTRIBUTION
+//  is enabled for this target), so any internal Swift type read from ObjC — RadarMeta
+//  included — needs a hand-maintained header like this one, mirroring the
+//  RadarLocationManagerSwift.h / RadarSdkConfiguration.h pattern.
 //
 
-#import "RadarTrackingOptions.h"
 #import "RadarSdkConfiguration.h"
+#import "RadarTrackingOptions.h"
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
