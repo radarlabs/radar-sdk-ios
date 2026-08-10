@@ -29,6 +29,13 @@ final class RadarLocationManagerSwift: NSObject {
     // `identifierPrefix` is internal rather than private because `shouldHandleRegion` lives in
     // RadarLocationManager+SwiftDelegate.swift, and Swift's `private` is file-scoped. The rest
     // stay private — they're only read by the sync/remove methods below.
+    //
+    // `kIdentifierPrefix` in RadarLocationManager.m is now read from exactly three places, all
+    // of them the flag-off fallback bodies of methods that already have twins here:
+    // `removeAllRegions`, `didEnterRegion:`, and `didExitRegion:`. Delete those three bodies
+    // when `useSwiftLocationManager` is trusted enough to cut over, and the ObjC constant goes
+    // with them. The other four prefixes will outlive it — they're still read by the beacon and
+    // geofence sync bodies and by every branch of `didDetermineState:`, none of which are ported.
     static let identifierPrefix = "radar_"
     private static let bubbleGeofenceIdentifierPrefix = "radar_bubble_"
     private static let syncGeofenceIdentifierPrefix = "radar_geofence_"
