@@ -294,8 +294,10 @@ extension RadarLocationManagerSwift {
     }
 
     @objc(applyRemoteTrackingOptions:)
-    static func applyRemoteTrackingOptions(_ trackingOptions: RadarTrackingOptions?) {
-        if let trackingOptions {
+    static func applyRemoteTrackingOptions(_ meta: RadarMeta?) {
+        guard let meta else { return }
+
+        if let trackingOptions = meta.trackingOptions {
             RadarLogger.shared.debug("🦅 Setting remote tracking options | trackingOptions = \(trackingOptions)")
             RadarSettings.remoteTrackingOptions = trackingOptions
         } else {

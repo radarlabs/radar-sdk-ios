@@ -15,6 +15,7 @@
 #import "Radar.h"
 #import "RadarBeacon.h"
 #import "RadarGeofence.h"
+#import "RadarMeta.h"
 #import "RadarTrackingOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -45,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable CLLocation *)effectiveLocationForLocationManager:(CLLocationManager *)locationManager;
 
-+ (void)applyRemoteTrackingOptions:(nullable RadarTrackingOptions *)trackingOptions;
++ (void)applyRemoteTrackingOptions:(nullable RadarMeta *)meta;
 
 + (BOOL)shouldHandleRegionWithIdentifier:(NSString *)identifier action:(NSString *)action;
 
