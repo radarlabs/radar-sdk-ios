@@ -71,11 +71,7 @@ extension RadarLocationManagerSwift {
     }
 
     // The shared entry gate for the region delegate callbacks: a region is ours only if it
-    // carries our identifier prefix, and we only act on it while tracking. `didEnterRegion`
-    // and `didExitRegion` ran identical copies of this, differing only in the log wording, so
-    // `action` ("entry"/"exit") is threaded through purely to preserve those messages.
-    // `didDetermineState` is deliberately not a caller — it gates on the beacon prefixes and
-    // has no tracking check.
+    // carries our identifier prefix, and we only act on it while tracking. 
     @objc(shouldHandleRegionWithIdentifier:action:)
     static func shouldHandleRegion(identifier: String, action: String) -> Bool {
         guard identifier.hasPrefix(identifierPrefix) else {
@@ -110,7 +106,7 @@ extension RadarLocationManagerSwift {
     }
 
     // Core Location reports a visit that is still in progress with `departureDate` set to
-    // the distant future, so that sentinel — not a nil check — is what distinguishes an
+    // the distant future, so that signal — not a nil check — is what distinguishes an
     // arrival from a departure.
     @objc(locationSourceForVisit:)
     static func locationSource(for visit: CLVisit) -> RadarLocationSource {
