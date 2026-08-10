@@ -8,11 +8,7 @@
 import CoreLocation
 import Foundation
 
-// The `CLLocationManagerDelegate` half of the `RadarLocationManager` Swift port. These twins
-// are called from the delegate callbacks in RadarLocationManager.m; the tracking- and
-// region-management twins live in RadarLocationManager+Swift.swift alongside the identifier
-// prefix constants. Split out purely so neither file exceeds SwiftLint's 400-line limit —
-// see that file's header comment for how the migration works.
+// The `CLLocationManagerDelegate` half of `RadarLocationManager`
 extension RadarLocationManagerSwift {
 
     // Takes the heading rather than the location manager, so it uses a plain selector
