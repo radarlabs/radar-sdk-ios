@@ -11,9 +11,6 @@ import Foundation
 // The `CLLocationManagerDelegate` half of `RadarLocationManager`
 extension RadarLocationManagerSwift {
 
-    // Takes the heading rather than the location manager, so it uses a plain selector
-    // instead of the `...OnLocationManager:` convention. `RadarState` is a non-@objc Swift
-    // class and can't appear in an @objc signature, so it's constructed inside the method.
     @objc(didUpdateHeading:)
     static func didUpdateHeading(_ heading: CLHeading) {
         RadarState().lastHeadingData = [
@@ -71,7 +68,7 @@ extension RadarLocationManagerSwift {
     }
 
     // The shared entry gate for the region delegate callbacks: a region is ours only if it
-    // carries our identifier prefix, and we only act on it while tracking. 
+    // carries our identifier prefix, and we only act on it while tracking.
     @objc(shouldHandleRegionWithIdentifier:action:)
     static func shouldHandleRegion(identifier: String, action: String) -> Bool {
         guard identifier.hasPrefix(identifierPrefix) else {
