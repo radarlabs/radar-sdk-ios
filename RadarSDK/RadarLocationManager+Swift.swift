@@ -367,4 +367,25 @@ extension RadarLocationManagerSwift {
             RadarLogger.shared.debug("🦅 Removed remote tracking options | trackingOptions = \(Radar.getTrackingOptions())")
         }
     }
+
+    // The shared entry gate for the region delegate callbacks: a region is ours only if it
+    // carries our identifier prefix, and we only act on it while tracking. `didEnterRegion`
+    // and `didExitRegion` ran identical copies of this, differing only in the log wording, so
+    // `action` ("entry"/"exit") is threaded through purely to preserve those messages.
+    // `didDetermineState` is deliberately not a caller — it gates on the beacon prefixes and
+    // has no tracking check.
+    @objc(shouldHandleRegionWithIdentifier:action:)
+    static func shouldHandleRegion(identifier: String, action: String) -> Bool {
+        guard identifier.hasPrefix(identifierPrefix) else {
+            RadarLogger.shared.debug("🦅 Ignoring region \(action): wrong prefix")
+            return false
+        }
+
+        guard RadarSettings.tracking else {
+            RadarLogger.shared.debug("🦅 Ignoring region \(action): not tracking")
+            return false
+        }
+
+        return true
+    }
 }

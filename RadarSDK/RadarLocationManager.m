@@ -1324,17 +1324,23 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
-    if (![region.identifier hasPrefix:kIdentifierPrefix]) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: wrong prefix"];
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        if (![RadarLocationManagerSwift shouldHandleRegionWithIdentifier:region.identifier action:@"entry"]) {
+            return;
+        }
+    } else {
+        if (![region.identifier hasPrefix:kIdentifierPrefix]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: wrong prefix"];
 
-        return;
-    }
+            return;
+        }
 
-    BOOL tracking = [RadarSettings tracking];
-    if (!tracking) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: not tracking"];
+        BOOL tracking = [RadarSettings tracking];
+        if (!tracking) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: not tracking"];
 
-        return;
+            return;
+        }
     }
 
     CLLocation *location;
@@ -1366,17 +1372,23 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
-    if (![region.identifier hasPrefix:kIdentifierPrefix]) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: wrong prefix"];
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        if (![RadarLocationManagerSwift shouldHandleRegionWithIdentifier:region.identifier action:@"exit"]) {
+            return;
+        }
+    } else {
+        if (![region.identifier hasPrefix:kIdentifierPrefix]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: wrong prefix"];
 
-        return;
-    }
+            return;
+        }
 
-    BOOL tracking = [RadarSettings tracking];
-    if (!tracking) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: not tracking"];
+        BOOL tracking = [RadarSettings tracking];
+        if (!tracking) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: not tracking"];
 
-        return;
+            return;
+        }
     }
 
     CLLocation *location;
