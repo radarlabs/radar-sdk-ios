@@ -50,8 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)shouldHandleRegionWithIdentifier:(NSString *)identifier action:(NSString *)action;
 
-+ (BOOL)shouldHandleVisit:(CLVisit *)visit location:(nullable CLLocation *)location;
-+ (RadarLocationSource)locationSourceForVisit:(CLVisit *)visit;
++ (void)didVisit:(CLVisit *)visit location:(nullable CLLocation *)location;
 
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;

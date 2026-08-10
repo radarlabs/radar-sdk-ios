@@ -1474,12 +1474,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)locationManager:(CLLocationManager *)manager didVisit:(CLVisit *)visit {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        if (![RadarLocationManagerSwift shouldHandleVisit:visit location:manager.location]) {
-            return;
-        }
-
-        [self handleLocation:manager.location source:[RadarLocationManagerSwift locationSourceForVisit:visit]];
-
+        [RadarLocationManagerSwift didVisit:visit location:manager.location];
         return;
     }
 
