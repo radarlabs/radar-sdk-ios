@@ -1474,8 +1474,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)locationManager:(CLLocationManager *)manager didVisit:(CLVisit *)visit {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        // The Swift twin owns the whole guard, including the nil-location check, so that this
-        // ObjC body can be deleted wholesale at cutover.
         if (![RadarLocationManagerSwift shouldHandleVisit:visit location:manager.location]) {
             return;
         }
