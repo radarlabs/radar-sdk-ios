@@ -12,6 +12,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
+#import "Radar.h"
 #import "RadarBeacon.h"
 #import "RadarGeofence.h"
 #import "RadarTrackingOptions.h"
@@ -47,6 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)applyRemoteTrackingOptions:(nullable RadarTrackingOptions *)trackingOptions;
 
 + (BOOL)shouldHandleRegionWithIdentifier:(NSString *)identifier action:(NSString *)action;
+
++ (BOOL)shouldHandleVisit:(CLVisit *)visit location:(CLLocation *)location;
++ (RadarLocationSource)locationSourceForVisit:(CLVisit *)visit;
 
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;

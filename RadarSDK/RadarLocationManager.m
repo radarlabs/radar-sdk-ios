@@ -1477,6 +1477,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        if (![RadarLocationManagerSwift shouldHandleVisit:visit location:manager.location]) {
+            return;
+        }
+
+        [self handleLocation:manager.location source:[RadarLocationManagerSwift locationSourceForVisit:visit]];
+
+        return;
+    }
+
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                    message:[NSString stringWithFormat:@"Visit detected | arrival = %@; departure = %@; horizontalAccuracy = %f; visit.coordinate = (%f, %f); manager.location = %@",
                                                                       visit.arrivalDate, visit.departureDate, visit.horizontalAccuracy, visit.coordinate.latitude, visit.coordinate.longitude, manager.location]];

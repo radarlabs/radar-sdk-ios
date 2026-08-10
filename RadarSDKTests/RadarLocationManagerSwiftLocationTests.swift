@@ -80,5 +80,52 @@ extension RadarSerializedTests {
 
             #expect(result === fallbackLocation)
         }
+
+        // MARK: - shouldHandleVisit
+
+        @Test("shouldHandleVisit accepts a visit while tracking")
+        func shouldHandleVisitAcceptsWhileTracking() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarSettings.tracking = true
+
+            let handled = RadarLocationManagerSwift.shouldHandleVisit(
+                StubCLVisit(),
+                location: CLLocation(latitude: 40.7, longitude: -74.0)
+            )
+
+            #expect(handled)
+        }
+
+        @Test("shouldHandleVisit rejects a visit when not tracking")
+        func shouldHandleVisitRejectsWhenNotTracking() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarSettings.tracking = false
+
+            let handled = RadarLocationManagerSwift.shouldHandleVisit(
+                StubCLVisit(),
+                location: CLLocation(latitude: 40.7, longitude: -74.0)
+            )
+
+            #expect(!handled)
+        }
+
+        // MARK: - locationSource(for:)
+
+        @Test("locationSource maps an in-progress visit to visitArrival")
+        func locationSourceMapsInProgressVisitToArrival() {
+            // Core Location leaves departureDate at distantFuture while the visit is ongoing.
+            let visit = StubCLVisit(departureDate: Date.distantFuture)
+
+            #expect(RadarLocationManagerSwift.locationSource(for: visit) == .visitArrival)
+        }
+
+        @Test("locationSource maps a completed visit to visitDeparture")
+        func locationSourceMapsCompletedVisitToDeparture() {
+            let visit = StubCLVisit(departureDate: Date(timeIntervalSince1970: 1_700_003_600))
+
+            #expect(RadarLocationManagerSwift.locationSource(for: visit) == .visitDeparture)
+        }
     }
 }

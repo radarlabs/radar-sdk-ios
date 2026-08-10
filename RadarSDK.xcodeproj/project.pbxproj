@@ -152,6 +152,7 @@
 		B0A0F0182FBC000100111111 /* RadarLocationManagerSwiftBeaconSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0192FBC000100111111 /* RadarLocationManagerSwiftBeaconSyncTests.swift */; };
 		B0A0F0202FBC000100111111 /* RadarLocationManagerSwiftRegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0212FBC000100111111 /* RadarLocationManagerSwiftRegionTests.swift */; };
 		B0A0F0222FBC000100111111 /* StubCLHeading.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0232FBC000100111111 /* StubCLHeading.swift */; };
+		B0A0F0362FBC000100111111 /* StubCLVisit.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0372FBC000100111111 /* StubCLVisit.swift */; };
 		B0A0F0242FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0252FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift */; };
 		B0A0F0282FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0292FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift */; };
 		B0A0F02A2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F02B2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift */; };
@@ -377,6 +378,7 @@
 		B0A0F0192FBC000100111111 /* RadarLocationManagerSwiftBeaconSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftBeaconSyncTests.swift; sourceTree = "<group>"; };
 		B0A0F0212FBC000100111111 /* RadarLocationManagerSwiftRegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftRegionTests.swift; sourceTree = "<group>"; };
 		B0A0F0232FBC000100111111 /* StubCLHeading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubCLHeading.swift; sourceTree = "<group>"; };
+		B0A0F0372FBC000100111111 /* StubCLVisit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubCLVisit.swift; sourceTree = "<group>"; };
 		B0A0F0252FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftHeadingTests.swift; sourceTree = "<group>"; };
 		B0A0F0292FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftAuthTests.swift; sourceTree = "<group>"; };
 		B0A0F02B2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftLifecycleTests.swift; sourceTree = "<group>"; };
@@ -804,6 +806,7 @@
 				B0A0F0192FBC000100111111 /* RadarLocationManagerSwiftBeaconSyncTests.swift */,
 				B0A0F0212FBC000100111111 /* RadarLocationManagerSwiftRegionTests.swift */,
 				B0A0F0232FBC000100111111 /* StubCLHeading.swift */,
+				B0A0F0372FBC000100111111 /* StubCLVisit.swift */,
 				B0A0F0252FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift */,
 				B0A0F0292FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift */,
 				B0A0F02B2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift */,
@@ -1279,6 +1282,7 @@
 				B0A0F0182FBC000100111111 /* RadarLocationManagerSwiftBeaconSyncTests.swift in Sources */,
 				B0A0F0202FBC000100111111 /* RadarLocationManagerSwiftRegionTests.swift in Sources */,
 				B0A0F0222FBC000100111111 /* StubCLHeading.swift in Sources */,
+				B0A0F0362FBC000100111111 /* StubCLVisit.swift in Sources */,
 				B0A0F0242FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift in Sources */,
 				B0A0F0282FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift in Sources */,
 				B0A0F02A2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift in Sources */,
