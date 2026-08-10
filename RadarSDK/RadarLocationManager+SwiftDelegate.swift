@@ -8,7 +8,11 @@
 import CoreLocation
 import Foundation
 
-// The `CLLocationManagerDelegate` half of `RadarLocationManager`
+// The `CLLocationManagerDelegate` half of the `RadarLocationManager` Swift port. These twins
+// are called from the delegate callbacks in RadarLocationManager.m; the tracking- and
+// region-management twins live in RadarLocationManager+Swift.swift alongside the identifier
+// prefix constants. Split out purely so neither file exceeds SwiftLint's 400-line limit —
+// see that file's header comment for how the migration works.
 extension RadarLocationManagerSwift {
 
     // Takes the heading rather than the location manager, so it uses a plain selector
@@ -91,33 +95,14 @@ extension RadarLocationManagerSwift {
         return true
     }
 
-    // The whole guard half of `didVisit:`: the manager must have a location to attribute the
-    // visit to, and we only act while tracking. The `handleLocation:` tail needs instance state
-    // and stays in ObjC, so the decision is split across this predicate and `locationSource(for:)`
-    // below.
-    //
-    // `location` is nullable and the nil check lives here rather than in the caller so that the
-    // entire guard is already in Swift: at cutover the ObjC body — including its own copy of the
-    // nil check — is deleted wholesale, with nothing left to hand-port. Returns false silently in
-    // that case, matching the ObjC body, which logs nothing when there's no location.
-    //
-    // The numeric fields go through `String(format: "%f", …)` rather than plain interpolation
-    // so this line is byte-identical to the ObjC body's, apart from the 🦅 prefix. `%f` pads to
-    // six decimal places (and truncates coordinates there); Swift interpolation would print
-    // `10.0` and `40.7127753` where ObjC prints `10.000000` and `40.712775`. Keeping them the
-    // same makes flag-on and flag-off log output directly comparable during rollout.
     @objc(shouldHandleVisit:location:)
     static func shouldHandleVisit(_ visit: CLVisit, location: CLLocation?) -> Bool {
         guard let location else {
             return false
         }
 
-        let horizontalAccuracy = String(format: "%f", visit.horizontalAccuracy)
-        let latitude = String(format: "%f", visit.coordinate.latitude)
-        let longitude = String(format: "%f", visit.coordinate.longitude)
-
         RadarLogger.shared.debug(
-            "🦅 Visit detected | arrival = \(visit.arrivalDate); departure = \(visit.departureDate); horizontalAccuracy = \(horizontalAccuracy); visit.coordinate = (\(latitude), \(longitude)); manager.location = \(location)"
+            "🦅 Visit detected | arrival = \(visit.arrivalDate); departure = \(visit.departureDate); horizontalAccuracy = \(visit.horizontalAccuracy); visit.coordinate = (\(visit.coordinate.latitude), \(visit.coordinate.longitude)); manager.location = \(location)"
         )
 
         guard RadarSettings.tracking else {
