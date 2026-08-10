@@ -388,4 +388,30 @@ extension RadarLocationManagerSwift {
 
         return true
     }
+
+    // The guard half of `didVisit:`. The caller has already established that the manager has
+    // a location, so it's passed in rather than re-checked here — it's only needed for the
+    // log line. The `handleLocation:` tail stays in ObjC, so the decision is split across
+    // this predicate and `locationSource(for:)` below.
+    @objc(shouldHandleVisit:location:)
+    static func shouldHandleVisit(_ visit: CLVisit, location: CLLocation) -> Bool {
+        RadarLogger.shared.debug(
+            "🦅 Visit detected | arrival = \(visit.arrivalDate); departure = \(visit.departureDate); horizontalAccuracy = \(visit.horizontalAccuracy); visit.coordinate = (\(visit.coordinate.latitude), \(visit.coordinate.longitude)); manager.location = \(location)"
+        )
+
+        guard RadarSettings.tracking else {
+            RadarLogger.shared.debug("🦅 Ignoring visit: not tracking")
+            return false
+        }
+
+        return true
+    }
+
+    // Core Location reports a visit that is still in progress with `departureDate` set to
+    // the distant future, so that sentinel — not a nil check — is what distinguishes an
+    // arrival from a departure.
+    @objc(locationSourceForVisit:)
+    static func locationSource(for visit: CLVisit) -> RadarLocationSource {
+        return visit.departureDate == Date.distantFuture ? .visitArrival : .visitDeparture
+    }
 }
