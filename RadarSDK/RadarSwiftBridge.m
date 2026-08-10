@@ -16,6 +16,7 @@
 #import "RadarUtils.h"
 #import "RadarDelegateHolder.h"
 #import "RadarAPIClient.h"
+#import "RadarLocationManager.h"
 
 @implementation RadarSwiftBridge
 
@@ -80,6 +81,10 @@
 
 - (void)didUpdateClientLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source {
     [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
+}
+
+- (void)handleLocation:(CLLocation *)location source:(RadarLocationSource)source {
+    [[RadarLocationManager sharedInstance] handleLocation:location source:source];
 }
 
 - (RadarUser * _Nullable)radarUser {

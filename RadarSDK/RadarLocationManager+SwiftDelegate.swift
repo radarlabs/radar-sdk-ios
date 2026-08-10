@@ -84,10 +84,10 @@ extension RadarLocationManagerSwift {
         return true
     }
 
-    @objc(shouldHandleVisit:location:)
-    static func shouldHandleVisit(_ visit: CLVisit, location: CLLocation?) -> Bool {
+    @objc(didVisit:location:)
+    static func didVisit(_ visit: CLVisit, location: CLLocation?) {
         guard let location else {
-            return false
+            return
         }
 
         RadarLogger.shared.debug(
@@ -96,16 +96,15 @@ extension RadarLocationManagerSwift {
 
         guard RadarSettings.tracking else {
             RadarLogger.shared.debug("🦅 Ignoring visit: not tracking")
-            return false
+            return
         }
 
-        return true
+        RadarSwift.bridge?.handleLocation(location, source: locationSource(for: visit))
     }
 
     // Core Location reports a visit that is still in progress with `departureDate` set to
     // the distant future, so that signal — not a nil check — is what distinguishes an
     // arrival from a departure.
-    @objc(locationSourceForVisit:)
     static func locationSource(for visit: CLVisit) -> RadarLocationSource {
         return visit.departureDate == Date.distantFuture ? .visitArrival : .visitDeparture
     }

@@ -81,44 +81,78 @@ extension RadarSerializedTests {
             #expect(result === fallbackLocation)
         }
 
-        // MARK: - shouldHandleVisit
+        // MARK: - didVisit
 
-        @Test("shouldHandleVisit accepts a visit while tracking")
-        func shouldHandleVisitAcceptsWhileTracking() {
+        @Test("didVisit hands an in-progress visit to the bridge as a visitArrival")
+        func didVisitHandlesInProgressVisitAsArrival() {
             RadarLocationManagerSwiftTestHelpers.clearState()
-            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer {
+                RadarSwift.bridge = original
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
             RadarSettings.tracking = true
 
-            let handled = RadarLocationManagerSwift.shouldHandleVisit(
-                StubCLVisit(),
-                location: CLLocation(latitude: 40.7, longitude: -74.0)
-            )
+            let location = CLLocation(latitude: 40.7, longitude: -74.0)
+            RadarLocationManagerSwift.didVisit(StubCLVisit(departureDate: Date.distantFuture), location: location)
 
-            #expect(handled)
+            #expect(mock.lastHandledLocation === location)
+            #expect(mock.lastHandledSource == .visitArrival)
         }
 
-        @Test("shouldHandleVisit rejects a visit when not tracking")
-        func shouldHandleVisitRejectsWhenNotTracking() {
+        @Test("didVisit hands a completed visit to the bridge as a visitDeparture")
+        func didVisitHandlesCompletedVisitAsDeparture() {
             RadarLocationManagerSwiftTestHelpers.clearState()
-            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer {
+                RadarSwift.bridge = original
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+            RadarSettings.tracking = true
+
+            let visit = StubCLVisit(departureDate: Date(timeIntervalSince1970: 1_700_003_600))
+            RadarLocationManagerSwift.didVisit(visit, location: CLLocation(latitude: 40.7, longitude: -74.0))
+
+            #expect(mock.lastHandledSource == .visitDeparture)
+        }
+
+        @Test("didVisit ignores a visit when not tracking")
+        func didVisitIgnoresVisitWhenNotTracking() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer {
+                RadarSwift.bridge = original
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
             RadarSettings.tracking = false
 
-            let handled = RadarLocationManagerSwift.shouldHandleVisit(
-                StubCLVisit(),
-                location: CLLocation(latitude: 40.7, longitude: -74.0)
-            )
+            RadarLocationManagerSwift.didVisit(StubCLVisit(), location: CLLocation(latitude: 40.7, longitude: -74.0))
 
-            #expect(!handled)
+            #expect(mock.lastHandledLocation == nil)
         }
 
-        @Test("shouldHandleVisit rejects a visit with no location, even while tracking")
-        func shouldHandleVisitRejectsWhenNoLocation() {
+        @Test("didVisit ignores a visit with no location, even while tracking")
+        func didVisitIgnoresVisitWithNoLocation() {
             RadarLocationManagerSwiftTestHelpers.clearState()
-            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
-            // Tracking is on, so the missing location is the only thing that can reject this.
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer {
+                RadarSwift.bridge = original
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+            // Tracking is on, so the missing location is the only thing that can stop this.
             RadarSettings.tracking = true
 
-            #expect(!RadarLocationManagerSwift.shouldHandleVisit(StubCLVisit(), location: nil))
+            RadarLocationManagerSwift.didVisit(StubCLVisit(), location: nil)
+
+            #expect(mock.lastHandledLocation == nil)
         }
 
         // MARK: - locationSource(for:)
