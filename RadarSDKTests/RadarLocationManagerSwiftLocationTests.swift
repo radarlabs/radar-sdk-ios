@@ -111,6 +111,16 @@ extension RadarSerializedTests {
             #expect(!handled)
         }
 
+        @Test("shouldHandleVisit rejects a visit with no location, even while tracking")
+        func shouldHandleVisitRejectsWhenNoLocation() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            // Tracking is on, so the missing location is the only thing that can reject this.
+            RadarSettings.tracking = true
+
+            #expect(!RadarLocationManagerSwift.shouldHandleVisit(StubCLVisit(), location: nil))
+        }
+
         // MARK: - locationSource(for:)
 
         @Test("locationSource maps an in-progress visit to visitArrival")
