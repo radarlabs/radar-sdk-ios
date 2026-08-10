@@ -91,10 +91,15 @@ extension RadarLocationManagerSwift {
         return true
     }
 
-    // The guard half of `didVisit:`. The caller has already established that the manager has
-    // a location, so it's passed in rather than re-checked here — it's only needed for the
-    // log line. The `handleLocation:` tail stays in ObjC, so the decision is split across
-    // this predicate and `locationSource(for:)` below.
+    // The whole guard half of `didVisit:`: the manager must have a location to attribute the
+    // visit to, and we only act while tracking. The `handleLocation:` tail needs instance state
+    // and stays in ObjC, so the decision is split across this predicate and `locationSource(for:)`
+    // below.
+    //
+    // `location` is nullable and the nil check lives here rather than in the caller so that the
+    // entire guard is already in Swift: at cutover the ObjC body — including its own copy of the
+    // nil check — is deleted wholesale, with nothing left to hand-port. Returns false silently in
+    // that case, matching the ObjC body, which logs nothing when there's no location.
     //
     // The numeric fields go through `String(format: "%f", …)` rather than plain interpolation
     // so this line is byte-identical to the ObjC body's, apart from the 🦅 prefix. `%f` pads to
@@ -102,7 +107,11 @@ extension RadarLocationManagerSwift {
     // `10.0` and `40.7127753` where ObjC prints `10.000000` and `40.712775`. Keeping them the
     // same makes flag-on and flag-off log output directly comparable during rollout.
     @objc(shouldHandleVisit:location:)
-    static func shouldHandleVisit(_ visit: CLVisit, location: CLLocation) -> Bool {
+    static func shouldHandleVisit(_ visit: CLVisit, location: CLLocation?) -> Bool {
+        guard let location else {
+            return false
+        }
+
         let horizontalAccuracy = String(format: "%f", visit.horizontalAccuracy)
         let latitude = String(format: "%f", visit.coordinate.latitude)
         let longitude = String(format: "%f", visit.coordinate.longitude)
