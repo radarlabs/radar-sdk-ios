@@ -15,25 +15,37 @@ extension RadarSerializedTests {
     @Suite(.serialized)
     actor RadarLocationManagerSwiftLocationTests {
 
-        // MARK: - locationSource(for:completionHandlerCount:)
+        // MARK: - didUpdateLocations(_:completionHandlerCount:)
 
         @Test("location updates with no locations are ignored")
         func locationUpdatesIgnoreEmptyUpdates() {
-            #expect(RadarLocationManagerSwift.locationSource(for: [], completionHandlerCount: 1) == .unknown)
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer { RadarSwift.bridge = original }
+
+            RadarLocationManagerSwift.didUpdateLocations([], completionHandlerCount: 1)
+
+            #expect(mock.lastHandledLocation == nil)
         }
 
         @Test("location updates requested by a completion handler use the foreground source when the foreground check is skipped")
         func locationUpdatesUseForegroundSourceWhenForegroundCheckIsSkipped() {
             RadarLocationManagerSwiftTestHelpers.clearState()
-            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer {
+                RadarSwift.bridge = original
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["skipForegroundCheck": true])
+            let location = CLLocation(latitude: 40.7, longitude: -74.0)
 
-            let source = RadarLocationManagerSwift.locationSource(
-                for: [CLLocation(latitude: 40.7, longitude: -74.0)],
-                completionHandlerCount: 1
-            )
+            RadarLocationManagerSwift.didUpdateLocations([location], completionHandlerCount: 1)
 
-            #expect(source == .foregroundLocation)
+            #expect(mock.lastHandledLocation === location)
+            #expect(mock.lastHandledSource == .foregroundLocation)
         }
 
         @Test("location updates requested in the foreground use the foreground source")
@@ -49,12 +61,11 @@ extension RadarSerializedTests {
             }
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["skipForegroundCheck": false])
 
-            let source = RadarLocationManagerSwift.locationSource(
-                for: [CLLocation(latitude: 40.7, longitude: -74.0)],
-                completionHandlerCount: 1
-            )
+            let location = CLLocation(latitude: 40.7, longitude: -74.0)
+            RadarLocationManagerSwift.didUpdateLocations([location], completionHandlerCount: 1)
 
-            #expect(source == .foregroundLocation)
+            #expect(mock.lastHandledLocation === location)
+            #expect(mock.lastHandledSource == .foregroundLocation)
         }
 
         @Test("tracked location updates use the background source")
@@ -62,13 +73,16 @@ extension RadarSerializedTests {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer { RadarLocationManagerSwiftTestHelpers.clearState() }
             RadarSettings.tracking = true
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer { RadarSwift.bridge = original }
+            let location = CLLocation(latitude: 40.7, longitude: -74.0)
 
-            let source = RadarLocationManagerSwift.locationSource(
-                for: [CLLocation(latitude: 40.7, longitude: -74.0)],
-                completionHandlerCount: 0
-            )
+            RadarLocationManagerSwift.didUpdateLocations([location], completionHandlerCount: 0)
 
-            #expect(source == .backgroundLocation)
+            #expect(mock.lastHandledLocation === location)
+            #expect(mock.lastHandledSource == .backgroundLocation)
         }
 
         @Test("untracked background location updates are ignored")
@@ -76,13 +90,14 @@ extension RadarSerializedTests {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer { RadarLocationManagerSwiftTestHelpers.clearState() }
             RadarSettings.tracking = false
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer { RadarSwift.bridge = original }
 
-            let source = RadarLocationManagerSwift.locationSource(
-                for: [CLLocation(latitude: 40.7, longitude: -74.0)],
-                completionHandlerCount: 0
-            )
+            RadarLocationManagerSwift.didUpdateLocations([CLLocation(latitude: 40.7, longitude: -74.0)], completionHandlerCount: 0)
 
-            #expect(source == .unknown)
+            #expect(mock.lastHandledLocation == nil)
         }
 
         // MARK: - effectiveLocation(for:)

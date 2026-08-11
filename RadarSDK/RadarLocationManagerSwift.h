@@ -50,8 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)shouldHandleRegionWithIdentifier:(NSString *)identifier action:(NSString *)action;
 
-+ (RadarLocationSource)locationSourceForUpdates:(nullable NSArray<CLLocation *> *)updates
-                         completionHandlerCount:(NSUInteger)completionHandlerCount;
++ (void)didUpdateLocations:(nullable NSArray<CLLocation *> *)updates completionHandlerCount:(NSUInteger)completionHandlerCount;
 
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
