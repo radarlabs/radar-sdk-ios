@@ -12,7 +12,6 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
-#import "Radar.h"
 #import "RadarBeacon.h"
 #import "RadarGeofence.h"
 #import "RadarMeta.h"
@@ -49,9 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)applyRemoteTrackingOptions:(nullable RadarMeta *)meta;
 
 + (BOOL)shouldHandleRegionWithIdentifier:(NSString *)identifier action:(NSString *)action;
-
-+ (RadarLocationSource)locationSourceForUpdates:(nullable NSArray<CLLocation *> *)updates
-                         completionHandlerCount:(NSUInteger)completionHandlerCount;
 
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
