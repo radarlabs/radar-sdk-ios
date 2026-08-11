@@ -235,6 +235,7 @@
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
             transactionId:(NSString * _Nullable)transactionId
+             revealRiskId:(NSString * _Nullable)revealRiskId
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     [self trackWithLocation:location
                     stopped:stopped
@@ -249,6 +250,7 @@
           expectedStateCode:expectedStateCode
                      reason:reason
               transactionId:transactionId
+               revealRiskId:revealRiskId
   useSecondaryVerifiedHost:NO
           completionHandler:completionHandler];
 }
@@ -266,6 +268,7 @@
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
             transactionId:(NSString * _Nullable)transactionId
+             revealRiskId:(NSString * _Nullable)revealRiskId
  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
@@ -390,6 +393,9 @@
         }
         if (transactionId) {
             params[@"transactionId"] = transactionId;
+        }
+        if (revealRiskId) {
+            params[@"revealRiskId"] = revealRiskId;
         }
         if (fraudPayload) {
             params[@"fraudPayload"] = fraudPayload;

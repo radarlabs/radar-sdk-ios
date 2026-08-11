@@ -21,6 +21,7 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarSDKFraudProtocol.h"
+#import "RadarRevealRiskManager.h"
 
 #include <ifaddrs.h>
 #include <arpa/inet.h>
@@ -126,6 +127,17 @@
                 return;
             }
             
+            Class RadarRevealRiskManager = NSClassFromString(@"RadarRevealRiskManager");
+            if (!RadarRevealRiskManager) {
+                [RadarUtilsDeprecated runOnMainThread:^{
+                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
+
+                    if (completionHandler) {
+                        completionHandler(RadarStatusErrorPlugin, nil);
+                    }
+                }];
+                return;
+            }
             
             NSMutableDictionary *options = [NSMutableDictionary dictionary];
             if (location) {
@@ -168,6 +180,7 @@
                 }
                 
                 NSString *fraudPayload = result[@"payload"];
+                NSString *revealRiskId = [[RadarRevealRiskManager shared] getRevealRiskId];
                 
                 void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
                 [[RadarAPIClient sharedInstance]
@@ -184,11 +197,13 @@
                  expectedStateCode:self.expectedStateCode
                  reason:reason
                  transactionId:transactionId
+                 revealRiskId:revealRiskId
                  useSecondaryVerifiedHost:useSecondaryVerifiedHost
                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                      RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                      RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                     if (status == RadarStatusSuccess && config != nil) {
+                        [[RadarRevealRiskManager shared] setRevealRiskId:nil];
                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                     }
                     

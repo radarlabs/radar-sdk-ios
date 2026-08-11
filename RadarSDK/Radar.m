@@ -104,9 +104,9 @@ BOOL _initialized = NO;
 
 + (void)initializeWithOptions:(RadarInitializeOptions *)options {
     [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
-    
+
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
-    
+
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
     if (RadarSDKMotion) {
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
