@@ -10,6 +10,10 @@
 
 @implementation CLLocationManagerMock
 
+- (CLLocation *)location {
+    return self.mockLocation;
+}
+
 - (void)requestLocation {
     if (self.delegate && self.mockLocation) {
         [self.delegate locationManager:self didUpdateLocations:@[self.mockLocation]];

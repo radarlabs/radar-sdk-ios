@@ -780,6 +780,67 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                                  }];
 }
 
+// Visit handling is asserted through RadarState.stopped, which handleLocation: sets
+// synchronously; the /track request it triggers goes out through RadarIndoors' async
+// completion handler and so isn't observable at the end of the test body. lastMovedLocation
+// and lastMovedAt are seeded so the stop-detection math is deterministic rather than
+// inheriting whatever a previous test left behind.
+#define SetUpVisitMocks()                                                                                                          \
+    self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedAlways;                            \
+    self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)  \
+                                                                          altitude:-1                                              \
+                                                                horizontalAccuracy:65                                              \
+                                                                  verticalAccuracy:-1                                              \
+                                                                         timestamp:[NSDate new]];                                  \
+    self.apiHelperMock.mockStatus = RadarStatusSuccess;                                                                             \
+    self.apiHelperMock.mockResponse = [RadarTestUtils jsonDictionaryFromResource:@"track"];                                          \
+    [RadarSettings setTrackingOptions:[RadarTrackingOptions presetResponsive]];                                                      \
+    [RadarState setLastMovedLocation:self.locationManagerMock.mockLocation];                                                         \
+    [RadarState setLastMovedAt:self.locationManagerMock.mockLocation.timestamp];
+
+- (void)test_Radar_didVisit_arrival_marksStopped {
+    SetUpVisitMocks();
+    [RadarSettings setTracking:YES];
+    [RadarState setStopped:NO];
+
+    [self.locationManagerMock mockVisitArrival];
+
+    // A visit arrival is the only source that declares the user stopped without consulting the
+    // stopDistance/stopDuration math, so this is what a broken dispatch would silently lose --
+    // the "Visit detected" log is emitted before the handoff and proves nothing on its own.
+    XCTAssertTrue([RadarState stopped]);
+
+    [RadarSettings setTracking:NO];
+    [RadarState setStopped:NO];
+}
+
+- (void)test_Radar_didVisit_departure_isNotTreatedAsAnArrival {
+    SetUpVisitMocks();
+    [RadarSettings setTracking:YES];
+    // Seeded YES so the assertion distinguishes "handleLocation: ran and recomputed stopped"
+    // from "the visit never got dispatched at all".
+    [RadarState setStopped:YES];
+
+    [self.locationManagerMock mockVisitDeparture];
+
+    XCTAssertFalse([RadarState stopped]);
+
+    [RadarSettings setTracking:NO];
+}
+
+- (void)test_Radar_didVisit_notTracking_doesNotHandleLocation {
+    SetUpVisitMocks();
+    [RadarSettings setTracking:NO];
+    [RadarState setStopped:YES];
+
+    [self.locationManagerMock mockVisitArrival];
+
+    // Untouched, because the twin gates on tracking before dispatching.
+    XCTAssertTrue([RadarState stopped]);
+
+    [RadarState setStopped:NO];
+}
+
 - (void)test_Radar_trackOnce_location_success {
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusNotDetermined;
     CLLocation *mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)

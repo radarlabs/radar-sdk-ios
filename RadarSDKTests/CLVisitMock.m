@@ -7,7 +7,12 @@
 
 #import "CLVisitMock.h"
 
-@implementation CLVisitMock
+@implementation CLVisitMock {
+    CLLocationCoordinate2D _storedCoordinate;
+    CLLocationAccuracy _storedHorizontalAccuracy;
+    NSDate *_storedArrivalDate;
+    NSDate *_storedDepartureDate;
+}
 
 - (instancetype)initWithCoordinate:(CLLocationCoordinate2D)coordinate
                 horizontalAccuracy:(CLLocationAccuracy)horizontalAccuracy
@@ -15,28 +20,28 @@
                      departureDate:(NSDate *)departureDate {
     self = [super init];
     if (self) {
-        self.coordinate = coordinate;
-        self.horizontalAccuracy = horizontalAccuracy;
-        self.arrivalDate = arrivalDate;
-        self.departureDate = departureDate;
+        _storedCoordinate = coordinate;
+        _storedHorizontalAccuracy = horizontalAccuracy;
+        _storedArrivalDate = arrivalDate;
+        _storedDepartureDate = departureDate;
     }
     return self;
 }
 
-- (void)setCoordinate:(CLLocationCoordinate2D)coordinate {
-    self.coordinate = coordinate;
+- (CLLocationCoordinate2D)coordinate {
+    return _storedCoordinate;
 }
 
-- (void)setHorizontalAccuracy:(CLLocationAccuracy)horizontalAccuracy {
-    self.horizontalAccuracy = horizontalAccuracy;
+- (CLLocationAccuracy)horizontalAccuracy {
+    return _storedHorizontalAccuracy;
 }
 
-- (void)setArrivalDate:(NSDate *)arrivalDate {
-    self.arrivalDate = arrivalDate;
+- (NSDate *)arrivalDate {
+    return _storedArrivalDate;
 }
 
-- (void)setDepartureDate:(NSDate *)departureDate {
-    self.departureDate = departureDate;
+- (NSDate *)departureDate {
+    return _storedDepartureDate;
 }
 
 @end
