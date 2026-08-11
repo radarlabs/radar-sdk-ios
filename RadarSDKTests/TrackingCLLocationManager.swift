@@ -19,8 +19,10 @@ final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
     private(set) var requestStateRegions: [CLRegion] = []
     private(set) var stopUpdatingLocationCallCount = 0
     private(set) var requestLocationCallCount = 0
+    var mockLocation: CLLocation?
 
     override var monitoredRegions: Set<CLRegion> { trackedRegions }
+    override var location: CLLocation? { mockLocation }
 
     override func startMonitoring(for region: CLRegion) {
         trackedRegions.insert(region)

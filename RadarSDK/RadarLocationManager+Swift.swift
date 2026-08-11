@@ -319,3 +319,36 @@ final class RadarLocationManagerSwift: NSObject {
         }
     }
 }
+
+extension RadarLocationManagerSwift {
+    @objc(clLocationAccuracyForDesiredAccuracy:)
+    static func clLocationAccuracy(for desiredAccuracy: RadarTrackingOptionsDesiredAccuracy) -> CLLocationAccuracy {
+        switch desiredAccuracy {
+        case .high:
+            return kCLLocationAccuracyBest
+        case .medium:
+            return kCLLocationAccuracyHundredMeters
+        case .low:
+            return kCLLocationAccuracyKilometer
+        @unknown default:
+            return kCLLocationAccuracyHundredMeters
+        }
+    }
+
+    @objc(didFailWithError:)
+    static func didFail(error: NSError) {
+        RadarLogger.shared.debug("🦅 CLLocation manager error | error = \(error)")
+        RadarSwift.bridge?.didFail(status: .errorLocation)
+    }
+
+    // Falls back to the last known location when the manager's current location is stale or
+    // missing — used by the region delegate callbacks (didEnterRegion/didExitRegion/
+    // didDetermineState) before they hand off to `handleLocation:`.
+    @objc(effectiveLocationForLocationManager:)
+    static func effectiveLocation(for locationManager: CLLocationManager) -> CLLocation? {
+        if let location = locationManager.location, location.isValid {
+            return location
+        }
+        return RadarSwift.bridge?.lastLocation()
+    }
+}
