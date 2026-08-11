@@ -8,12 +8,6 @@
 import CoreLocation
 import Foundation
 
-/// Test-only `CLVisit` subclass that overrides the read-only visit fields so the Swift twin
-/// can be exercised without real Core Location. `CLVisit` has no public initializer that
-/// sets these, and subclassing it is officially unsupported by Apple, but this is the same
-/// technique `StubCLHeading` uses for `CLHeading` and `TrackingCLLocationManager` uses for
-/// `CLLocationManager`.
-///
 /// `departureDate` defaults to `Date.distantFuture`, which is how Core Location represents a
 /// visit that is still in progress — i.e. an arrival.
 final class StubCLVisit: CLVisit, @unchecked Sendable {
