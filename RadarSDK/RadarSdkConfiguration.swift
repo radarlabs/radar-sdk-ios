@@ -53,7 +53,7 @@ class RadarSdkConfiguration: NSObject {
         skipForegroundCheck = dict?["skipForegroundCheck"] as? Bool ?? true
         useOfflineRTOUpdates = dict?["useOfflineRTOUpdates"] as? Bool ?? false
         offlineEventGenerationEnabled = dict?["offlineEventGenerationEnabled"] as? Bool ?? false
-        useSwiftLocationManager = dict?["useSwiftLocationManager"] as? Bool ?? false
+        useSwiftLocationManager = true
         startUpdatesWhileInUse = dict?["startUpdatesWhileInUse"] as? Bool ?? false
         remoteTrackingOptions = RadarRemoteTrackingOptions.from(array: dict?["remoteTrackingOptions"] as? [[String: Any]])
     }
