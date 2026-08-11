@@ -4,11 +4,6 @@
 //
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
-//  Covers `applyRemoteTrackingOptions` — the Swift twin of the remote-tracking-options
-//  half of `RadarLocationManager.updateTrackingFromMeta:`. "RTO" matches the repo's
-//  existing shorthand (`useOfflineRTOUpdates`, `RadarRemoteTrackingOptions`) and keeps
-//  the type name inside SwiftLint's 40-character limit.
-//
 
 import Foundation
 import Testing
