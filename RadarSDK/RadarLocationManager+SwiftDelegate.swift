@@ -11,6 +11,27 @@ import Foundation
 // The `CLLocationManagerDelegate` half of `RadarLocationManager`
 extension RadarLocationManagerSwift {
 
+    @objc(locationSourceForUpdates:completionHandlerCount:)
+    static func locationSource(for updates: [CLLocation]?, completionHandlerCount: UInt) -> RadarLocationSource {
+        guard updates?.last != nil else {
+            return .unknown
+        }
+
+        let configuration = RadarSettings.sdkConfiguration
+        if completionHandlerCount > 0,
+            configuration?.skipForegroundCheck == true || RadarSwift.bridge?.isForeground() == true
+        {
+            return .foregroundLocation
+        }
+
+        guard RadarSettings.tracking else {
+            RadarLogger.shared.debug("🦅 Ignoring location: not tracking")
+            return .unknown
+        }
+
+        return .backgroundLocation
+    }
+
     @objc(didUpdateHeading:)
     static func didUpdateHeading(_ heading: CLHeading) {
         RadarState().lastHeadingData = [

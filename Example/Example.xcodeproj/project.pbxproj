@@ -95,6 +95,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		17C81332302B9EDC00425933 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9415002E0DE3E6008ECBEB;
+			remoteInfo = RadarSDKIndoorsTests;
+		};
 		5B085ACBE42C1F343A80AFB6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */;
@@ -285,14 +292,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		BA51988E2ED10AEB004A3B35 /* Exceptions for "TripActivityExtension" folder in "TripActivityExtensionExtension" target */ = {
+		BA51988E2ED10AEB004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = BA5198792ED10AEA004A3B35 /* TripActivityExtensionExtension */;
 		};
-		BA5198982EDE1106004A3B35 /* Exceptions for "TripActivityExtension" folder in "Example" target */ = {
+		BA5198982EDE1106004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"Extensions/UIColor+Hex.swift",
@@ -306,7 +313,7 @@
 			);
 			target = DD236D22230A006700EB88F9 /* Example */;
 		};
-		F6513E7A2E60A5F600523472 /* Exceptions for "LocationPushExtension" folder in "LocationPushExtension" target */ = {
+		F6513E7A2E60A5F600523472 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -316,31 +323,8 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		BA51987F2ED10AEA004A3B35 /* TripActivityExtension */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				BA5198982EDE1106004A3B35 /* Exceptions for "TripActivityExtension" folder in "Example" target */,
-				BA51988E2ED10AEB004A3B35 /* Exceptions for "TripActivityExtension" folder in "TripActivityExtensionExtension" target */,
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = TripActivityExtension;
-			sourceTree = "<group>";
-		};
-		F6513E732E60A5F600523472 /* LocationPushExtension */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				F6513E7A2E60A5F600523472 /* Exceptions for "LocationPushExtension" folder in "LocationPushExtension" target */,
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = LocationPushExtension;
-			sourceTree = "<group>";
-		};
+		BA51987F2ED10AEA004A3B35 /* TripActivityExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BA5198982EDE1106004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, BA51988E2ED10AEB004A3B35 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = TripActivityExtension; sourceTree = "<group>"; };
+		F6513E732E60A5F600523472 /* LocationPushExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6513E7A2E60A5F600523472 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = LocationPushExtension; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -385,6 +369,7 @@
 			isa = PBXGroup;
 			children = (
 				FD361BF33854ED123BC40BAB /* RadarSDKIndoors.framework */,
+				17C81333302B9EDC00425933 /* RadarSDKIndoorsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -709,12 +694,12 @@
 					ProjectRef = F64C7FB22F645A9F00943B7A /* RadarSDKFraud.xcodeproj */;
 				},
 				{
-					ProductGroup = F64C7F0C2F64564F00943B7A /* Products */;
-					ProjectRef = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
-				},
-				{
 					ProductGroup = 6FD78D530E6296330B1235BA /* Products */;
 					ProjectRef = DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */;
+				},
+				{
+					ProductGroup = F64C7F0C2F64564F00943B7A /* Products */;
+					ProjectRef = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -727,6 +712,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		17C81333302B9EDC00425933 /* RadarSDKIndoorsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RadarSDKIndoorsTests.xctest;
+			remoteRef = 17C81332302B9EDC00425933 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		F64C7F092F64564F00943B7A /* RadarSDKTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
