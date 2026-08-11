@@ -1303,6 +1303,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift didUpdateLocations:locations completionHandlerCount:self.completionHandlers.count];
+        return;
+    }
+
     if (!locations || !locations.count) {
         return;
     }

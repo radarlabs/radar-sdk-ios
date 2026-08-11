@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateTracking;
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta;
 - (void)updateTrackingFromInitialize;
+- (void)handleLocation:(CLLocation *)location source:(RadarLocationSource)source;
 
 /**
  If `[RadarSettings previousTrackingOptions]` is not `nil`, remove them and
