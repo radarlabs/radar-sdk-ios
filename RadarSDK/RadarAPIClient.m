@@ -219,6 +219,7 @@
           expectedStateCode:nil
                      reason:nil
               transactionId:nil
+               revealRiskId:nil
           completionHandler:completionHandler];
 }
 
