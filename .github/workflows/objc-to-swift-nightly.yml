@@ -26,7 +26,9 @@ permissions:
 
 jobs:
   migrate:
-    runs-on: ubuntu-latest
+    # Run on the same platform as build-and-test.yml so the agent can compile
+    # and test its migration before it creates a PR.
+    runs-on: macos-15
     timeout-minutes: 60
 
     steps:
@@ -56,6 +58,8 @@ jobs:
         with:
           # GitHub App token (not GITHUB_TOKEN) so the pushed branch + PR trigger CI.
           token: ${{ steps.app-token.outputs.token }}
+          # make lint-swift diffs against origin/master, which requires history.
+          fetch-depth: 0
           # No submodules: the conversion only touches RadarSDK sources + pbxproj.
 
       - name: Checkout the objc-to-swift skill (radarlabs/clankers)
@@ -73,12 +77,35 @@ jobs:
           cp -R clankers-skill/skills/objc-to-swift .claude/skills/objc-to-swift
           rm -rf clankers-skill
 
-      - name: Install Swift formatting tools (best effort)
+      - name: Use the PR CI Xcode version
         if: steps.guard.outputs.open == '0'
         run: |
-          # Linux bottles exist for these most of the time; the skill's batch
-          # mode degrades gracefully (PR CI checks formatting) if they don't.
-          brew install swift-format || echo "::warning::swift-format unavailable on this runner; PR CI will check formatting"
+          sudo xcode-select -switch /Applications/Xcode_26.3.app
+
+      - name: Install Swift validation tools
+        if: steps.guard.outputs.open == '0'
+        run: brew install swift-format swiftlint
+
+      - name: Pick an available iPhone simulator
+        if: steps.guard.outputs.open == '0'
+        run: |
+          SIMULATOR_ID=$(xcrun simctl list devices --json \
+            | jq -r '
+                .devices
+                | to_entries
+                | map(select(.key | startswith("com.apple.CoreSimulator.SimRuntime.iOS")))
+                | .[]
+                | .value[]
+                | select(.isAvailable == true and (.name | test("iPhone")))
+                | .udid
+              ' | head -n 1)
+
+          if [ -z "$SIMULATOR_ID" ]; then
+            echo "No available iPhone simulator found"
+            exit 1
+          fi
+
+          echo "MIGRATION_DESTINATION=platform=iOS Simulator,id=$SIMULATOR_ID" >> "$GITHUB_ENV"
 
       - name: Run the migration agent
         if: steps.guard.outputs.open == '0'
@@ -97,8 +124,21 @@ jobs:
               flag-free candidate (smallest, least-coupled; Strategy D or A
               only), skipping Route*/Trip* clusters. If none is eligible, print
               why and exit WITHOUT editing anything or opening a PR.
-            - You are on a Linux runner: skip make build/test; PR CI verifies.
-            - Branch claude/migrate-<FileName> off master, commit, push, and
-              open a PR labeled swift-migration using gh (GH_TOKEN is set),
-              filling .github/PULL_REQUEST_TEMPLATE.md.
+            - You are on macOS with Xcode 26.3, swift-format, swiftlint, and
+              plutil installed. Before pushing, you MUST verify the migration:
+              1. Create a local commit on claude/migrate-<FileName> (do not
+                 push yet), so make lint-swift can diff the committed changes
+                 against origin/master.
+              2. Run make lint-swift, make format-check, and
+                 plutil -lint RadarSDK.xcodeproj/project.pbxproj.
+              3. Run `make build DESTINATION="$MIGRATION_DESTINATION"` and
+                 `make test DESTINATION="$MIGRATION_DESTINATION"`.
+              4. If any command fails, diagnose and fix the migration, amend
+                 the local commit, then rerun every failed check. Do not push
+                 or open a PR unless all four checks pass. If validation is
+                 unavailable, exit without pushing or opening a PR.
+            - Only after successful validation, push and open a PR labeled
+              swift-migration using gh (GH_TOKEN is set), filling
+              .github/PULL_REQUEST_TEMPLATE.md. In the PR description, report
+              the commands that passed; do not claim validation was skipped.
           claude_args: '--allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 80'
