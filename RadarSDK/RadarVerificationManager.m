@@ -126,19 +126,7 @@
                 }];
                 return;
             }
-            
-            Class RadarRevealRiskManagerClass = NSClassFromString(@"RadarRevealRiskManager");
-            if (!RadarRevealRiskManagerClass) {
-                [RadarUtilsDeprecated runOnMainThread:^{
-                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
 
-                    if (completionHandler) {
-                        completionHandler(RadarStatusErrorPlugin, nil);
-                    }
-                }];
-                return;
-            }
-            
             NSMutableDictionary *options = [NSMutableDictionary dictionary];
             if (location) {
                 options[@"location"] = location;
