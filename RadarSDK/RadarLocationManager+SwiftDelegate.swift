@@ -13,6 +13,7 @@ extension RadarLocationManagerSwift {
 
     @objc(didUpdateLocations:completionHandlerCount:)
     static func didUpdateLocations(_ updates: [CLLocation]?, completionHandlerCount: UInt) {
+        // At least one location update exists. Last one is the one we care about
         guard let location = updates?.last else {
             return
         }
