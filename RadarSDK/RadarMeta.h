@@ -2,12 +2,11 @@
 //  RadarMeta.h
 //  RadarSDK
 //
-//  Created by Jeff Kao on 10/1/21.
-//  Copyright © 2021 Radar Labs, Inc. All rights reserved.
+//  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarTrackingOptions.h"
 #import "RadarSdkConfiguration.h"
+#import "RadarTrackingOptions.h"
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
