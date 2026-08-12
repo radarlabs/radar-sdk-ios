@@ -25,7 +25,7 @@ final class RadarLocationManagerSwift: NSObject {
 
     // Mirror of the identifier prefix constants in RadarLocationManager.m. Kept in sync by
     // hand until that file is fully ported.
-    private static let identifierPrefix = "radar_"
+    static let identifierPrefix = "radar_"
     private static let bubbleGeofenceIdentifierPrefix = "radar_bubble_"
     private static let syncGeofenceIdentifierPrefix = "radar_geofence_"
     private static let syncBeaconIdentifierPrefix = "radar_beacon_"
@@ -262,22 +262,6 @@ final class RadarLocationManagerSwift: NSObject {
         }
     }
 
-    // Takes the heading rather than the location manager, so it uses a plain selector
-    // instead of the `...OnLocationManager:` convention. `RadarState` is a non-@objc Swift
-    // class and can't appear in an @objc signature, so it's constructed inside the method.
-    @objc(didUpdateHeading:)
-    static func didUpdateHeading(_ heading: CLHeading) {
-        RadarState().lastHeadingData = [
-            "magneticHeading": heading.magneticHeading,
-            "trueHeading": heading.trueHeading,
-            "headingAccuracy": heading.headingAccuracy,
-            "x": heading.x,
-            "y": heading.y,
-            "z": heading.z,
-            "timestamp": heading.timestamp.timeIntervalSince1970,
-        ]
-    }
-
     @objc(shutDownOnLocationManager:lowPowerLocationManager:)
     static func shutDown(locationManager: CLLocationManager, lowPowerLocationManager: CLLocationManager) {
         RadarLogger.shared.debug("🦅 Shutting down")
@@ -291,32 +275,6 @@ final class RadarLocationManagerSwift: NSObject {
         RadarLogger.shared.debug("🦅 Requesting location")
 
         locationManager.requestLocation()
-    }
-
-    @objc(didChangeAuthorizationStatus:)
-    static func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
-        let state = RadarState()
-        let previousStatus = state.locationAuthorizationStatus
-        state.locationAuthorizationStatus = status
-
-        if status == previousStatus {
-            return
-        }
-
-        guard let config = RadarSettings.sdkConfiguration else {
-            return
-        }
-        guard status == .authorizedAlways || status == .authorizedWhenInUse,
-            config.trackOnceOnAppOpen || config.startTrackingOnInitialize
-        else {
-            return
-        }
-
-        RadarLogger.shared.log(level: .info, message: "🦅 Location services authorized")
-        Radar.trackOnce(completionHandler: nil)
-        if config.startTrackingOnInitialize, !RadarSettings.tracking {
-            Radar.startTracking(trackingOptions: RadarSettings.trackingOptions)
-        }
     }
 }
 
@@ -335,20 +293,16 @@ extension RadarLocationManagerSwift {
         }
     }
 
-    @objc(didFailWithError:)
-    static func didFail(error: NSError) {
-        RadarLogger.shared.debug("🦅 CLLocation manager error | error = \(error)")
-        RadarSwift.bridge?.didFail(status: .errorLocation)
-    }
+    @objc(applyRemoteTrackingOptions:)
+    static func applyRemoteTrackingOptions(_ meta: RadarMeta?) {
+        guard let meta else { return }
 
-    // Falls back to the last known location when the manager's current location is stale or
-    // missing — used by the region delegate callbacks (didEnterRegion/didExitRegion/
-    // didDetermineState) before they hand off to `handleLocation:`.
-    @objc(effectiveLocationForLocationManager:)
-    static func effectiveLocation(for locationManager: CLLocationManager) -> CLLocation? {
-        if let location = locationManager.location, location.isValid {
-            return location
+        if let trackingOptions = meta.trackingOptions {
+            RadarLogger.shared.debug("🦅 Setting remote tracking options | trackingOptions = \(trackingOptions)")
+            RadarSettings.remoteTrackingOptions = trackingOptions
+        } else {
+            RadarSettings.remoteTrackingOptions = nil
+            RadarLogger.shared.debug("🦅 Removed remote tracking options | trackingOptions = \(Radar.getTrackingOptions())")
         }
-        return RadarSwift.bridge?.lastLocation()
     }
 }

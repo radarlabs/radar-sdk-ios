@@ -23,7 +23,6 @@
 #import "../RadarSDK/RadarBeacon+Internal.h"
 #import "../RadarSDK/RadarPlace+Internal.h"
 #import "CLLocationManagerMock.h"
-#import "CLVisitMock.h"
 #import "RadarAPIHelperMock.h"
 #import "RadarPermissionsHelperMock.h"
 #import "RadarTestUtils.h"

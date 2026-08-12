@@ -80,5 +80,6 @@ extension RadarSerializedTests {
 
             #expect(result === fallbackLocation)
         }
+
     }
 }

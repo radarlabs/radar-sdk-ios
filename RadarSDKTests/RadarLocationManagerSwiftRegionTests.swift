@@ -226,5 +226,47 @@ extension RadarSerializedTests {
             let remaining = manager.trackedRegions.map { $0.identifier }.sorted()
             #expect(remaining == ["notradar_keep", "other_keep"])
         }
+
+        // MARK: - shouldHandleRegion
+
+        @Test("shouldHandleRegion accepts a radar_-prefixed region while tracking")
+        func shouldHandleRegionAcceptsRadarPrefixWhileTracking() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarSettings.tracking = true
+
+            #expect(RadarLocationManagerSwift.shouldHandleRegion(identifier: "radar_geofence_a", action: "entry"))
+        }
+
+        @Test("shouldHandleRegion rejects a region without the radar_ prefix")
+        func shouldHandleRegionRejectsWrongPrefix() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            // Tracking is on, so the prefix is the only thing that can reject this.
+            RadarSettings.tracking = true
+
+            #expect(!RadarLocationManagerSwift.shouldHandleRegion(identifier: "other_region", action: "entry"))
+        }
+
+        @Test("shouldHandleRegion rejects an owned region when not tracking")
+        func shouldHandleRegionRejectsWhenNotTracking() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            // Prefix is ours, so the tracking gate is the only thing that can reject this.
+            RadarSettings.tracking = false
+
+            #expect(!RadarLocationManagerSwift.shouldHandleRegion(identifier: "radar_geofence_a", action: "exit"))
+        }
+
+        @Test("shouldHandleRegion accepts every radar_ sub-prefix the region callbacks see")
+        func shouldHandleRegionAcceptsEverySubPrefix() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarSettings.tracking = true
+
+            for identifier in ["radar_bubble_a", "radar_geofence_b", "radar_beacon_c", "radar_uuid_d"] {
+                #expect(RadarLocationManagerSwift.shouldHandleRegion(identifier: identifier, action: "entry"))
+            }
+        }
     }
 }
