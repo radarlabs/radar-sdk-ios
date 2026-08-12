@@ -25,7 +25,7 @@ final class RadarLocationManagerSwift: NSObject {
 
     // Mirror of the identifier prefix constants in RadarLocationManager.m. Kept in sync by
     // hand until that file is fully ported.
-    private static let identifierPrefix = "radar_"
+    static let identifierPrefix = "radar_"
     private static let bubbleGeofenceIdentifierPrefix = "radar_bubble_"
     private static let syncGeofenceIdentifierPrefix = "radar_geofence_"
     private static let syncBeaconIdentifierPrefix = "radar_beacon_"
@@ -262,22 +262,6 @@ final class RadarLocationManagerSwift: NSObject {
         }
     }
 
-    // Takes the heading rather than the location manager, so it uses a plain selector
-    // instead of the `...OnLocationManager:` convention. `RadarState` is a non-@objc Swift
-    // class and can't appear in an @objc signature, so it's constructed inside the method.
-    @objc(didUpdateHeading:)
-    static func didUpdateHeading(_ heading: CLHeading) {
-        RadarState().lastHeadingData = [
-            "magneticHeading": heading.magneticHeading,
-            "trueHeading": heading.trueHeading,
-            "headingAccuracy": heading.headingAccuracy,
-            "x": heading.x,
-            "y": heading.y,
-            "z": heading.z,
-            "timestamp": heading.timestamp.timeIntervalSince1970,
-        ]
-    }
-
     @objc(shutDownOnLocationManager:lowPowerLocationManager:)
     static func shutDown(locationManager: CLLocationManager, lowPowerLocationManager: CLLocationManager) {
         RadarLogger.shared.debug("🦅 Shutting down")
@@ -292,30 +276,33 @@ final class RadarLocationManagerSwift: NSObject {
 
         locationManager.requestLocation()
     }
+}
 
-    @objc(didChangeAuthorizationStatus:)
-    static func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
-        let state = RadarState()
-        let previousStatus = state.locationAuthorizationStatus
-        state.locationAuthorizationStatus = status
-
-        if status == previousStatus {
-            return
+extension RadarLocationManagerSwift {
+    @objc(clLocationAccuracyForDesiredAccuracy:)
+    static func clLocationAccuracy(for desiredAccuracy: RadarTrackingOptionsDesiredAccuracy) -> CLLocationAccuracy {
+        switch desiredAccuracy {
+        case .high:
+            return kCLLocationAccuracyBest
+        case .medium:
+            return kCLLocationAccuracyHundredMeters
+        case .low:
+            return kCLLocationAccuracyKilometer
+        @unknown default:
+            return kCLLocationAccuracyHundredMeters
         }
+    }
 
-        guard let config = RadarSettings.sdkConfiguration else {
-            return
-        }
-        guard status == .authorizedAlways || status == .authorizedWhenInUse,
-            config.trackOnceOnAppOpen || config.startTrackingOnInitialize
-        else {
-            return
-        }
+    @objc(applyRemoteTrackingOptions:)
+    static func applyRemoteTrackingOptions(_ meta: RadarMeta?) {
+        guard let meta else { return }
 
-        RadarLogger.shared.log(level: .info, message: "🦅 Location services authorized")
-        Radar.trackOnce(completionHandler: nil)
-        if config.startTrackingOnInitialize, !RadarSettings.tracking {
-            Radar.startTracking(trackingOptions: RadarSettings.trackingOptions)
+        if let trackingOptions = meta.trackingOptions {
+            RadarLogger.shared.debug("🦅 Setting remote tracking options | trackingOptions = \(trackingOptions)")
+            RadarSettings.remoteTrackingOptions = trackingOptions
+        } else {
+            RadarSettings.remoteTrackingOptions = nil
+            RadarLogger.shared.debug("🦅 Removed remote tracking options | trackingOptions = \(Radar.getTrackingOptions())")
         }
     }
 }

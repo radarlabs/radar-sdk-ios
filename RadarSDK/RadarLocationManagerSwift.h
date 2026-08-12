@@ -14,10 +14,14 @@
 
 #import "RadarBeacon.h"
 #import "RadarGeofence.h"
+#import "RadarMeta.h"
+#import "RadarTrackingOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLocationManagerSwift : NSObject
+
++ (CLLocationAccuracy)clLocationAccuracyForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
 
 + (void)restartPreviousTrackingOptions;
 
@@ -39,8 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)removeSyncedGeofencesOnLocationManager:(CLLocationManager *)locationManager;
 + (void)removeAllRegionsOnLocationManager:(CLLocationManager *)locationManager;
 
++ (nullable CLLocation *)effectiveLocationForLocationManager:(CLLocationManager *)locationManager;
+
++ (void)applyRemoteTrackingOptions:(nullable RadarMeta *)meta;
+
++ (BOOL)shouldHandleRegionWithIdentifier:(NSString *)identifier action:(NSString *)action;
+
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
++ (void)didFailWithError:(NSError *)error;
 
 + (void)shutDownOnLocationManager:(CLLocationManager *)locationManager
           lowPowerLocationManager:(CLLocationManager *)lowPowerLocationManager;
