@@ -87,7 +87,7 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
             expectedStateCode: nil,
             reason: nil,
             transactionId: nil,
-            revealRiskId:nil,
+            revealRiskId: nil,
             useSecondaryVerifiedHost: true
         ) { _, _, _, _, _, _, _ in
             exp.fulfill()
