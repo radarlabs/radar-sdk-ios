@@ -31,7 +31,8 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
 
     private let sharingLock = NSLock()
     private var _revealRiskId: String? = nil
-    private var revealRiskId: String? {
+    @objc
+    var revealRiskId: String? {
         get { sharingLock.lock(); defer { sharingLock.unlock() }; return _revealRiskId }
         set { sharingLock.lock(); _revealRiskId = newValue; sharingLock.unlock() }
     }

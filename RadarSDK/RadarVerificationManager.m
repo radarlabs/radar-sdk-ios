@@ -127,8 +127,8 @@
                 return;
             }
             
-            Class RadarRevealRiskManager = NSClassFromString(@"RadarRevealRiskManager");
-            if (!RadarRevealRiskManager) {
+            Class RadarRevealRiskManagerClass = NSClassFromString(@"RadarRevealRiskManager");
+            if (!RadarRevealRiskManagerClass) {
                 [RadarUtilsDeprecated runOnMainThread:^{
                     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
 
@@ -180,7 +180,7 @@
                 }
                 
                 NSString *fraudPayload = result[@"payload"];
-                NSString *revealRiskId = [[RadarRevealRiskManager shared] getRevealRiskId];
+                NSString *revealRiskId = [RadarRevealRiskManager shared].revealRiskId;
                 
                 void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
                 [[RadarAPIClient sharedInstance]
@@ -203,7 +203,7 @@
                                      RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                      RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                     if (status == RadarStatusSuccess && config != nil) {
-                        [[RadarRevealRiskManager shared] setRevealRiskId:nil];
+                        [RadarRevealRiskManager shared].revealRiskId = nil;
                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                     }
                     

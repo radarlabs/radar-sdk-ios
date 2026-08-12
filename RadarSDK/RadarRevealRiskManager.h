@@ -10,7 +10,6 @@
 
 @interface RadarRevealRiskManager : NSObject
 + (RadarRevealRiskManager * _Nonnull)shared;
-- (void)setRevealRiskId:(NSString * _Nullable)revealRiskId;
-- (NSString * _Nullable)getRevealRiskId;
+@property (nonatomic, copy, nullable) NSString *revealRiskId;
 - (void)revealRiskWithUseSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost completionHandler:(void (^ _Nonnull)(RadarStatus, RadarRevealRiskToken * _Nullable))completionHandler;
 @end
