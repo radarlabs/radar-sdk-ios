@@ -21,6 +21,7 @@
 #import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
 #import "RadarInitializeOptions.h"
+#import "RadarTripLeg.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RadarTripOptions;
 @class RadarInAppMessage;
+@class RadarRevealRiskToken;
 
 #pragma mark - Enums
 
@@ -51,7 +53,7 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorLocation,
     /// Beacon ranging error or timeout (5 seconds)
     RadarStatusErrorBluetooth,
-    /// Network error or timeout (10 seconds)
+    /// Network error or timeout (default 10 seconds; override with `RadarInitializeOptions.networkTimeoutInterval`)
     RadarStatusErrorNetwork,
     /// Bad request (missing or invalid params)
     RadarStatusErrorBadRequest,
@@ -63,6 +65,8 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     RadarStatusErrorForbidden,
     /// Not found
     RadarStatusErrorNotFound,
+    /// Missing plugin
+    RadarStatusErrorPlugin,
     /// Too many requests (rate limit exceeded)
     RadarStatusErrorRateLimit,
     /// Internal server error
@@ -95,6 +99,8 @@ typedef NS_ENUM(NSInteger, RadarLocationSource) {
     RadarLocationSourceBeaconEnter,
     /// Beacon exit
     RadarLocationSourceBeaconExit,
+    /// Location from RadarSDKIndoors
+    RadarLocationSourceIndoors,
     /// Unknown
     RadarLocationSourceUnknown
 };
@@ -219,6 +225,15 @@ typedef void (^_Nullable RadarFlushReplaysCompletionHandler)(RadarStatus status,
 typedef void (^_Nullable RadarTrackVerifiedCompletionHandler)(RadarStatus status, RadarVerifiedLocationToken *_Nullable token);
 
 /**
+ Called when a reveal risk request succeeds, fails, or times out.
+
+ Receives the request status and, if successful, the reveal risk result.
+
+ @see https://radar.com/documentation/sdk/fraud
+ */
+typedef void (^_Nullable RadarRevealRiskCompletionHandler)(RadarStatus status, RadarRevealRiskToken *_Nullable revealRisk);
+
+/**
  Called when a trip update succeeds, fails, or times out.
 
  Receives the request status and, if successful, the trip and an array of the events generated.
@@ -226,6 +241,15 @@ typedef void (^_Nullable RadarTrackVerifiedCompletionHandler)(RadarStatus status
  @see https://radar.com/documentation/sdk/ios
  */
 typedef void (^_Nullable RadarTripCompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, NSArray<RadarEvent *> *_Nullable events);
+
+/**
+ Called when a trip leg update succeeds, fails, or times out.
+
+ Receives the request status and, if successful, the trip, the updated leg, and an array of the events generated.
+
+ @see https://radar.com/documentation/sdk/ios
+ */
+typedef void (^_Nullable RadarTripLegCompletionHandler)(RadarStatus status, RadarTrip *_Nullable trip, RadarTripLeg *_Nullable leg, NSArray<RadarEvent *> *_Nullable events);
 
 /**
  Called when a context request succeeds, fails, or times out.
@@ -271,6 +295,15 @@ typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArr
  @see https://radar.com/documentation/api#ip-geocode
  */
 typedef void (^_Nonnull RadarIPGeocodeCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy);
+
+/**
+ Called when an IP geocoding request succeeds, fails, or times out.
+
+ Receives the request status and, if successful, the geocoding result (a partial address) and a boolean indicating whether the IP address is a known proxy. Also receives the underlying NSError when the failure originated from a caught network, parse, or exception error — forward it to an error collector (Sentry, Crashlytics, etc.) to capture diagnostics.
+
+ @see https://radar.com/documentation/api#ip-geocode
+ */
+typedef void (^_Nonnull RadarIPGeocodeWithErrorCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address, BOOL proxy, NSError *_Nullable error);
 
 /**
  Called when an address validation request succeeds, fails, or times out.
@@ -319,6 +352,8 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
 #pragma mark - Initialization
 
+@property (readonly, class) BOOL isInitialized;
+
 /**
  Initializes the Radar SDK.
 
@@ -335,6 +370,28 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 
  @warning Call this method from the main thread in your `AppDelegate` class before calling any other Radar methods.
 
+ @param authToken Your auth token.
+ @param options Radar SDK initialization options.
+
+ @see https://radar.com/documentation/sdk/ios#initialize-sdk
+ */
++ (void)initializeWithAuthToken:(NSString *_Nonnull)authToken options:(RadarInitializeOptions *_Nullable)options NS_SWIFT_NAME(initialize(authToken:options:));
+
+/**
+ Initializes the Radar SDK.
+
+ @warning Call this method from the main thread in your `AppDelegate` class before calling any other Radar methods.
+
+ @param authToken Your auth token.
+ @see https://radar.com/documentation/sdk/ios#initialize-sdk
+ */
++ (void)initializeWithAuthToken:(NSString *)authToken NS_SWIFT_NAME(initialize(authToken:));
+
+/**
+ Initializes the Radar SDK.
+
+ @warning Call this method from the main thread in your `AppDelegate` class before calling any other Radar methods.
+
  @param publishableKey Your publishable API key.
  @param options Radar SDK initialization options.
 
@@ -342,6 +399,9 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  */
 
 + (void)initializeWithPublishableKey:(NSString *_Nonnull)publishableKey options:(RadarInitializeOptions *_Nullable)options NS_SWIFT_NAME(initialize(publishableKey:options:));
+
++ (void)initializeWithAppGroup:(NSString *_Nonnull)appGroup;
+
 #pragma mark - Properties
 
 /**
@@ -368,6 +428,20 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  @see https://radar.com/documentation/sdk/ios#identify-user
  */
 + (NSString *_Nullable)getUserId;
+
+/**
+ Sets the user's preferred language. Pass a BCP-47 language tag like `"en"` or `"es-PR"`.
+
+ @param userLanguage The user's preferred language. If `nil`, the previous `userLanguage` will be cleared.
+ */
++ (void)setUserLanguage:(NSString *_Nullable)userLanguage;
+
+/**
+ Returns the current `userLanguage`.
+
+ @return The current `userLanguage`.
+ */
++ (NSString *_Nullable)getUserLanguage;
 
 /**
  Sets an optional description for the user, displayed in the dashboard.
@@ -531,6 +605,17 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(completionHandler:));
 
 /**
+ Reveals device and network risk signals for this device.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)revealRiskWithCompletionHandler:(RadarRevealRiskCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(revealRisk(completionHandler:));
+
+/**
  Tracks the user's location with device integrity information for location verification use cases.
 
  @warning Note that you must configure SSL pinning before calling this method.
@@ -585,6 +670,22 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  @see https://radar.com/documentation/sdk/fraud
  */
 + (BOOL)isTrackingVerified;
+
+/**
+ Returns the current screen sharing state.
+
+ @return A boolean indicating the current screen sharing state.
+
+ @see https://radar.com/documentation/sdk/fraud
+ */
++ (BOOL)isSharing;
+
+/**
+ Clears the last screen sharing state.
+
+ @see https://radar.com/documentation/sdk/fraud
+ */
++ (void)clearSharing;
 
 /**
  Returns the user's last verified location token if still valid, or requests a fresh token if not.
@@ -786,6 +887,16 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (RadarTripOptions *_Nullable)getTripOptions;
 
 /**
+ Returns the current trip, including legs for multi-destination trips.
+ Use the legs' _id values when calling updateTripLeg.
+
+ @return The current trip, or nil if no trip is active.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (RadarTrip *_Nullable)getTrip;
+
+/**
  Starts a trip.
 
  @param options Configurable trip options.
@@ -862,6 +973,70 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  @see https://radar.com/documentation/trip-tracking
  */
 + (void)cancelTripWithCompletionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(cancelTrip(completionHandler:));
+
+/**
+ Updates a trip leg status for multi-destination trips.
+
+ @param tripId The Radar ID of the trip (from RadarTrip._id).
+ @param legId The Radar ID of the leg (from RadarTripLeg._id).
+ @param status The new status for the leg.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (void)updateTripLegWithTripId:(NSString *_Nonnull)tripId
+                          legId:(NSString *_Nonnull)legId
+                         status:(RadarTripLegStatus)status
+              completionHandler:(RadarTripLegCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateTripLeg(tripId:legId:status:completionHandler:));
+
+/**
+ Updates a trip leg status for multi-destination trips, using the current trip's ID.
+
+ @param legId The Radar ID of the leg (from RadarTripLeg._id).
+ @param status The new status for the leg.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (void)updateTripLegWithLegId:(NSString *_Nonnull)legId
+                        status:(RadarTripLegStatus)status
+             completionHandler:(RadarTripLegCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateTripLeg(legId:status:completionHandler:));
+
+/**
+ Updates the current trip leg status for multi-destination trips.
+ Uses the current trip's ID and currentLegId automatically.
+
+ @param status The new status for the current leg.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (void)updateCurrentTripLegWithStatus:(RadarTripLegStatus)status
+                     completionHandler:(RadarTripLegCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(updateCurrentTripLeg(status:completionHandler:));
+
+/**
+ Reorders the legs of a multi-destination trip.
+
+ @param tripId The Radar ID of the trip (from RadarTrip._id).
+ @param legIds An array of leg IDs in the desired new order.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (void)reorderTripLegsWithTripId:(NSString *_Nonnull)tripId
+                           legIds:(NSArray<NSString *> *_Nonnull)legIds
+                completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(reorderTripLegs(tripId:legIds:completionHandler:));
+
+/**
+ Reorders the legs of the current multi-destination trip.
+
+ @param legIds An array of leg IDs in the desired new order.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
++ (void)reorderTripLegsWithLegIds:(NSArray<NSString *> *_Nonnull)legIds
+                completionHandler:(RadarTripCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(reorderTripLegs(legIds:completionHandler:));
 
 #pragma mark - Context
 
@@ -1173,6 +1348,15 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  */
 + (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(ipGeocode(completionHandler:));
 
+/**
+ Geocodes the device's current IP address, converting IP address to partial address. The completion handler also receives the underlying NSError when the failure originated from a caught network, parse, or exception error — forward it to an error collector (Sentry, Crashlytics, etc.) to capture diagnostics.
+
+ @param completionHandler A completion handler.
+
+ @see https://radar.com/documentation/api#ip-geocode
+ */
++ (void)ipGeocodeWithErrorCompletionHandler:(RadarIPGeocodeWithErrorCompletionHandler)completionHandler
+    NS_SWIFT_NAME(ipGeocode(completionHandler:)) NS_SWIFT_DISABLE_ASYNC;
 
 /**
  Validates an address, attaching a verification status, property type, and ZIP+4.
@@ -1360,14 +1544,15 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  */
 + (void) loadImage:(NSString*)url completionHandler:(void (^ _Nonnull)(UIImage * _Nullable))completionHandler NS_SWIFT_NAME(loadImage(_:completionHandler:));
 
-/**
- This function should be internal, but it is exposed due to swift migration limitations. It should only be used by internal swift classes while RadarLogBuffer is still in Obj-C
- */
-+ (void)__writeToLogBufferWithLevel:(RadarLogLevel)level type:(RadarLogType)type message:(NSString *)message forcePersist:(BOOL)forcePersist
-    NS_SWIFT_NAME(__writeToLogBuffer(with:type:message:forcePersist:));
-
-
 + (void)requestMotionActivityPermission NS_SWIFT_NAME(requestMotionActivityPermission());
+
++ (void)setAppGroup:(NSString*_Nullable)appGroup;
+
++ (void)setPushNotificationToken:(NSString*_Nullable)token;
+
++ (void)setLocationExtensionToken:(NSString*_Nullable)token;
+
++ (void)didReceivePushNotificationPayload:(NSDictionary*)payload completionHandler:(void (^ _Nonnull)(void))completionHandler;
 
 @end
 

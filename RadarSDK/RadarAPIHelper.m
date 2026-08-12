@@ -11,11 +11,36 @@
 #import "RadarSettings.h"
 #import "RadarUtils.h"
 
+#import <math.h>
+
+static NSTimeInterval RadarAPIHelperStandardNetworkTimeoutInterval(void) {
+    RadarInitializeOptions *opts = [RadarSettings initializeOptions];
+    NSTimeInterval interval = opts ? opts.networkTimeoutInterval : 10;
+
+    // Validate
+    if (interval <= 0 || isnan(interval) || isinf(interval)) {
+        interval = 10;
+    }
+
+    // Clamp to reasonable range
+    if (interval < 1) {
+        interval = 1;
+    } else if (interval > 300) {
+        interval = 300;
+    }
+
+    return interval;
+}
+
+static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterval standard) { return standard * 2.5; }
+
 @interface RadarAPIHelper ()
 
 @property (strong, nonatomic) dispatch_queue_t queue;
 @property (strong, nonatomic) dispatch_semaphore_t semaphore;
 @property (assign, nonatomic) BOOL wait;
+@property (strong, nonatomic) NSURLSession *standardSession;
+@property (strong, nonatomic) NSURLSession *extendedTimeoutSession;
 
 @end
 
@@ -26,6 +51,19 @@
     if (self) {
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
         _semaphore = dispatch_semaphore_create(1);
+
+        NSTimeInterval standardTimeout = RadarAPIHelperStandardNetworkTimeoutInterval();
+        NSTimeInterval extendedTimeout = RadarAPIHelperExtendedNetworkTimeoutInterval(standardTimeout);
+
+        NSURLSessionConfiguration *standardConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        standardConfig.timeoutIntervalForRequest = standardTimeout;
+        standardConfig.timeoutIntervalForResource = standardTimeout;
+        _standardSession = [NSURLSession sessionWithConfiguration:standardConfig];
+
+        NSURLSessionConfiguration *extendedConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+        extendedConfig.timeoutIntervalForRequest = extendedTimeout;
+        extendedConfig.timeoutIntervalForResource = extendedTimeout;
+        _extendedTimeoutSession = [NSURLSession sessionWithConfiguration:extendedConfig];
     }
     return self;
 }
@@ -46,8 +84,8 @@
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
 
-        NSString * paramJsonStr = [RadarUtils dictionaryToJson:params];
-        NSString * headersJsonStr = [RadarUtils dictionaryToJson:headers];
+        NSString *paramJsonStr = [RadarUtils dictionaryToJson:params];
+        NSString *headersJsonStr = [RadarUtils dictionaryToJson:headers];
 
         if (logPayload) {
             [[RadarLogger sharedInstance]
@@ -61,8 +99,7 @@
         @try {
             if (headers) {
                 for (NSString *key in headers) {
-                    NSString *value = [headers valueForKey:key];
-                    [req addValue:value forHTTPHeaderField:key];
+                    [req addValue:[headers valueForKey:key] forHTTPHeaderField:key];
                 }
             }
 
@@ -93,35 +130,28 @@
                         requestParams[@"replays"] = updatedReplays;
                     }
 
-                    [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:requestParams options:0 error:NULL]];
+                    [req setHTTPBody:[RadarUtils jsonData:requestParams]];
                 } else {
-                    [req setHTTPBody:[NSJSONSerialization dataWithJSONObject:params options:0 error:NULL]];
+                    [req setHTTPBody:[RadarUtils jsonData:params]];
                 }
             }
 
-
-            NSURLSessionConfiguration *configuration;
-            if (extendedTimeout) {
-                configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-                configuration.timeoutIntervalForRequest = 25;
-                configuration.timeoutIntervalForResource = 25;
-            } else {
-                // avoid SSL or credential caching
-                configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-                configuration.timeoutIntervalForRequest = 10;
-                configuration.timeoutIntervalForResource = 10;
-            }
-
+            NSURLSession *session = extendedTimeout ? self.extendedTimeoutSession : self.standardSession;
             NSDate *requestStart = [NSDate date];
 
-            void (^dataTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-                // calculate request latencies, multiplying by -1 because timeIntervalSinceNow returns a negative value
+            void (^dataTaskCompletionHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
                 NSTimeInterval latency = [requestStart timeIntervalSinceNow] * -1;
 
                 if (error) {
+                    long elapsedMs = (long)(latency * 1000);
+                    NSString *host = req.URL.host ?: @"unknown";
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:[NSString stringWithFormat:@"Received network error | error = %@", error]];
-                        completionHandler(RadarStatusErrorNetwork, nil);
+                        [[RadarLogger sharedInstance]
+                            logWithLevel:RadarLogLevelError
+                                    type:RadarLogTypeSDKError
+                                 message:[NSString stringWithFormat:@"Network error | host = %@; errorDomain = %@; errorCode = %ld; errorDescription = %@; elapsedMs = %ld",
+                                          host, error.domain, (long)error.code, error.localizedDescription, elapsedMs]];
+                        completionHandler(RadarStatusErrorNetwork, nil, error);
                     });
 
                     if (sleep) {
@@ -136,7 +166,7 @@
                 id resObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&deserializationError];
                 if (deserializationError || ![resObj isKindOfClass:[NSDictionary class]]) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        completionHandler(RadarStatusErrorServer, nil);
+                        completionHandler(RadarStatusErrorServer, nil, deserializationError);
                     });
 
                     if (sleep) {
@@ -171,7 +201,7 @@
                     }
 
                     res = (NSDictionary *)resObj;
-                    NSString * resJsonStr = [RadarUtils dictionaryToJson:res];
+                    NSString *resJsonStr = [RadarUtils dictionaryToJson:res];
 
                     if (params && [params objectForKey:@"replays"]) {
                         NSArray *replays = [params objectForKey:@"replays"];
@@ -188,7 +218,7 @@
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    completionHandler(status, res);
+                    completionHandler(status, res, nil);
                 });
 
                 if (sleep) {
@@ -197,11 +227,33 @@
                 }
             };
 
-            NSURLSessionDataTask *task = [[NSURLSession sessionWithConfiguration:configuration] dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
+            void (^dataTaskRetryHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                if (error && [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNetworkConnectionLost) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                       message:[NSString stringWithFormat:@"📍 Radar API retrying after lost connection | url = %@", url]];
+                    NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
+                    [retryTask resume];
+                } else {
+                    dataTaskCompletionHandler(data, response, error);
+                }
+            };
 
+            NSURLSessionDataTask *task = [session dataTaskWithRequest:req completionHandler:dataTaskRetryHandler];
             [task resume];
         } @catch (NSException *exception) {
-            return completionHandler(RadarStatusErrorBadRequest, nil);
+            if (sleep) {
+                dispatch_semaphore_signal(self.semaphore);
+            }
+            NSError *exceptionError = [NSError errorWithDomain:@"RadarSDK"
+                                                          code:0
+                                                      userInfo:@{
+                                                          NSLocalizedDescriptionKey: exception.reason ?: exception.name ?: @"NSException",
+                                                          @"NSException": exception
+                                                      }];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completionHandler(RadarStatusErrorBadRequest, nil, exceptionError);
+            });
+            return;
         }
     });
 }

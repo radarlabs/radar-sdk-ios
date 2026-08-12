@@ -51,6 +51,21 @@
  */
 @property (nullable, copy, nonatomic, readonly) RadarOperatingHours *operatingHours;
 
+/**
+ The optional dwell threshold for the geofence.
+ */
+@property (nullable, strong, nonatomic, readonly) NSNumber *dwellThreshold;
+
+/**
+ The optional stop detection value for the geofence.
+ */
+@property (nullable, strong, nonatomic, readonly) NSNumber *geofenceStopDetection;
+
+/**
+ The active indoor model ID if a model exists.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *activeIndoorModelId;
+
 + (NSArray<NSDictionary *> *_Nullable)arrayForGeofences:(NSArray<RadarGeofence *> *_Nullable)geofences;
 - (NSDictionary *_Nonnull)dictionaryValue;
 

@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (assign, nonatomic) RadarStatus mockStatus;
 @property (nonnull, strong, nonatomic) NSDictionary *mockResponse;
+@property (nonatomic, strong, nullable) NSError *mockError;
 
 // Properties to capture last request for testing
 @property (nonatomic, strong, nullable) NSString *lastMethod;
@@ -23,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSDictionary *lastParams;
 
 - (void)setMockResponse:(NSDictionary *)response forMethod:(NSString *)urlString;
+- (void)setMockStatus:(RadarStatus)mockStatus forMethod:(NSString *)urlString;
+- (void)setMockStatus:(RadarStatus)mockStatus response:(NSDictionary*)response forMethod:(NSString *)urlString;
 
 @end
 

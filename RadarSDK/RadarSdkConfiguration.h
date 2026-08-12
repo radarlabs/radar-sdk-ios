@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Radar.h"
+@class RadarRemoteTrackingOptions;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,38 +17,38 @@ NS_ASSUME_NONNULL_BEGIN
  @see https://radar.com/documentation/sdk/ios
  */
 @interface RadarSdkConfiguration : NSObject
-
-@property (nonatomic, assign) RadarLogLevel logLevel;
-
-@property (nonatomic, assign) BOOL startTrackingOnInitialize;
-
-@property (nonatomic, assign) BOOL trackOnceOnAppOpen;
-
-@property (nonatomic, assign) BOOL usePersistence;
-
-@property (nonatomic, assign) BOOL extendFlushReplays;
-
-@property (nonatomic, assign) BOOL useLogPersistence;
-
-@property (nonatomic, assign) BOOL useRadarModifiedBeacon;
-
-@property (nonatomic, assign) BOOL useOpenedAppConversion;
-
-@property (nonatomic, assign) BOOL useForegroundLocationUpdatedAtMsDiff;
-
-@property (nonatomic, assign) BOOL useNotificationDiff;
-
-@property (nonatomic, assign) BOOL syncAfterSetUser;
-
-/**
- Initializes a new RadarSdkConfiguration object with given value.
- */
+- (RadarLogLevel)logLevel;
+- (BOOL)startTrackingOnInitialize;
+- (BOOL)trackOnceOnAppOpen;
+- (BOOL)usePersistence;
+- (BOOL)extendFlushReplays;
+- (BOOL)useLogPersistence;
+- (BOOL)useRadarModifiedBeacon;
+- (BOOL)useOpenedAppConversion;
+- (BOOL)useForegroundLocationUpdatedAtMsDiff;
+- (BOOL)syncAfterSetUser;
+- (BOOL)useSyncRegion;
+- (NSInteger)defaultGeofenceDwellThreshold;
+- (BOOL)bufferGeofenceEntries;
+- (BOOL)bufferGeofenceExits;
+- (BOOL)stopDetection;
+- (BOOL)skipForegroundCheck;
+- (BOOL)useOfflineRTOUpdates;
+- (BOOL)offlineEventGenerationEnabled;
+- (BOOL)useSwiftLocationManager;
+- (BOOL)startUpdatesWhileInUse;
+- (NSArray<RadarRemoteTrackingOptions *> *_Nullable)remoteTrackingOptions;
 - (instancetype)initWithDict:(NSDictionary *_Nullable)dict;
+- (NSDictionary *)dictionaryValue;
++ (RadarSdkConfiguration *_Nullable)current;
+@end
 
 /**
- Returns a dictionary representation of the object.
+ Represents server-side sdk configuration.
+ 
+ @see https://radar.com/documentation/sdk/ios
  */
-- (NSDictionary *)dictionaryValue;
+@interface RadarSdkConfiguration_ObjC : NSObject
 
 + (void)updateSdkConfigurationFromServer;
 

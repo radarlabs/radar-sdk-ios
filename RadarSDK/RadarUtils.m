@@ -13,7 +13,7 @@
 
 #import "RadarUtils.h"
 
-@implementation RadarUtils
+@implementation RadarUtilsDeprecated
 
 static NSDateFormatter *_isoDateFormatter;
 
@@ -47,7 +47,7 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)sdkVersion {
-    return @"3.23.2";
+    return @"3.39.1"; // SDK VERSION
 }
 
 + (NSString *)deviceId {
@@ -147,14 +147,6 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 
-+ (BOOL)isSimulator {
-#if TARGET_OS_SIMULATOR
-    return YES;
-#else
-    return NO;
-#endif
-}
-
 + (BOOL)locationBackgroundMode {
     NSArray *backgroundModes = [NSBundle mainBundle].infoDictionary[@"UIBackgroundModes"];
     return backgroundModes && [backgroundModes containsObject:@"location"];
@@ -177,7 +169,11 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)locationAccuracyAuthorization {
-    CLLocationManager *locationManager = [CLLocationManager new];
+    static CLLocationManager *locationManager;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        locationManager = [CLLocationManager new];
+    });
     if (@available(iOS 14.0, *)) {
         CLAccuracyAuthorization accuracyAuthorization = locationManager.accuracyAuthorization;
         switch (accuracyAuthorization) {

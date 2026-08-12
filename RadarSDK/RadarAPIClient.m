@@ -11,7 +11,7 @@
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
-#import "RadarBeaconManager.h"
+#import "RadarBeaconManagerSwift.h"
 #import "RadarConfig.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
@@ -30,13 +30,21 @@
 #import "RadarState.h"
 #import "RadarTrip+Internal.h"
 #import "RadarTripOptions.h"
+#import "RadarTripLeg.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarVerifiedLocationToken+Internal.h"
 #import "RadarNotificationHelper.h"
-#import "Radar-Swift.h"
 #import <os/log.h>
+#import "RadarSDKFraudProtocol.h"
+#import "RadarOfflineEventManager.h"
+
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
 
 @implementation RadarAPIClient
 
@@ -59,7 +67,7 @@
 
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey {
     NSDictionary *appInfo = [RadarUtils appInfo];
-    NSString *appInfoJSON = [RadarUtils dictionaryToJson:appInfo];
+    NSString *appInfoJSON = [RadarUtils escapeNonAsciiCharacters:[RadarUtils dictionaryToJson:appInfo]];
     
     NSMutableDictionary *headers = [@{
         @"Authorization": publishableKey,
@@ -67,7 +75,7 @@
         @"X-Radar-Config": @"true",
         @"X-Radar-Device-Make": [RadarUtils deviceMake],
         @"X-Radar-Device-Model": [RadarUtils deviceModel],
-        @"X-Radar-Device-OS": [RadarUtils deviceOS],
+        @"X-Radar-Device-OS": [RadarUtilsDeprecated deviceOS], // this is the OS version
         @"X-Radar-Device-Type": [RadarUtils deviceType],
         @"X-Radar-SDK-Version": [RadarUtils sdkVersion],
         @"X-Radar-Mobile-Origin": [[NSBundle mainBundle] bundleIdentifier],
@@ -94,6 +102,13 @@
 }
 
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
+    [self getConfigForUsage:usage verified:verified useSecondaryVerifiedHost:NO completionHandler:completionHandler];
+}
+
+- (void)getConfigForUsage:(NSString *_Nullable)usage
+                 verified:(BOOL)verified
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+        completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil);
@@ -119,7 +134,7 @@
     [queryString appendFormat:@"&verified=%@", verified ? @"true" : @"false"];
     [queryString appendFormat:@"&clientSdkConfiguration=%@", [RadarUtils dictionaryToJson:[RadarSettings clientSdkConfiguration]]];
 
-    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
+    NSString *host = verified ? (useSecondaryVerifiedHost ? [RadarSettings defaultVerifiedHostSecondary] : [RadarSettings verifiedHost]) : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
@@ -132,7 +147,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (!res) {
                             completionHandler(status, nil);
                             return;
@@ -141,7 +156,7 @@
                         [Radar flushLogs];
 
                         RadarConfig *config = [RadarConfig fromDictionary:res];
-
+        
                         completionHandler(status, config);
                     }];
 }
@@ -150,7 +165,7 @@
    completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return;
+        return completionHandler(RadarStatusErrorPublishableKey, nil);
     }
 
     NSString *host = [RadarSettings host];
@@ -169,7 +184,7 @@
                                 sleep:NO
                            logPayload:NO
                       extendedTimeout:YES
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                             id eventsObj = res[@"events"];
                             id userObj = res[@"user"];
 
@@ -189,7 +204,7 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-             indoorScan:(NSString *_Nullable)indoorScan
+           indoorLocation:(CLLocation *_Nullable)indoorLocation
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     [self trackWithLocation:location
                     stopped:stopped
@@ -197,12 +212,9 @@
                      source:source
                    replayed:replayed
                     beacons:beacons
-               indoorScan:indoorScan
+               indoorLocation:indoorLocation
                    verified:NO
-          attestationString:nil
-                      keyId:nil
-           attestationError:nil
-                  encrypted:NO
+              fraudPayload:nil
         expectedCountryCode:nil
           expectedStateCode:nil
                      reason:nil
@@ -216,16 +228,45 @@
                    source:(RadarLocationSource)source
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-             indoorScan:(NSString *_Nullable)indoorScan
+           indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
-        attestationString:(NSString *_Nullable)attestationString
-                    keyId:(NSString *_Nullable)keyId
-         attestationError:(NSString *_Nullable)attestationError
-                encrypted:(BOOL)encrypted
+            fraudPayload:(NSString *_Nullable)fraudPayload
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
                    reason:(NSString * _Nullable)reason
             transactionId:(NSString * _Nullable)transactionId
+        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [self trackWithLocation:location
+                    stopped:stopped
+                 foreground:foreground
+                     source:source
+                   replayed:replayed
+                    beacons:beacons
+                 indoorLocation:indoorLocation
+                   verified:verified
+               fraudPayload:fraudPayload
+        expectedCountryCode:expectedCountryCode
+          expectedStateCode:expectedStateCode
+                     reason:reason
+              transactionId:transactionId
+  useSecondaryVerifiedHost:NO
+          completionHandler:completionHandler];
+}
+
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
+                  stopped:(BOOL)stopped
+               foreground:(BOOL)foreground
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+           indoorLocation:(CLLocation *_Nullable)indoorLocation
+                 verified:(BOOL)verified
+            fraudPayload:(NSString * _Nullable)fraudPayload
+      expectedCountryCode:(NSString * _Nullable)expectedCountryCode
+        expectedStateCode:(NSString * _Nullable)expectedStateCode
+                   reason:(NSString * _Nullable)reason
+            transactionId:(NSString * _Nullable)transactionId
+ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -245,7 +286,7 @@
         params[@"id"] = [RadarSettings _id];
         params[@"installId"] = [RadarSettings installId];
         params[@"userId"] = [RadarSettings userId];
-        params[@"deviceId"] = [RadarUtils deviceId];
+        params[@"deviceId"] = [RadarUtilsDeprecated deviceId];
         params[@"description"] = [RadarSettings __description];
         params[@"metadata"] = [RadarSettings metadata];
         NSArray<NSString *> *userTags = [RadarSettings tags];
@@ -288,29 +329,19 @@
     params[@"deviceMake"] = [RadarUtils deviceMake];
     params[@"sdkVersion"] = [RadarUtils sdkVersion];
     params[@"deviceModel"] = [RadarUtils deviceModel];
-    params[@"deviceOS"] = [RadarUtils deviceOS];
+    params[@"deviceOS"] = [RadarUtilsDeprecated deviceOS]; // this is the OS version
     params[@"country"] = [RadarUtils country];
     params[@"timeZoneOffset"] = [RadarUtils timeZoneOffset];
     params[@"source"] = [Radar stringForLocationSource:source];
+    params[@"lang"] = [RadarSettings userLanguage];
     if ([RadarSettings xPlatform]) {
         params[@"xPlatformType"] = [RadarSettings xPlatformSDKType];
         params[@"xPlatformSDKVersion"] = [RadarSettings xPlatformSDKVersion];
     } else {
         params[@"xPlatformType"] = @"Native";
     }
-    NSMutableArray<NSString *> *fraudFailureReasons = [NSMutableArray new];
-    if (@available(iOS 15.0, *)) {
-        CLLocationSourceInformation *sourceInformation = location.sourceInformation;
-        if (sourceInformation) {
-            if (sourceInformation.isSimulatedBySoftware) {
-                params[@"mocked"] = @(YES);
-                [fraudFailureReasons addObject:@"fraud_mocked_from_mock_provider"];
-            }
-            if (sourceInformation.isProducedByAccessory) {
-                [fraudFailureReasons addObject:@"fraud_mocked_produced_by_accessory"];
-            }
-        }
-    }
+    params[@"pushNotificationToken"] = [RadarSettings pushNotificationToken];
+    params[@"locationExtensionToken"] = [RadarSettings locationExtensionToken];
     
     RadarTripOptions *tripOptions = Radar.getTripOptions;
 
@@ -331,9 +362,6 @@
     if (beacons) {
         params[@"beacons"] = [RadarBeacon arrayForBeacons:beacons];
     }
-    if (indoorScan) {
-        params[@"indoorScan"] = indoorScan;
-    }
     NSString *locationAuthorization = [RadarUtils locationAuthorization];
     if (locationAuthorization) {
         params[@"locationAuthorization"] = locationAuthorization;
@@ -351,15 +379,6 @@
 
     params[@"verified"] = @(verified);
     if (verified) {
-        params[@"attestationString"] = attestationString;
-        params[@"keyId"] = keyId;
-        params[@"attestationError"] = attestationError;
-        params[@"encrypted"] = @(encrypted);
-        BOOL jailbroken = [[RadarVerificationManager sharedInstance] isJailbroken];
-        params[@"compromised"] = @(jailbroken);
-        if (jailbroken) {
-            [fraudFailureReasons addObject:@"fraud_compromised_jailbroken"];
-        }
         if (expectedCountryCode) {
             params[@"expectedCountryCode"] = expectedCountryCode;
         }
@@ -372,14 +391,11 @@
         if (transactionId) {
             params[@"transactionId"] = transactionId;
         }
-        if (UIScreen.mainScreen.isCaptured) {
-            [fraudFailureReasons addObject:@"fraud_sharing_capturing_screen"];
-        }
-        NSString *kDeviceId = [[RadarVerificationManager sharedInstance] kDeviceId];
-        if (kDeviceId) {
-            params[@"kDeviceId"] = kDeviceId;
+        if (fraudPayload) {
+            params[@"fraudPayload"] = fraudPayload;
         }
     }
+
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
     if (appName) {
@@ -420,53 +436,67 @@
         locationMetadata[@"altitude"] = @(location.altitude);
         locationMetadata[@"floor"] = @([location.floor level]);
         locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
+        NSString *motionAuth = [RadarState motionAuthorizationString];
+        if (motionAuth) {
+            params[@"motionAuthorization"] = motionAuth;
+        }
+        NSDictionary *pressureDict = [RadarState lastRelativeAltitudeData];
+        if (pressureDict) {
+            NSNumber *pressure = pressureDict[@"pressure"];
+            NSNumber *relAlt = pressureDict[@"relativeAltitude"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Including pressure metadata: pressure=%@ hPa, relative=%@ m", pressure, relAlt]];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"usePressure enabled but no recent pressure data available; sending without pressureHPa"];
+        }
     }
 
-    if (options.usePressure || options.useMotion) {
+    // RadarIndoors.getLocation only returns a location with a usable (valid, non-origin) coordinate,
+    // so the nil check alone is enough here.
+    if (options.useIndoorScan && indoorLocation) {
+        locationMetadata[@"indoorMLLatitude"] = @(indoorLocation.coordinate.latitude);
+        locationMetadata[@"indoorMLLongitude"] = @(indoorLocation.coordinate.longitude);
+        locationMetadata[@"deviceLatitude"] = params[@"latitude"];
+        locationMetadata[@"deviceLongitude"] = params[@"longitude"];
+        // CRITICAL: Overwrite the reported coordinates with the indoor ML model's prediction.
+        params[@"latitude"] = @(indoorLocation.coordinate.latitude);
+        params[@"longitude"] = @(indoorLocation.coordinate.longitude);
+    }
+
+    if (locationMetadata.count > 0) {
         params[@"locationMetadata"] = locationMetadata;
     }
-    
-    params[@"fraudFailureReasons"] = fraudFailureReasons;
+
+    // Include stored altitudeAdjustments from previous track responses
+    NSArray<NSDictionary *> *altitudeAdjustments = [RadarState altitudeAdjustments];
+    if (altitudeAdjustments && altitudeAdjustments.count > 0) {
+        params[@"altitudeAdjustments"] = altitudeAdjustments;
+    }
 
     if (anonymous) {
         [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
-                                                  verified:verified
-                                         completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
+                                                verified:verified
+                                        completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
 
-                                         }];
+                                        }];
     }
 
-    if (sdkConfiguration.useNotificationDiff) {
-        [RadarNotificationHelper getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
-            if (notificationsDelivered) {
-                params[@"notificationDiff"] = notificationsDelivered;
-            }
+    [RadarNotificationUtils getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
+        if (notificationsDelivered) {
+            params[@"notificationDiff"] = notificationsDelivered;
+        }
 
-            [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
-                                                                options:options
-                                                                stopped:stopped
-                                                            location:location
-                                                                source:source
-                                                            verified:verified
-                                                        publishableKey:publishableKey
-                                                notificationsRemaining:notificationsDelivered
-                                                locationMetadata:locationMetadata
-                                                    completionHandler:completionHandler];
-        }];
-    } else {
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
                                                             options:options
                                                             stopped:stopped
-                                                           location:location
-                                                             source:source
-                                                           verified:verified
-                                                     publishableKey:publishableKey
-                                             notificationsRemaining:@[]
-                                             locationMetadata:locationMetadata
-                                                  completionHandler:completionHandler];
-    }
-
-
+                                                        location:location
+                                                            source:source
+                                                        verified:verified
+                                          useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                                                    publishableKey:publishableKey
+                                            notificationsRemaining:notificationsRemaining
+                                            locationMetadata:locationMetadata
+                                                completionHandler:completionHandler];
+    }];
 }
 
 - (void)makeTrackRequestWithParams:(NSDictionary *)params
@@ -475,12 +505,32 @@
                         location:(CLLocation *)location
                         source:(RadarLocationSource)source
                         verified:(BOOL)verified
+        useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                 publishableKey:(NSString *)publishableKey
                 notificationsRemaining:(NSArray *)notificationsRemaining
                 locationMetadata:(NSDictionary *)locationMetadata
             completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
+    
+    BOOL batchingEnabled = (options.batchSize > 0 || options.batchInterval > 0);
 
-    NSString *host = verified ? [RadarSettings verifiedHost] : [RadarSettings host];
+    if (batchingEnabled && source != RadarLocationSourceManualLocation && source != RadarLocationSourceForegroundLocation) {
+        NSMutableDictionary *batchParams = [params mutableCopy];
+
+        RadarReplayBuffer *buffer = [RadarReplayBuffer sharedInstance];
+        [buffer addToBatch:batchParams options:options];
+
+        if ([buffer shouldFlushBatchWithOptions:options]) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                               message:@"Flushing batch: size limit reached"];
+            [buffer flushBatch];
+        }
+
+        [RadarSettings updateLastTrackedTime];
+        completionHandler(RadarStatusSuccess, nil, nil, nil, nil, nil, nil);
+        return;
+    }
+
+    NSString *host = verified ? (useSecondaryVerifiedHost ? [RadarSettings defaultVerifiedHostSecondary] : [RadarSettings verifiedHost]) : [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
@@ -497,13 +547,26 @@
             if (status != RadarStatusSuccess) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Failed to flush replays"]];
                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                
+                // Generate offline events on track failure (gated internally by offlineEventGenerationEnabled)
+                [RadarOfflineEventManager handleTrackFailure:location];
+                
+                // Update tracking options from offline location (only if useOfflineRTOUpdates)
+                RadarConfig *offlineConfig = nil;
+                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
+                    RadarTrackingOptions *offlineOptions = [RadarOfflineEventManager updateTrackingOptionsFor:location];
+                    if (offlineOptions) {
+                        offlineConfig = [RadarConfig fromDictionary:@{@"meta": @{@"trackingOptions": [offlineOptions dictionaryValue]}}];
+                    }
+                }
+                
+                completionHandler(status, nil, nil, nil, nil, offlineConfig, nil);
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Successfully flushed replays"]];
                 [RadarState setLastFailedStoppedLocation:nil];
                 [RadarSettings updateLastTrackedTime];
+                completionHandler(status, nil, nil, nil, nil, nil, nil);
             }
-
-            completionHandler(status, nil, nil, nil, nil, nil, nil);
         }];
     } else {
         [self.apiHelper requestWithMethod:@"POST"
@@ -513,15 +576,27 @@
                                     sleep:YES
                             logPayload:YES
                         extendedTimeout:NO
-                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
                                     bufferParams[@"replayed"] = @(YES);
 
-                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
-                                    [RadarState setRegisteredNotifications:notificationsRemaining];
+                                    // Skip notification removal under XCTest. RadarNotificationHelper_Swift.shared resolves its
+                                    // notification center from UNUserNotificationCenter.current(), which has no app bundle or
+                                    // notification entitlements in the unit-test host and misbehaves there. This call used to be
+                                    // gated behind the useNotificationDiffV2 flag (false in tests); removing the flag made it
+                                    // unconditional, so the guard preserves the prior "skip in tests" behavior. This matches the
+                                    // existing XCTestCase guards elsewhere in the SDK. TODO: route through the injectable
+                                    // NotificationCenterProtocol seam instead so tests can use a mock and this guard can be deleted.
+                                    if (NSClassFromString(@"XCTestCase") == nil) {
+                                        [[RadarNotificationHelper_Swift shared]
+                                            removeRegisteredNotificationsWithNotifications:params[@"notificationDiff"]
+                                            completionHandler:^() {}
+                                        ];
+                                    }
+
                                     [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
                                 } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
                                         !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {
@@ -529,10 +604,22 @@
                                 }
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                                
+                                // Generate offline events on track failure (gated internally by offlineEventGenerationEnabled)
+                                [RadarOfflineEventManager handleTrackFailure:location];
 
-                                return completionHandler(status, nil, nil, nil, nil, nil, nil);
+                                // Update tracking options from offline location (only if useOfflineRTOUpdates)
+                                RadarConfig *offlineConfig = nil;
+                                if ([RadarSettings sdkConfiguration].useOfflineRTOUpdates) {
+                                    RadarTrackingOptions *offlineOptions = [RadarOfflineEventManager updateTrackingOptionsFor:location];
+                                    if (offlineOptions) {
+                                        offlineConfig = [RadarConfig fromDictionary:@{@"meta": @{@"trackingOptions": [offlineOptions dictionaryValue]}}];
+                                    }
+                                }
+                                
+                                return completionHandler(status, nil, nil, nil, nil, offlineConfig, nil);
                             }
-
+            
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
                             [RadarState setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
@@ -546,6 +633,15 @@
                                 NSMutableDictionary *mutableUserObj = [userObj mutableCopy];
                                 mutableUserObj[@"metadata"] = locationMetadata;
                                 userObj = mutableUserObj;
+                                
+                                // Extract and store altitudeAdjustments from user object
+                                id altitudeAdjustmentsObj = mutableUserObj[@"altitudeAdjustments"];
+                                if ([altitudeAdjustmentsObj isKindOfClass:[NSArray class]]) {
+                                    [RadarState setAltitudeAdjustments:(NSArray *)altitudeAdjustmentsObj];
+                                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored %lu altitude adjustments from track response", (unsigned long)[(NSArray *)altitudeAdjustmentsObj count]]];
+                                } else {
+                                    [RadarState setAltitudeAdjustments:nil];
+                                }
                             }
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
                             id inAppMessagesObj = res[@"inAppMessages"];
@@ -554,11 +650,9 @@
                             NSArray<RadarGeofence *> *nearbyGeofences = [RadarGeofence geofencesFromObject:nearbyGeofencesObj];
                             RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res];
 
-                            if (@available(iOS 13.0, *)) {
-                                NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
-                                if (inAppMessages) {
-                                    [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
-                                }
+                            NSArray<RadarInAppMessage *> *inAppMessages = [RadarInAppMessage fromArray:inAppMessagesObj];
+                            if (inAppMessages) {
+                                [[RadarInAppMessageManager shared] onInAppMessageReceivedWithMessages:inAppMessages];
                             }
                                    
                             if (user) {
@@ -604,14 +698,22 @@
                                 }
                                 [RadarState setBeaconIds:beaconIds];
                             }
+            
+                            [RadarOfflineEventManager reset];
 
                             if (events && user) {
                                 [RadarSettings setId:user._id];
+                                [RadarState setRadarUser:user];
 
-                                // if user was on a trip that ended server-side, restore previous tracking options
-                                if (!user.trip && [RadarSettings tripOptions]) {
+                                // Update local trip state from server response
+                                if (user.trip) {
+                                    // Update local trip with latest state (ETAs, leg statuses, etc.)
+                                    [RadarSettings setTrip:user.trip];
+                                } else if ([RadarSettings tripOptions]) {
+                                    // Trip ended server-side - restore previous tracking options
                                     [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
-                                [RadarSettings setTripOptions:nil];
+                                    [RadarSettings setTripOptions:nil];
+                                    [RadarSettings setTrip:nil];
                                 }
 
                                 [RadarSettings setUserDebug:user.debug];
@@ -631,9 +733,9 @@
                                 id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
                                 if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
                                     NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
-                                    [[RadarBeaconManager sharedInstance] registerBeaconRegionNotificationsFromArray:beaconRegions];
+                                    [[RadarBeaconManagerSwift shared] registerBeaconRegionNotificationsFromArray:beaconRegions];
                                 }
-
+                                
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {
                                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
@@ -641,7 +743,7 @@
                             }
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-
+            
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
                         }];
     }
@@ -673,7 +775,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res){
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error){
 
                     }];
 }
@@ -716,6 +818,10 @@
         params[@"approachingThreshold"] = [NSString stringWithFormat:@"%d", options.approachingThreshold];
     }
 
+    if (options.legs && options.legs.count > 0) {
+        params[@"legs"] = [RadarTripLeg arrayForLegs:options.legs];
+    }
+    
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/trips", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
@@ -729,7 +835,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -800,7 +906,102 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil);
+                        }
+
+                        id tripObj = res[@"trip"];
+                        id eventsObj = res[@"events"];
+                        RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripObj];
+                        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+
+                        if (events && events.count) {
+                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:nil];
+                        }
+
+                        completionHandler(RadarStatusSuccess, trip, events);
+                    }];
+}
+
+- (void)updateTripLegWithTripId:(NSString *_Nonnull)tripId
+                          legId:(NSString *_Nonnull)legId
+                         status:(RadarTripLegStatus)status
+              completionHandler:(RadarTripLegAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil);
+    }
+    
+    if (!tripId || !legId) {
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil, nil);
+    }
+    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"status"] = [RadarTripLeg stringForStatus:status];
+    
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@/legs/%@", host, tripId, legId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+    
+    [self.apiHelper requestWithMethod:@"PATCH"
+                                  url:url
+                              headers:headers
+                               params:params
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
+                        if (status != RadarStatusSuccess || !res) {
+                            return completionHandler(status, nil, nil, nil);
+                        }
+                        
+                        id tripObj = res[@"trip"];
+                        id legObj = res[@"leg"];
+                        id eventsObj = res[@"events"];
+                        RadarTrip *trip = [[RadarTrip alloc] initWithObject:tripObj];
+                        RadarTripLeg *leg = [RadarTripLeg legFromDictionary:legObj];
+                        NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:eventsObj];
+                        
+                        if (events && events.count) {
+                            [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:nil];
+                        }
+                        
+                        completionHandler(RadarStatusSuccess, trip, leg, events);
+                    }];
+}
+
+- (void)reorderTripLegsWithTripId:(NSString *_Nonnull)tripId
+                           legIds:(NSArray<NSString *> *_Nonnull)legIds
+                completionHandler:(RadarTripAPICompletionHandler _Nonnull)completionHandler {
+    NSString *publishableKey = [RadarSettings publishableKey];
+    if (!publishableKey) {
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    if (!tripId || !legIds || legIds.count == 0) {
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil);
+    }
+
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    params[@"legs"] = legIds;
+
+    NSString *host = [RadarSettings host];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/trips/%@/legs", host, tripId];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+    [self.apiHelper requestWithMethod:@"PUT"
+                                  url:url
+                              headers:headers
+                               params:params
+                                sleep:NO
+                           logPayload:YES
+                      extendedTimeout:NO
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -839,7 +1040,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -905,7 +1106,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -965,7 +1166,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1005,7 +1206,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil, nil);
                         }
@@ -1084,7 +1285,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1140,7 +1341,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1185,7 +1386,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1210,7 +1411,7 @@
     if (!address.countryCode || !address.stateCode || !address.city || !address.postalCode || 
         !((address.street && address.number) || address.addressLabel)) {
         if (completionHandler) {
-            [RadarUtils runOnMainThread:^{
+            [RadarUtilsDeprecated runOnMainThread:^{
                 completionHandler(RadarStatusErrorBadRequest, nil, nil, RadarAddressVerificationStatusNone);
             }];
         }
@@ -1249,7 +1450,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil, RadarAddressVerificationStatusNone);
                         }
@@ -1267,7 +1468,7 @@
                             RadarAddressVerificationStatus verificationStatus = [RadarAddress addressVerificationStatusForString:result[@"verificationStatus"]];
 
                             if (completionHandler) {
-                                [RadarUtils runOnMainThread:^{
+                                [RadarUtilsDeprecated runOnMainThread:^{
                                     completionHandler(RadarStatusSuccess, res, address, verificationStatus);
                                 }];
                                 return;
@@ -1309,7 +1510,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1351,7 +1552,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1369,7 +1570,7 @@
 - (void)ipGeocodeWithCompletionHandler:(RadarIPGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, NO);
+        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, NO, nil);
     }
 
     NSString *host = [RadarSettings host];
@@ -1384,9 +1585,9 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil, NO);
+                            return completionHandler(status, nil, nil, NO, error);
                         }
 
                         id addressObj = res[@"address"];
@@ -1399,10 +1600,10 @@
                         }
 
                         if (address) {
-                            return completionHandler(RadarStatusSuccess, res, address, proxy);
+                            return completionHandler(RadarStatusSuccess, res, address, proxy, nil);
                         }
 
-                        completionHandler(RadarStatusErrorServer, nil, nil, NO);
+                        completionHandler(RadarStatusErrorServer, nil, nil, NO, nil);
                     }];
 }
 
@@ -1462,7 +1663,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1538,7 +1739,7 @@
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1555,6 +1756,7 @@
 
 - (void)sendEvent:(NSString *)conversionName
      withMetadata:(NSDictionary *_Nullable)metadata
+     withCampaign:(NSString *_Nullable)campaign
 completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -1565,10 +1767,11 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
     params[@"id"] = [RadarSettings _id];
     params[@"installId"] = [RadarSettings installId];
     params[@"userId"] = [RadarSettings userId];
-    params[@"deviceId"] = [RadarUtils deviceId];
+    params[@"deviceId"] = [RadarUtilsDeprecated deviceId];
 
     params[@"type"] = conversionName;
     params[@"metadata"] = metadata;
+    params[@"campaign"] = campaign;
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/events", host];
@@ -1583,7 +1786,7 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
+                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
                             return completionHandler(status, nil, nil);
                         }
@@ -1600,40 +1803,4 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                         return completionHandler(RadarStatusSuccess, res, customEvent);
                     }];
 }
-
-- (void)syncLogs:(NSArray<RadarLog *> *)logs completionHandler:(RadarSyncLogsAPICompletionHandler)completionHandler {
-    NSString *publishableKey = [RadarSettings publishableKey];
-    if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey);
-    }
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/logs", host];
-
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
-
-    NSMutableDictionary *params = [NSMutableDictionary new];
-
-    params[@"id"] = [RadarSettings _id];
-    params[@"installId"] = [RadarSettings installId];
-    params[@"deviceId"] = [RadarUtils deviceId];
-    NSString *sessionId = [RadarSettings sessionId];
-    if (sessionId) {
-        params[@"sessionId"] = sessionId;
-    }
-    NSArray *logsArray = [RadarLog arrayForLogs:logs];
-    [params setValue:logsArray forKey:@"logs"];
-
-    [self.apiHelper requestWithMethod:@"POST"
-                                  url:url
-                              headers:headers
-                               params:params
-                                sleep:NO
-                           logPayload:NO // avoid logging the logging call
-                      extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res) {
-                        return completionHandler(status);
-                    }];
-}
-
 @end

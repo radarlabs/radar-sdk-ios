@@ -10,25 +10,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RadarNotificationHelper : NSObject
-
-typedef void (^NotificationPermissionCheckCompletion)(BOOL granted);
-
-+ (void)showNotificationsForEvents:(NSArray<RadarEvent *> *)events;
-
-+ (void)swizzleNotificationCenterDelegate;
-
-+ (void)updateClientSideCampaignsWithPrefix:(NSString *)prefix notificationRequests:(NSArray<UNNotificationRequest *> *)requests;
-
-+ (void)checkNotificationPermissionsWithCompletionHandler:(nullable NotificationPermissionCheckCompletion)completionHandler;
-
-+ (void)logConversionWithNotificationResponse:(UNNotificationResponse *)response;
-
-+ (void)openURLFromNotification:(UNNotification *)notification;
-
-+ (nullable UNMutableNotificationContent *)extractContentFromMetadata:(nullable NSDictionary *)metadata identifier:(nullable NSString *)identifier;
-
-+ (void)getNotificationDiffWithCompletionHandler:(void (^)(NSArray *notificationsDelivered, NSArray *notificationsRemaining))completionHandler;
+@interface RadarNotificationHelper_Swift : NSObject
++ (RadarNotificationHelper_Swift*) shared;
+- (void)registerGeofenceNotificationsWithGeofences:(NSArray<NSDictionary<NSString *, id> *> * _Nullable)geofences completionHandler:(void (^ _Nonnull)(void))completionHandler;
+- (void)getDeliveredNotificationsWithCompletionHandler:(void (^ _Nonnull)(NSArray<NSDictionary<NSString *, id> *> * _Nonnull))completionHandler;
+- (void)removeRegisteredNotificationsWithNotifications:(NSArray<NSDictionary<NSString *, id> *> * _Nullable)notifications completionHandler:(void (^ _Nonnull)(void))completionHandler;
+- (void)refreshGeofenceNotificationsWithCompletionHandler:(void (^ _Nonnull)(void))completionHandler;
 @end
 
 NS_ASSUME_NONNULL_END

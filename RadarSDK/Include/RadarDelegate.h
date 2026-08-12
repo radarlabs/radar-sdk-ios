@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
  @see https://radar.com/documentation/sdk/ios
  */
 @protocol RadarDelegate<NSObject>
+@optional
 
 /**
  Tells the delegate that events were received.

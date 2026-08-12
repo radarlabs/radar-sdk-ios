@@ -32,6 +32,8 @@ NSString *const kBeacons = @"beacons";
 NSString *const kUseIndoorScan = @"useIndoorScan";
 NSString *const kUseMotion = @"useMotion";
 NSString *const kUsePressure = @"usePressure";
+NSString *const kBatchInterval = @"batchInterval";
+NSString *const kBatchSize = @"batchSize";
 
 NSString *const kDesiredAccuracyHigh = @"high";
 NSString *const kDesiredAccuracyMedium = @"medium";
@@ -44,6 +46,21 @@ NSString *const kReplayAll = @"all";
 NSString *const kSyncAll = @"all";
 NSString *const kSyncStopsAndExits = @"stopsAndExits";
 NSString *const kSyncNone = @"none";
+NSString *const kSyncEvents = @"events";
+
+NSString *const kType = @"type";
+NSString *const kTypeDefault = @"default";
+NSString *const kTypeOnTrip = @"on-trip";
+NSString *const kTypeInGeofence = @"in-geofence";
+NSString *const kTypeIsUser = @"is-user";
+
+// startTrackingAfter/stopTrackingAfter round-trip through millisecond serialization in
+// -dictionaryValue (timeIntervalSince1970 * 1000, then / 1000 on the way back), which loses a
+// few hundred nanoseconds of precision. DBL_EPSILON (~2.2e-16) is far smaller than a single ULP
+// at Unix-timestamp magnitudes (~2.4e-7 near 1.75e9), so comparing dates against it made -isEqual
+// spuriously report inequality for a serialized-then-deserialized copy. Compare at the millisecond
+// precision the dates are actually stored with instead.
+static const NSTimeInterval kRadarTrackingOptionsDateEpsilon = 0.001;
 
 + (RadarTrackingOptions *)presetContinuous {
     RadarTrackingOptions *options = [RadarTrackingOptions new];
@@ -69,6 +86,8 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.batchInterval = 0;
+    options.batchSize = 0;
     return options;
 }
 
@@ -96,6 +115,8 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.batchInterval = 0;
+    options.batchSize = 0;
     return options;
 }
 
@@ -123,6 +144,8 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = NO;
     options.useMotion = NO;
     options.usePressure = NO;
+    options.batchInterval = 0;
+    options.batchSize = 0;
     return options;
 }
 
@@ -189,6 +212,9 @@ NSString *const kSyncNone = @"none";
     case RadarTrackingOptionsSyncStopsAndExits:
         str = kSyncStopsAndExits;
         break;
+    case RadarTrackingOptionsSyncEvents:
+        str = kSyncEvents;
+        break;
     case RadarTrackingOptionsSyncAll:
     default:
         str = kSyncAll;
@@ -202,8 +228,41 @@ NSString *const kSyncNone = @"none";
         sync = RadarTrackingOptionsSyncStopsAndExits;
     } else if ([str isEqualToString:kSyncNone]) {
         sync = RadarTrackingOptionsSyncNone;
+    } else if ([str isEqualToString:kSyncEvents]) {
+        sync = RadarTrackingOptionsSyncEvents;
     }
     return sync;
+}
+
++ (NSString *)stringForType:(RadarTrackingOptionsType)type {
+    NSString *str;
+    switch (type) {
+        case RadarTrackingOptionsTypeOnTrip:
+            str = kTypeOnTrip;
+            break;
+        case RadarTrackingOptionsTypeInGeofence:
+            str = kTypeInGeofence;
+            break;
+        case RadarTrackingOptionsTypeIsUser:
+            str = kTypeIsUser;
+            break;
+        case RadarTrackingOptionsTypeDefault:
+        default:
+            str = kTypeDefault;
+    }
+    return str;
+}
+
++ (RadarTrackingOptionsType)typeForString:(NSString *)str {
+    RadarTrackingOptionsType type = RadarTrackingOptionsTypeDefault;
+    if ([str isEqualToString:kTypeOnTrip]) {
+        type = RadarTrackingOptionsTypeOnTrip;
+    } else if ([str isEqualToString:kTypeInGeofence]) {
+        type = RadarTrackingOptionsTypeInGeofence;
+    } else if ([str isEqualToString:kTypeIsUser]) {
+        type = RadarTrackingOptionsTypeIsUser;
+    }
+    return type;
 }
 
 + (RadarTrackingOptions *)trackingOptionsFromDictionary:(NSDictionary *)dict {
@@ -254,6 +313,9 @@ NSString *const kSyncNone = @"none";
     options.useIndoorScan = [dict[kUseIndoorScan] boolValue];
     options.useMotion = [dict[kUseMotion] boolValue];
     options.usePressure = [dict[kUsePressure] boolValue];
+    options.batchInterval = [dict[kBatchInterval] intValue];
+    options.batchSize = [dict[kBatchSize] intValue];
+    options.type = [RadarTrackingOptions typeForString:dict[kType]];
     return options;
 }
 
@@ -289,6 +351,9 @@ NSString *const kSyncNone = @"none";
     dict[kUseIndoorScan] = @(self.useIndoorScan);
     dict[kUseMotion] = @(self.useMotion);
     dict[kUsePressure] = @(self.usePressure);
+    dict[kBatchInterval] = @(self.batchInterval);
+    dict[kBatchSize] = @(self.batchSize);
+    dict[kType] = [RadarTrackingOptions stringForType:self.type];
     return dict;
 }
 
@@ -311,14 +376,15 @@ NSString *const kSyncNone = @"none";
            self.desiredSyncInterval == options.desiredSyncInterval && self.desiredAccuracy == options.desiredAccuracy && self.stopDuration == options.stopDuration &&
            self.stopDistance == options.stopDistance &&
            (self.startTrackingAfter == nil ? options.startTrackingAfter == nil :
-                                             self.startTrackingAfter.timeIntervalSince1970 - options.startTrackingAfter.timeIntervalSince1970 < DBL_EPSILON) &&
+                                             fabs(self.startTrackingAfter.timeIntervalSince1970 - options.startTrackingAfter.timeIntervalSince1970) < kRadarTrackingOptionsDateEpsilon) &&
            (self.stopTrackingAfter == nil ? options.stopTrackingAfter == nil :
-                                            self.stopTrackingAfter.timeIntervalSince1970 - options.stopTrackingAfter.timeIntervalSince1970 < DBL_EPSILON) &&
+                                            fabs(self.stopTrackingAfter.timeIntervalSince1970 - options.stopTrackingAfter.timeIntervalSince1970) < kRadarTrackingOptionsDateEpsilon) &&
            self.syncLocations == options.syncLocations && self.replay == options.replay && self.showBlueBar == options.showBlueBar &&
            self.useStoppedGeofence == options.useStoppedGeofence && self.stoppedGeofenceRadius == options.stoppedGeofenceRadius &&
            self.useMovingGeofence == options.useMovingGeofence && self.movingGeofenceRadius == options.movingGeofenceRadius && self.syncGeofences == options.syncGeofences &&
            self.useVisits == options.useVisits && self.useSignificantLocationChanges == options.useSignificantLocationChanges && self.beacons == options.beacons &&
-           self.useIndoorScan == options.useIndoorScan && self.useMotion == options.useMotion && self.usePressure == options.usePressure;
+           self.useIndoorScan == options.useIndoorScan && self.useMotion == options.useMotion && self.usePressure == options.usePressure &&
+           self.batchInterval == options.batchInterval && self.batchSize == options.batchSize;
 }
 
 @end

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <math.h>
 #import "RadarInitializeOptions.h"
 
 
@@ -17,6 +18,10 @@
     if (self) {
         _autoLogNotificationConversions = NO;
         _autoHandleNotificationDeepLinks = NO;
+        _silentPush = NO;
+        _trackVerifiedAutoFailover = NO;
+        _networkTimeoutInterval = 10;
+        _ipChangeDebounceInterval = 10;
     }
     return self;
 }
@@ -25,6 +30,10 @@
     NSMutableDictionary *dict = [NSMutableDictionary new];
     dict[@"autoLogNotificationConversions"] = @(_autoLogNotificationConversions);
     dict[@"autoHandleNotificationDeepLinks"] = @(_autoHandleNotificationDeepLinks);
+    dict[@"silentPush"] = @(_silentPush);
+    dict[@"trackVerifiedAutoFailover"] = @(_trackVerifiedAutoFailover);
+    dict[@"networkTimeoutInterval"] = @(_networkTimeoutInterval);
+    dict[@"ipChangeDebounceInterval"] = @(_ipChangeDebounceInterval);
     return dict;
 }
 
@@ -33,6 +42,18 @@
     if (self) {
         _autoLogNotificationConversions = [dict[@"autoLogNotificationConversions"] boolValue];
         _autoHandleNotificationDeepLinks = [dict[@"autoHandleNotificationDeepLinks"] boolValue];
+        _silentPush = [dict[@"silentPush"] boolValue];
+        _trackVerifiedAutoFailover = [dict[@"trackVerifiedAutoFailover"] boolValue];
+        NSNumber *networkTimeout = dict[@"networkTimeoutInterval"];
+        _networkTimeoutInterval = networkTimeout ? [networkTimeout doubleValue] : 10;
+        if (_networkTimeoutInterval <= 0 || isnan(_networkTimeoutInterval) || isinf(_networkTimeoutInterval)) {
+            _networkTimeoutInterval = 10;
+        }
+        NSNumber *ipChangeDebounce = dict[@"ipChangeDebounceInterval"];
+        _ipChangeDebounceInterval = ipChangeDebounce ? [ipChangeDebounce doubleValue] : 10;
+        if (_ipChangeDebounceInterval < 0 || isnan(_ipChangeDebounceInterval) || isinf(_ipChangeDebounceInterval)) {
+            _ipChangeDebounceInterval = 10;
+        }
     }
     return self;
 }

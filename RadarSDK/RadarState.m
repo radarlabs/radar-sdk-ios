@@ -6,8 +6,13 @@
 //
 
 #import "RadarState.h"
+#import "RadarGeofence+Internal.h"
+#import "RadarBeacon+Internal.h"
+#import "RadarPlace+Internal.h"
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
+#import "RadarLogger.h"
+#import "RadarUserDefaults.h"
 
 @implementation RadarState
 
@@ -26,7 +31,11 @@ static NSString *const kLastHeadingData = @"radar-lastHeadingData";
 static NSString *const kLastMotionActivityData = @"radar-lastMotionActivityData";
 static NSString *const kLastPressureData = @"radar-lastPressureData";
 static NSString *const kNotificationPermissionGranted = @"radar-notificationPermissionGranted";
+static NSString *const kMotionAuthorization = @"radar-motionAuthorization";
+static NSString *const kLocationAuthorizationStatus = @"radar-locationAuthorizationStatus";
 static NSString *const kRegisteredNotifications = @"radar-registeredNotifications";
+static NSString *const kAltitudeAdjustments = @"radar-altitudeAdjustments";
+static NSString *const kRadarUser = @"radar-radarUser";
 static NSDictionary *_lastRelativeAltitudeDataInMemory = nil;
 static NSDate *_lastPressureBackupTime = nil;
 static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
@@ -171,11 +180,13 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 }
 
 + (NSDictionary *)lastHeadingData {
-    return [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastHeadingData];
+    // Reads through the app-group-aware store so it stays consistent with the Swift
+    // RadarLocationManager twin, which writes heading via RadarUserDefaults.
+    return [[RadarUserDefaults sharedUserDefaults] dictionaryForKey:kLastHeadingData];
 }
 
 + (void)setLastHeadingData:(NSDictionary *_Nullable)lastHeadingData {
-    [[NSUserDefaults standardUserDefaults] setObject:lastHeadingData forKey:kLastHeadingData];
+    [[RadarUserDefaults sharedUserDefaults] setObject:lastHeadingData forKey:kLastHeadingData];
 }
 
 + (NSDictionary *)lastMotionActivityData {
@@ -187,11 +198,16 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
 }
 
 + (NSDictionary *)lastRelativeAltitudeData {
+    NSTimeInterval currentTime = [[NSDate date] timeIntervalSince1970];
+    
     // If we have a valid in-memory value, check its timestamp
     if (_lastRelativeAltitudeDataInMemory) {
         NSTimeInterval timestamp = [_lastRelativeAltitudeDataInMemory[@"relativeAltitudeTimestamp"] doubleValue];
-        if (timestamp > 0 && [[NSDate date] timeIntervalSince1970] - timestamp <= 60) {
+        NSTimeInterval age = currentTime - timestamp;
+        if (timestamp > 0 && age <= 60) {
             return _lastRelativeAltitudeDataInMemory;
+        } else if (timestamp > 0) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:[NSString stringWithFormat:@"In-memory altitude data is stale (age: %.1f seconds) - will try persisted data", age]];
         }
     }
     
@@ -199,17 +215,31 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     NSDictionary *savedData = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kLastPressureData];
     if (savedData) {
         NSTimeInterval timestamp = [savedData[@"relativeAltitudeTimestamp"] doubleValue];
-        if (timestamp > 0 && [[NSDate date] timeIntervalSince1970] - timestamp <= 60) {
+        NSTimeInterval age = currentTime - timestamp;
+        if (timestamp > 0 && age <= 60) {
             // Update in-memory value if valid
             _lastRelativeAltitudeDataInMemory = savedData;
             return savedData;
+        } else if (timestamp > 0) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:[NSString stringWithFormat:@"Persisted altitude data is also stale (age: %.1f seconds) - returning nil, altitude will be undefined", age]];
         }
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"No persisted altitude data found - altitude will be undefined"];
     }
     
     return nil;
 }
 
 + (void)setLastRelativeAltitudeData:(NSDictionary *)lastPressureData {
+    if (lastPressureData) {
+        NSTimeInterval timestamp = [lastPressureData[@"relativeAltitudeTimestamp"] doubleValue];
+        NSNumber *pressure = lastPressureData[@"pressure"];
+        NSNumber *relativeAlt = lastPressureData[@"relativeAltitude"];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Storing new altitude data: timestamp=%.3f, pressure=%@ hPa, relative=%@ m", timestamp, pressure, relativeAlt]];
+    } else {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Clearing altitude data (nil passed)"];
+    }
+    
     // Update in-memory value
     _lastRelativeAltitudeDataInMemory = lastPressureData;
     
@@ -218,15 +248,36 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     if (!_lastPressureBackupTime || [now timeIntervalSinceDate:_lastPressureBackupTime] >= kBackupInterval) {
         [[NSUserDefaults standardUserDefaults] setObject:lastPressureData forKey:kLastPressureData];
         _lastPressureBackupTime = now;
+        if (lastPressureData) {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Backed up altitude data to disk"];
+        }
     }
 }
 
 + (void)setNotificationPermissionGranted:(BOOL)notificationPermissionGranted {
-    [[NSUserDefaults standardUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
+    [[RadarUserDefaults sharedUserDefaults] setBool:notificationPermissionGranted forKey:kNotificationPermissionGranted];
 }
 
 + (BOOL)notificationPermissionGranted {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kNotificationPermissionGranted];
+    return [[RadarUserDefaults sharedUserDefaults] boolForKey:kNotificationPermissionGranted];
+}
+
++ (void)setMotionAuthorizationString:(NSString *)status {
+    [[NSUserDefaults standardUserDefaults] setObject:status forKey:kMotionAuthorization];
+}
+
++ (NSString *)motionAuthorizationString {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kMotionAuthorization];
+}
+
++ (void)setLocationAuthorizationStatus:(CLAuthorizationStatus)status {
+    // Writes through the app-group-aware store so it stays consistent with the Swift
+    // RadarLocationManager twin, which persists auth status via RadarUserDefaults.
+    [[RadarUserDefaults sharedUserDefaults] setInteger:status forKey:kLocationAuthorizationStatus];
+}
+
++ (CLAuthorizationStatus)locationAuthorizationStatus {
+    return (CLAuthorizationStatus)[[RadarUserDefaults sharedUserDefaults] integerForKey:kLocationAuthorizationStatus];
 }
 
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications {
@@ -238,7 +289,6 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     [[NSUserDefaults standardUserDefaults] setValue:registeredNotifications forKey:kRegisteredNotifications];
 }
 
-
 + (void)addRegisteredNotification:(NSDictionary *)notification {
     NSMutableArray *registeredNotifications = [NSMutableArray new];
     NSArray *notifications = [RadarState registeredNotifications];
@@ -247,6 +297,35 @@ static NSTimeInterval const kBackupInterval = 2.0; // 2 seconds
     }
     [registeredNotifications addObject:notification];
     [RadarState setRegisteredNotifications:registeredNotifications];
+}
+
++ (NSArray<NSDictionary *> *_Nullable)altitudeAdjustments {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kAltitudeAdjustments];
+}
+
++ (void)setAltitudeAdjustments:(NSArray<NSDictionary *> *_Nullable)altitudeAdjustments {
+    if (altitudeAdjustments) {
+        [[NSUserDefaults standardUserDefaults] setObject:altitudeAdjustments forKey:kAltitudeAdjustments];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kAltitudeAdjustments];
+    }
+}
+
++ (void)setRadarUser:(RadarUser *_Nullable)radarUser {
+    if (radarUser) {
+        NSDictionary *radarUserDict = [radarUser dictionaryValue];
+        [[NSUserDefaults standardUserDefaults] setObject:radarUserDict forKey:kRadarUser];
+    } else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kRadarUser];
+    }
+}
+
++ (RadarUser *_Nullable)radarUser {
+    NSDictionary *radarUserDict = [[NSUserDefaults standardUserDefaults] objectForKey:kRadarUser];
+    if (!radarUserDict) {
+        return nil;
+    }
+    return [[RadarUser alloc] initWithObject:radarUserDict];
 }
 
 @end

@@ -1,0 +1,51 @@
+//
+//  MainView.swift
+//  Example
+//
+//  Created by ShiCheng Lu on 9/5/25.
+//  Copyright © 2025 Radar Labs, Inc. All rights reserved.
+//
+
+import RadarSDK
+import SwiftUI
+
+struct MainView: View {
+
+    enum TabIdentifier: String, CaseIterable {
+        case Map
+        case Logs
+        case Tests
+        case CSGN
+        case Survey
+    }
+
+    @State private var selectedTab: TabIdentifier = .Tests
+
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            MapView().tabItem {
+                Text("Map")
+            }.tag(TabIdentifier.Map)
+
+            LogsView().tabItem {
+                Text("Debug")
+            }.tag(TabIdentifier.Logs)
+
+            TestsView(selectedTab: $selectedTab).tabItem {
+                Text("Tests")
+            }.tag(TabIdentifier.Tests)
+
+            CSGNInspectorView().tabItem {
+                Text("CSGN")
+            }.tag(TabIdentifier.CSGN)
+
+            SurveyView().tabItem {
+                Text("Survey")
+            }.tag(TabIdentifier.Survey)
+        }
+    }
+}
+
+#Preview {
+    MainView()
+}
