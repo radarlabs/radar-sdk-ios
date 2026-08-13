@@ -50,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)shouldHandleRegionWithIdentifier:(NSString *)identifier action:(NSString *)action;
 
 + (void)didUpdateLocations:(nullable NSArray<CLLocation *> *)updates completionHandlerCount:(NSUInteger)completionHandlerCount;
++ (void)didVisitOnLocationManager:(CLLocationManager *)locationManager visit:(CLVisit *)visit;
 
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;

@@ -100,6 +100,89 @@ extension RadarSerializedTests {
             #expect(mock.lastHandledLocation == nil)
         }
 
+        // MARK: - didVisit(locationManager:visit:)
+
+        @Test("visits without a manager location are ignored")
+        func visitsIgnoreMissingManagerLocation() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarSettings.tracking = true
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer { RadarSwift.bridge = original }
+            let locationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.didVisit(
+                locationManager: locationManager,
+                visit: makeVisit(departureDate: .distantFuture)
+            )
+
+            #expect(mock.lastHandledLocation == nil)
+        }
+
+        @Test("visits are ignored when tracking is disabled")
+        func visitsIgnoreWhenTrackingIsDisabled() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarSettings.tracking = false
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer { RadarSwift.bridge = original }
+            let locationManager = TrackingCLLocationManager()
+            locationManager.mockLocation = CLLocation(latitude: 40.7, longitude: -74.0)
+
+            RadarLocationManagerSwift.didVisit(
+                locationManager: locationManager,
+                visit: makeVisit(departureDate: .distantFuture)
+            )
+
+            #expect(mock.lastHandledLocation == nil)
+        }
+
+        @Test("visits with a distant-future departure use the arrival source")
+        func visitArrivalUsesArrivalSource() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarSettings.tracking = true
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer { RadarSwift.bridge = original }
+            let locationManager = TrackingCLLocationManager()
+            locationManager.mockLocation = CLLocation(latitude: 40.7, longitude: -74.0)
+
+            RadarLocationManagerSwift.didVisit(
+                locationManager: locationManager,
+                visit: makeVisit(departureDate: .distantFuture)
+            )
+
+            #expect(mock.lastHandledLocation === locationManager.mockLocation)
+            #expect(mock.lastHandledSource == .visitArrival)
+        }
+
+        @Test("visits with a departure date use the departure source")
+        func visitDepartureUsesDepartureSource() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarSettings.tracking = true
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer { RadarSwift.bridge = original }
+            let locationManager = TrackingCLLocationManager()
+            locationManager.mockLocation = CLLocation(latitude: 40.7, longitude: -74.0)
+
+            RadarLocationManagerSwift.didVisit(
+                locationManager: locationManager,
+                visit: makeVisit(departureDate: Date())
+            )
+
+            #expect(mock.lastHandledLocation === locationManager.mockLocation)
+            #expect(mock.lastHandledSource == .visitDeparture)
+        }
+
         // MARK: - effectiveLocation(for:)
 
         @Test("effectiveLocation prefers the manager's current valid location")
@@ -164,6 +247,20 @@ extension RadarSerializedTests {
             let result = RadarLocationManagerSwift.effectiveLocation(for: locationManager)
 
             #expect(result === fallbackLocation)
+        }
+
+        private func makeVisit(departureDate: Date) -> CLVisitMock {
+            guard
+                let visit = CLVisitMock(
+                    coordinate: CLLocationCoordinate2D(latitude: 40.7, longitude: -74.0),
+                    horizontalAccuracy: 100,
+                    arrivalDate: Date(timeIntervalSince1970: 0),
+                    departureDate: departureDate
+                )
+            else {
+                fatalError("Failed to create CLVisitMock")
+            }
+            return visit
         }
 
     }
