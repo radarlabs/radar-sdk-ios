@@ -2,6 +2,8 @@ name: Xcode - Build, Analyze, & Test
 
 on:
   pull_request:
+  merge_group:
+    types: [checks_requested]
 
 # Cancel superseded runs when a PR branch is re-pushed
 concurrency:
@@ -37,6 +39,7 @@ jobs:
           swiftlint lint --strict --baseline .swiftlint-baseline.json
 
       - name: Format Swift
+        if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           SWIFT_FORMAT_VERSION: "603.0.0"
