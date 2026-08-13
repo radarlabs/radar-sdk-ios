@@ -31,6 +31,19 @@ final class RadarLocationManagerSwift: NSObject {
     private static let syncBeaconIdentifierPrefix = "radar_beacon_"
     private static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
 
+    @objc(startTrackingWithOptions:)
+    static func startTracking(options: RadarTrackingOptions) {
+        let authorizationStatus = RadarSwift.bridge?.locationAuthorizationStatus()
+        guard authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways else {
+            RadarSwift.bridge?.didFail(status: .errorPermissions)
+            return
+        }
+
+        RadarSettings.tracking = true
+        RadarSettings.trackingOptions = options
+        RadarSwift.bridge?.updateTracking()
+    }
+
     @objc static func restartPreviousTrackingOptions() {
         let previousTrackingOptions = RadarSettings.previousTrackingOptions
         RadarLogger.shared.debug("🦅 Restarting previous tracking options")
