@@ -118,6 +118,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
         expectedStateCode:(NSString *_Nullable)expectedStateCode
                    reason:(NSString *_Nullable)reason
             transactionId:(NSString *_Nullable)transactionId
+             revealRiskId:(NSString *_Nullable)revealRiskId
  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 

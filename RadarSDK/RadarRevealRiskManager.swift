@@ -13,7 +13,7 @@ import Foundation
 /// This manager wraps the async reveal risk request in a completion-handler API that can be
 /// invoked from Objective-C, hopping back to the main thread to deliver the result.
 @objc(RadarRevealRiskManager)
-final class RadarRevealRiskManager: NSObject, Sendable {
+final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
 
     @objc
     static let shared = RadarRevealRiskManager(
@@ -27,6 +27,23 @@ final class RadarRevealRiskManager: NSObject, Sendable {
     init(apiClient: RadarAPIClient, fraudSDK: RadarSDKFraud?) {
         self.apiClient = apiClient
         self.fraudSDK = fraudSDK
+    }
+
+    private let sharingLock = NSLock()
+    private var _revealRiskId: String?
+
+    @objc
+    var revealRiskId: String? {
+        get {
+            sharingLock.lock()
+            defer { sharingLock.unlock() }
+            return _revealRiskId
+        }
+        set {
+            sharingLock.lock()
+            _revealRiskId = newValue
+            sharingLock.unlock()
+        }
     }
 
     func revealRisk(useSecondaryVerifiedHost: Bool) async throws -> RadarRevealRiskToken {
@@ -55,6 +72,8 @@ final class RadarRevealRiskManager: NSObject, Sendable {
             do {
                 let token = try await self.revealRisk(useSecondaryVerifiedHost: useSecondaryVerifiedHost)
                 RadarLogger.shared.debug("RadarRevealRiskManager: revealRisk() succeeded \(RadarUtils.dictionaryToJson(token.dictionaryValue))")
+
+                revealRiskId = token.id
                 completionHandler(.success, token)
             } catch {
                 if let radarError = error as? RadarError {

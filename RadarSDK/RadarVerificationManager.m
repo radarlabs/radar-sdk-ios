@@ -21,6 +21,7 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarSDKFraudProtocol.h"
+#import "RadarRevealRiskManager.h"
 
 #include <ifaddrs.h>
 #include <arpa/inet.h>
@@ -125,8 +126,7 @@
                 }];
                 return;
             }
-            
-            
+
             NSMutableDictionary *options = [NSMutableDictionary dictionary];
             if (location) {
                 options[@"location"] = location;
@@ -168,6 +168,7 @@
                 }
                 
                 NSString *fraudPayload = result[@"payload"];
+                NSString *revealRiskId = [RadarRevealRiskManager shared].revealRiskId;
                 
                 void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
                 [[RadarAPIClient sharedInstance]
@@ -184,11 +185,13 @@
                  expectedStateCode:self.expectedStateCode
                  reason:reason
                  transactionId:transactionId
+                 revealRiskId:revealRiskId
                  useSecondaryVerifiedHost:useSecondaryVerifiedHost
                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                      RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                      RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
                     if (status == RadarStatusSuccess && config != nil) {
+                        [RadarRevealRiskManager shared].revealRiskId = nil;
                         [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
                     }
                     
