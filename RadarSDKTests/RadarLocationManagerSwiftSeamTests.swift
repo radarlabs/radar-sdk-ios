@@ -5,6 +5,7 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import Testing
 
@@ -13,6 +14,67 @@ import Testing
 extension RadarSerializedTests {
     @Suite(.serialized)
     actor RadarLocationManagerSwiftSeamTests {
+
+        // MARK: - startTracking(options:)
+
+        @Test("start tracking reports a permissions error without changing state when unauthorized")
+        func startTrackingRejectsUnauthorizedStatus() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer { RadarSwift.bridge = original }
+            mock.mockLocationAuthorizationStatus = .denied
+            let existingOptions = RadarTrackingOptions.presetContinuous
+            RadarSettings.trackingOptions = existingOptions
+
+            RadarLocationManagerSwift.startTracking(options: .presetResponsive)
+
+            #expect(mock.lastFailStatus == .errorPermissions)
+            #expect(mock.updateTrackingCallCount == 0)
+            #expect(RadarSettings.tracking == false)
+            #expect(RadarSettings.trackingOptions == existingOptions)
+        }
+
+        @Test(arguments: [CLAuthorizationStatus.authorizedWhenInUse, .authorizedAlways])
+        func startTrackingAcceptsAuthorizedStatus(authorizationStatus: CLAuthorizationStatus) {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            let mock = MockRadarSwiftBridge()
+            let original = RadarSwift.bridge
+            RadarSwift.bridge = mock
+            defer { RadarSwift.bridge = original }
+            mock.mockLocationAuthorizationStatus = authorizationStatus
+            let options = RadarTrackingOptions.presetResponsive
+
+            RadarLocationManagerSwift.startTracking(options: options)
+
+            #expect(mock.lastFailStatus == nil)
+            #expect(mock.updateTrackingCallCount == 1)
+            #expect(RadarSettings.tracking == true)
+            #expect(RadarSettings.trackingOptions == options)
+        }
+
+        @Test("public start tracking method routes to the Swift twin when enabled")
+        func publicStartTrackingRoutesToSwiftTwinWhenFlagEnabled() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer { RadarSwift.bridge = originalBridge }
+            bridge.mockLocationAuthorizationStatus = .denied
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                "useSwiftLocationManager": true
+            ])
+
+            RadarLocationManager.sharedInstance().startTracking(with: .presetResponsive)
+
+            #expect(bridge.lastFailStatus == .errorPermissions)
+            #expect(bridge.updateTrackingCallCount == 0)
+            #expect(RadarSettings.tracking == false)
+        }
 
         // MARK: - restartPreviousTrackingOptions — Swift twin
 

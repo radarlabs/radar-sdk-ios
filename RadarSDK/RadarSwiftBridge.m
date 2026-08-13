@@ -87,6 +87,14 @@
     [[RadarLocationManager sharedInstance] handleLocation:location source:source];
 }
 
+- (void)updateTracking {
+    [[RadarLocationManager sharedInstance] updateTracking];
+}
+
+- (CLAuthorizationStatus)locationAuthorizationStatus {
+    return [[[RadarLocationManager sharedInstance] permissionsHelper] locationAuthorizationStatus];
+}
+
 - (RadarUser * _Nullable)radarUser {
     return [RadarState radarUser];
 }
