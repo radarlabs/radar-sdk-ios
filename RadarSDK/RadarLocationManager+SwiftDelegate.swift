@@ -42,6 +42,30 @@ extension RadarLocationManagerSwift {
         return .backgroundLocation
     }
 
+    @objc(didVisitOnLocationManager:visit:)
+    static func didVisit(locationManager: CLLocationManager, visit: CLVisit) {
+        guard let location = locationManager.location else {
+            return
+        }
+
+        RadarLogger.shared.debug(
+            "🦅 Visit detected | arrival = \(visit.arrivalDate); departure = \(visit.departureDate); horizontalAccuracy = \(visit.horizontalAccuracy); visit.coordinate = (\(visit.coordinate.latitude), \(visit.coordinate.longitude)); manager.location = \(location)"
+        )
+
+        guard RadarSettings.tracking else {
+            RadarLogger.shared.debug("🦅 Ignoring visit: not tracking")
+            return
+        }
+
+        // Core Location represents an arrival-only visit with a distant-future departure date;
+        // a concrete departure date means the visit is complete. See CLVisit.departureDate.
+        let source: RadarLocationSource =
+            visit.departureDate == .distantFuture
+            ? .visitArrival
+            : .visitDeparture
+        RadarSwift.bridge?.handleLocation(location, source: source)
+    }
+
     @objc(didUpdateHeading:)
     static func didUpdateHeading(_ heading: CLHeading) {
         RadarState().lastHeadingData = [
