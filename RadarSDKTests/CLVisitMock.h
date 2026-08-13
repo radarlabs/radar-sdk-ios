@@ -12,10 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CLVisitMock : CLVisit
 
-- (instancetype _Nullable)initWithCoordinate:(CLLocationCoordinate2D)coordinate
-                          horizontalAccuracy:(CLLocationAccuracy)horizontalAccuracy
-                                 arrivalDate:(NSDate *)arrivalDate
-                               departureDate:(NSDate *)departureDate;
+- (instancetype)initWithCoordinate:(CLLocationCoordinate2D)coordinate
+                 horizontalAccuracy:(CLLocationAccuracy)horizontalAccuracy
+                        arrivalDate:(NSDate *)arrivalDate
+                      departureDate:(NSDate *)departureDate;
 
 @end
 

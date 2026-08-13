@@ -250,17 +250,12 @@ extension RadarSerializedTests {
         }
 
         private func makeVisit(departureDate: Date) -> CLVisitMock {
-            guard
-                let visit = CLVisitMock(
-                    coordinate: CLLocationCoordinate2D(latitude: 40.7, longitude: -74.0),
-                    horizontalAccuracy: 100,
-                    arrivalDate: Date(timeIntervalSince1970: 0),
-                    departureDate: departureDate
-                )
-            else {
-                fatalError("Failed to create CLVisitMock")
-            }
-            return visit
+            CLVisitMock(
+                coordinate: CLLocationCoordinate2D(latitude: 40.7, longitude: -74.0),
+                horizontalAccuracy: 100,
+                arrivalDate: Date(timeIntervalSince1970: 0),
+                departureDate: departureDate
+            )
         }
 
     }
