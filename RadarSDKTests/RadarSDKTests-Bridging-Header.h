@@ -14,3 +14,4 @@
 #import "../RadarSDK/RadarEvent+Internal.h"
 #import "../RadarSDK/RadarTrip+Internal.h"
 #import "../RadarSDK/RadarBeacon+Internal.h"
+#import "../RadarSDK/RadarSegment+Internal.h"
