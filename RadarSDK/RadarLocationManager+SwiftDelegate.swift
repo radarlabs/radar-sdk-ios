@@ -11,6 +11,37 @@ import Foundation
 // The `CLLocationManagerDelegate` half of `RadarLocationManager`
 extension RadarLocationManagerSwift {
 
+    @objc(didUpdateLocations:completionHandlerCount:)
+    static func didUpdateLocations(_ updates: [CLLocation]?, completionHandlerCount: UInt) {
+        // At least one location update exists. Last one is the one we care about
+        guard let location = updates?.last else {
+            return
+        }
+
+        let source = locationSource(completionHandlerCount: completionHandlerCount)
+        guard source != .unknown else {
+            return
+        }
+
+        RadarSwift.bridge?.handleLocation(location, source: source)
+    }
+
+    private static func locationSource(completionHandlerCount: UInt) -> RadarLocationSource {
+        let configuration = RadarSettings.sdkConfiguration
+        if completionHandlerCount > 0,
+            configuration?.skipForegroundCheck == true || RadarSwift.bridge?.isForeground() == true
+        {
+            return .foregroundLocation
+        }
+
+        guard RadarSettings.tracking else {
+            RadarLogger.shared.debug("🦅 Ignoring location: not tracking")
+            return .unknown
+        }
+
+        return .backgroundLocation
+    }
+
     @objc(didUpdateHeading:)
     static func didUpdateHeading(_ heading: CLHeading) {
         RadarState().lastHeadingData = [

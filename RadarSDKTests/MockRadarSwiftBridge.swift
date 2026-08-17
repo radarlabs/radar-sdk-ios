@@ -36,9 +36,16 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func createEvent(dict: [String: Any]) -> RadarEvent? { nil }
     func createUser(dict: [String: Any]) -> RadarUser? { nil }
     func createGeofence(dict: [String: Any]) -> RadarGeofence? { nil }
-    func isForeground() -> Bool { false }
+    var mockIsForeground = false
+    func isForeground() -> Bool { mockIsForeground }
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {}
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {}
+    private(set) var lastHandledLocation: CLLocation?
+    private(set) var lastHandledSource: RadarLocationSource?
+    func handleLocation(_ location: CLLocation, source: RadarLocationSource) {
+        lastHandledLocation = location
+        lastHandledSource = source
+    }
     func radarUser() -> RadarUser? { nil }
     private(set) var lastFailStatus: RadarStatus?
     func didFail(status: RadarStatus) { lastFailStatus = status }
