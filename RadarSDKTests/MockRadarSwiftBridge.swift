@@ -48,8 +48,6 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     }
     private(set) var updateTrackingCallCount = 0
     func updateTracking() { updateTrackingCallCount += 1 }
-    var mockLocationAuthorizationStatus: CLAuthorizationStatus = .notDetermined
-    func locationAuthorizationStatus() -> CLAuthorizationStatus { mockLocationAuthorizationStatus }
     func radarUser() -> RadarUser? { nil }
     private(set) var lastFailStatus: RadarStatus?
     func didFail(status: RadarStatus) { lastFailStatus = status }
