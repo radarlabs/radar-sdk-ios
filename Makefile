@@ -1,16 +1,16 @@
 SDK ?= "iphonesimulator"
-DESTINATION ?= "platform=iOS Simulator,name=iPhone 17,OS=26.4.1"
+DESTINATION ?= platform=iOS Simulator,name=iPhone 17,OS=26.4.1
 PROJECT := RadarSDK
 PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
 SCHEME_EXAMPLE := Example
 SWIFTLINT := $(firstword $(wildcard .tools/swiftlint) swiftlint)
-XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
+XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination "$(DESTINATION)" ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 # The example app links MapLibre (swiftui-dsl), which needs two accommodations in a
 # non-interactive build:
 #   -skipMacroValidation      skips the one-time MapLibreSwiftMacros trust prompt.
-XC_EXAMPLE_ARGS := -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination $(DESTINATION) -skipMacroValidation ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
+XC_EXAMPLE_ARGS := -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination "$(DESTINATION)" -skipMacroValidation ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 CI_SCHEME ?= RadarSDK
 CI_WORKSPACE ?= Example/Example.xcodeproj/project.xcworkspace
 CI_DESTINATION ?= platform=iOS Simulator,name=iPhone 17,OS=26.4.1
