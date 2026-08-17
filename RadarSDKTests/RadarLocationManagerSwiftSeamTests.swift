@@ -18,6 +18,7 @@ extension RadarSerializedTests {
         // MARK: - startTracking(options:)
 
         @Test("start tracking reports a permissions error without changing state when unauthorized")
+        @MainActor
         func startTrackingRejectsUnauthorizedStatus() {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer { RadarLocationManagerSwiftTestHelpers.clearState() }
@@ -25,7 +26,11 @@ extension RadarSerializedTests {
             let original = RadarSwift.bridge
             RadarSwift.bridge = mock
             defer { RadarSwift.bridge = original }
-            mock.mockLocationAuthorizationStatus = .denied
+            let permissionsHelper = MockRadarPermissionsHelper()
+            permissionsHelper.mockAuthorizationStatus = .denied
+            let originalPermissionsHelper = RadarLocationManagerSwift.permissionsHelper
+            RadarLocationManagerSwift.permissionsHelper = permissionsHelper
+            defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
             let existingOptions = RadarTrackingOptions.presetContinuous
             RadarSettings.trackingOptions = existingOptions
 
@@ -38,6 +43,7 @@ extension RadarSerializedTests {
         }
 
         @Test(arguments: [CLAuthorizationStatus.authorizedWhenInUse, .authorizedAlways])
+        @MainActor
         func startTrackingAcceptsAuthorizedStatus(authorizationStatus: CLAuthorizationStatus) {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer { RadarLocationManagerSwiftTestHelpers.clearState() }
@@ -45,7 +51,11 @@ extension RadarSerializedTests {
             let original = RadarSwift.bridge
             RadarSwift.bridge = mock
             defer { RadarSwift.bridge = original }
-            mock.mockLocationAuthorizationStatus = authorizationStatus
+            let permissionsHelper = MockRadarPermissionsHelper()
+            permissionsHelper.mockAuthorizationStatus = authorizationStatus
+            let originalPermissionsHelper = RadarLocationManagerSwift.permissionsHelper
+            RadarLocationManagerSwift.permissionsHelper = permissionsHelper
+            defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
             let options = RadarTrackingOptions.presetResponsive
 
             RadarLocationManagerSwift.startTracking(options: options)
@@ -57,6 +67,7 @@ extension RadarSerializedTests {
         }
 
         @Test("public start tracking method routes to the Swift twin when enabled")
+        @MainActor
         func publicStartTrackingRoutesToSwiftTwinWhenFlagEnabled() {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer { RadarLocationManagerSwiftTestHelpers.clearState() }
@@ -64,7 +75,11 @@ extension RadarSerializedTests {
             let originalBridge = RadarSwift.bridge
             RadarSwift.bridge = bridge
             defer { RadarSwift.bridge = originalBridge }
-            bridge.mockLocationAuthorizationStatus = .denied
+            let permissionsHelper = MockRadarPermissionsHelper()
+            permissionsHelper.mockAuthorizationStatus = .denied
+            let originalPermissionsHelper = RadarLocationManagerSwift.permissionsHelper
+            RadarLocationManagerSwift.permissionsHelper = permissionsHelper
+            defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
                 "useSwiftLocationManager": true
             ])

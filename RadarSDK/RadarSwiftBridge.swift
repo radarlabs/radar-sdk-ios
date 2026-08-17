@@ -30,7 +30,6 @@ protocol RadarSwiftBridgeProtocol {
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource)
     func handleLocation(_ location: CLLocation, source: RadarLocationSource)
     func updateTracking()
-    func locationAuthorizationStatus() -> CLAuthorizationStatus
     func radarUser() -> RadarUser?
     func didFail(status: RadarStatus)
     func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon
