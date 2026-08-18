@@ -130,8 +130,8 @@ ci-test-pretty:
 	  status=$$?; \
 	  if [ $$status -ne 0 ]; then \
 	    echo ""; \
-	    echo "=== Raw xcodebuild test log (captured before xcpretty) ==="; \
-	    cat "$(CI_TEST_LOG)"; \
+	    echo "=== Swift Testing issues (hidden by xcpretty) ==="; \
+	    grep -E "^(Testing failed:|.*✘ Test |.*recorded an issue|.* failed after .* with [0-9]+ issue|Crash: )" $(CI_TEST_LOG) || echo "(no Swift Testing failure markers found — see $(CI_TEST_LOG))"; \
 	  fi; \
 	  exit $$status
 
