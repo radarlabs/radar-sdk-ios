@@ -113,6 +113,58 @@ extension RadarSerializedTests {
             #expect(trackOnceCallCount == 0)
         }
 
+        @Test("indoor updates trigger tracking with the last device location")
+        func indoorUpdatesTriggerTracking() {
+            setIndoorScanEnabled(true)
+            RadarSettings.tracking = true
+            defer { RadarSettings.tracking = false }
+            let bridge = MockRadarSwiftBridge()
+            let deviceLocation = CLLocation(latitude: 41.0, longitude: -87.0)
+            bridge.mockLastLocation = deviceLocation
+
+            RadarIndoors.triggerTrackForIndoorUpdate(bridge: bridge)
+
+            #expect(bridge.lastHandledLocation === deviceLocation)
+            #expect(bridge.lastHandledSource == .indoors)
+        }
+
+        @Test("indoor updates do not trigger tracking after tracking stops")
+        func indoorUpdatesDoNotTriggerAfterTrackingStops() {
+            setIndoorScanEnabled(true)
+            RadarSettings.tracking = false
+            let bridge = MockRadarSwiftBridge()
+            bridge.mockLastLocation = CLLocation(latitude: 41.0, longitude: -87.0)
+
+            RadarIndoors.triggerTrackForIndoorUpdate(bridge: bridge)
+
+            #expect(bridge.lastHandledLocation == nil)
+        }
+
+        @Test("indoor updates do not trigger tracking when indoor scanning is disabled")
+        func indoorUpdatesRespectTrackingOptions() {
+            setIndoorScanEnabled(false)
+            RadarSettings.tracking = true
+            defer { RadarSettings.tracking = false }
+            let bridge = MockRadarSwiftBridge()
+            bridge.mockLastLocation = CLLocation(latitude: 41.0, longitude: -87.0)
+
+            RadarIndoors.triggerTrackForIndoorUpdate(bridge: bridge)
+
+            #expect(bridge.lastHandledLocation == nil)
+        }
+
+        @Test("indoor updates do not trigger tracking without a device location")
+        func indoorUpdatesNeedDeviceLocation() {
+            setIndoorScanEnabled(true)
+            RadarSettings.tracking = true
+            defer { RadarSettings.tracking = false }
+            let bridge = MockRadarSwiftBridge()
+
+            RadarIndoors.triggerTrackForIndoorUpdate(bridge: bridge)
+
+            #expect(bridge.lastHandledLocation == nil)
+        }
+
         @Test("stops indoor scanning once the current geofences no longer include an active indoor model")
         func stopsWhenGeofenceLosesModel() async {
             setIndoorScanEnabled(true)

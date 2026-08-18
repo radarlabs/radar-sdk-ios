@@ -117,11 +117,26 @@ internal class RadarIndoors: NSObject {
         return { location in
             Task {
                 await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
+                await MainActor.run {
+                    triggerTrackForIndoorUpdate(bridge: RadarSwift.bridge)
+                }
                 RadarLogger.shared.debug(
                     "Indoor location update | latitude = \(location.coordinate.latitude); longitude = \(location.coordinate.longitude); horizontalAccuracy = \(location.horizontalAccuracy); floor = \(location.floor.map { String($0.level) } ?? "nil"); timestamp = \(location.timestamp)"
                 )
             }
         }
+    }
+
+    nonisolated static func triggerTrackForIndoorUpdate(bridge: RadarSwiftBridgeProtocol?) {
+        guard RadarSettings.tracking, Radar.getTrackingOptions().useIndoorScan,
+            let deviceLocation = bridge?.lastLocation()
+        else {
+            return
+        }
+
+        // The tracking pipeline reads the newest indoor result before sending. Pass the device
+        // location here so the request can keep both sets of coordinates.
+        bridge?.handleLocation(deviceLocation, source: .indoors)
     }
 
     // Initialized entirely from nonisolated, Sendable expressions so the singleton can be built

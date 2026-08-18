@@ -917,7 +917,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     [RadarState setLastLocation:location];
 
-    [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
+    if (source != RadarLocationSourceIndoors) {
+        [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
+    }
 
     if (source != RadarLocationSourceManualLocation) {
         [self updateTracking:location];
