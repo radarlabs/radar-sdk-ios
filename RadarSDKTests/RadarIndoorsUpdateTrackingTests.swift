@@ -165,6 +165,18 @@ extension RadarSerializedTests {
             #expect(bridge.lastHandledLocation == nil)
         }
 
+        @Test("indoor tracking bypasses device location state gates")
+        func indoorTrackingBypassesDeviceLocationState() {
+            #expect(RadarLocationManagerSwift.shouldBypassDeviceLocationState(for: .indoors))
+        }
+
+        @Test("device tracking keeps device location state gates")
+        func deviceTrackingKeepsDeviceLocationState() {
+            #expect(!RadarLocationManagerSwift.shouldBypassDeviceLocationState(for: .backgroundLocation))
+            #expect(!RadarLocationManagerSwift.shouldBypassDeviceLocationState(for: .foregroundLocation))
+            #expect(!RadarLocationManagerSwift.shouldBypassDeviceLocationState(for: .manualLocation))
+        }
+
         @Test("stops indoor scanning once the current geofences no longer include an active indoor model")
         func stopsWhenGeofenceLosesModel() async {
             setIndoorScanEnabled(true)
