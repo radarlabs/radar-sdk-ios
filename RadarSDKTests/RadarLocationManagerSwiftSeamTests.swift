@@ -20,75 +20,48 @@ extension RadarSerializedTests {
         @Test("start tracking reports a permissions error without changing state when unauthorized")
         @MainActor
         func startTrackingRejectsUnauthorizedStatus() {
-            RadarLocationManagerSwiftTestHelpers.clearState()
-            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
-            let mock = MockRadarSwiftBridge()
-            let original = RadarSwift.bridge
-            RadarSwift.bridge = mock
-            defer { RadarSwift.bridge = original }
-            let permissionsHelper = MockRadarPermissionsHelper()
-            permissionsHelper.mockAuthorizationStatus = .denied
-            let originalPermissionsHelper = RadarLocationManagerSwift.permissionsHelper
-            RadarLocationManagerSwift.permissionsHelper = permissionsHelper
-            defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
-            let existingOptions = RadarTrackingOptions.presetContinuous
-            RadarSettings.trackingOptions = existingOptions
+            RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies(authorizationStatus: .denied) { bridge in
+                let existingOptions = RadarTrackingOptions.presetContinuous
+                RadarSettings.trackingOptions = existingOptions
 
-            RadarLocationManagerSwift.startTracking(options: .presetResponsive)
+                RadarLocationManagerSwift.startTracking(options: .presetResponsive)
 
-            #expect(mock.lastFailStatus == .errorPermissions)
-            #expect(mock.updateTrackingCallCount == 0)
-            #expect(RadarSettings.tracking == false)
-            #expect(RadarSettings.trackingOptions == existingOptions)
+                #expect(bridge.lastFailStatus == .errorPermissions)
+                #expect(bridge.updateTrackingCallCount == 0)
+                #expect(RadarSettings.tracking == false)
+                #expect(RadarSettings.trackingOptions == existingOptions)
+            }
         }
 
         @Test(arguments: [CLAuthorizationStatus.authorizedWhenInUse, .authorizedAlways])
         @MainActor
         func startTrackingAcceptsAuthorizedStatus(authorizationStatus: CLAuthorizationStatus) {
-            RadarLocationManagerSwiftTestHelpers.clearState()
-            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
-            let mock = MockRadarSwiftBridge()
-            let original = RadarSwift.bridge
-            RadarSwift.bridge = mock
-            defer { RadarSwift.bridge = original }
-            let permissionsHelper = MockRadarPermissionsHelper()
-            permissionsHelper.mockAuthorizationStatus = authorizationStatus
-            let originalPermissionsHelper = RadarLocationManagerSwift.permissionsHelper
-            RadarLocationManagerSwift.permissionsHelper = permissionsHelper
-            defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
-            let options = RadarTrackingOptions.presetResponsive
+            RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies(authorizationStatus: authorizationStatus) { bridge in
+                let options = RadarTrackingOptions.presetResponsive
 
-            RadarLocationManagerSwift.startTracking(options: options)
+                RadarLocationManagerSwift.startTracking(options: options)
 
-            #expect(mock.lastFailStatus == nil)
-            #expect(mock.updateTrackingCallCount == 1)
-            #expect(RadarSettings.tracking == true)
-            #expect(RadarSettings.trackingOptions == options)
+                #expect(bridge.lastFailStatus == nil)
+                #expect(bridge.updateTrackingCallCount == 1)
+                #expect(RadarSettings.tracking == true)
+                #expect(RadarSettings.trackingOptions == options)
+            }
         }
 
         @Test("public start tracking method routes to the Swift twin when enabled")
         @MainActor
         func publicStartTrackingRoutesToSwiftTwinWhenFlagEnabled() {
-            RadarLocationManagerSwiftTestHelpers.clearState()
-            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
-            let bridge = MockRadarSwiftBridge()
-            let originalBridge = RadarSwift.bridge
-            RadarSwift.bridge = bridge
-            defer { RadarSwift.bridge = originalBridge }
-            let permissionsHelper = MockRadarPermissionsHelper()
-            permissionsHelper.mockAuthorizationStatus = .denied
-            let originalPermissionsHelper = RadarLocationManagerSwift.permissionsHelper
-            RadarLocationManagerSwift.permissionsHelper = permissionsHelper
-            defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
-            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-                "useSwiftLocationManager": true
-            ])
+            RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies(authorizationStatus: .denied) { bridge in
+                RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                    "useSwiftLocationManager": true
+                ])
 
-            RadarLocationManager.sharedInstance().startTracking(with: .presetResponsive)
+                RadarLocationManager.sharedInstance().startTracking(with: .presetResponsive)
 
-            #expect(bridge.lastFailStatus == .errorPermissions)
-            #expect(bridge.updateTrackingCallCount == 0)
-            #expect(RadarSettings.tracking == false)
+                #expect(bridge.lastFailStatus == .errorPermissions)
+                #expect(bridge.updateTrackingCallCount == 0)
+                #expect(RadarSettings.tracking == false)
+            }
         }
 
         // MARK: - restartPreviousTrackingOptions — Swift twin
@@ -108,45 +81,43 @@ extension RadarSerializedTests {
         }
 
         @Test("Swift twin restarts tracking with previous options and clears previousTrackingOptions")
+        @MainActor
         func swiftTwinRestartsTrackingAndClearsPreviousOptions() {
-            RadarLocationManagerSwiftTestHelpers.clearState()
-            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies { bridge in
+                RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                    "useSwiftLocationManager": true
+                ])
+                let previousOptions = RadarTrackingOptions.presetResponsive
+                RadarSettings.previousTrackingOptions = previousOptions
 
-            // Authorize location so `Radar.startTracking(trackingOptions:)` proceeds past the
-            // permission gate in `RadarLocationManager.startTrackingWithOptions:`.
-            RadarLocationManagerSwiftTestHelpers.installAuthorizedPermissions()
-            let previousOptions = RadarTrackingOptions.presetResponsive
-            RadarSettings.previousTrackingOptions = previousOptions
+                RadarLocationManagerSwift.restartPreviousTrackingOptions()
 
-            RadarLocationManagerSwift.restartPreviousTrackingOptions()
-
-            // Previous slot cleared, tracking is now active, and the live tracking options
-            // equal the previous options — proving `Radar.startTracking(trackingOptions:)` was
-            // called with the right argument.
-            #expect(RadarSettings.previousTrackingOptions == nil)
-            #expect(RadarSettings.tracking == true)
-            #expect(RadarSettings.trackingOptions == previousOptions)
+                #expect(RadarSettings.previousTrackingOptions == nil)
+                #expect(RadarSettings.tracking == true)
+                #expect(RadarSettings.trackingOptions == previousOptions)
+                #expect(bridge.updateTrackingCallCount == 1)
+            }
         }
 
         // MARK: - restartPreviousTrackingOptions — public method routing
 
         @Test("Public method routes to Swift twin when useSwiftLocationManager is enabled")
+        @MainActor
         func publicMethodRoutesToSwiftTwinWhenFlagEnabled() {
-            RadarLocationManagerSwiftTestHelpers.clearState()
-            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies { bridge in
+                RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                    "useSwiftLocationManager": true
+                ])
+                let previousOptions = RadarTrackingOptions.presetResponsive
+                RadarSettings.previousTrackingOptions = previousOptions
 
-            RadarLocationManagerSwiftTestHelpers.installAuthorizedPermissions()
-            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-                "useSwiftLocationManager": true
-            ])
-            let previousOptions = RadarTrackingOptions.presetResponsive
-            RadarSettings.previousTrackingOptions = previousOptions
+                RadarLocationManager.sharedInstance().restartPreviousTrackingOptions()
 
-            RadarLocationManager.sharedInstance().restartPreviousTrackingOptions()
-
-            #expect(RadarSettings.previousTrackingOptions == nil)
-            #expect(RadarSettings.tracking == true)
-            #expect(RadarSettings.trackingOptions == previousOptions)
+                #expect(RadarSettings.previousTrackingOptions == nil)
+                #expect(RadarSettings.tracking == true)
+                #expect(RadarSettings.trackingOptions == previousOptions)
+                #expect(bridge.updateTrackingCallCount == 1)
+            }
         }
 
         @Test("Public method uses ObjC body when useSwiftLocationManager is disabled")

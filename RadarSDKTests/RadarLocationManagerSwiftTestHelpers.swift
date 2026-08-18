@@ -17,6 +17,30 @@ import Foundation
 
 enum RadarLocationManagerSwiftTestHelpers {
 
+    /// Swift tracking crosses both injection seams; keeping their lifetime scoped together
+    /// prevents a test's bridge or authorization state from leaking into the next test.
+    @MainActor
+    static func withMockedSwiftTrackingDependencies(
+        authorizationStatus: CLAuthorizationStatus = .authorizedAlways,
+        _ body: (MockRadarSwiftBridge) -> Void
+    ) {
+        clearState()
+        defer { clearState() }
+
+        let bridge = MockRadarSwiftBridge()
+        let originalBridge = RadarSwift.bridge
+        RadarSwift.bridge = bridge
+        defer { RadarSwift.bridge = originalBridge }
+
+        let permissionsHelper = MockRadarPermissionsHelper()
+        permissionsHelper.mockAuthorizationStatus = authorizationStatus
+        let originalPermissionsHelper = RadarLocationManagerSwift.permissionsHelper
+        RadarLocationManagerSwift.permissionsHelper = permissionsHelper
+        defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
+
+        body(bridge)
+    }
+
     /// Reset every `RadarSettings` key the seam tests write so each test starts
     /// from a known state, and restore the shared `RadarLocationManager`'s
     /// permissions helper to a real one. Call at the beginning of each test
