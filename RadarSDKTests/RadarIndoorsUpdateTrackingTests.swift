@@ -89,6 +89,30 @@ extension RadarSerializedTests {
             )!
         }
 
+        @Test("bootstraps the indoor model when effective tracking options enable indoor scanning")
+        func bootstrapsIndoorTracking() {
+            setIndoorScanEnabled(true)
+            var trackOnceCallCount = 0
+
+            RadarIndoors.bootstrapTrackingIfNeeded {
+                trackOnceCallCount += 1
+            }
+
+            #expect(trackOnceCallCount == 1)
+        }
+
+        @Test("does not bootstrap the indoor model when indoor scanning is disabled")
+        func skipsBootstrapWhenIndoorScanningIsDisabled() {
+            setIndoorScanEnabled(false)
+            var trackOnceCallCount = 0
+
+            RadarIndoors.bootstrapTrackingIfNeeded {
+                trackOnceCallCount += 1
+            }
+
+            #expect(trackOnceCallCount == 0)
+        }
+
         @Test("stops indoor scanning once the current geofences no longer include an active indoor model")
         func stopsWhenGeofenceLosesModel() async {
             setIndoorScanEnabled(true)

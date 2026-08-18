@@ -141,6 +141,22 @@ internal class RadarIndoors: NSObject {
         super.init()
     }
 
+    nonisolated static func bootstrapTrackingIfNeeded() {
+        bootstrapTrackingIfNeeded {
+            Radar.trackOnce(completionHandler: nil)
+        }
+    }
+
+    nonisolated static func bootstrapTrackingIfNeeded(trackOnce: () -> Void) {
+        guard Radar.getTrackingOptions().useIndoorScan else {
+            return
+        }
+
+        // The first track response identifies the active indoor model. Request it now so indoor
+        // ranging does not have to wait for the continuous tracking timer to fire.
+        trackOnce()
+    }
+
     public func updateTracking(geofences: [RadarGeofence]?) async {
         guard let sdk else {
             if Radar.getTrackingOptions().useIndoorScan {

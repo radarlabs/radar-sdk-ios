@@ -211,6 +211,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [RadarSettings setTracking:YES];
     [RadarSettings setTrackingOptions:trackingOptions];
     [self updateTracking];
+    [RadarIndoors bootstrapTrackingIfNeeded];
 }
 
 - (void)stopTracking {
