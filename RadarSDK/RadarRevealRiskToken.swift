@@ -22,8 +22,16 @@ final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
     let expiresIn: Double?
     @objc(expiresIn) var _expiresIn: NSNumber? { expiresIn.map { NSNumber(value: $0) } }
     let risk: RadarRevealRiskTokenRisk
-    let network: RadarRevealRiskTokenNetwork
-    let device: RadarRevealRiskTokenDevice
+    /// `nil` when `format` is JWE, since the payload only exists inside the encrypted token.
+    let network: RadarRevealRiskTokenNetwork?
+    /// `nil` when `format` is JWE, since the payload only exists inside the encrypted token.
+    let device: RadarRevealRiskTokenDevice?
+
+    private let rawFormat: String?
+    /// The wire format of the token, controlled by a server-side project setting. When JWE, the
+    /// token is opaque to the SDK: decrypt with your private key and verify against Radar's JWKS
+    /// server-side.
+    @objc(format) var format: RadarTokenFormat { rawFormat?.uppercased() == "JWE" ? .jwe : .jws }
 
     // unchecked sendable, set on init, should not be modified afterwards
     var dictionaryValue: [String: Sendable]?
@@ -36,6 +44,7 @@ final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
         case risk
         case network
         case device
+        case rawFormat = "format"
     }
 
     nonisolated(unsafe) private static let isoFormatter: ISO8601DateFormatter = {
@@ -111,7 +120,8 @@ enum RadarRevealRiskLevel: Int, Sendable, Decodable {
 @objc(RadarRevealRiskTokenRisk) @objcMembers
 final class RadarRevealRiskTokenRisk: NSObject, Decodable, Sendable {
     let level: RadarRevealRiskLevel
-    let reasons: [String]
+    /// `nil` when the token format is JWE, since reasons only exist inside the encrypted token.
+    let reasons: [String]?
 }
 
 @objc(RadarRevealRiskTokenNetwork) @objcMembers

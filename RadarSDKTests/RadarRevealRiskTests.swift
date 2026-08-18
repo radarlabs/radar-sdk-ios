@@ -133,13 +133,40 @@ extension RadarSerializedTests {
             #expect(token.expiresIn == 3600)
             #expect(token.risk.level == .medium)
             #expect(token.risk.reasons == ["proxy_detected", "vpn_detected"])
-            #expect(token.network.ipAddress?.countryCode == "US")
-            #expect(token.network.ipAddress?.city == "New York")
-            #expect(token.network.privacy?.proxy == true)
-            #expect(token.network.privacy?.vpn == true)
-            #expect(token.network.asn?.name == "CLOUDFLARENET")
-            #expect(token.device.deviceType == "iOS")
-            #expect(token.device.installId == "install-xyz")
+            #expect(token.format == .jws)
+            #expect(token.network?.ipAddress?.countryCode == "US")
+            #expect(token.network?.ipAddress?.city == "New York")
+            #expect(token.network?.privacy?.proxy == true)
+            #expect(token.network?.privacy?.vpn == true)
+            #expect(token.network?.asn?.name == "CLOUDFLARENET")
+            #expect(token.device?.deviceType == "iOS")
+            #expect(token.device?.installId == "install-xyz")
+        }
+
+        @Test("revealRisk parses a protected (JWE) response that omits reasons, network, and device")
+        func revealRiskParsesProtectedResponse() async throws {
+            // in protected mode the verdict-bearing fields only exist inside the encrypted token
+            let protectedResponse: [String: Any] = [
+                "_id": "risk-token-456",
+                "token": "a.b.c.d.e",
+                "expiresAt": "2026-07-14T12:00:00.000Z",
+                "expiresIn": 1200,
+                "risk": ["level": "low"],
+                "format": "JWE",
+            ]
+            let session = MockURLSession()
+            session.on(RadarRevealRiskTests.revealRiskURL, protectedResponse)
+
+            let manager = makeManager(fraudResult: ["payload": "mock-fraud-payload"], session: session)
+            let token = try await manager.revealRisk(useSecondaryVerifiedHost: false)
+
+            #expect(token.id == "risk-token-456")
+            #expect(token.token == "a.b.c.d.e")
+            #expect(token.format == .jwe)
+            #expect(token.risk.level == .low)
+            #expect(token.risk.reasons == nil)
+            #expect(token.network == nil)
+            #expect(token.device == nil)
         }
 
         @Test("revealRisk surfaces the token through the completion-handler API")
@@ -158,6 +185,7 @@ extension RadarSerializedTests {
             #expect(status == .success)
             #expect(token?.id == "risk-token-123")
             #expect(token?.risk.level == .medium)
+            #expect(token?.format == .jws)
         }
 
         @Test("revealRisk passes the product up in the X-Radar-Product header when it is set")

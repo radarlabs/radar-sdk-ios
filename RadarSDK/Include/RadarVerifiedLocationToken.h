@@ -10,6 +10,19 @@
 #import <Foundation/Foundation.h>
 
 /**
+ The wire format of a verified response token, controlled by a server-side project setting.
+
+ @see https://radar.com/documentation/fraud
+ */
+typedef NS_ENUM(NSInteger, RadarTokenFormat) {
+    /// A signed JSON Web Token (JWT). Verify the token server-side using your secret key.
+    RadarTokenFormatJWS NS_SWIFT_NAME(jws) = 0,
+    /// A signed JWT nested in an encrypted JWE. Opaque to the SDK; decrypt with your private key
+    /// and verify against Radar's JWKS server-side.
+    RadarTokenFormatJWE NS_SWIFT_NAME(jwe) = 1,
+};
+
+/**
  Represents a user's verified location.
 
  @see https://radar.com/documentation/fraud
@@ -17,17 +30,18 @@
 @interface RadarVerifiedLocationToken : NSObject
 
 /**
- The user.
+ The user. `nil` when `format` is `RadarTokenFormatJWE`, since the payload only exists inside the encrypted token.
  */
 @property (nullable, strong, nonatomic, readonly) RadarUser *user;
 
 /**
- An array of events.
+ An array of events. `nil` when `format` is `RadarTokenFormatJWE`, since the payload only exists inside the encrypted token.
  */
 @property (nullable, strong, nonatomic, readonly) NSArray<RadarEvent *> *events;
 
 /**
- A signed JSON Web Token (JWT) containing the user and array of events. Verify the token server-side using your secret key.
+ A signed JSON Web Token (JWT) containing the user and array of events. When `format` is `RadarTokenFormatJWE`, an encrypted
+ JWE instead. Verify (and, for JWE, decrypt) the token server-side.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *token;
 
@@ -55,6 +69,11 @@
  The Radar ID of the location check.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *_id;
+
+/**
+ The wire format of the token. `RadarTokenFormatJWS` unless the server indicates otherwise.
+ */
+@property (assign, nonatomic, readonly) RadarTokenFormat format;
 
 /**
  The full dictionary value of the token.
