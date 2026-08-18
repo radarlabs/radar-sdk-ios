@@ -737,6 +737,12 @@
                                 }
                                 
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
+                            } else if (token && token.format == RadarTokenFormatJWE) {
+                                // protected mode: user and events are omitted from the plaintext response
+                                // and only exist inside the encrypted token
+                                [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
+
+                                return completionHandler(RadarStatusSuccess, res, nil, nil, nearbyGeofences, config, token);
                             } else {
                                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
                                 [RadarState setRegisteredNotifications:notificationsRemaining];

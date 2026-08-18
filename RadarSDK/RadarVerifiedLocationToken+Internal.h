@@ -10,14 +10,15 @@
 
 @interface RadarVerifiedLocationToken ()
 
-- (instancetype _Nullable)initWithUser:(RadarUser *_Nonnull)user
-                                events:(NSArray<RadarEvent *> *_Nonnull)events
+- (instancetype _Nullable)initWithUser:(RadarUser *_Nullable)user
+                                events:(NSArray<RadarEvent *> *_Nullable)events
                                  token:(NSString *_Nonnull)token
                              expiresAt:(NSDate *_Nonnull)expiresAt
                              expiresIn:(NSTimeInterval)expiresIn
                                 passed:(BOOL)passed
                         failureReasons:(NSArray<NSString *> *_Nonnull)failureReasons
                                    _id:(NSString *_Nonnull)_id
+                                format:(RadarTokenFormat)format
                               fullDict:(NSDictionary *_Nonnull)fullDict;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 

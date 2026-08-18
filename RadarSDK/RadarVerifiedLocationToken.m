@@ -13,14 +13,15 @@
 
 @implementation RadarVerifiedLocationToken
 
-- (instancetype _Nullable)initWithUser:(RadarUser *_Nonnull)user
-                                events:(NSArray<RadarEvent *> *_Nonnull)events
+- (instancetype _Nullable)initWithUser:(RadarUser *_Nullable)user
+                                events:(NSArray<RadarEvent *> *_Nullable)events
                                  token:(NSString *_Nonnull)token
                              expiresAt:(NSDate *_Nonnull)expiresAt
                              expiresIn:(NSTimeInterval)expiresIn
                                 passed:(BOOL)passed
                         failureReasons:(NSArray<NSString *> * _Nonnull)failureReasons
                                    _id:(NSString * _Nonnull)_id
+                                format:(RadarTokenFormat)format
                                fullDict:(NSDictionary *_Nonnull)fullDict {
     self = [super init];
     if (self) {
@@ -32,6 +33,7 @@
         _passed = passed;
         _failureReasons = failureReasons;
         __id = _id;
+        _format = format;
         _fullDict = fullDict;
     }
     return self;
@@ -96,8 +98,16 @@
         _id = (NSString *)idObj;
     }
     
-    if (user && events && token && expiresAt) {
-        return [[RadarVerifiedLocationToken alloc] initWithUser:user events:events token:token expiresAt:expiresAt expiresIn:expiresIn passed:passed failureReasons:failureReasons _id:_id fullDict:dict];
+    RadarTokenFormat format = RadarTokenFormatJWS;
+    id formatObj = dict[@"format"];
+    if (formatObj && [formatObj isKindOfClass:[NSString class]] && [[(NSString *)formatObj uppercaseString] isEqualToString:@"JWE"]) {
+        format = RadarTokenFormatJWE;
+    }
+    
+    // in JWE (protected) mode the user and events only exist inside the encrypted token
+    BOOL hasRequiredFields = token && expiresAt && (format == RadarTokenFormatJWE || (user && events));
+    if (hasRequiredFields) {
+        return [[RadarVerifiedLocationToken alloc] initWithUser:user events:events token:token expiresAt:expiresAt expiresIn:expiresIn passed:passed failureReasons:failureReasons _id:_id format:format fullDict:dict];
     }
     
     return nil;

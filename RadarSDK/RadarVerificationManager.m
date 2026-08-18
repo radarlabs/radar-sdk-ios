@@ -382,6 +382,13 @@
         return NO;
     }
 
+    if (self.lastToken.format == RadarTokenFormatJWE) {
+        // JWE (protected) tokens are opaque to the SDK: without user.state.distanceToBorder the
+        // border check below is impossible, so they are never reused and every retrieval re-tracks
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Last token invalid | JWE tokens are never reused"];
+        return NO;
+    }
+
     NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
     double lastDistanceToStateBorder = -1;
     if (self.lastToken.user && self.lastToken.user.state) {
