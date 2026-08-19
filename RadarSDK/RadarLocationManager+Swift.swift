@@ -30,9 +30,8 @@ final class RadarLocationManagerSwift: NSObject {
     private static let syncGeofenceIdentifierPrefix = "radar_geofence_"
     private static let syncBeaconIdentifierPrefix = "radar_beacon_"
     private static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
-    @MainActor static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
+    nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
 
-    @MainActor
     @objc(startTrackingWithOptions:)
     static func startTracking(options: RadarTrackingOptions) {
         let authorizationStatus = permissionsHelper.locationAuthorizationStatus()

@@ -19,7 +19,6 @@ enum RadarLocationManagerSwiftTestHelpers {
 
     /// Swift tracking crosses both injection seams; keeping their lifetime scoped together
     /// prevents a test's bridge or authorization state from leaking into the next test.
-    @MainActor
     static func withMockedSwiftTrackingDependencies(
         authorizationStatus: CLAuthorizationStatus = .authorizedAlways,
         _ body: (MockRadarSwiftBridge) -> Void

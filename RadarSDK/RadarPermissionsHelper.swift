@@ -9,13 +9,11 @@
 import CoreLocation
 import Foundation
 
-@MainActor
-protocol RadarPermissionsHelping {
+protocol RadarPermissionsHelping: Sendable {
     func locationAuthorizationStatus() -> CLAuthorizationStatus
     func isRangingAvailable() -> Bool
 }
 
-@MainActor
 final class RadarPermissionsHelperSwift: RadarPermissionsHelping {
     func locationAuthorizationStatus() -> CLAuthorizationStatus {
         CLLocationManager.authorizationStatus()
