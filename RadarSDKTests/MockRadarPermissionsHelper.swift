@@ -17,13 +17,29 @@ final class MockRadarPermissionsHelper: RadarPermissionsHelping, @unchecked Send
     private var _mockRangingAvailable = true
 
     var mockAuthorizationStatus: CLAuthorizationStatus {
-        get { lock.lock(); defer { lock.unlock() }; return _mockAuthorizationStatus }
-        set { lock.lock(); defer { lock.unlock() }; _mockAuthorizationStatus = newValue }
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _mockAuthorizationStatus
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _mockAuthorizationStatus = newValue
+        }
     }
 
     var mockRangingAvailable: Bool {
-        get { lock.lock(); defer { lock.unlock() }; return _mockRangingAvailable }
-        set { lock.lock(); defer { lock.unlock() }; _mockRangingAvailable = newValue }
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _mockRangingAvailable
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _mockRangingAvailable = newValue
+        }
     }
 
     func locationAuthorizationStatus() -> CLAuthorizationStatus { mockAuthorizationStatus }
