@@ -7,15 +7,19 @@
 
 import Foundation
 
-struct RadarOperatingHoursSwift: Codable, Sendable, Equatable {
-    let hours: [String: [[String]]]
+private typealias DayRanges = [[String]]
+private typealias OperatingHours = [String: DayRanges]
 
-    init(hours: [String: [[String]]]) {
+struct RadarOperatingHoursSwift: Codable, Sendable, Equatable {
+    /// Expected JSON: `{ "mon": [["09:00", "17:00"]] }`.
+    let hours: OperatingHours
+
+    init(hours: OperatingHours) {
         self.hours = hours
     }
 
     init(from decoder: Decoder) throws {
-        let days = try decoder.singleValueContainer().decode([String: LenientDay].self)
+        let days = try decoder.singleValueContainer().decode([String: LossyDay].self)
         hours = days.compactMapValues { $0.ranges }
     }
 
@@ -24,8 +28,8 @@ struct RadarOperatingHoursSwift: Codable, Sendable, Equatable {
         try container.encode(hours)
     }
 
-    fileprivate static func parse(_ dictionary: NSDictionary) -> [String: [[String]]] {
-        var parsedHours: [String: [[String]]] = [:]
+    fileprivate static func parse(_ dictionary: NSDictionary) -> OperatingHours {
+        var parsedHours: OperatingHours = [:]
 
         for case let (key as String, dayPairs as [Any]) in dictionary {
             let parsedDayPairs = dayPairs.compactMap { pair -> [String]? in
@@ -43,13 +47,14 @@ struct RadarOperatingHoursSwift: Codable, Sendable, Equatable {
         return parsedHours
     }
 
-    /// One day's ranges. Decoding never throws, so a single malformed day cannot fail the whole
-    /// payload; `ranges` is `nil` when the value was not an array, which drops the day.
-    private struct LenientDay: Decodable {
-        let ranges: [[String]]?
+    /// Expected JSON for one day: `[["09:00", "17:00"], ["18:00", "21:00"]]`.
+    ///
+    /// Bad days are dropped so one bad value does not lose the whole payload.
+    private struct LossyDay: Decodable {
+        let ranges: DayRanges?
 
         init(from decoder: Decoder) throws {
-            guard let decoded = try? decoder.singleValueContainer().decode([LenientRange].self) else {
+            guard let decoded = try? decoder.singleValueContainer().decode([LossyRange].self) else {
                 ranges = nil
                 return
             }
@@ -57,9 +62,10 @@ struct RadarOperatingHoursSwift: Codable, Sendable, Equatable {
         }
     }
 
-    /// One `[start, end]` range. `range` is `nil` unless the value was an array of exactly two
-    /// strings, which drops the range from its day.
-    private struct LenientRange: Decodable {
+    /// Expected JSON for one range: `["09:00", "17:00"]`.
+    ///
+    /// Bad ranges are dropped so good ranges for the day still work.
+    private struct LossyRange: Decodable {
         let range: [String]?
 
         init(from decoder: Decoder) throws {
