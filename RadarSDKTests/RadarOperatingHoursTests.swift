@@ -22,8 +22,8 @@ struct RadarOperatingHoursTests {
         return try #require(try JSONSerialization.jsonObject(with: data) as? [String: [[String]]])
     }
 
-    private func objcHours(_ dictionary: [String: Any]) throws -> [String: [[String]]] {
-        let parsed = try #require(RadarOperatingHours(dictionary: dictionary))
+    private func compatibilityHours(_ dictionary: [String: Any]) throws -> [String: [[String]]] {
+        let parsed = RadarOperatingHours(dictionary: dictionary as NSDictionary)
         return try #require(parsed.hours as? [String: [[String]]])
     }
 
@@ -103,21 +103,19 @@ struct RadarOperatingHoursTests {
         #expect(try JSONDecoder().decode(RadarOperatingHoursSwift.self, from: data) == original)
     }
 
-    // MARK: - Parity with the legacy ObjC RadarOperatingHours
-
-    @Test("matches ObjC parsing of a valid payload")
-    func parityOnValidPayload() throws {
+    @Test("the Objective-C facade parses a valid payload")
+    func compatibilityOnValidPayload() throws {
         let dictionary: [String: Any] = [
             "mon": [["09:00", "17:00"]],
             "tue": [["08:00", "12:00"], ["13:00", "20:00"]],
         ]
         let swift = try decode(#"{"mon": [["09:00", "17:00"]], "tue": [["08:00", "12:00"], ["13:00", "20:00"]]}"#)
 
-        #expect(try objcHours(dictionary) == swift.hours)
+        #expect(try compatibilityHours(dictionary) == swift.hours)
     }
 
-    @Test("matches ObjC on a payload with malformed days and ranges")
-    func parityOnMalformedPayload() throws {
+    @Test("the Objective-C facade drops malformed days and ranges")
+    func compatibilityOnMalformedPayload() throws {
         let dictionary: [String: Any] = [
             "mon": [["09:00", "17:00"], ["18:00"], ["19:00", 20]],
             "tue": "closed",
@@ -125,12 +123,12 @@ struct RadarOperatingHoursTests {
         ]
         let swift = try decode(#"{"mon": [["09:00", "17:00"], ["18:00"], ["19:00", 20]], "tue": "closed", "wed": []}"#)
 
-        #expect(try objcHours(dictionary) == ["mon": [["09:00", "17:00"]], "wed": []])
-        #expect(try objcHours(dictionary) == swift.hours)
+        #expect(try compatibilityHours(dictionary) == ["mon": [["09:00", "17:00"]], "wed": []])
+        #expect(try compatibilityHours(dictionary) == swift.hours)
     }
 
-    @Test("matches ObjC on an empty payload")
-    func parityOnEmptyPayload() throws {
-        #expect(try objcHours([:]) == (try decode("{}")).hours)
+    @Test("the Objective-C facade parses an empty payload")
+    func compatibilityOnEmptyPayload() throws {
+        #expect(try compatibilityHours([:]) == (try decode("{}")).hours)
     }
 }
