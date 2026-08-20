@@ -42,7 +42,7 @@ struct VerifiedPanel: View {
             }
             ActionButton("revealRisk") {
                 Radar.revealRisk { (status, token) in
-                    let tokenDesc = token?.dictionaryValue().description ?? "no token"
+                    let tokenDesc = token?.dictionaryValue()?.description ?? "no token"
                     logStream.write(
                         status,
                         summary: "revealRisk: \(Radar.stringForStatus(status))",

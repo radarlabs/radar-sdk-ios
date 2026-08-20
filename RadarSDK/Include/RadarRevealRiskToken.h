@@ -6,6 +6,10 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
+#import "RadarVerifiedLocationToken.h"
+
 typedef NS_ENUM(NSInteger, RadarRevealRiskLevel) {
     RadarRevealRiskLevelNone = 0,
     RadarRevealRiskLevelLow,
@@ -15,7 +19,10 @@ typedef NS_ENUM(NSInteger, RadarRevealRiskLevel) {
 
 @interface RadarRevealRiskTokenRisk : NSObject
 @property (nonatomic, readonly) RadarRevealRiskLevel level;
-@property (nonatomic, readonly, copy) NSArray<NSString *> * _Nonnull reasons;
+/**
+ The risk reasons. `nil` when `format` is `RadarTokenFormatJWE`, since reasons only exist inside the encrypted token.
+ */
+@property (nonatomic, readonly, copy) NSArray<NSString *> * _Nullable reasons;
 @end
 
 @interface RadarRevealRiskTokenNetworkAsn : NSObject
@@ -33,6 +40,7 @@ typedef NS_ENUM(NSInteger, RadarRevealRiskLevel) {
 @end
 
 @interface RadarRevealRiskTokenNetworkIpAddress : NSObject
+@property (nonatomic, readonly, copy) NSString * _Nullable ip;
 @property (nonatomic, readonly, copy) NSString * _Nullable countryCode;
 @property (nonatomic, readonly, copy) NSString * _Nullable country;
 @property (nonatomic, readonly, copy) NSString * _Nullable countryFlag;
@@ -92,12 +100,27 @@ typedef NS_ENUM(NSInteger, RadarRevealRiskLevel) {
  */
 @interface RadarRevealRiskToken : NSObject
 @property (nonatomic, readonly, copy) NSString * _Nonnull _id;
+/**
+ A signed JSON Web Token (JWT). When `format` is `RadarTokenFormatJWE`, an encrypted (JWE) token that must be
+ decrypted with your private key and verified against Radar's JWKS server-side.
+ */
 @property (nonatomic, readonly, copy) NSString * _Nullable token;
 @property (nonatomic, readonly, copy) NSDate * _Nullable expiresAt;
 @property (nonatomic, readonly, strong) NSNumber * _Nullable expiresIn;
 @property (nonatomic, readonly, strong) RadarRevealRiskTokenRisk * _Nonnull risk;
-@property (nonatomic, readonly, strong) RadarRevealRiskTokenNetwork * _Nonnull network;
-@property (nonatomic, readonly, strong) RadarRevealRiskTokenDevice * _Nonnull device;
+/**
+ The network signals. `nil` when `format` is `RadarTokenFormatJWE`, since the payload only exists inside the encrypted token.
+ */
+@property (nonatomic, readonly, strong) RadarRevealRiskTokenNetwork * _Nullable network;
+/**
+ The device signals. `nil` when `format` is `RadarTokenFormatJWE`, since the payload only exists inside the encrypted token.
+ */
+@property (nonatomic, readonly, strong) RadarRevealRiskTokenDevice * _Nullable device;
+/**
+ The wire format of the token, controlled by a server-side project setting. `RadarTokenFormatJWS` unless the server
+ indicates otherwise.
+ */
+@property (nonatomic, readonly) RadarTokenFormat format;
 
--(NSDictionary*_Nonnull) dictionaryValue;
+- (NSDictionary * _Nullable)dictionaryValue;
 @end
