@@ -116,15 +116,19 @@ internal class RadarIndoors: NSObject {
     nonisolated private static func makeOnLocationUpdate() -> @Sendable @convention(block) (CLLocation) -> Void {
         return { location in
             Task {
-                await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
-                await MainActor.run {
-                    triggerTrackForIndoorUpdate(bridge: RadarSwift.bridge)
-                }
-                RadarLogger.shared.debug(
-                    "Indoor location update | latitude = \(location.coordinate.latitude); longitude = \(location.coordinate.longitude); horizontalAccuracy = \(location.horizontalAccuracy); floor = \(location.floor.map { String($0.level) } ?? "nil"); timestamp = \(location.timestamp)"
-                )
+                await processIndoorLocationUpdate(location)
             }
         }
+    }
+
+    nonisolated static func processIndoorLocationUpdate(_ location: CLLocation) async {
+        await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
+        await MainActor.run {
+            triggerTrackForIndoorUpdate(bridge: RadarSwift.bridge)
+        }
+        RadarLogger.shared.debug(
+            "Indoor location update | latitude = \(location.coordinate.latitude); longitude = \(location.coordinate.longitude); horizontalAccuracy = \(location.horizontalAccuracy); floor = \(location.floor.map { String($0.level) } ?? "nil"); timestamp = \(location.timestamp)"
+        )
     }
 
     nonisolated static func triggerTrackForIndoorUpdate(bridge: RadarSwiftBridgeProtocol?) {
