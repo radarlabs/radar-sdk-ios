@@ -7,8 +7,8 @@
 
 import Foundation
 
-private typealias DayRanges = [[String]]
-private typealias OperatingHours = [String: DayRanges]
+typealias DayRanges = [[String]]
+typealias OperatingHours = [String: DayRanges]
 
 struct RadarOperatingHoursSwift: Codable, Sendable, Equatable {
     /// Expected JSON: `{ "mon": [["09:00", "17:00"]] }`.
