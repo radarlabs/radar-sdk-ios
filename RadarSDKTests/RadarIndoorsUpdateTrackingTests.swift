@@ -89,6 +89,111 @@ extension RadarSerializedTests {
             )!
         }
 
+        @Test("bootstraps the indoor model when effective tracking options enable indoor scanning")
+        func bootstrapsIndoorTracking() {
+            setIndoorScanEnabled(true)
+            var trackOnceCallCount = 0
+
+            RadarIndoors.bootstrapTrackingIfNeeded {
+                trackOnceCallCount += 1
+            }
+
+            #expect(trackOnceCallCount == 1)
+        }
+
+        @Test("does not bootstrap the indoor model when indoor scanning is disabled")
+        func skipsBootstrapWhenIndoorScanningIsDisabled() {
+            setIndoorScanEnabled(false)
+            var trackOnceCallCount = 0
+
+            RadarIndoors.bootstrapTrackingIfNeeded {
+                trackOnceCallCount += 1
+            }
+
+            #expect(trackOnceCallCount == 0)
+        }
+
+        @Test("indoor callbacks forward the estimate and trigger tracking with the last device location")
+        func indoorCallbacksTriggerTracking() async {
+            setIndoorScanEnabled(true)
+            RadarSettings.tracking = true
+            defer { RadarSettings.tracking = false }
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer { RadarSwift.bridge = originalBridge }
+            let deviceLocation = CLLocation(latitude: 41.0, longitude: -87.0)
+            let indoorLocation = CLLocation(latitude: 41.1, longitude: -87.1)
+            bridge.mockLastLocation = deviceLocation
+
+            await RadarIndoors.processIndoorLocationUpdate(indoorLocation)
+
+            #expect(bridge.lastClientLocation === indoorLocation)
+            #expect(bridge.lastClientLocationSource == .indoors)
+            #expect(bridge.lastHandledLocation === deviceLocation)
+            #expect(bridge.lastHandledSource == .indoors)
+        }
+
+        @Test("indoor callbacks do not trigger tracking after tracking stops")
+        func indoorCallbacksDoNotTriggerAfterTrackingStops() async {
+            setIndoorScanEnabled(true)
+            RadarSettings.tracking = false
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer { RadarSwift.bridge = originalBridge }
+            let indoorLocation = CLLocation(latitude: 41.1, longitude: -87.1)
+            bridge.mockLastLocation = CLLocation(latitude: 41.0, longitude: -87.0)
+
+            await RadarIndoors.processIndoorLocationUpdate(indoorLocation)
+
+            #expect(bridge.lastClientLocation === indoorLocation)
+            #expect(bridge.lastHandledLocation == nil)
+        }
+
+        @Test("indoor callbacks do not trigger tracking when indoor scanning is disabled")
+        func indoorCallbacksRespectTrackingOptions() async {
+            setIndoorScanEnabled(false)
+            RadarSettings.tracking = true
+            defer { RadarSettings.tracking = false }
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer { RadarSwift.bridge = originalBridge }
+            bridge.mockLastLocation = CLLocation(latitude: 41.0, longitude: -87.0)
+
+            await RadarIndoors.processIndoorLocationUpdate(CLLocation(latitude: 41.1, longitude: -87.1))
+
+            #expect(bridge.lastHandledLocation == nil)
+        }
+
+        @Test("indoor callbacks do not trigger tracking without a device location")
+        func indoorCallbacksNeedDeviceLocation() async {
+            setIndoorScanEnabled(true)
+            RadarSettings.tracking = true
+            defer { RadarSettings.tracking = false }
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer { RadarSwift.bridge = originalBridge }
+
+            await RadarIndoors.processIndoorLocationUpdate(CLLocation(latitude: 41.1, longitude: -87.1))
+
+            #expect(bridge.lastHandledLocation == nil)
+        }
+
+        @Test("indoor tracking bypasses device location state gates")
+        func indoorTrackingBypassesDeviceLocationState() {
+            #expect(RadarLocationManagerSwift.shouldBypassDeviceLocationState(for: .indoors))
+        }
+
+        @Test("device tracking keeps device location state gates")
+        func deviceTrackingKeepsDeviceLocationState() {
+            #expect(!RadarLocationManagerSwift.shouldBypassDeviceLocationState(for: .backgroundLocation))
+            #expect(!RadarLocationManagerSwift.shouldBypassDeviceLocationState(for: .foregroundLocation))
+            #expect(!RadarLocationManagerSwift.shouldBypassDeviceLocationState(for: .manualLocation))
+        }
+
         @Test("stops indoor scanning once the current geofences no longer include an active indoor model")
         func stopsWhenGeofenceLosesModel() async {
             setIndoorScanEnabled(true)

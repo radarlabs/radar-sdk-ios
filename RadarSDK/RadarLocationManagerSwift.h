@@ -14,6 +14,7 @@
 
 #import "RadarBeacon.h"
 #import "RadarGeofence.h"
+#import "Radar.h"
 #import "RadarMeta.h"
 #import "RadarTrackingOptions.h"
 
@@ -22,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarLocationManagerSwift : NSObject
 
 + (CLLocationAccuracy)clLocationAccuracyForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
++ (BOOL)shouldBypassDeviceLocationStateForSource:(RadarLocationSource)source;
 
 + (void)restartPreviousTrackingOptions;
 

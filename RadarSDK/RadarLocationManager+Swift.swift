@@ -31,6 +31,11 @@ final class RadarLocationManagerSwift: NSObject {
     private static let syncBeaconIdentifierPrefix = "radar_beacon_"
     private static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
 
+    @objc(shouldBypassDeviceLocationStateForSource:)
+    static func shouldBypassDeviceLocationState(for source: RadarLocationSource) -> Bool {
+        source == .indoors
+    }
+
     @objc static func restartPreviousTrackingOptions() {
         let previousTrackingOptions = RadarSettings.previousTrackingOptions
         RadarLogger.shared.debug("🦅 Restarting previous tracking options")
