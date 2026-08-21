@@ -85,6 +85,14 @@ final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
         guard let decoded = try? decoder.decode(RadarRevealRiskToken.self, from: data) else {
             return nil
         }
+        // The verdict-bearing fields are only allowed to be absent in protected (JWE) mode,
+        // where they exist inside the encrypted token. A JWS response missing them is malformed,
+        // so fail parsing rather than returning partial data (mirrors RadarVerifiedLocationToken,
+        // which requires user and events unless the format is JWE).
+        if decoded.format == .jws
+            && (decoded.risk.reasons == nil || decoded.network == nil || decoded.device == nil) {
+            return nil
+        }
         var dict: [String: Sendable]? = (try? JSONSerialization.jsonObject(with: data)) as? [String: Sendable]
         // raw data from response returns with a meta field for the http status, ignore this for reveal risk response dict
         dict?["meta"] = nil

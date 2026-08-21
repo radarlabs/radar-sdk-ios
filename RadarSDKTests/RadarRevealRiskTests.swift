@@ -169,6 +169,25 @@ extension RadarSerializedTests {
             #expect(token.device == nil)
         }
 
+        @Test("revealRisk rejects a JWS response missing verdict-bearing fields")
+        func revealRiskRejectsIncompleteJwsResponse() async throws {
+            // reasons, network, and device may only be absent in protected (JWE) mode; a JWS
+            // response without them is malformed and must fail instead of parsing partially
+            var incompleteResponse = RadarRevealRiskTests.revealRiskResponse
+            incompleteResponse["network"] = nil
+            incompleteResponse["device"] = nil
+            incompleteResponse["risk"] = ["level": "medium"]
+
+            let session = MockURLSession()
+            session.on(RadarRevealRiskTests.revealRiskURL, incompleteResponse)
+
+            let manager = makeManager(fraudResult: ["payload": "mock-fraud-payload"], session: session)
+
+            await #expect(throws: Error.self) {
+                _ = try await manager.revealRisk(useSecondaryVerifiedHost: false)
+            }
+        }
+
         @Test("revealRisk surfaces the token through the completion-handler API")
         func revealRiskCompletionHandlerSucceeds() async throws {
             let session = MockURLSession()
