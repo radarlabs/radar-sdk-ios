@@ -701,6 +701,14 @@
             
                             [RadarOfflineEventManager reset];
 
+                            // nearbyBeaconRegions is not verdict-bearing, so protected (JWE) responses still
+                            // include it in plaintext — register before branching on the response format
+                            id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
+                            if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
+                                NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
+                                [[RadarBeaconManagerSwift shared] registerBeaconRegionNotificationsFromArray:beaconRegions];
+                            }
+
                             if (events && user) {
                                 [RadarSettings setId:user._id];
                                 [RadarState setRadarUser:user];
@@ -730,12 +738,6 @@
                                     [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
                                 }
 
-                                id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
-                                if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
-                                    NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
-                                    [[RadarBeaconManagerSwift shared] registerBeaconRegionNotificationsFromArray:beaconRegions];
-                                }
-                                
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else if (token && token.format == RadarTokenFormatJWE) {
                                 // protected mode: user and events are omitted from the plaintext response
