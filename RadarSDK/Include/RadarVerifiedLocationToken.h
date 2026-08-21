@@ -61,7 +61,8 @@ typedef NS_ENUM(NSInteger, RadarTokenFormat) {
 @property (assign, nonatomic, readonly) bool passed;
 
 /**
- An array of failure reasons for jurisdiction and fraud detection checks.
+ An array of failure reasons for jurisdiction and fraud detection checks. `nil` when `format` is
+ `RadarTokenFormatJWE`, since the reasons only exist inside the encrypted token.
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<NSString *> *failureReasons;
 

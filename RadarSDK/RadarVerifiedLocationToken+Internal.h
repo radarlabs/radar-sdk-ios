@@ -16,7 +16,7 @@
                              expiresAt:(NSDate *_Nonnull)expiresAt
                              expiresIn:(NSTimeInterval)expiresIn
                                 passed:(BOOL)passed
-                        failureReasons:(NSArray<NSString *> *_Nonnull)failureReasons
+                        failureReasons:(NSArray<NSString *> *_Nullable)failureReasons
                                    _id:(NSString *_Nonnull)_id
                                 format:(RadarTokenFormat)format
                               fullDict:(NSDictionary *_Nonnull)fullDict;

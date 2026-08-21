@@ -19,7 +19,7 @@
                              expiresAt:(NSDate *_Nonnull)expiresAt
                              expiresIn:(NSTimeInterval)expiresIn
                                 passed:(BOOL)passed
-                        failureReasons:(NSArray<NSString *> * _Nonnull)failureReasons
+                        failureReasons:(NSArray<NSString *> * _Nullable)failureReasons
                                    _id:(NSString * _Nonnull)_id
                                 format:(RadarTokenFormat)format
                                fullDict:(NSDictionary *_Nonnull)fullDict {
@@ -52,7 +52,7 @@
     NSDate *expiresAt;
     NSTimeInterval expiresIn = 0;
     BOOL passed = NO;
-    NSArray<NSString *> *failureReasons = @[];
+    NSArray<NSString *> *failureReasons;
     NSString *_id;
     
     id tokenObj = dict[@"token"];
@@ -102,6 +102,13 @@
     id formatObj = dict[@"format"];
     if (formatObj && [formatObj isKindOfClass:[NSString class]] && [[(NSString *)formatObj uppercaseString] isEqualToString:@"JWE"]) {
         format = RadarTokenFormatJWE;
+    }
+
+    // legacy JWS behavior: default absent failureReasons to an empty array. In JWE (protected)
+    // mode the reasons only exist inside the encrypted token, so keep nil rather than reporting
+    // "no failures" — the token can have passed == NO with reasons that are simply unavailable.
+    if (format == RadarTokenFormatJWS && !failureReasons) {
+        failureReasons = @[];
     }
     
     // in JWE (protected) mode the user and events only exist inside the encrypted token

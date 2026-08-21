@@ -81,10 +81,38 @@ struct RadarVerifiedLocationTokenTests {
         #expect(token?.format == .jwe)
         #expect(token?.user == nil)
         #expect(token?.events == nil)
+        #expect(token?.failureReasons == nil)
         #expect(token?.token == "aaa.bbb.ccc.ddd.eee")
         #expect(token?.expiresIn == 1200)
         #expect(token?.passed == true)
         #expect(token?._id == "location-456")
+    }
+
+    @Test("a failed JWE response keeps failureReasons nil rather than reporting no failures")
+    func failedJweResponsePreservesNilFailureReasons() {
+        // in protected mode the reasons only exist inside the encrypted token, so a failed
+        // check must surface nil (unavailable), not an empty array (no failures)
+        var response = RadarVerifiedLocationTokenTests.jweResponse
+        response["passed"] = false
+
+        let token = RadarVerifiedLocationToken(object: response)
+
+        #expect(token != nil)
+        #expect(token?.format == .jwe)
+        #expect(token?.passed == false)
+        #expect(token?.failureReasons == nil)
+    }
+
+    @Test("a JWS response without failureReasons defaults to an empty array")
+    func jwsResponseDefaultsFailureReasonsToEmpty() {
+        var response = RadarVerifiedLocationTokenTests.jwsResponse
+        response["failureReasons"] = nil
+
+        let token = RadarVerifiedLocationToken(object: response)
+
+        #expect(token != nil)
+        #expect(token?.format == .jws)
+        #expect(token?.failureReasons == [])
     }
 
     @Test("the format field is parsed case-insensitively")
