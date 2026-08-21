@@ -65,7 +65,7 @@ class RadarInitializeOptions: NSObject {
         return false
     }
 
-    /// Missing, unparseable, non-finite, and out-of-range values fall back to the default.
+    /// Missing, unparseable, non-finite, and disallowed non-positive values fall back to the default.
     /// `allowsZero` keeps 0 for debounce intervals, where it means "no throttling".
     private static func interval(_ value: Any?, allowsZero: Bool) -> TimeInterval {
         let interval: TimeInterval
