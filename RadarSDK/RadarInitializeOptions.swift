@@ -30,7 +30,7 @@ class RadarInitializeOptions: NSObject {
     override init() {
         super.init()
     }
-    
+
     @objc(initWithDict:)
     init(dict: [String: Any]?) {
         autoLogNotificationConversions = RadarInitializeOptions.parseBool(dict?["autoLogNotificationConversions"])
