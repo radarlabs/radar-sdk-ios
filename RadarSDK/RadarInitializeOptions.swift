@@ -30,15 +30,15 @@ class RadarInitializeOptions: NSObject {
     override init() {
         super.init()
     }
-
+    
     @objc(initWithDict:)
     init(dict: [String: Any]?) {
-        autoLogNotificationConversions = RadarInitializeOptions.bool(dict?["autoLogNotificationConversions"])
-        autoHandleNotificationDeepLinks = RadarInitializeOptions.bool(dict?["autoHandleNotificationDeepLinks"])
-        silentPush = RadarInitializeOptions.bool(dict?["silentPush"])
-        trackVerifiedAutoFailover = RadarInitializeOptions.bool(dict?["trackVerifiedAutoFailover"])
-        networkTimeoutInterval = RadarInitializeOptions.interval(dict?["networkTimeoutInterval"], allowsZero: false)
-        ipChangeDebounceInterval = RadarInitializeOptions.interval(dict?["ipChangeDebounceInterval"], allowsZero: true)
+        autoLogNotificationConversions = RadarInitializeOptions.parseBool(dict?["autoLogNotificationConversions"])
+        autoHandleNotificationDeepLinks = RadarInitializeOptions.parseBool(dict?["autoHandleNotificationDeepLinks"])
+        silentPush = RadarInitializeOptions.parseBool(dict?["silentPush"])
+        trackVerifiedAutoFailover = RadarInitializeOptions.parseBool(dict?["trackVerifiedAutoFailover"])
+        networkTimeoutInterval = RadarInitializeOptions.safeParseTimeInterval(dict?["networkTimeoutInterval"], allowsZero: false)
+        ipChangeDebounceInterval = RadarInitializeOptions.safeParseTimeInterval(dict?["ipChangeDebounceInterval"], allowsZero: true)
         super.init()
     }
 
@@ -55,7 +55,7 @@ class RadarInitializeOptions: NSObject {
 
     /// Accepts both the numbers a property list round trip produces and the strings a
     /// cross-platform wrapper may pass, matching what `-[NSObject boolValue]` did here.
-    private static func bool(_ value: Any?) -> Bool {
+    private static func parseBool(_ value: Any?) -> Bool {
         if let number = value as? NSNumber {
             return number.boolValue
         }
@@ -67,7 +67,7 @@ class RadarInitializeOptions: NSObject {
 
     /// Missing, unparseable, non-finite, and disallowed non-positive values fall back to the default.
     /// `allowsZero` keeps 0 for debounce intervals, where it means "no throttling".
-    private static func interval(_ value: Any?, allowsZero: Bool) -> TimeInterval {
+    private static func safeParseTimeInterval(_ value: Any?, allowsZero: Bool) -> TimeInterval {
         let interval: TimeInterval
         if let number = value as? NSNumber {
             interval = number.doubleValue
