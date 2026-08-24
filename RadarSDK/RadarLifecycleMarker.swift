@@ -7,43 +7,52 @@
 
 import Foundation
 
-@objc(RadarLifecycleMarker) final class RadarLifecycleMarker: NSObject {
+@objc(RadarLifecycleMarker)
+final class RadarLifecycleMarker: NSObject, @unchecked Sendable {
     private static let markerKey = "radar-appLifecycleMarker"
-    // The server uses this prefix to turn uploaded logs into app_killed issues.
-    @objc(appTerminatingMessage) static let appTerminatingMessage = "App terminating"
 
-    @objc(sharedMarker) nonisolated(unsafe) static let shared = RadarLifecycleMarker()
+    // The server uses this prefix to turn uploaded logs into app_killed issues.
+    @objc(appTerminatingMessage)
+    static let appTerminatingMessage = "App terminating"
+
+    @objc(sharedMarker)
+    static let shared = RadarLifecycleMarker()
 
     private let userDefaults: UserDefaults
     private let lock = NSLock()
 
     init(userDefaults: UserDefaults = RadarUserDefaults.sharedUserDefaults) {
         self.userDefaults = userDefaults
+        super.init()
     }
 
     @objc func beginProcess() -> Bool {
-        lock.lock()
-        defer { lock.unlock() }
-
-        let previousValue = userDefaults.bool(forKey: Self.markerKey)
-        userDefaults.set(true, forKey: Self.markerKey)
-        userDefaults.synchronize()
-        return previousValue
+        withSynchronizedDefaults { defaults in
+            let previousValue = defaults.bool(forKey: Self.markerKey)
+            defaults.set(true, forKey: Self.markerKey)
+            return previousValue
+        }
     }
 
     @objc func markBackground() {
-        lock.lock()
-        defer { lock.unlock() }
-
-        userDefaults.set(true, forKey: Self.markerKey)
-        userDefaults.synchronize()
+        withSynchronizedDefaults { defaults in
+            defaults.set(true, forKey: Self.markerKey)
+        }
     }
 
     @objc func markCleanTermination() {
+        withSynchronizedDefaults { defaults in
+            defaults.removeObject(forKey: Self.markerKey)
+        }
+    }
+
+    private func withSynchronizedDefaults<T>(
+        _ operation: (UserDefaults) -> T
+    ) -> T {
         lock.lock()
         defer { lock.unlock() }
+        defer { userDefaults.synchronize() }
 
-        userDefaults.removeObject(forKey: Self.markerKey)
-        userDefaults.synchronize()
+        return operation(userDefaults)
     }
 }
