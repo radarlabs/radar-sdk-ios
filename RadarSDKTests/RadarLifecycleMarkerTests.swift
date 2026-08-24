@@ -11,6 +11,11 @@ import Testing
 @testable import RadarSDK
 
 struct RadarLifecycleMarkerTests {
+
+    @Test("The app terminating message matches the server contract")
+    func appTerminatingMessageMatchesServerContract() {
+        #expect(RadarLifecycleMarker.appTerminatingMessage == "App terminating")
+    }
     private func makeUserDefaults() -> UserDefaults {
         let suiteName = "RadarLifecycleMarkerTests.\(UUID().uuidString)"
         let userDefaults = UserDefaults(suiteName: suiteName)!

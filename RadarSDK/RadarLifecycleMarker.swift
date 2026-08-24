@@ -9,6 +9,8 @@ import Foundation
 
 @objc(RadarLifecycleMarker) final class RadarLifecycleMarker: NSObject {
     private static let markerKey = "radar-appLifecycleMarker"
+    // The server uses this prefix to turn uploaded logs into app_killed issues.
+    @objc(appTerminatingMessage) static let appTerminatingMessage = "App terminating"
 
     @objc(sharedMarker) nonisolated(unsafe) static let shared = RadarLifecycleMarker()
 

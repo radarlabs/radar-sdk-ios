@@ -44,6 +44,7 @@
 
 + (instancetype)sharedMarker;
 - (BOOL)beginProcess;
++ (NSString *)appTerminatingMessage;
 - (void)markBackground;
 - (void)markCleanTermination;
 
@@ -117,7 +118,7 @@ BOOL _initialized = NO;
     RadarLifecycleMarker *lifecycleMarker = [RadarLifecycleMarker sharedMarker];
     BOOL uncleanPreviousProcess = [lifecycleMarker beginProcess];
     if (uncleanPreviousProcess && [RadarSettings tripOptions] != nil) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:NO append:YES];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:[RadarLifecycleMarker appTerminatingMessage] includeDate:YES includeBattery:NO append:YES];
     }
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
@@ -1486,7 +1487,7 @@ BOOL _initialized = NO;
 
 + (void)logTermination { 
     [[RadarLifecycleMarker sharedMarker] markCleanTermination];
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:YES append:YES];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:[RadarLifecycleMarker appTerminatingMessage] includeDate:YES includeBattery:YES append:YES];
 }
 
 + (void)logBackgrounding {
