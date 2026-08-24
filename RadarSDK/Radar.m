@@ -143,11 +143,6 @@ BOOL _initialized = NO;
                                                object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
-                                             selector:@selector(applicationDidEnterBackground)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillTerminate)
                                                  name:UIApplicationWillTerminateNotification
                                                object:nil];
@@ -1752,10 +1747,6 @@ BOOL _initialized = NO;
 
 + (NSDictionary *)dictionaryForInAppMessage:(RadarInAppMessage *)message {
     return [message toDictionary];
-}
-
-- (void)applicationDidEnterBackground {
-    [[RadarLifecycleMarker sharedMarker] markBackground];
 }
 
 - (void)applicationWillTerminate {

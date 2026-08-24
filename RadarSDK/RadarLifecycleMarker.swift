@@ -34,14 +34,6 @@ final class RadarLifecycleMarker: NSObject, @unchecked Sendable {
         }
     }
 
-    @objc func markBackground() {
-        // Backgrounding is not an app kill. Keep the marker so a later kill of the
-        // suspended process can be detected on the next initialize.
-        withSynchronizedDefaults { defaults in
-            defaults.set(true, forKey: Self.markerKey)
-        }
-    }
-
     @objc func markCleanTermination() {
         withSynchronizedDefaults { defaults in
             defaults.removeObject(forKey: Self.markerKey)

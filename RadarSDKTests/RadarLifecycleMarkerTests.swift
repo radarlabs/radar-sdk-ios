@@ -42,16 +42,6 @@ struct RadarLifecycleMarkerTests {
         #expect(secondMarker.beginProcess() == true)
     }
 
-    @Test("Backgrounding restores the lifecycle marker")
-    func backgroundingRestoresMarker() {
-        let userDefaults = makeUserDefaults()
-        let marker = RadarLifecycleMarker(userDefaults: userDefaults)
-
-        marker.markBackground()
-
-        #expect(RadarLifecycleMarker(userDefaults: userDefaults).beginProcess() == true)
-    }
-
     @Test("Clean termination removes the lifecycle marker")
     func cleanTerminationRemovesMarker() {
         let userDefaults = makeUserDefaults()
