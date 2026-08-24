@@ -40,6 +40,15 @@
 
 @end
 
+@interface RadarLifecycleMarker : NSObject
+
++ (instancetype)sharedMarker;
+- (BOOL)beginProcess;
+- (void)markBackground;
+- (void)markCleanTermination;
+
+@end
+
 @implementation Radar
 
 #pragma mark - Initialization
@@ -105,6 +114,12 @@ BOOL _initialized = NO;
 + (void)initializeWithOptions:(RadarInitializeOptions *)options {
     [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
 
+    RadarLifecycleMarker *lifecycleMarker = [RadarLifecycleMarker sharedMarker];
+    BOOL uncleanPreviousProcess = [lifecycleMarker beginProcess];
+    if (uncleanPreviousProcess && [RadarSettings tripOptions] != nil) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:NO append:YES];
+    }
+
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
     Class RadarSDKMotion = NSClassFromString(@"RadarSDKMotion");
@@ -124,6 +139,16 @@ BOOL _initialized = NO;
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
+                                             selector:@selector(applicationDidEnterBackground)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
+                                             selector:@selector(applicationWillTerminate)
+                                                 name:UIApplicationWillTerminateNotification
                                                object:nil];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
@@ -1460,6 +1485,7 @@ BOOL _initialized = NO;
 }
 
 + (void)logTermination { 
+    [[RadarLifecycleMarker sharedMarker] markCleanTermination];
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:YES append:YES];
 }
 
@@ -1470,6 +1496,7 @@ BOOL _initialized = NO;
 + (void)logResigningActive {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
 }
+
 
 
 #pragma mark - Indoors
@@ -1724,6 +1751,14 @@ BOOL _initialized = NO;
 
 + (NSDictionary *)dictionaryForInAppMessage:(RadarInAppMessage *)message {
     return [message toDictionary];
+}
+
+- (void)applicationDidEnterBackground {
+    [[RadarLifecycleMarker sharedMarker] markBackground];
+}
+
+- (void)applicationWillTerminate {
+    [[RadarLifecycleMarker sharedMarker] markCleanTermination];
 }
 
 - (void)applicationWillEnterForeground {
