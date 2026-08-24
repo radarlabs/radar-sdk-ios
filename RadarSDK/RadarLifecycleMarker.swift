@@ -11,7 +11,7 @@ import Foundation
 final class RadarLifecycleMarker: NSObject, @unchecked Sendable {
     private static let markerKey = "radar-appLifecycleMarker"
 
-    // The server uses this prefix to turn uploaded logs into app_killed issues.
+    // The server uses this prefix to turn uploaded logs into app_killed issues. Be very careful changing it.
     @objc(appTerminatingMessage)
     static let appTerminatingMessage = "App terminating"
 
@@ -35,6 +35,8 @@ final class RadarLifecycleMarker: NSObject, @unchecked Sendable {
     }
 
     @objc func markBackground() {
+        // Backgrounding is not an app kill. Keep the marker so a later kill of the
+        // suspended process can be detected on the next initialize.
         withSynchronizedDefaults { defaults in
             defaults.set(true, forKey: Self.markerKey)
         }
