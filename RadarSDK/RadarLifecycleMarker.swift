@@ -32,7 +32,6 @@ final class RadarLifecycleMarker: NSObject, @unchecked Sendable {
         withSynchronizedDefaults { defaults in
             guard !didBeginProcess else { return false }
 
-            RadarLogger.shared.debug("STOV: Begin process")
             let previousValue = defaults.bool(forKey: Self.markerKey)
             defaults.set(true, forKey: Self.markerKey)
             didBeginProcess = true

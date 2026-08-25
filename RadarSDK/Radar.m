@@ -123,11 +123,8 @@ BOOL _initialized = NO;
 
     RadarLifecycleMarker *lifecycleMarker = [RadarLifecycleMarker sharedMarker];
     BOOL uncleanPreviousProcess = [lifecycleMarker beginProcess];
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:[NSString stringWithFormat:@"STOV: Unclean previous state: %d", uncleanPreviousProcess]];
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:[NSString stringWithFormat:@"STOV: Trip options: %d", [RadarSettings tripOptions] != nil]];
     // The app was killed not gracefully (user swiped away, killed in background etc.) and a trip was active
     if (uncleanPreviousProcess && [RadarSettings tripOptions] != nil) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"STOV: Spewing terminating message"];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:[RadarLifecycleMarker appTerminatingMessage] includeDate:YES includeBattery:NO append:YES];
     }
 }
