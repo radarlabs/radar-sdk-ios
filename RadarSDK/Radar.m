@@ -215,7 +215,6 @@ BOOL _initialized = NO;
                                                 [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
                                             }
 
-                                            [self flushLogs];
                                         }];
     }];
     

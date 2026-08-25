@@ -5,6 +5,7 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+import Foundation
 import Testing
 
 @testable import RadarSDK
@@ -14,6 +15,29 @@ private func waitUntil(timeout: TimeInterval = 5.0, _ check: () async -> Bool) a
     while Date() < deadline {
         if await check() { return }
         try? await Task.sleep(nanoseconds: 25_000_000)
+    }
+}
+
+private final class RequestCounter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storedValue = 0
+
+    var value: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return storedValue
+    }
+
+    func increment() {
+        lock.lock()
+        storedValue += 1
+        lock.unlock()
+    }
+
+    func set(_ value: Int) {
+        lock.lock()
+        storedValue = value
+        lock.unlock()
     }
 }
 
@@ -100,6 +124,77 @@ struct RadarLogBufferTests {
         #expect(fileLogs.count == 0)
 
         try? FileManager.default.removeItem(at: file)
+    }
+
+    @Test func concurrentFlushesSendOneBatch() async throws {
+        RadarSettings.publishableKey = "test-key"
+        let session = MockURLSession()
+        let client = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
+        let requestCounter = RequestCounter()
+
+        session.on({ request in
+            requestCounter.increment()
+            Thread.sleep(forTimeInterval: 0.1)
+            return request.url?.absoluteString == "\(RadarSettings.host)/v1/logs"
+        }, Data("{}".utf8))
+
+        let buffer = RadarLogBuffer(logsFile: "test/logs-concurrent.txt", logPersistence: false, apiClient: client)
+        await buffer.log(simpleLog("test"))
+
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask { await buffer.flush() }
+            group.addTask { await buffer.flush() }
+            await group.waitForAll()
+        }
+
+        #expect(requestCounter.value == 1)
+        #expect(await buffer.logs.count == 0)
+    }
+
+    @Test func deduplicatesIdenticalLogsBeforeFlush() async throws {
+        RadarSettings.publishableKey = "test-key"
+        let session = MockURLSession()
+        let client = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
+        let capturedLogCount = RequestCounter()
+
+        session.on({ request in
+            if let body = request.httpBody,
+               let object = try? JSONSerialization.jsonObject(with: body) as? [String: Any],
+               let logs = object["logs"] as? [[String: Any]]
+            {
+                capturedLogCount.set(logs.count)
+            }
+            return request.url?.absoluteString == "\(RadarSettings.host)/v1/logs"
+        }, Data("{}".utf8))
+
+        let buffer = RadarLogBuffer(logsFile: "test/logs-deduplicate.txt", logPersistence: false, apiClient: client)
+        let log = simpleLog("duplicate")
+        await buffer.log(log)
+        await buffer.log(log)
+
+        await buffer.flush()
+
+        #expect(capturedLogCount.value == 1)
+    }
+
+    @Test func deduplicatesPersistedLogsOnLoad() async throws {
+        let logsFile = "test/logs-deduplicate-persisted.txt"
+        let storage = RadarFileStorage(fileName: logsFile)
+        let log = simpleLog("duplicate")
+        let encodedLog = try! JSONEncoder().encode(log)  // swiftlint:disable:this force_try
+        let line = encodedLog + "\n".data(using: .utf8)!  // swiftlint:disable:this non_optional_string_data_conversion
+        storage?.write(data: line + line)
+
+        let buffer = RadarLogBuffer(logsFile: logsFile, logPersistence: true)
+        await waitUntil { await buffer.logs.count == 1 }
+
+        #expect(await buffer.logs.count == 1)
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        if let file = file(logsFile) {
+            #expect(logsFrom(url: file).count == 1)
+        }
+        storage?.delete()
     }
 
     @Test func initializeWithLogPersistenceLoadsBuffer() async throws {
