@@ -45,8 +45,6 @@
 + (instancetype)sharedMarker;
 - (BOOL)beginProcess;
 + (NSString *)appTerminatingMessage;
-- (void)markBackground;
-- (void)markCleanTermination;
 
 @end
 
@@ -140,11 +138,6 @@ BOOL _initialized = NO;
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
                                              selector:@selector(applicationWillEnterForeground)
                                                  name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:[self sharedInstance]
-                                             selector:@selector(applicationWillTerminate)
-                                                 name:UIApplicationWillTerminateNotification
                                                object:nil];
 
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
@@ -1480,8 +1473,7 @@ BOOL _initialized = NO;
     [RadarSdkConfiguration_ObjC updateSdkConfigurationFromServer];
 }
 
-+ (void)logTermination { 
-    [[RadarLifecycleMarker sharedMarker] markCleanTermination];
++ (void)logTermination {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:[RadarLifecycleMarker appTerminatingMessage] includeDate:YES includeBattery:YES append:YES];
 }
 
@@ -1749,9 +1741,6 @@ BOOL _initialized = NO;
     return [message toDictionary];
 }
 
-- (void)applicationWillTerminate {
-    [[RadarLifecycleMarker sharedMarker] markCleanTermination];
-}
 
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];

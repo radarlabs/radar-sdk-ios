@@ -20,23 +20,23 @@ final class RadarLifecycleMarker: NSObject, @unchecked Sendable {
 
     private let userDefaults: UserDefaults
     private let lock = NSLock()
+    private var didBeginProcess = false
 
     init(userDefaults: UserDefaults = RadarUserDefaults.sharedUserDefaults) {
         self.userDefaults = userDefaults
         super.init()
     }
 
+    // iOS may kill a background app without a callback, so this marker stays set.
     @objc func beginProcess() -> Bool {
         withSynchronizedDefaults { defaults in
+            guard !didBeginProcess else { return false }
+
+            RadarLogger.shared.debug("STOV: Begin process")
             let previousValue = defaults.bool(forKey: Self.markerKey)
             defaults.set(true, forKey: Self.markerKey)
+            didBeginProcess = true
             return previousValue
-        }
-    }
-
-    @objc func markCleanTermination() {
-        withSynchronizedDefaults { defaults in
-            defaults.removeObject(forKey: Self.markerKey)
         }
     }
 

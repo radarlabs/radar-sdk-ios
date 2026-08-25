@@ -42,14 +42,13 @@ struct RadarLifecycleMarkerTests {
         #expect(secondMarker.beginProcess() == true)
     }
 
-    @Test("Clean termination removes the lifecycle marker")
-    func cleanTerminationRemovesMarker() {
+    @Test("Repeated initialization in one process is idempotent")
+    func repeatedBeginProcessIsIdempotent() {
         let userDefaults = makeUserDefaults()
         let marker = RadarLifecycleMarker(userDefaults: userDefaults)
 
-        _ = marker.beginProcess()
-        marker.markCleanTermination()
-
-        #expect(RadarLifecycleMarker(userDefaults: userDefaults).beginProcess() == false)
+        #expect(marker.beginProcess() == false)
+        #expect(marker.beginProcess() == false)
+        #expect(userDefaults.bool(forKey: "radar-appLifecycleMarker") == true)
     }
 }
