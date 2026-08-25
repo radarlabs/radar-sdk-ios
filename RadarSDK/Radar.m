@@ -37,6 +37,7 @@
 @interface Radar ()
 
 @property (nullable, weak, nonatomic) id<RadarDelegate> delegate;
++ (void)logUncleanPreviousProcessIfNeeded;
 
 @end
 
@@ -110,14 +111,31 @@ BOOL _initialized = NO;
     [Radar initializeWithPublishableKey:[RadarSettings publishableKey]];
 }
 
-+ (void)initializeWithOptions:(RadarInitializeOptions *)options {
-    [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
++ (void)logUncleanPreviousProcessIfNeeded {
+
+    // App extensions share the app group's defaults but run in separate processes.
+    // If an extension updates this marker, its launch looks like a killed app and
+    // creates a duplicate app_killed issue. The marker belongs to the main app.
+    BOOL isMainAppProcess = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSExtension"] == nil;
+    if (!isMainAppProcess) {
+        return;
+    }
 
     RadarLifecycleMarker *lifecycleMarker = [RadarLifecycleMarker sharedMarker];
     BOOL uncleanPreviousProcess = [lifecycleMarker beginProcess];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:[NSString stringWithFormat:@"STOV: Unclean previous state: %d", uncleanPreviousProcess]];
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:[NSString stringWithFormat:@"STOV: Trip options: %d", [RadarSettings tripOptions] != nil]];
+    // The app was killed not gracefully (user swiped away, killed in background etc.) and a trip was active
     if (uncleanPreviousProcess && [RadarSettings tripOptions] != nil) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"STOV: Spewing terminating message"];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:[RadarLifecycleMarker appTerminatingMessage] includeDate:YES includeBattery:NO append:YES];
     }
+}
+
++ (void)initializeWithOptions:(RadarInitializeOptions *)options {
+    [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
+
+    [self logUncleanPreviousProcessIfNeeded];
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
