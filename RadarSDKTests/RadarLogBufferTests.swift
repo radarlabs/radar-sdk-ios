@@ -132,11 +132,12 @@ struct RadarLogBufferTests {
         let client = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
         let requestCounter = RequestCounter()
 
-        session.on({ request in
-            requestCounter.increment()
-            Thread.sleep(forTimeInterval: 0.1)
-            return request.url?.absoluteString == "\(RadarSettings.host)/v1/logs"
-        }, Data("{}".utf8))
+        session.on(
+            { request in
+                requestCounter.increment()
+                Thread.sleep(forTimeInterval: 0.1)
+                return request.url?.absoluteString == "\(RadarSettings.host)/v1/logs"
+            }, Data("{}".utf8))
 
         let buffer = RadarLogBuffer(logsFile: "test/logs-concurrent.txt", logPersistence: false, apiClient: client)
         await buffer.log(simpleLog("test"))
@@ -157,15 +158,16 @@ struct RadarLogBufferTests {
         let client = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
         let capturedLogCount = RequestCounter()
 
-        session.on({ request in
-            if let body = request.httpBody,
-               let object = try? JSONSerialization.jsonObject(with: body) as? [String: Any],
-               let logs = object["logs"] as? [[String: Any]]
-            {
-                capturedLogCount.set(logs.count)
-            }
-            return request.url?.absoluteString == "\(RadarSettings.host)/v1/logs"
-        }, Data("{}".utf8))
+        session.on(
+            { request in
+                if let body = request.httpBody,
+                    let object = try? JSONSerialization.jsonObject(with: body) as? [String: Any],
+                    let logs = object["logs"] as? [[String: Any]]
+                {
+                    capturedLogCount.set(logs.count)
+                }
+                return request.url?.absoluteString == "\(RadarSettings.host)/v1/logs"
+            }, Data("{}".utf8))
 
         let buffer = RadarLogBuffer(logsFile: "test/logs-deduplicate.txt", logPersistence: false, apiClient: client)
         let log = simpleLog("duplicate")
