@@ -10,8 +10,8 @@ import Foundation
 @objc(RadarInitializeOptions)
 @objcMembers
 class RadarInitializeOptions: NSObject {
-    /// Default for `networkTimeoutInterval` and `ipChangeDebounceInterval`, in seconds.
-    private static let defaultInterval: TimeInterval = 10
+    private static let defaultNetworkTimeoutInterval: TimeInterval = 10
+    private static let defaultIPChangeDebounceInterval: TimeInterval = 10
 
     var autoLogNotificationConversions = false
     var autoHandleNotificationDeepLinks = false
@@ -20,12 +20,12 @@ class RadarInitializeOptions: NSObject {
 
     /// Request and resource timeout in seconds for standard API calls. Default 10 seconds.
     /// Invalid values (non-finite or ≤ 0) fall back to the default.
-    var networkTimeoutInterval: TimeInterval = RadarInitializeOptions.defaultInterval
+    var networkTimeoutInterval: TimeInterval = RadarInitializeOptions.defaultNetworkTimeoutInterval
 
     /// Minimum interval in seconds between deliveries of `RadarVerifiedDelegate.didChangeIP()`.
     /// Default 10 seconds. Set to 0 to disable throttling (deliver every detected change).
     /// Negative or non-finite values fall back to the default.
-    var ipChangeDebounceInterval: TimeInterval = RadarInitializeOptions.defaultInterval
+    var ipChangeDebounceInterval: TimeInterval = RadarInitializeOptions.defaultIPChangeDebounceInterval
 
     override init() {
         super.init()
@@ -37,8 +37,14 @@ class RadarInitializeOptions: NSObject {
         autoHandleNotificationDeepLinks = RadarInitializeOptions.parseBool(dict?["autoHandleNotificationDeepLinks"])
         silentPush = RadarInitializeOptions.parseBool(dict?["silentPush"])
         trackVerifiedAutoFailover = RadarInitializeOptions.parseBool(dict?["trackVerifiedAutoFailover"])
-        networkTimeoutInterval = RadarInitializeOptions.safeParseTimeInterval(dict?["networkTimeoutInterval"], allowsZero: false)
-        ipChangeDebounceInterval = RadarInitializeOptions.safeParseTimeInterval(dict?["ipChangeDebounceInterval"], allowsZero: true)
+        networkTimeoutInterval = RadarInitializeOptions.safeParseTimeInterval(
+            dict?["networkTimeoutInterval"],
+            allowsZero: false,
+            defaultValue: RadarInitializeOptions.defaultNetworkTimeoutInterval)
+        ipChangeDebounceInterval = RadarInitializeOptions.safeParseTimeInterval(
+            dict?["ipChangeDebounceInterval"],
+            allowsZero: true,
+            defaultValue: RadarInitializeOptions.defaultIPChangeDebounceInterval)
         super.init()
     }
 
@@ -67,21 +73,23 @@ class RadarInitializeOptions: NSObject {
 
     /// Missing, unparseable, non-finite, and disallowed non-positive values fall back to the default.
     /// `allowsZero` keeps 0 for debounce intervals, where it means "no throttling".
-    private static func safeParseTimeInterval(_ value: Any?, allowsZero: Bool) -> TimeInterval {
+    private static func safeParseTimeInterval(
+        _ value: Any?, allowsZero: Bool, defaultValue: TimeInterval
+    ) -> TimeInterval {
         let interval: TimeInterval
         if let number = value as? NSNumber {
             interval = number.doubleValue
         } else if let string = value as? String {
             interval = (string as NSString).doubleValue
         } else {
-            return defaultInterval
+            return defaultValue
         }
 
         guard interval.isFinite else {
-            return defaultInterval
+            return defaultValue
         }
         if allowsZero ? interval < 0 : interval <= 0 {
-            return defaultInterval
+            return defaultValue
         }
         return interval
     }
