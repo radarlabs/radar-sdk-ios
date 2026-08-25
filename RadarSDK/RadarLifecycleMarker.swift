@@ -39,6 +39,25 @@ final class RadarLifecycleMarker: NSObject, @unchecked Sendable {
         }
     }
 
+    @objc func logUncleanPreviousProcessIfNeeded() {
+        // App extensions share the app group's defaults but run in separate processes.
+        // Only the main app owns this marker; otherwise an extension launch looks like a killed app.
+        guard Bundle.main.object(forInfoDictionaryKey: "NSExtension") == nil else {
+            return
+        }
+
+        let uncleanPreviousProcess = beginProcess()
+        guard uncleanPreviousProcess, RadarSettings.tripOptions != nil else {
+            return
+        }
+
+        RadarLogger.shared.debug(
+            Self.appTerminatingMessage,
+            includeDate: true,
+            append: true
+        )
+    }
+
     private func withSynchronizedDefaults<T>(
         _ operation: (UserDefaults) -> T
     ) -> T {
