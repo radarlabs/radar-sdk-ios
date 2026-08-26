@@ -11,6 +11,8 @@ import UIKit
 
 struct LogsView: View {
     @EnvironmentObject var logStream: LogStream
+    @State private var searchText = ""
+    @FocusState private var isSearchFocused: Bool
     @State private var filter: Filter = .all
     @State private var expandedIds: Set<UUID> = []
     @State private var isShowingShareSheet = false
@@ -39,9 +41,18 @@ struct LogsView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
+            searchRow
             filterRow
             Divider()
             content
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    isSearchFocused = false
+                }
+            }
         }
         .sheet(isPresented: $isShowingShareSheet) {
             ActivityShareSheet(activityItems: [ConsoleEntry.formatForExport(filtered)])
@@ -86,6 +97,38 @@ struct LogsView: View {
         .padding(.top, 12)
         .padding(.bottom, 8)
     }
+    private var searchRow: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.secondary)
+            TextField("Search logs", text: $searchText)
+                .textFieldStyle(.plain)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .focused($isSearchFocused)
+                .submitLabel(.done)
+                .onSubmit {
+                    isSearchFocused = false
+                }
+                .accessibilityLabel("Search logs")
+            if !searchText.isEmpty {
+                Button {
+                    searchText = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.secondary)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Clear search")
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(Color(.tertiarySystemFill))
+        .cornerRadius(10)
+        .padding(.horizontal)
+        .padding(.bottom, 8)
+    }
 
     private var filterRow: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -112,8 +155,10 @@ struct LogsView: View {
 
     @ViewBuilder
     private var content: some View {
-        if filtered.isEmpty {
+        if logStream.entries.isEmpty {
             emptyState
+        } else if filtered.isEmpty {
+            noMatchesState
         } else {
             List {
                 ForEach(filtered) { entry in
@@ -140,11 +185,37 @@ struct LogsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+    private var noMatchesState: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 48))
+                .foregroundColor(.secondary)
+            Text("No matches")
+                .font(.headline)
+                .foregroundColor(.secondary)
+            Text("Change the selected filter or search term to see more logs.")
+                .font(.callout)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 280)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
 
     // MARK: - Helpers
 
+    private var searchQuery: String {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     private var filtered: [ConsoleEntry] {
-        logStream.entries.reversed().filter { filter.includes($0.kind) }
+        let query = searchQuery
+        return logStream.entries.reversed().filter { entry in
+            guard filter.includes(entry.kind) else { return false }
+            guard !query.isEmpty else { return true }
+            return entry.summary.localizedCaseInsensitiveContains(query)
+                || entry.detail?.localizedCaseInsensitiveContains(query) == true
+        }
     }
 
     private func expansionBinding(for entry: ConsoleEntry) -> Binding<Bool> {

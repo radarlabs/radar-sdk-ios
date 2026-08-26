@@ -13,6 +13,18 @@ actor RadarLogBuffer {
 
     var logs = [RadarLog]()
 
+    // A second flush can start while the first upload waits on the network.
+    private var isFlushing = false
+
+    private struct LogIdentity: Hashable {
+        let createdAt: Date
+        let level: String
+        let type: String
+        let message: String
+        let includeDate: Bool
+        let battery: Float?
+    }
+
     // the logs file is a full reflection of the logs
     let logsFile: RadarFileStorage?
 
@@ -57,6 +69,12 @@ actor RadarLogBuffer {
         } catch {
 
         }
+
+        let uniqueLogs = deduplicated(logs)
+        if uniqueLogs.count != logs.count {
+            logs = uniqueLogs
+            rewriteLogsFile()
+        }
     }
 
     func log(_ log: RadarLog) {
@@ -82,15 +100,54 @@ actor RadarLogBuffer {
         }
     }
 
-    func flush() async {
-        do {
-            try await apiClient.sendLogs(logs: logs)
-            logs = []
-            if useLogPersistence, let logsFile {
-                logsFile.write(data: Data())
+    // A killed process can leave a log to be replayed from persistent storage.
+    private func deduplicated(_ logs: [RadarLog]) -> [RadarLog] {
+        var seen = Set<LogIdentity>()
+        return logs.filter { log in
+            let identity = LogIdentity(
+                createdAt: log.createdAt,
+                level: log.level.toString(),
+                type: log.type.toString(),
+                message: log.message,
+                includeDate: log.includeDate,
+                battery: log.battery
+            )
+            return seen.insert(identity).inserted
+        }
+    }
+
+    private func rewriteLogsFile() {
+        guard let logsFile else { return }
+        logsFile.write(data: Data())
+        for log in logs {
+            if let data = try? JSONEncoder().encode(log) {
+                logsFile.append(data: data + NEW_LINE)
             }
+        }
+    }
+
+    private func persistLogs() {
+        guard useLogPersistence else { return }
+        rewriteLogsFile()
+    }
+
+    func flush() async {
+        guard !isFlushing else { return }
+
+        logs = deduplicated(logs)
+        guard !logs.isEmpty else { return }
+
+        isFlushing = true
+        let logsToSend = logs
+        logs.removeAll()
+        defer { isFlushing = false }
+
+        do {
+            try await apiClient.sendLogs(logs: logsToSend)
+            persistLogs()
         } catch {
-            // failed to flush logs, keep existing buffer
+            logs.insert(contentsOf: logsToSend, at: 0)
+            persistLogs()
         }
     }
 }

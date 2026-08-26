@@ -240,6 +240,7 @@
 		F64FF0D92E4D2B9100DF3926 /* RadarInAppMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64FF0D82E4D2B9100DF3926 /* RadarInAppMessageManager.swift */; };
 		F64FF0DB2E4D2BC600DF3926 /* RadarInAppMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64FF0DA2E4D2BC600DF3926 /* RadarInAppMessageView.swift */; };
 		F64FF0DD2E4D2BEA00DF3926 /* RadarLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64FF0DC2E4D2BEA00DF3926 /* RadarLogger.swift */; };
+		F6AC00012F00000100523472 /* RadarLifecycleMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AC00002F00000100523472 /* RadarLifecycleMarker.swift */; };
 		F64FF0DF2E4D2C2A00DF3926 /* RadarSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64FF0DE2E4D2C2A00DF3926 /* RadarSettings.swift */; };
 		F64FF0E32E4D2E1100DF3926 /* InAppMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64FF0E22E4D2E1100DF3926 /* InAppMessageTest.swift */; };
 		F6513DDC2E54F63100523472 /* RadarAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513DDB2E54F63100523472 /* RadarAPIClient.swift */; };
@@ -259,6 +260,7 @@
 		F686B7312E4D29C400D3D614 /* RadarInAppMessageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F686B7302E4D29C400D3D614 /* RadarInAppMessageDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F686B7372E4D2AFC00D3D614 /* RadarAPIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F686B7362E4D2AFC00D3D614 /* RadarAPIHelper.swift */; };
 		F6A0DAC82EF087AC00BC10B4 /* RadarSettingsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A0DAC72EF087A100BC10B4 /* RadarSettingsTest.swift */; };
+		F6AC00032F00000100523472 /* RadarLifecycleMarkerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AC00022F00000100523472 /* RadarLifecycleMarkerTests.swift */; };
 		F6A2DDE52EE8A23000ABA650 /* RadarIndoors.h in Headers */ = {isa = PBXBuildFile; fileRef = F6A2DDE42EE8A22500ABA650 /* RadarIndoors.h */; };
 		F6A2DDE62EE8A71800ABA650 /* RadarIndoors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6ED7C1D2EDF917700D3E6E6 /* RadarIndoors.swift */; };
 		F6AF00012FE1000000000001 /* RadarLocationInsightsModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AF00002FE1000000000001 /* RadarLocationInsightsModelTests.swift */; };
@@ -519,6 +521,7 @@
 		F64FF0D82E4D2B9100DF3926 /* RadarInAppMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarInAppMessageManager.swift; sourceTree = "<group>"; };
 		F64FF0DA2E4D2BC600DF3926 /* RadarInAppMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarInAppMessageView.swift; sourceTree = "<group>"; };
 		F64FF0DC2E4D2BEA00DF3926 /* RadarLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLogger.swift; sourceTree = "<group>"; };
+		F6AC00002F00000100523472 /* RadarLifecycleMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLifecycleMarker.swift; sourceTree = "<group>"; };
 		F64FF0DE2E4D2C2A00DF3926 /* RadarSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSettings.swift; sourceTree = "<group>"; };
 		F64FF0E12E4D2E1100DF3926 /* RadarSDKTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarSDKTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		F64FF0E22E4D2E1100DF3926 /* InAppMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppMessageTest.swift; sourceTree = "<group>"; };
@@ -541,6 +544,7 @@
 		F686B7302E4D29C400D3D614 /* RadarInAppMessageDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarInAppMessageDelegate.h; sourceTree = "<group>"; };
 		F686B7362E4D2AFC00D3D614 /* RadarAPIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelper.swift; sourceTree = "<group>"; };
 		F6A0DAC72EF087A100BC10B4 /* RadarSettingsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSettingsTest.swift; sourceTree = "<group>"; };
+		F6AC00022F00000100523472 /* RadarLifecycleMarkerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLifecycleMarkerTests.swift; sourceTree = "<group>"; };
 		F6A2DDE42EE8A22500ABA650 /* RadarIndoors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarIndoors.h; sourceTree = "<group>"; };
 		F6AF00002FE1000000000001 /* RadarLocationInsightsModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationInsightsModelTests.swift; sourceTree = "<group>"; };
 		F6B7E3462F7429CC006A5A24 /* RadarNotificationHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarNotificationHelperTest.swift; sourceTree = "<group>"; };
@@ -753,6 +757,7 @@
 				82D04ABA29722ED20036619F /* RadarReplayBuffer.h */,
 				F6843C393005538D00213092 /* RadarRevealRiskManager.h */,
 				FE10A6092F2BC9160058ECD4 /* RadarRevealRiskManager.swift */,
+				F6AC00002F00000100523472 /* RadarLifecycleMarker.swift */,
 				BA264CFE2FF31FAF000EDFE6 /* RadarReplayBuffer.swift */,
 				8227EF0B2CDAB69B00C47290 /* RadarRouteMode.m */,
 				F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */,
@@ -830,6 +835,7 @@
 				B0A0F0312FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift */,
 				F6AF00002FE1000000000001 /* RadarLocationInsightsModelTests.swift */,
 				F6A0DAC72EF087A100BC10B4 /* RadarSettingsTest.swift */,
+				F6AC00022F00000100523472 /* RadarLifecycleMarkerTests.swift */,
 				F6FA1101000000000000A001 /* RadarVerifiedHostOverrideTests.swift */,
 				F6FA1103000000000000A001 /* RadarIndoorLocationTrackParamsTests.swift */,
 				61FFFC29F8BCE53F30E3180F /* RadarIndoorsUpdateTrackingTests.swift */,
@@ -1254,6 +1260,7 @@
 				0107AA7A26220128008AB52F /* RadarAddress.m in Sources */,
 				0107AABC26220178008AB52F /* RadarRegion.m in Sources */,
 				F64FF0DD2E4D2BEA00DF3926 /* RadarLogger.swift in Sources */,
+				F6AC00012F00000100523472 /* RadarLifecycleMarker.swift in Sources */,
 				0107AB26262201F0008AB52F /* RadarState.m in Sources */,
 				0107AAA126220159008AB52F /* RadarEvent.m in Sources */,
 				F64FF0DF2E4D2C2A00DF3926 /* RadarSettings.swift in Sources */,
@@ -1279,6 +1286,7 @@
 			files = (
 				BA561CDA2FD3869500D7A3E3 /* RadarOperatingHoursEvaluatorTest.swift in Sources */,
 				F6A0DAC82EF087AC00BC10B4 /* RadarSettingsTest.swift in Sources */,
+				F6AC00032F00000100523472 /* RadarLifecycleMarkerTests.swift in Sources */,
 				BA8D153D300EA41900022EB3 /* RadarEventNotificationsTestHelpers.swift in Sources */,
 				F6843C87300696A200213092 /* RadarRevealRiskTests.swift in Sources */,
 				F6AF00012FE1000000000001 /* RadarLocationInsightsModelTests.swift in Sources */,
