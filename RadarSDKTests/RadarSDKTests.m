@@ -2277,4 +2277,44 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     }];
     XCTAssertTrue(explicitTrue.skipForegroundCheck);
 }
+
+- (void)test_RadarAPIHelper_attachRequestId_setsRequestIdWhenMetaPresent {
+    NSDictionary *res = @{@"meta": @{@"code": @200}, @"user": @{@"_id": @"abc"}};
+
+    NSDictionary *result = [RadarAPIHelper dictionaryByAttachingRequestId:@"01a01c2e-7512-704c-aa02-81253218d810" toRes:res];
+
+    XCTAssertEqualObjects(result[@"meta"][@"requestId"], @"01a01c2e-7512-704c-aa02-81253218d810");
+    XCTAssertEqualObjects(result[@"meta"][@"code"], @200);
+    XCTAssertEqualObjects(result[@"user"][@"_id"], @"abc");
+}
+
+- (void)test_RadarAPIHelper_attachRequestId_setsRequestIdOnErrorMeta {
+    NSDictionary *res = @{@"meta": @{@"code": @400, @"error": @"ERROR_BAD_REQUEST"}};
+
+    NSDictionary *result = [RadarAPIHelper dictionaryByAttachingRequestId:@"01a01c2e-7512-704c-aa02-81253218d810" toRes:res];
+
+    XCTAssertEqualObjects(result[@"meta"][@"requestId"], @"01a01c2e-7512-704c-aa02-81253218d810");
+    XCTAssertEqualObjects(result[@"meta"][@"error"], @"ERROR_BAD_REQUEST");
+}
+
+- (void)test_RadarAPIHelper_attachRequestId_doesNotCreateMetaWhenAbsent {
+    // RadarAPIClient gates config handling on the presence of meta — synthesizing one here
+    // would flow a meta with no trackingOptions downstream, which removes remote tracking
+    // options. A response without meta must stay without meta.
+    NSDictionary *res = @{@"user": @{@"_id": @"abc"}};
+
+    NSDictionary *result = [RadarAPIHelper dictionaryByAttachingRequestId:@"01a01c2e-7512-704c-aa02-81253218d810" toRes:res];
+
+    XCTAssertNil(result[@"meta"]);
+    XCTAssertEqualObjects(result[@"user"][@"_id"], @"abc");
+}
+
+- (void)test_RadarAPIHelper_attachRequestId_leavesMetaUntouchedWhenRequestIdNil {
+    NSDictionary *res = @{@"meta": @{@"code": @200}};
+
+    NSDictionary *result = [RadarAPIHelper dictionaryByAttachingRequestId:nil toRes:res];
+
+    XCTAssertNil(result[@"meta"][@"requestId"]);
+    XCTAssertEqualObjects(result[@"meta"][@"code"], @200);
+}
 @end

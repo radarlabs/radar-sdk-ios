@@ -46,6 +46,21 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
 
 @implementation RadarAPIHelper
 
++ (NSDictionary *)dictionaryByAttachingRequestId:(NSString *_Nullable)requestId toRes:(NSDictionary *)res {
+    // only attach to an existing meta: synthesizing one would flip downstream meta-presence
+    // checks (e.g. remote tracking options handling in RadarAPIClient)
+    if (!requestId || ![res[@"meta"] isKindOfClass:[NSDictionary class]]) {
+        return res;
+    }
+
+    NSMutableDictionary *mutableRes = [res mutableCopy];
+    NSMutableDictionary *meta = [(NSDictionary *)res[@"meta"] mutableCopy];
+    meta[@"requestId"] = requestId;
+    mutableRes[@"meta"] = meta;
+
+    return [mutableRes copy];
+}
+
 - (instancetype)init {
     self = [super init];
     if (self) {
@@ -200,7 +215,8 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                         status = RadarStatusErrorServer;
                     }
 
-                    res = (NSDictionary *)resObj;
+                    res = [RadarAPIHelper dictionaryByAttachingRequestId:[(NSHTTPURLResponse *)response valueForHTTPHeaderField:@"x-radar-request-id"]
+                                                                   toRes:(NSDictionary *)resObj];
                     NSString *resJsonStr = [RadarUtils dictionaryToJson:res];
 
                     if (params && [params objectForKey:@"replays"]) {

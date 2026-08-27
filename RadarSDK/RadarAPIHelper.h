@@ -15,6 +15,8 @@ typedef void (^_Nullable RadarAPICompletionHandler)(RadarStatus status, NSDictio
 
 @interface RadarAPIHelper : NSObject
 
++ (NSDictionary *)dictionaryByAttachingRequestId:(NSString *_Nullable)requestId toRes:(NSDictionary *)res;
+
 - (void)requestWithMethod:(NSString *)method
                       url:(NSString *)url
                   headers:(NSDictionary *_Nullable)headers
