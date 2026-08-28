@@ -186,24 +186,25 @@ class SurveyApi {
             request.addTextField(named: "key", value: pathString)
             request.addDataField(named: "file", data: data, mimeType: "application/octet-stream")
 
-            let (data, response) = try await URLSession.shared.data(for: request)
+            let (responseData, response) = try await URLSession.shared.data(for: request)
 
             if let httpResponse = response as? HTTPURLResponse {
                 if (200...299).contains(httpResponse.statusCode) {
                     // The upload was successful and the server returned a success status code.
                     print("Upload successful! Status code: \(httpResponse.statusCode)")
-                    // Process 'data' if the server returned any response data.
                 } else {
                     // The upload completed, but the server returned an error status code.
                     print("Server error: Status code \(httpResponse.statusCode)")
-                    print("Server error: \(String(data: data, encoding: .utf8) ?? "<non-utf8 response>")")
+                    let responseBody = String(data: responseData, encoding: .utf8) ?? "<non-utf8 response>"
+                    print("Server error: \(responseBody)")
+                    return "S3 upload failed for \(data.count) bytes (HTTP \(httpResponse.statusCode)): \(responseBody)"
                 }
             } else {
                 // An unexpected scenario, potentially a non-HTTP response.
                 return "Unexpected response type."
             }
         } catch {
-            return "Failed to upload"
+            return "S3 upload failed for \(data.count) bytes: \(error.localizedDescription)"
         }
 
         // update status to completed

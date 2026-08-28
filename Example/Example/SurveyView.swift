@@ -124,6 +124,9 @@ struct SurveyView: View {
     @State
     var success = false
 
+    @State
+    var sending = false
+
     let site: RadarSite? = {
         do {
             let dateFormatter = DateFormatter()
@@ -328,6 +331,11 @@ struct SurveyView: View {
                                     logStream.write(action: "Send data: no data collected")
                                     return
                                 }
+                                if sending {
+                                    return
+                                }
+                                sending = true
+                                success = false
                                 logStream.write(action: "Send data: \(collectedData.count) points of data with \(collectedBeaconList.count) beacons")
 
                                 // convert collected data into csv
@@ -352,19 +360,25 @@ struct SurveyView: View {
                                 Task {
                                     let status = await SurveyApi.createSurvey(data: compressed, publishableKey: publishableKey)
                                     logStream.write(action: "createSurvey: \(status)")
-                                    await MainActor.run { success = (status == "Success") }
+                                    await MainActor.run {
+                                        let uploadSucceeded = status == "Success"
+                                        success = uploadSucceeded
+                                        sending = false
+                                        if uploadSucceeded {
+                                            collectedBeaconList.removeAll()
+                                            collectedData.removeAll()
+                                        }
+                                    }
                                 }
-
-                                collectedBeaconList.removeAll()
-                                collectedData.removeAll()
                             }) {
-                                Text("Send data")
+                                Text(sending ? "Uploading..." : "Send data")
                                     .font(.title)
                                     .foregroundColor(.white)
                                     .frame(width: 80, height: 80)
-                                    .background(collectedData.isEmpty ? Color.gray : Color.green)
+                                    .background(collectedData.isEmpty || sending ? Color.gray : Color.green)
                                     .clipShape(Circle())
                             }
+                            .disabled(sending)
                         }
 
                     }.frame(width: 200)
