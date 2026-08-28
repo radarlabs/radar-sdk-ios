@@ -127,6 +127,9 @@ struct SurveyView: View {
     @State
     var sending = false
 
+    @State
+    var uploadError: String? = nil
+
     let site: RadarSite? = {
         do {
             let dateFormatter = DateFormatter()
@@ -334,8 +337,8 @@ struct SurveyView: View {
                                 if sending {
                                     return
                                 }
-                                sending = true
                                 success = false
+                                uploadError = nil
                                 logStream.write(action: "Send data: \(collectedData.count) points of data with \(collectedBeaconList.count) beacons")
 
                                 // convert collected data into csv
@@ -349,13 +352,14 @@ struct SurveyView: View {
                                 }
 
                                 guard let data = csv.data(using: .utf8) else {
-                                    print("invalid conversion to Data")
+                                    uploadError = "Unable to encode survey data."
                                     return
                                 }
                                 guard let compressed = try? data.gzipped(level: .bestCompression) else {
-                                    print("unable to compress")
+                                    uploadError = "Unable to compress survey data."
                                     return
                                 }
+                                sending = true
                                 let publishableKey = settingsStore.resolvedPublishableKey
                                 Task {
                                     let status = await SurveyApi.createSurvey(data: compressed, publishableKey: publishableKey)
@@ -363,6 +367,7 @@ struct SurveyView: View {
                                     await MainActor.run {
                                         let uploadSucceeded = status == "Success"
                                         success = uploadSucceeded
+                                        uploadError = uploadSucceeded ? nil : status
                                         sending = false
                                         if uploadSucceeded {
                                             collectedBeaconList.removeAll()
@@ -379,6 +384,14 @@ struct SurveyView: View {
                                     .clipShape(Circle())
                             }
                             .disabled(sending)
+                        }
+                        if let uploadError {
+                            Text(uploadError)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(8)
+                                .frame(maxWidth: 200)
                         }
 
                     }.frame(width: 200)

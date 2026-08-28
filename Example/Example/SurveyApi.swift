@@ -99,6 +99,17 @@ extension URLSession {
 }
 
 class SurveyApi {
+    private static func httpFailureMessage(_ response: URLResponse, data: Data, operation: String) -> String? {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return "\(operation) returned an unexpected response."
+        }
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let responseBody = String(data: data, encoding: .utf8) ?? "<non-utf8 response>"
+            return "\(operation) failed (HTTP \(httpResponse.statusCode)): \(responseBody)"
+        }
+        return nil
+    }
+
     static func createSurvey(data: Data, publishableKey: String) async -> String {
         // Host follows the SDK (see Utils.radarHost); the publishable key is passed in from
         // SettingsStore.resolvedPublishableKey. Everything else comes from SurveyConfig.
@@ -130,7 +141,11 @@ class SurveyApi {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
 
             // send the request
-            let (data, _) = try await URLSession.shared.data(for: request)
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            if let failure = Self.httpFailureMessage(response, data: data, operation: "Survey creation") {
+                return failure
+            }
 
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                 return "Failed to json serialize response"
@@ -139,7 +154,7 @@ class SurveyApi {
             print(json)
             surveyId = (json["indoorSurvey"] as? [String: Any])?["_id"] as? String
         } catch {
-            print("SurveyService: Failed: \(error.localizedDescription)")
+            return "SurveyService: Failed to create survey: \(error.localizedDescription)"
         }
 
         do {
@@ -155,7 +170,11 @@ class SurveyApi {
             request.httpMethod = "GET"
             request.setValue(publishableKey, forHTTPHeaderField: "Authorization")
 
-            let (data, _) = try await URLSession.shared.data(for: request)
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            if let failure = Self.httpFailureMessage(response, data: data, operation: "Upload URL request") {
+                return failure
+            }
 
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                 return "Failed to json serialize response"
@@ -164,7 +183,7 @@ class SurveyApi {
             print(json)
             uploadParams = json
         } catch {
-            print("SurveyService: Error getting asset upload url")
+            return "SurveyService: Error getting asset upload URL: \(error.localizedDescription)"
         }
 
         // upload to s3 via presigned url
@@ -227,7 +246,13 @@ class SurveyApi {
             ]
             request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
 
-            let (data, _) = try await URLSession.shared.data(for: request)
+            let (responseData, response) = try await URLSession.shared.data(for: request)
+
+            if let failure = Self.httpFailureMessage(response, data: responseData, operation: "Survey completion") {
+                return failure
+            }
+
+            let data = responseData
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                 return "failed to json serialize response"
             }
