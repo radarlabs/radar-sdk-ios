@@ -116,12 +116,31 @@ internal class RadarIndoors: NSObject {
     nonisolated private static func makeOnLocationUpdate() -> @Sendable @convention(block) (CLLocation) -> Void {
         return { location in
             Task {
-                await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
-                RadarLogger.shared.debug(
-                    "Indoor location update | latitude = \(location.coordinate.latitude); longitude = \(location.coordinate.longitude); horizontalAccuracy = \(location.horizontalAccuracy); floor = \(location.floor.map { String($0.level) } ?? "nil"); timestamp = \(location.timestamp)"
-                )
+                await processIndoorLocationUpdate(location)
             }
         }
+    }
+
+    nonisolated static func processIndoorLocationUpdate(_ location: CLLocation) async {
+        await RadarDelegateHolder.didUpdateClientLocation(location: location, stopped: false, source: .indoors)
+        await MainActor.run {
+            triggerTrackForIndoorUpdate(bridge: RadarSwift.bridge)
+        }
+        RadarLogger.shared.debug(
+            "Indoor location update | latitude = \(location.coordinate.latitude); longitude = \(location.coordinate.longitude); horizontalAccuracy = \(location.horizontalAccuracy); floor = \(location.floor.map { String($0.level) } ?? "nil"); timestamp = \(location.timestamp)"
+        )
+    }
+
+    nonisolated static func triggerTrackForIndoorUpdate(bridge: RadarSwiftBridgeProtocol?) {
+        guard RadarSettings.tracking, Radar.getTrackingOptions().useIndoorScan,
+            let deviceLocation = bridge?.lastLocation()
+        else {
+            return
+        }
+
+        // The tracking pipeline reads the newest indoor result before sending. Pass the device
+        // location here so the request can keep both sets of coordinates.
+        bridge?.handleLocation(deviceLocation, source: .indoors)
     }
 
     // Initialized entirely from nonisolated, Sendable expressions so the singleton can be built
@@ -139,6 +158,22 @@ internal class RadarIndoors: NSObject {
         self.sdk = sdk
         self.onLocationUpdate = RadarIndoors.makeOnLocationUpdate()
         super.init()
+    }
+
+    nonisolated static func bootstrapTrackingIfNeeded() {
+        bootstrapTrackingIfNeeded {
+            Radar.trackOnce(completionHandler: nil)
+        }
+    }
+
+    nonisolated static func bootstrapTrackingIfNeeded(trackOnce: () -> Void) {
+        guard Radar.getTrackingOptions().useIndoorScan else {
+            return
+        }
+
+        // The first track response identifies the active indoor model. Request it now so indoor
+        // ranging does not have to wait for the continuous tracking timer to fire.
+        trackOnce()
     }
 
     public func updateTracking(geofences: [RadarGeofence]?) async {

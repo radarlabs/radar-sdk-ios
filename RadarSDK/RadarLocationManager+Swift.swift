@@ -45,6 +45,11 @@ final class RadarLocationManagerSwift: NSObject {
         RadarSwift.bridge?.updateTracking()
     }
 
+    @objc(shouldBypassDeviceLocationStateForSource:)
+    static func shouldBypassDeviceLocationState(for source: RadarLocationSource) -> Bool {
+        source == .indoors
+    }
+
     @objc static func restartPreviousTrackingOptions() {
         let previousTrackingOptions = RadarSettings.previousTrackingOptions
         RadarLogger.shared.debug("🦅 Restarting previous tracking options")

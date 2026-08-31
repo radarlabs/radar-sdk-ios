@@ -39,7 +39,12 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     var mockIsForeground = false
     func isForeground() -> Bool { mockIsForeground }
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {}
-    func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {}
+    private(set) var lastClientLocation: CLLocation?
+    private(set) var lastClientLocationSource: RadarLocationSource?
+    func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource) {
+        lastClientLocation = location
+        lastClientLocationSource = source
+    }
     private(set) var lastHandledLocation: CLLocation?
     private(set) var lastHandledSource: RadarLocationSource?
     func handleLocation(_ location: CLLocation, source: RadarLocationSource) {

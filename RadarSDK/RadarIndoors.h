@@ -12,6 +12,7 @@
 @interface RadarIndoors : NSObject
 
 + (RadarIndoors * _Nonnull)shared;
++ (void)bootstrapTrackingIfNeeded;
 
 - (void)updateTrackingWithGeofences:(NSArray<RadarGeofence *> * _Nullable)geofences completionHandler:(void (^ _Nonnull)(void))completionHandler;
 - (void)stopWithCompletionHandler:(void (^ _Nonnull)(void))completionHandler;

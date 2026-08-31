@@ -40,6 +40,15 @@
 
 @end
 
+@interface RadarLifecycleMarker : NSObject
+
++ (instancetype)sharedMarker;
+- (BOOL)beginProcess;
+- (void)logUncleanPreviousProcessIfNeeded;
++ (NSString *)appTerminatingMessage;
+
+@end
+
 @implementation Radar
 
 #pragma mark - Initialization
@@ -104,6 +113,8 @@ BOOL _initialized = NO;
 
 + (void)initializeWithOptions:(RadarInitializeOptions *)options {
     [RadarSwift setBridge:[[RadarSwiftBridge alloc] init]];
+
+    [[RadarLifecycleMarker sharedMarker] logUncleanPreviousProcessIfNeeded];
 
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"initialize()"];
 
@@ -183,7 +194,6 @@ BOOL _initialized = NO;
                                                 [Radar trackOnceWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium beacons:[Radar getTrackingOptions].beacons completionHandler:nil];
                                             }
 
-                                            [self flushLogs];
                                         }];
     }];
     
@@ -1459,8 +1469,8 @@ BOOL _initialized = NO;
     [RadarSdkConfiguration_ObjC updateSdkConfigurationFromServer];
 }
 
-+ (void)logTermination { 
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App terminating" includeDate:YES includeBattery:YES append:YES];
++ (void)logTermination {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:[RadarLifecycleMarker appTerminatingMessage] includeDate:YES includeBattery:YES append:YES];
 }
 
 + (void)logBackgrounding {
@@ -1470,6 +1480,7 @@ BOOL _initialized = NO;
 + (void)logResigningActive {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug type:RadarLogTypeNone message:@"App resigning active" includeDate:YES includeBattery:YES];
 }
+
 
 
 #pragma mark - Indoors
@@ -1725,6 +1736,7 @@ BOOL _initialized = NO;
 + (NSDictionary *)dictionaryForInAppMessage:(RadarInAppMessage *)message {
     return [message toDictionary];
 }
+
 
 - (void)applicationWillEnterForeground {
     BOOL updated = [RadarSettings updateSessionId];

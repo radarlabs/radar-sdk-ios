@@ -216,6 +216,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [RadarSettings setTracking:YES];
     [RadarSettings setTrackingOptions:trackingOptions];
     [self updateTracking];
+    [RadarIndoors bootstrapTrackingIfNeeded];
 }
 
 - (void)stopTracking {
@@ -836,7 +837,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
-    [self cancelTimeouts];
+    BOOL bypassDeviceLocationState = [RadarLocationManagerSwift shouldBypassDeviceLocationStateForSource:source];
+
+    if (!bypassDeviceLocationState) {
+        [self cancelTimeouts];
+    }
 
     if (!location.isValid) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
@@ -853,7 +858,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     BOOL force = (source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation) || (options.syncLocations != RadarTrackingOptionsSyncEvents && (source == RadarLocationSourceBeaconEnter ||
                   source == RadarLocationSourceBeaconExit || source == RadarLocationSourceVisitArrival));
-    if (wasStopped && !force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
+    if (!bypassDeviceLocationState && wasStopped && !force && location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                            message:[NSString stringWithFormat:@"Skipping location: inaccurate | accuracy = %f", location.horizontalAccuracy]];
 
@@ -871,7 +876,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     CLLocationDistance distance = CLLocationDistanceMax;
     NSTimeInterval duration = 0;
-    if (options.stopDistance > 0 && options.stopDuration > 0) {
+    if (bypassDeviceLocationState) {
+        // Indoor updates carry the last device fix only as request metadata. Keep the device's
+        // movement state until Core Location gives us a new fix.
+        stopped = wasStopped;
+    } else if (options.stopDistance > 0 && options.stopDuration > 0) {
         CLLocation *lastMovedLocation = [RadarState lastMovedLocation];
         if (!lastMovedLocation) {
             lastMovedLocation = location;
@@ -915,19 +924,19 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         stopped = (force || source == RadarLocationSourceVisitArrival);
     }
     BOOL justStopped = stopped && !wasStopped;
-    [RadarState setStopped:stopped];
+    if (!bypassDeviceLocationState) {
+        [RadarState setStopped:stopped];
+        [RadarState setLastLocation:location];
+        [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
 
-    [RadarState setLastLocation:location];
+        if (source != RadarLocationSourceManualLocation) {
+            [self updateTracking:location];
+        }
 
-    [[RadarDelegateHolder sharedInstance] didUpdateClientLocation:location stopped:stopped source:source];
-
-    if (source != RadarLocationSourceManualLocation) {
-        [self updateTracking:location];
+        [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];
     }
-
-    [self callCompletionHandlersWithStatus:RadarStatusSuccess location:location];
     
-    if ([RadarSettings sdkConfiguration].useSyncRegion) {
+    if (!bypassDeviceLocationState && [RadarSettings sdkConfiguration].useSyncRegion) {
         if (![RadarSyncManager hasSyncedRegion]) {
             [RadarSyncManager fetchSyncRegion];
         } else if ([RadarSettings sdkConfiguration].offlineEventGenerationEnabled
@@ -941,7 +950,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     CLLocation *lastFailedStoppedLocation = [RadarState lastFailedStoppedLocation];
     BOOL replayed = NO;
-    if (options.replay == RadarTrackingOptionsReplayStops && lastFailedStoppedLocation && !justStopped) {
+    if (!bypassDeviceLocationState && options.replay == RadarTrackingOptionsReplayStops && lastFailedStoppedLocation && !justStopped) {
         sendLocation = lastFailedStoppedLocation;
         stopped = YES;
         replayed = YES;
@@ -957,7 +966,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     NSDate *now = [NSDate new];
     NSTimeInterval lastSyncInterval = [now timeIntervalSinceDate:lastSentAt];
     if (!ignoreSync) {
-        if (!force && stopped && wasStopped && distance <= options.stopDistance &&
+        if (!bypassDeviceLocationState && !force && stopped && wasStopped && distance <= options.stopDistance &&
             (options.desiredStoppedUpdateInterval == 0 || (options.syncLocations != RadarTrackingOptionsSyncAll && options.syncLocations != RadarTrackingOptionsSyncEvents))) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Skipping sync: already stopped | stopped = %d; wasStopped = %d", stopped, wasStopped]];
@@ -1001,7 +1010,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
     }
     
-    if (source != RadarLocationSourceForegroundLocation && source != RadarLocationSourceManualLocation &&
+    if (!bypassDeviceLocationState && source != RadarLocationSourceForegroundLocation && source != RadarLocationSourceManualLocation &&
         [RadarSettings sdkConfiguration].useSyncRegion && options.syncLocations == RadarTrackingOptionsSyncEvents) {
         
         if (location.horizontalAccuracy >= 1000 && options.desiredAccuracy != RadarTrackingOptionsDesiredAccuracyLow) {
