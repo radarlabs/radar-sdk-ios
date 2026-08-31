@@ -63,7 +63,5 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         self.longitude = coords[0]
         self.latitude = coords[1]
     }
-    
-    
 }
 
