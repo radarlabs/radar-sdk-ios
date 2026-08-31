@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     /// (for example, "http://192.168.0.24:8081") for a physical device. Replace the example
     /// with your own address. Overrides the API + verified hosts on launch; leave blank to use
     /// the SDK defaults.
-    static let TARGET_HOST = "http://192.168.0.24:8081"
+    static let TARGET_HOST = ""
 
     let locationManager = CLLocationManager()
     var window: UIWindow?  // required for UIWindowSceneDelegate
