@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Represents a time zone.
+/// Represents a time zone. Keeps interopt with Obj-C
 ///
 /// See https://radar.com/documentation/api#geocoding
 struct RadarTimeZoneSwift: Codable, Sendable, Equatable {
@@ -23,22 +23,16 @@ struct RadarTimeZoneSwift: Codable, Sendable, Equatable {
         return formatter
     }()
 
-    /// The ID of the time zone.
     let id: String
 
-    /// The name of the time zone.
     let name: String
 
-    /// The time zone abbreviation.
     let code: String
 
-    /// The current time for the time zone.
     let currentTime: Date?
 
-    /// The UTC offset for the time zone.
     let utcOffset: Int
 
-    /// The DST offset for the time zone.
     let dstOffset: Int
 
     enum CodingKeys: String, CodingKey {
@@ -59,9 +53,6 @@ struct RadarTimeZoneSwift: Codable, Sendable, Equatable {
         self.dstOffset = dstOffset
     }
 
-    /// Decoding is lenient to match the Objective-C parser's `isKindOfClass:` checks: a
-    /// missing field, a `null`, an unparseable date, or a value of the wrong type falls back
-    /// to the default instead of failing the whole payload.
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
