@@ -16,7 +16,7 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
     let latitude: Double
     let longitude: Double
     
-    // in Objective-C, coordinates is the only visible property
+    // visible in Objective-C, coordinates is the only visible property
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
@@ -34,11 +34,13 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         self.longitude = longitude
     }
     
+    // visible in Objective-C
     init(coordinate: CLLocationCoordinate2D) {
         self.latitude = coordinate.latitude
         self.longitude = coordinate.longitude
     }
     
+    // private in Objective-C
     static func coordinatesFrom(object: Any) -> [RadarCoordinateSwift]? {
         guard let array = object as? [Any] else {
             return nil
@@ -46,10 +48,12 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         return array.compactMap(RadarCoordinateSwift.init)
     }
     
+    // visible in Objective-C
     func dictionaryValue() -> [String: Any] {
         return [:]
     }
     
+    // private in Objective-C
     init?(object: Any?) {
         guard let dict = object as? [String: Any] else {
             return nil
