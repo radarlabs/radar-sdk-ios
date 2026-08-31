@@ -7,9 +7,8 @@
 //
 
 import CoreLocation
-import Testing
-
 import RadarSDK
+import Testing
 
 private struct TripLegUpdateResult {
     let status: RadarStatus
@@ -25,31 +24,31 @@ private struct TripLegValidationResult {
 
 extension RadarSerializedTests {
     @Suite(.serialized)
-    struct RadarTripIntegrationTests { // swiftlint:disable:this type_body_length
-        
+    struct RadarTripIntegrationTests {  // swiftlint:disable:this type_body_length
+
         init() {
             Radar.initialize(
                 publishableKey:
                     "prj_test_pk_0000000000000000000000000000000000000000"
             )
-            
+
             let apiHelperMock = RadarAPIHelperMock()
             apiHelperMock.mockStatus = .success
             RadarAPIClient.sharedInstance().apiHelper = apiHelperMock
-            
+
             let locationManagerMock = TrackingCLLocationManager()
             let locationManager = RadarLocationManager.sharedInstance()
             locationManager.locationManager = locationManagerMock
             locationManager.lowPowerLocationManager = locationManagerMock
             locationManagerMock.delegate = locationManager
-            
+
             let permissionsHelperMock = RadarPermissionsHelperMock()
             permissionsHelperMock.mockLocationAuthorizationStatus = .authorizedAlways
             locationManager.permissionsHelper = permissionsHelperMock
-            
+
             RadarTripIntegrationTestSupport.resetState()
         }
-        
+
         @Test("startTrip stores the trip options")
         func startTripStoresOptions() throws {
             let options = RadarTripOptions(
@@ -65,29 +64,29 @@ extension RadarSerializedTests {
                 "qux": 1,
             ]
             options.mode = .foot
-            
+
             Radar.startTrip(options: options)
-            
+
             let storedOptions = try #require(
                 Radar.getTripOptions()
             )
             #expect(storedOptions.isEqual(options))
         }
-        
+
         @Test("completeTrip clears the trip options")
         func completeTripClearsOptions() {
             Radar.completeTrip()
-            
+
             #expect(Radar.getTripOptions() == nil)
         }
-        
+
         @Test("cancelTrip clears the trip options")
         func cancelTripClearsOptions() {
             Radar.cancelTrip()
-            
+
             #expect(Radar.getTripOptions() == nil)
         }
-        
+
         @Test("trip tracking preserves existing tracking options")
         func tripPreservesExistingTrackingOptions() async {
             let originalTrackingOptions =
@@ -95,7 +94,7 @@ extension RadarSerializedTests {
             Radar.startTracking(
                 trackingOptions: originalTrackingOptions
             )
-            
+
             let tripOptions = RadarTripOptions(
                 externalId: "testTrip",
                 destinationGeofenceTag: "someTag",
@@ -103,7 +102,7 @@ extension RadarSerializedTests {
             )
             let tripTrackingOptions =
                 RadarTrackingOptions.presetContinuous
-            
+
             await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
                 Radar.startTrip(
                     options: tripOptions,
@@ -112,21 +111,21 @@ extension RadarSerializedTests {
                     continuation.resume()
                 }
             }
-            
+
             #expect(
                 RadarTripIntegrationTestSupport
                     .previousTrackingOptionsEqual(
                         to: originalTrackingOptions
                     )
             )
-            
+
             #expect(
                 Radar.getTrackingOptions()
                     .isEqual(tripTrackingOptions)
             )
-            
+
             await Radar.completeTrip()
-            
+
             #expect(
                 !RadarTripIntegrationTestSupport
                     .hasPreviousTrackingOptions()
@@ -137,7 +136,7 @@ extension RadarSerializedTests {
             )
             #expect(Radar.isTracking())
         }
-        
+
         @Test("trip tracking stops when tracking was not already active")
         func tripStopsWhenTrackingWasNotActive() async {
             let tripOptions = RadarTripOptions(
@@ -146,8 +145,8 @@ extension RadarSerializedTests {
                 destinationGeofenceExternalId: "someId"
             )
             let tripTrackingOptions =
-            RadarTrackingOptions.presetContinuous
-            
+                RadarTrackingOptions.presetContinuous
+
             await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
                 Radar.startTrip(
                     options: tripOptions,
@@ -156,38 +155,38 @@ extension RadarSerializedTests {
                     continuation.resume()
                 }
             }
-            
+
             #expect(
                 !RadarTripIntegrationTestSupport
                     .hasPreviousTrackingOptions()
             )
-            
+
             #expect(
                 Radar.getTrackingOptions()
                     .isEqual(tripTrackingOptions)
             )
-            
+
             await Radar.completeTrip()
-            
+
             #expect(
                 !RadarTripIntegrationTestSupport
                     .hasPreviousTrackingOptions()
             )
             #expect(!Radar.isTracking())
         }
-        
+
         @Test("getTrip returns nil when no trip is stored")
         func getTripReturnsNilWithoutStoredTrip() {
             #expect(Radar.getTrip() == nil)
         }
-        
+
         @Test("getTrip returns the stored multi-leg trip")
         func getTripReturnsStoredTrip() throws {
             RadarTripIntegrationTestSupport.storeMultiLegTrip()
-            
+
             let trip = try #require(Radar.getTrip())
             let legs = try #require(trip.legs)
-            
+
             #expect(trip._id == "trip_abc123")
             #expect(legs.count == 2)
             #expect(trip.currentLegId == "leg_001")
@@ -334,22 +333,23 @@ extension RadarSerializedTests {
             RadarTripIntegrationTestSupport
                 .configureMultiLegTripResponse()
 
-            let result: (
-                status: RadarStatus,
-                tripId: String?
-            ) = await withCheckedContinuation { continuation in
-                Radar.reorderTripLegs(
-                    tripId: "trip_abc123",
-                    legIds: ["leg_002", "leg_001"]
-                ) { status, trip, _ in
-                    continuation.resume(
-                        returning: (
-                            status,
-                            trip?._id
+            let result:
+                (
+                    status: RadarStatus,
+                    tripId: String?
+                ) = await withCheckedContinuation { continuation in
+                    Radar.reorderTripLegs(
+                        tripId: "trip_abc123",
+                        legIds: ["leg_002", "leg_001"]
+                    ) { status, trip, _ in
+                        continuation.resume(
+                            returning: (
+                                status,
+                                trip?._id
+                            )
                         )
-                    )
+                    }
                 }
-            }
 
             #expect(result.status == .success)
             #expect(result.tripId == "trip_abc123")
@@ -361,21 +361,22 @@ extension RadarSerializedTests {
 
         @Test("reorderTripLegs fails when no trip is active")
         func reorderTripLegsFailsWithoutActiveTrip() async {
-            let result: (
-                status: RadarStatus,
-                tripIsNil: Bool
-            ) = await withCheckedContinuation { continuation in
-                Radar.reorderTripLegs(
-                    legIds: ["leg_001", "leg_002"]
-                ) { status, trip, _ in
-                    continuation.resume(
-                        returning: (
-                            status,
-                            trip == nil
+            let result:
+                (
+                    status: RadarStatus,
+                    tripIsNil: Bool
+                ) = await withCheckedContinuation { continuation in
+                    Radar.reorderTripLegs(
+                        legIds: ["leg_001", "leg_002"]
+                    ) { status, trip, _ in
+                        continuation.resume(
+                            returning: (
+                                status,
+                                trip == nil
+                            )
                         )
-                    )
+                    }
                 }
-            }
 
             #expect(result.status == .errorBadRequest)
             #expect(result.tripIsNil)

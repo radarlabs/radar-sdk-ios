@@ -13,7 +13,7 @@ import Foundation
 
 @objc(RadarTripLeg)
 @objcMembers
-class RadarTripLeg: NSObject { // swiftlint:disable:this type_body_length
+class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
 
     // swiftlint:disable:next identifier_name
     public private(set) var _id: String?
@@ -195,7 +195,8 @@ class RadarTripLeg: NSObject { // swiftlint:disable:this type_body_length
         }
 
         if let destination =
-            dictionary["destination"] as? [AnyHashable: Any] {
+            dictionary["destination"] as? [AnyHashable: Any]
+        {
             parseDestination(destination)
         }
 
@@ -225,7 +226,8 @@ class RadarTripLeg: NSObject { // swiftlint:disable:this type_body_length
         }
 
         if let source =
-            destination["source"] as? [AnyHashable: Any] {
+            destination["source"] as? [AnyHashable: Any]
+        {
             parseDestinationSource(source)
         } else {
             parseRequestDestination(destination)
@@ -233,14 +235,16 @@ class RadarTripLeg: NSObject { // swiftlint:disable:this type_body_length
 
         if let location =
             destination["location"] as? [AnyHashable: Any],
-           let coordinates = Self.coordinates(
-               from: location["coordinates"]
-           ) {
+            let coordinates = Self.coordinates(
+                from: location["coordinates"]
+            )
+        {
             self.coordinates = coordinates
         }
 
         if let arrivalRadius =
-            destination["arrivalRadius"] as? NSNumber {
+            destination["arrivalRadius"] as? NSNumber
+        {
             self.arrivalRadius = arrivalRadius.intValue
         }
 
@@ -294,11 +298,7 @@ class RadarTripLeg: NSObject { // swiftlint:disable:this type_body_length
             return
         }
 
-        if destinationGeofenceId != nil ||
-            (
-                destinationGeofenceTag != nil &&
-                destinationGeofenceExternalId != nil
-            ) {
+        if destinationGeofenceId != nil || (destinationGeofenceTag != nil && destinationGeofenceExternalId != nil) {
             destinationType = .geofence
         } else if address != nil {
             destinationType = .address
@@ -311,9 +311,9 @@ class RadarTripLeg: NSObject { // swiftlint:disable:this type_body_length
         from object: Any?
     ) -> CLLocationCoordinate2D? {
         guard let values = object as? [Any],
-              values.count >= 2,
-              let longitude = doubleValue(from: values[0]),
-              let latitude = doubleValue(from: values[1])
+            values.count >= 2,
+            let longitude = doubleValue(from: values[0]),
+            let latitude = doubleValue(from: values[1])
         else {
             return nil
         }
@@ -467,19 +467,17 @@ class RadarTripLeg: NSObject { // swiftlint:disable:this type_body_length
             return true
         }
 
-        return hasMatchingCoreValues(other) &&
-            hasMatchingDestination(other) &&
-            hasMatchingMetadata(other)
+        return hasMatchingCoreValues(other) && hasMatchingDestination(other) && hasMatchingMetadata(other)
     }
 
     private func hasMatchingCoreValues(
         _ other: RadarTripLeg
     ) -> Bool {
         guard destinationType == other.destinationType,
-              status == other.status,
-              stopDuration == other.stopDuration,
-              arrivalRadius == other.arrivalRadius,
-              hasCoordinates == other.hasCoordinates
+            status == other.status,
+            stopDuration == other.stopDuration,
+            arrivalRadius == other.arrivalRadius,
+            hasCoordinates == other.hasCoordinates
         else {
             return false
         }
@@ -488,21 +486,14 @@ class RadarTripLeg: NSObject { // swiftlint:disable:this type_body_length
             return true
         }
 
-        return coordinates.latitude == other.coordinates.latitude &&
-            coordinates.longitude == other.coordinates.longitude
+        return coordinates.latitude == other.coordinates.latitude && coordinates.longitude == other.coordinates.longitude
     }
 
     private func hasMatchingDestination(
         _ other: RadarTripLeg
     ) -> Bool {
-        _id == other._id &&
-            destinationGeofenceTag ==
-                other.destinationGeofenceTag &&
-            destinationGeofenceExternalId ==
-                other.destinationGeofenceExternalId &&
-            destinationGeofenceId ==
-                other.destinationGeofenceId &&
-            address == other.address
+        _id == other._id && destinationGeofenceTag == other.destinationGeofenceTag && destinationGeofenceExternalId == other.destinationGeofenceExternalId
+            && destinationGeofenceId == other.destinationGeofenceId && address == other.address
     }
 
     private func hasMatchingMetadata(

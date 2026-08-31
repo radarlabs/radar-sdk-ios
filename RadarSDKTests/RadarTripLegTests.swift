@@ -15,7 +15,7 @@ import Testing
 @testable import RadarSDK
 
 @Suite("RadarTripLegTests")
-struct RadarTripLegTests { // swiftlint:disable:this type_body_length
+struct RadarTripLegTests {  // swiftlint:disable:this type_body_length
 
     // MARK: - Default State
 

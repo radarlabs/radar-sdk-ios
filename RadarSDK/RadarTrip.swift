@@ -63,7 +63,7 @@ class RadarTrip: NSObject {
     @objc(initWithObject:)
     public convenience init?(object: Any) {
         guard let dictionary = object as? [AnyHashable: Any],
-              let externalId = dictionary["externalId"] as? String
+            let externalId = dictionary["externalId"] as? String
         else {
             return nil
         }
@@ -75,9 +75,11 @@ class RadarTrip: NSObject {
         let destinationGeofenceExternalId =
             dictionary["destinationGeofenceExternalId"] as? String
 
-        guard let destinationLocation = Self.destinationLocation(
-            from: dictionary["destinationLocation"]
-        ) else {
+        guard
+            let destinationLocation = Self.destinationLocation(
+                from: dictionary["destinationLocation"]
+            )
+        else {
             return nil
         }
 
@@ -170,9 +172,9 @@ class RadarTrip: NSObject {
         }
 
         guard let coordinates = location["coordinates"] as? [Any],
-              coordinates.count == 2,
-              let longitude = coordinates[0] as? NSNumber,
-              let latitude = coordinates[1] as? NSNumber
+            coordinates.count == 2,
+            let longitude = coordinates[0] as? NSNumber,
+            let latitude = coordinates[1] as? NSNumber
         else {
             return nil
         }

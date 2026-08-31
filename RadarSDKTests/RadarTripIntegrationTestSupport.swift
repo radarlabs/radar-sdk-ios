@@ -81,7 +81,7 @@ enum RadarTripIntegrationTestSupport {
         guard
             let apiHelperMock =
                 RadarAPIClient.sharedInstance().apiHelper
-                    as? RadarAPIHelperMock
+                as? RadarAPIHelperMock
         else {
             return false
         }
@@ -105,7 +105,7 @@ enum RadarTripIntegrationTestSupport {
         guard
             let apiHelperMock =
                 RadarAPIClient.sharedInstance().apiHelper
-                    as? RadarAPIHelperMock,
+                as? RadarAPIHelperMock,
             let legIds =
                 apiHelperMock.lastParams?["legs"] as? [String]
         else {

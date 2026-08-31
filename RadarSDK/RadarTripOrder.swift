@@ -47,11 +47,11 @@ class RadarTripOrder: NSObject {
     @objc(initWithObject:)
     public convenience init?(object: Any) {
         guard let dictionary = object as? [AnyHashable: Any],
-              let id = dictionary["id"] as? String,
-              let updatedAtString = dictionary["updatedAt"] as? String,
-              let updatedAt = RadarUtils.isoDateFormatter.date(
-                  from: updatedAtString
-              )
+            let id = dictionary["id"] as? String,
+            let updatedAtString = dictionary["updatedAt"] as? String,
+            let updatedAt = RadarUtils.isoDateFormatter.date(
+                from: updatedAtString
+            )
         else {
             return nil
         }

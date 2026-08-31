@@ -10,7 +10,7 @@ import Foundation
 
 @objc(RadarTripOptions)
 @objcMembers
-class RadarTripOptions: NSObject { // swiftlint:disable:this type_body_length
+class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
 
     public var externalId: String?
     public var metadata: [AnyHashable: Any]?
@@ -155,7 +155,7 @@ class RadarTripOptions: NSObject { // swiftlint:disable:this type_body_length
         )
         let approachingThreshold =
             (dictionary["approachingThreshold"] as? NSNumber)?
-                .uint16Value ?? 0
+            .uint16Value ?? 0
         let startTracking = Self.startTracking(
             from: dictionary["startTracking"]
         )
@@ -280,8 +280,9 @@ class RadarTripOptions: NSObject { // swiftlint:disable:this type_body_length
         dictionary["startTracking"] = startTracking
 
         if let legs,
-           !legs.isEmpty,
-           let serializedLegs = RadarTripLeg.array(for: legs) {
+            !legs.isEmpty,
+            let serializedLegs = RadarTripLeg.array(for: legs)
+        {
             dictionary["legs"] = serializedLegs
         }
 
@@ -297,23 +298,14 @@ class RadarTripOptions: NSObject { // swiftlint:disable:this type_body_length
             return true
         }
 
-        return hasMatchingValues(other) &&
-            hasMatchingMetadata(other) &&
-            hasMatchingLegs(other)
+        return hasMatchingValues(other) && hasMatchingMetadata(other) && hasMatchingLegs(other)
     }
 
     private func hasMatchingValues(
         _ other: RadarTripOptions
     ) -> Bool {
-        externalId == other.externalId &&
-            destinationGeofenceTag ==
-                other.destinationGeofenceTag &&
-            destinationGeofenceExternalId ==
-                other.destinationGeofenceExternalId &&
-            scheduledArrivalAt == other.scheduledArrivalAt &&
-            mode == other.mode &&
-            approachingThreshold == other.approachingThreshold &&
-            startTracking == other.startTracking
+        externalId == other.externalId && destinationGeofenceTag == other.destinationGeofenceTag && destinationGeofenceExternalId == other.destinationGeofenceExternalId
+            && scheduledArrivalAt == other.scheduledArrivalAt && mode == other.mode && approachingThreshold == other.approachingThreshold && startTracking == other.startTracking
     }
 
     private func hasMatchingMetadata(
