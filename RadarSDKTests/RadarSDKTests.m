@@ -1154,41 +1154,6 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(dict[@"currentLeg"], @"leg_001");
 }
 
-- (void)test_RadarTripOptions_legsSerializationRoundTrip {
-    RadarTripOptions *options = [[RadarTripOptions alloc] initWithExternalId:@"trip-1"
-                                                      destinationGeofenceTag:@"store"
-                                               destinationGeofenceExternalId:@"store-1"];
-    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithDestinationGeofenceTag:@"warehouse"
-                                              destinationGeofenceExternalId:@"wh-1"];
-    leg.stopDuration = 10;
-    options.legs = @[leg];
-
-    NSDictionary *dict = [options dictionaryValue];
-    XCTAssertNotNil(dict[@"legs"]);
-
-    RadarTripOptions *restored = [RadarTripOptions tripOptionsFromDictionary:dict];
-    XCTAssertNotNil(restored.legs);
-    XCTAssertEqual(restored.legs.count, 1);
-    XCTAssertEqualObjects(restored.legs[0].destinationGeofenceTag, @"warehouse");
-}
-
-- (void)test_RadarTripOptions_isEqual_accountsForLegs {
-    RadarTripOptions *options1 = [[RadarTripOptions alloc] initWithExternalId:@"trip-1"
-                                                       destinationGeofenceTag:@"store"
-                                                destinationGeofenceExternalId:@"store-1"];
-    RadarTripOptions *options2 = [[RadarTripOptions alloc] initWithExternalId:@"trip-1"
-                                                       destinationGeofenceTag:@"store"
-                                                destinationGeofenceExternalId:@"store-1"];
-
-    RadarTripLeg *leg = [[RadarTripLeg alloc] initWithAddress:@"123 St"];
-    options1.legs = @[leg];
-
-    XCTAssertFalse([options1 isEqual:options2]);
-
-    options2.legs = @[leg];
-    XCTAssertTrue([options1 isEqual:options2]);
-}
-
 - (void)test_Radar_getTrip_returnsNilWhenNoTrip {
     [RadarSettings setTrip:nil];
     XCTAssertNil([Radar getTrip]);
