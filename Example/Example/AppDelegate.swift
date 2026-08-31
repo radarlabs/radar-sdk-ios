@@ -15,10 +15,12 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarVerifiedDelegate {
 
-    /// Point the SDK at a dev server by setting this to its address, e.g.
-    /// "http://192.168.1.10:8081" (device) or "http://localhost:8081" (simulator). Overrides
-    /// the API + verified hosts on launch; leave blank to use the SDK defaults.
-    static let TARGET_HOST = ""
+    /// Point the SDK at a dev server by setting this to its address.
+    /// Use "http://localhost:8081" for the Simulator, or your Mac's current LAN IP
+    /// (for example, "http://192.168.0.24:8081") for a physical device. Replace the example
+    /// with your own address. Overrides the API + verified hosts on launch; leave blank to use
+    /// the SDK defaults.
+    static let TARGET_HOST = "http://192.168.0.24:8081"
 
     let locationManager = CLLocationManager()
     var window: UIWindow?  // required for UIWindowSceneDelegate
