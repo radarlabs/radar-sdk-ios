@@ -145,24 +145,23 @@ struct RadarTimeZoneTests {
         #expect(try JSONDecoder().decode(RadarTimeZoneSwift.self, from: data) == original)
     }
 
-    // MARK: - Parity with the legacy ObjC RadarTimeZone
+    // MARK: - Objective-C compatibility
 
-    /// The Objective-C properties are declared `nonnull` but its parser leaves them unset on
-    /// a partial payload, so parity is read through `dictionaryValue` rather than by touching
-    /// the properties from Swift.
-    private func objcDictionary(_ json: String) throws -> [String: Any] {
+    /// The public header declares these properties as nonnull, but partial payloads leave them
+    /// unset, so compatibility is checked through `dictionaryValue`.
+    private func compatibilityDictionary(_ json: String) throws -> [String: Any] {
         let object = try #require(JSONSerialization.jsonObject(with: Data(json.utf8)) as? [String: Any])
         let timeZone = try #require(RadarTimeZone(object: object))
-        return try #require(timeZone.dictionaryValue() as? [String: Any])
+        return timeZone.dictionaryValue()
     }
 
-    @Test("matches ObjC parsing of a full payload")
+    @Test("matches Objective-C parsing of a full payload")
     func parityOnParsing() throws {
         let object = try #require(JSONSerialization.jsonObject(with: Data(Self.fullJSON.utf8)) as? [String: Any])
         let objc = try #require(RadarTimeZone(object: object))
         let swift = try decode(Self.fullJSON)
 
-        #expect(objc._id == swift.id)
+        #expect(objc.id == swift.id)
         #expect(objc.name == swift.name)
         #expect(objc.code == swift.code)
         #expect(objc.currentTime == swift.currentTime)
@@ -170,9 +169,9 @@ struct RadarTimeZoneTests {
         #expect(Int(objc.dstOffset) == swift.dstOffset)
     }
 
-    @Test("matches ObjC serialization of a full payload")
+    @Test("matches Objective-C serialization of a full payload")
     func parityOnSerialization() throws {
-        let objcDict = try objcDictionary(Self.fullJSON) as NSDictionary
+        let objcDict = try compatibilityDictionary(Self.fullJSON) as NSDictionary
         let swiftDict = try encodeToDictionary(try decode(Self.fullJSON)) as NSDictionary
 
         #expect(swiftDict == objcDict)
@@ -189,7 +188,7 @@ struct RadarTimeZoneTests {
         ]
     )
     func parityOnLenientPayloads(json: String) throws {
-        let objcDict = try objcDictionary(json)
+        let objcDict = try compatibilityDictionary(json)
         let swift = try decode(json)
 
         // Unset strings are absent from the ObjC dictionary where Swift defaults to empty.
