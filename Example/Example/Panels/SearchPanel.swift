@@ -232,13 +232,6 @@ struct SearchPanel: View {
                         car duration: \(String(describing: routes?.car?.duration.text))
                         foot distance: \(String(describing: routes?.foot?.distance.text))
                         foot duration: \(String(describing: routes?.foot?.duration.text))
-                        
-                        car geometry: \(String(describing: routes?.car?.geometry.coordinates?.count))
-                        \(routes?.car?.geometry.coordinates.map { coords in
-                            coords.map { coord in
-                                "\(coord.coordinate.latitude) \(coord.coordinate.longitude)"
-                            }
-                        })
                         """
                     logStream.write(
                         status,

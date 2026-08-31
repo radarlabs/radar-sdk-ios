@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		26FEF59A2ABCC0C7ED804196 /* RadarSDKIndoors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD361BF33854ED123BC40BAB /* RadarSDKIndoors.framework */; };
 		34A9408B904A8CEDF1A941EF /* AR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADD56E28546D24100452E77 /* AR.swift */; };
 		3E65616E4C3D6B6E198644B2 /* SurveyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0357ED46C5457642FBDB83 /* SurveyView.swift */; };
 		6814D480521A0A14D7C366EF /* SurveyApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F25EB75285088BF8AFD284D /* SurveyApi.swift */; };
 		7037AD987541A35D942C1A5C /* MyMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1E2E96294A65D5419B0059 /* MyMapView.swift */; };
+		890A4EA0E15F879C71E7BB3A /* RadarSDKIndoors.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD361BF33854ED123BC40BAB /* RadarSDKIndoors.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		92EE46B98361FE7ADF80EBB4 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = 70D59073A64C5F1081FC94EF /* Gzip */; };
 		9D429469133C2C5D325676C6 /* MapLibre in Frameworks */ = {isa = PBXBuildFile; productRef = A4F03C41A11D2CFE2E0E2D3F /* MapLibre */; };
 		A4D42C392B4358BF5FA23797 /* RadarSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7092341E2C7DFCBC8F8AA810 /* RadarSite.swift */; };
@@ -75,30 +77,79 @@
 		F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886B92EA7DB180072E87C /* TestsView.swift */; };
 		F61886C32EA7DB5F0072E87C /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61886C22EA7DB5C0072E87C /* LogsView.swift */; };
 		F625D7F92C3337650024D1E7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */; };
+		F64C7F412F64568E00943B7A /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F0B2F64564F00943B7A /* RadarSDK.framework */; };
+		F64C7F422F64568E00943B7A /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F0B2F64564F00943B7A /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F64C7F432F64568E00943B7A /* RadarSDKMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F112F64564F00943B7A /* RadarSDKMotion.framework */; };
+		F64C7F442F64568E00943B7A /* RadarSDKMotion.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F112F64564F00943B7A /* RadarSDKMotion.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F64C7F452F64569F00943B7A /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F0B2F64564F00943B7A /* RadarSDK.framework */; };
+		F64C7F462F64569F00943B7A /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F0B2F64564F00943B7A /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F64C7F472F6456A400943B7A /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F0B2F64564F00943B7A /* RadarSDK.framework */; };
+		F64C7F482F6456A400943B7A /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7F0B2F64564F00943B7A /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F64C80D62F64876500943B7A /* RadarSDKFraud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */; };
+		F64C80D72F64876500943B7A /* RadarSDKFraud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F6513E792E60A5F600523472 /* LocationPushExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F6513E722E60A5F600523472 /* LocationPushExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F6513F602E6B736200523472 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F5F2E6B736200523472 /* MainView.swift */; };
 		F6513F702E6B736200523472 /* CSGNInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6513F712E6B736200523472 /* CSGNInspectorView.swift */; };
 		F65F793E2EF458E600399E84 /* MyIAMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65F79382EF458E000399E84 /* MyIAMDelegate.swift */; };
-		F66D60B93045FA4600B95B82 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F66D60B83045FA4600B95B82 /* RadarSDK.framework */; };
-		F66D60BA3045FA4600B95B82 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F66D60B83045FA4600B95B82 /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F66D60F23045FF5800B95B82 /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F66D60EE3045FF5800B95B82 /* RadarSDK.framework */; };
-		F66D60F33045FF5800B95B82 /* RadarSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F66D60EE3045FF5800B95B82 /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F66D60F43045FF5800B95B82 /* RadarSDKFraud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F66D60EF3045FF5800B95B82 /* RadarSDKFraud.framework */; };
-		F66D60F53045FF5800B95B82 /* RadarSDKFraud.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F66D60EF3045FF5800B95B82 /* RadarSDKFraud.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F66D60F63045FF5800B95B82 /* RadarSDKIndoors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F66D60F03045FF5800B95B82 /* RadarSDKIndoors.framework */; };
-		F66D60F73045FF5800B95B82 /* RadarSDKIndoors.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F66D60F03045FF5800B95B82 /* RadarSDKIndoors.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F66D60F83045FF5800B95B82 /* RadarSDKMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F66D60F13045FF5800B95B82 /* RadarSDKMotion.framework */; };
-		F66D60F93045FF5800B95B82 /* RadarSDKMotion.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F66D60F13045FF5800B95B82 /* RadarSDKMotion.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F66DAD6A2E707F0700896773 /* waypoints.gpx in Sources */ = {isa = PBXBuildFile; fileRef = F66DAD642E707F0300896773 /* waypoints.gpx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		17C814CC302CC79400425933 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9415002E0DE3E6008ECBEB;
+			remoteInfo = RadarSDKIndoorsTests;
+		};
+		5B085ACBE42C1F343A80AFB6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FE9414F72E0DE3E6008ECBEB;
+			remoteInfo = RadarSDKIndoors;
+		};
 		BA51988B2ED10AEB004A3B35 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DD236D1B230A006700EB88F9 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = BA5198792ED10AEA004A3B35;
 			remoteInfo = TripActivityExtensionExtension;
+		};
+		F64C7F082F64564F00943B7A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DD236C7E2308797B00EB88F9;
+			remoteInfo = RadarSDKTests;
+		};
+		F64C7F0A2F64564F00943B7A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0107A9E82621FFB9008AB52F;
+			remoteInfo = RadarSDK;
+		};
+		F64C7F102F64564F00943B7A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E698B6672C6167A800084371;
+			remoteInfo = RadarSDKMotion;
+		};
+		F64C7F122F64564F00943B7A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E698B6712C6167A800084371;
+			remoteInfo = RadarSDKMotionTests;
+		};
+		F64C80432F645C3E00943B7A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F64C7FB22F645A9F00943B7A /* RadarSDKFraud.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4BFF276F2E79C12600EC633E;
+			remoteInfo = RadarSDKFraud;
 		};
 		F6513E772E60A5F600523472 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -110,12 +161,27 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		013D7AF426D327C400574AD5 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F64C80D72F64876500943B7A /* RadarSDKFraud.framework in Embed Frameworks */,
+				F64C7F442F64568E00943B7A /* RadarSDKMotion.framework in Embed Frameworks */,
+				F64C7F422F64568E00943B7A /* RadarSDK.framework in Embed Frameworks */,
+				890A4EA0E15F879C71E7BB3A /* RadarSDKIndoors.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F64C7F492F6456A400943B7A /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				F64C7F482F6456A400943B7A /* RadarSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -132,27 +198,13 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F66D60FA3045FF5800B95B82 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				F66D60F73045FF5800B95B82 /* RadarSDKIndoors.framework in Embed Frameworks */,
-				F66D60F33045FF5800B95B82 /* RadarSDK.framework in Embed Frameworks */,
-				F66D60F93045FF5800B95B82 /* RadarSDKMotion.framework in Embed Frameworks */,
-				F66D60F53045FF5800B95B82 /* RadarSDKFraud.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		F6BF84202EC78AAF00143AD9 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F66D60BA3045FA4600B95B82 /* RadarSDK.framework in Embed Frameworks */,
+				F64C7F462F64569F00943B7A /* RadarSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -221,26 +273,21 @@
 		DD236D26230A006700EB88F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DD236D34230A006900EB88F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD291168230D0AF900049D3A /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDK.xcodeproj; path = ../RadarSDK.xcodeproj; sourceTree = SOURCE_ROOT; };
 		DD86FD0B23918B3C003225F6 /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		DDB861D22385FC3E00770661 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKIndoors.xcodeproj; path = ../RadarSDKIndoors/RadarSDKIndoors.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E632FA1C2CAC366C00E86C85 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
+		E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKMotion.xcodeproj; path = ../RadarSDKMotion/RadarSDKMotion.xcodeproj; sourceTree = "<group>"; };
 		F61886B92EA7DB180072E87C /* TestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsView.swift; sourceTree = "<group>"; };
 		F61886C22EA7DB5C0072E87C /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
 		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		F64C7FB22F645A9F00943B7A /* RadarSDKFraud.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKFraud.xcodeproj; path = ../RadarSDKFraud/RadarSDKFraud.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKFraud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513E722E60A5F600523472 /* LocationPushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LocationPushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513F5F2E6B736200523472 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		F6513F712E6B736200523472 /* CSGNInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSGNInspectorView.swift; sourceTree = "<group>"; };
 		F65F79382EF458E000399E84 /* MyIAMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyIAMDelegate.swift; sourceTree = "<group>"; };
-		F66D60AC3045FA0E00B95B82 /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F66D60AD3045FA0E00B95B82 /* RadarSDKFraud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKFraud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F66D60AE3045FA0E00B95B82 /* RadarSDKIndoors.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKIndoors.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F66D60AF3045FA0E00B95B82 /* RadarSDKMotion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKMotion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F66D60B83045FA4600B95B82 /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F66D60EE3045FF5800B95B82 /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F66D60EF3045FF5800B95B82 /* RadarSDKFraud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKFraud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F66D60F03045FF5800B95B82 /* RadarSDKIndoors.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKIndoors.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F66D60F13045FF5800B95B82 /* RadarSDKMotion.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKMotion.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F66DAD642E707F0300896773 /* waypoints.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = waypoints.gpx; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -286,6 +333,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA51987E2ED10AEA004A3B35 /* SwiftUI.framework in Frameworks */,
+				F64C7F472F6456A400943B7A /* RadarSDK.framework in Frameworks */,
 				BA51987C2ED10AEA004A3B35 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -294,15 +342,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F64C80D62F64876500943B7A /* RadarSDKFraud.framework in Frameworks */,
+				F64C7F432F64568E00943B7A /* RadarSDKMotion.framework in Frameworks */,
+				F64C7F412F64568E00943B7A /* RadarSDK.framework in Frameworks */,
 				9D429469133C2C5D325676C6 /* MapLibre in Frameworks */,
-				F66D60F43045FF5800B95B82 /* RadarSDKFraud.framework in Frameworks */,
 				A7B49EA1855BAFB10D29D5DF /* MapLibreSwiftDSL in Frameworks */,
-				F66D60F83045FF5800B95B82 /* RadarSDKMotion.framework in Frameworks */,
 				D3F016BC2A5F0CB1AF06D2E5 /* MapLibreSwiftUI in Frameworks */,
 				BFDBBE1F3E6C402A81D9974D /* MapLibreSwiftMacros in Frameworks */,
-				F66D60F23045FF5800B95B82 /* RadarSDK.framework in Frameworks */,
 				92EE46B98361FE7ADF80EBB4 /* Gzip in Frameworks */,
-				F66D60F63045FF5800B95B82 /* RadarSDKIndoors.framework in Frameworks */,
+				26FEF59A2ABCC0C7ED804196 /* RadarSDKIndoors.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,13 +358,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F66D60B93045FA4600B95B82 /* RadarSDK.framework in Frameworks */,
+				F64C7F452F64569F00943B7A /* RadarSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6FD78D530E6296330B1235BA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FD361BF33854ED123BC40BAB /* RadarSDKIndoors.framework */,
+				17C814CD302CC79400425933 /* RadarSDKIndoorsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		BA7792E72FA3D1D200E197CA /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -424,10 +481,14 @@
 			isa = PBXGroup;
 			children = (
 				DD236D25230A006700EB88F9 /* Example */,
+				DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */,
+				F64C7FB22F645A9F00943B7A /* RadarSDKFraud.xcodeproj */,
+				E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */,
 				F6513E732E60A5F600523472 /* LocationPushExtension */,
 				BA51987F2ED10AEA004A3B35 /* TripActivityExtension */,
 				DD236D24230A006700EB88F9 /* Products */,
 				DD86FD03239185FB003225F6 /* Frameworks */,
+				DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -479,20 +540,37 @@
 		DD86FD03239185FB003225F6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F66D60EE3045FF5800B95B82 /* RadarSDK.framework */,
-				F66D60EF3045FF5800B95B82 /* RadarSDKFraud.framework */,
-				F66D60F03045FF5800B95B82 /* RadarSDKIndoors.framework */,
-				F66D60F13045FF5800B95B82 /* RadarSDKMotion.framework */,
-				F66D60B83045FA4600B95B82 /* RadarSDK.framework */,
-				F66D60AC3045FA0E00B95B82 /* RadarSDK.framework */,
-				F66D60AD3045FA0E00B95B82 /* RadarSDKFraud.framework */,
-				F66D60AE3045FA0E00B95B82 /* RadarSDKIndoors.framework */,
-				F66D60AF3045FA0E00B95B82 /* RadarSDKMotion.framework */,
 				F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */,
 				BA51987B2ED10AEA004A3B35 /* WidgetKit.framework */,
 				BA51987D2ED10AEA004A3B35 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F64C7F032F64564F00943B7A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F64C7F092F64564F00943B7A /* RadarSDKTests.xctest */,
+				F64C7F0B2F64564F00943B7A /* RadarSDK.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F64C7F0C2F64564F00943B7A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F64C7F112F64564F00943B7A /* RadarSDKMotion.framework */,
+				F64C7F132F64564F00943B7A /* RadarSDKMotionTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F64C803D2F645C3E00943B7A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F64C80442F645C3E00943B7A /* RadarSDKFraud.framework */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -526,8 +604,8 @@
 				DD236D1F230A006700EB88F9 /* Sources */,
 				DD236D20230A006700EB88F9 /* Frameworks */,
 				DD236D21230A006700EB88F9 /* Resources */,
+				013D7AF426D327C400574AD5 /* Embed Frameworks */,
 				F6513E7E2E60A5F600523472 /* Embed Foundation Extensions */,
-				F66D60FA3045FF5800B95B82 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -606,6 +684,24 @@
 			);
 			productRefGroup = DD236D24230A006700EB88F9 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F64C7F032F64564F00943B7A /* Products */;
+					ProjectRef = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
+				},
+				{
+					ProductGroup = F64C803D2F645C3E00943B7A /* Products */;
+					ProjectRef = F64C7FB22F645A9F00943B7A /* RadarSDKFraud.xcodeproj */;
+				},
+				{
+					ProductGroup = 6FD78D530E6296330B1235BA /* Products */;
+					ProjectRef = DFA6F045F184B94C6F334DFB /* RadarSDKIndoors.xcodeproj */;
+				},
+				{
+					ProductGroup = F64C7F0C2F64564F00943B7A /* Products */;
+					ProjectRef = E698B7382C626AE600084371 /* RadarSDKMotion.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				DD236D22230A006700EB88F9 /* Example */,
@@ -614,6 +710,58 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		17C814CD302CC79400425933 /* RadarSDKIndoorsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RadarSDKIndoorsTests.xctest;
+			remoteRef = 17C814CC302CC79400425933 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F64C7F092F64564F00943B7A /* RadarSDKTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RadarSDKTests.xctest;
+			remoteRef = F64C7F082F64564F00943B7A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F64C7F0B2F64564F00943B7A /* RadarSDK.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDK.framework;
+			remoteRef = F64C7F0A2F64564F00943B7A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F64C7F112F64564F00943B7A /* RadarSDKMotion.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDKMotion.framework;
+			remoteRef = F64C7F102F64564F00943B7A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F64C7F132F64564F00943B7A /* RadarSDKMotionTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RadarSDKMotionTests.xctest;
+			remoteRef = F64C7F122F64564F00943B7A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F64C80442F645C3E00943B7A /* RadarSDKFraud.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDKFraud.framework;
+			remoteRef = F64C80432F645C3E00943B7A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FD361BF33854ED123BC40BAB /* RadarSDKIndoors.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RadarSDKIndoors.framework;
+			remoteRef = 5B085ACBE42C1F343A80AFB6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BA5198782ED10AEA004A3B35 /* Resources */ = {

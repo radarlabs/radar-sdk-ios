@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     /// Point the SDK at a dev server by setting this to its address, e.g.
     /// "http://192.168.1.10:8081" (device) or "http://localhost:8081" (simulator). Overrides
     /// the API + verified hosts on launch; leave blank to use the SDK defaults.
-    static let TARGET_HOST = "https://api.radar-staging.com"
+    static let TARGET_HOST = ""
 
     let locationManager = CLLocationManager()
     var window: UIWindow?  // required for UIWindowSceneDelegate
