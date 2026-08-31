@@ -33,6 +33,10 @@
     [[RadarLocationManager sharedInstance] updateTracking];
 }
 
+- (void)updateTrackingFromInitialize {
+    [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
+}
+
 - (void)logOpenedAppConversion {
     [Radar logOpenedAppConversion];
 }

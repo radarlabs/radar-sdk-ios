@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable CLLocation *)effectiveLocationForLocationManager:(CLLocationManager *)locationManager;
 
 + (void)applyRemoteTrackingOptions:(nullable RadarMeta *)meta;
++ (void)updateTrackingFromMeta:(nullable RadarMeta *)meta;
 
 + (BOOL)shouldHandleRegionWithIdentifier:(NSString *)identifier action:(NSString *)action;
 

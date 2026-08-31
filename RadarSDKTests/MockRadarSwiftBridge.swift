@@ -17,6 +17,7 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     private(set) var flushReplaysCallCount = 0
     private(set) var stopIndoorTrackingCallCount = 0
     private(set) var updateTrackingCallCount = 0
+    private(set) var updateTrackingFromInitializeCallCount = 0
     private(set) var callOrder: [String] = []
 
     func flushReplaysRequest(
@@ -40,6 +41,11 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func updateTracking() {
         updateTrackingCallCount += 1
         callOrder.append("updateTracking")
+    }
+
+    func updateTrackingFromInitialize() {
+        updateTrackingFromInitializeCallCount += 1
+        callOrder.append("updateTrackingFromInitialize")
     }
 
     func logOpenedAppConversion() {}

@@ -358,4 +358,10 @@ extension RadarLocationManagerSwift {
             RadarLogger.shared.debug("🦅 Removed remote tracking options | trackingOptions = \(Radar.getTrackingOptions())")
         }
     }
+
+    @objc(updateTrackingFromMeta:)
+    static func updateTrackingFromMeta(_ meta: RadarMeta?) {
+        applyRemoteTrackingOptions(meta)
+        RadarSwift.bridge?.updateTrackingFromInitialize()
+    }
 }

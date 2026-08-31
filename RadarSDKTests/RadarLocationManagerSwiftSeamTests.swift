@@ -62,6 +62,57 @@ extension RadarSerializedTests {
                 #expect(bridge.updateTrackingCallCount == 0)
                 #expect(RadarSettings.tracking == false)
             }
+        // MARK: - updateTrackingFromMeta — public method routing
+
+        @Test("Public updateTrackingFromMeta routes to the Swift twin when useSwiftLocationManager is enabled")
+        func publicUpdateTrackingFromMetaRoutesToSwiftTwinWhenFlagEnabled() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer {
+                RadarSwift.bridge = originalBridge
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": true])
+            let options = RadarLocationManagerSwiftTestHelpers.trackingOptions(beacons: true)
+            let meta = RadarMeta.from(dictionary: ["trackingOptions": options.dictionaryValue()])!
+
+            RadarLocationManager.sharedInstance().perform(
+                #selector(RadarLocationManagerSwift.updateTrackingFromMeta(_:)),
+                with: meta
+            )
+
+            #expect(RadarSettings.remoteTrackingOptions == options)
+            #expect(bridge.updateTrackingFromInitializeCallCount == 1)
+            #expect(bridge.callOrder == ["updateTrackingFromInitialize"])
+        }
+
+        @Test("Public updateTrackingFromMeta keeps the Objective-C body when useSwiftLocationManager is disabled")
+        func publicUpdateTrackingFromMetaUsesObjCBodyWhenFlagDisabled() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer {
+                RadarSwift.bridge = originalBridge
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": false])
+            let options = RadarLocationManagerSwiftTestHelpers.trackingOptions(beacons: true)
+            let meta = RadarMeta.from(dictionary: ["trackingOptions": options.dictionaryValue()])!
+
+            RadarLocationManager.sharedInstance().perform(
+                #selector(RadarLocationManagerSwift.updateTrackingFromMeta(_:)),
+                with: meta
+            )
+
+            #expect(RadarSettings.remoteTrackingOptions == options)
+            #expect(bridge.callOrder.isEmpty)
+        }
+
         // MARK: - stopTracking — public method routing
 
         @Test("Public stopTracking routes to the Swift twin when useSwiftLocationManager is enabled")
