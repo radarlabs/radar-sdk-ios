@@ -62,6 +62,54 @@ extension RadarSerializedTests {
                 #expect(bridge.updateTrackingCallCount == 0)
                 #expect(RadarSettings.tracking == false)
             }
+        // MARK: - stopTracking — public method routing
+
+        @Test("Public stopTracking routes to the Swift twin when useSwiftLocationManager is enabled")
+        func publicStopTrackingRoutesToSwiftTwinWhenFlagEnabled() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            let manager = RadarLocationManager.sharedInstance()
+            let originalLocationManager = manager.locationManager
+            let originalActivityManager = manager.activityManager
+            RadarSwift.bridge = bridge
+            defer {
+                RadarSwift.bridge = originalBridge
+                manager.locationManager = originalLocationManager
+                manager.activityManager = originalActivityManager
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": true])
+            RadarSettings.tracking = true
+            manager.locationManager = TrackingCLLocationManager()
+            manager.activityManager = TrackingRadarActivityManager()
+
+            manager.stopTracking()
+
+            #expect(RadarSettings.tracking == false)
+            #expect(bridge.callOrder == ["stopIndoorTracking", "updateTracking"])
+        }
+
+        @Test("Public stopTracking keeps the Objective-C body when useSwiftLocationManager is disabled")
+        func publicStopTrackingUsesObjCBodyWhenFlagDisabled() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            let manager = RadarLocationManager.sharedInstance()
+            RadarSwift.bridge = bridge
+            defer {
+                RadarSwift.bridge = originalBridge
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": false])
+            RadarSettings.tracking = true
+
+            manager.stopTracking()
+
+            #expect(RadarSettings.tracking == false)
+            #expect(bridge.callOrder.isEmpty)
         }
 
         // MARK: - restartPreviousTrackingOptions — Swift twin

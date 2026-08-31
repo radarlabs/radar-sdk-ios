@@ -63,6 +63,40 @@ final class RadarLocationManagerSwift: NSObject {
         RadarSettings.previousTrackingOptions = nil
     }
 
+    @objc(stopTrackingOnLocationManager:activityManager:)
+    static func stopTracking(locationManager: CLLocationManager, activityManager: AnyObject?) {
+        RadarSettings.tracking = false
+
+        RadarSwift.bridge?.stopIndoorTracking()
+
+        if RadarSettings.sdkConfiguration?.extendFlushReplays == true {
+            RadarLogger.shared.info("Flushing replays from stopTracking()", type: .sdkCall)
+            RadarSwift.bridge?.flushReplays()
+        }
+
+        let trackingOptions = RadarSettings.trackingOptions ?? .presetEfficient
+        if trackingOptions.useMotion || trackingOptions.usePressure {
+            locationManager.stopUpdatingHeading()
+
+            if let activityManager {
+                // This class is internal, so call its existing Objective-C selectors without exposing it to Swift.
+                if trackingOptions.usePressure {
+                    (activityManager as? NSObject)?.perform(#selector(RadarMotionProtocol.stopRelativeAltitudeUpdates))
+                    (activityManager as? NSObject)?.perform(#selector(RadarMotionProtocol.stopAbsoluteAltitudeUpdates))
+                }
+                if trackingOptions.useMotion {
+                    (activityManager as? NSObject)?.perform(#selector(RadarMotionProtocol.stopActivityUpdates))
+                }
+            }
+        }
+
+        trackingOptions.startTrackingAfter = nil
+        trackingOptions.stopTrackingAfter = nil
+        RadarSettings.trackingOptions = trackingOptions
+
+        RadarSwift.bridge?.updateTracking()
+    }
+
     @objc(matchBeaconIdsWithRanged:synced:)
     static func matchBeaconIds(ranged: [RadarBeacon], synced: [RadarBeacon]) -> [String] {
         var syncedMap: [String: String] = [:]

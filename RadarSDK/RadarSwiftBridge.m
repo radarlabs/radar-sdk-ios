@@ -16,12 +16,21 @@
 #import "RadarUtils.h"
 #import "RadarDelegateHolder.h"
 #import "RadarAPIClient.h"
+#import "RadarIndoors.h"
 #import "RadarLocationManager.h"
 
 @implementation RadarSwiftBridge
 
 - (void)flushReplays {
     [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
+}
+
+- (void)stopIndoorTracking {
+    [[RadarIndoors shared] stopWithCompletionHandler:^{}];
+}
+
+- (void)updateTracking {
+    [[RadarLocationManager sharedInstance] updateTracking];
 }
 
 - (void)logOpenedAppConversion {

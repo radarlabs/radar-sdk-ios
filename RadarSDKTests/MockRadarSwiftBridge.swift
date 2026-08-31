@@ -14,6 +14,10 @@ import UserNotifications
 final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked Sendable {
     var flushStatus: RadarStatus = .success
     private(set) var lastFlushedReplays: [[AnyHashable: Any]]?
+    private(set) var flushReplaysCallCount = 0
+    private(set) var stopIndoorTrackingCallCount = 0
+    private(set) var updateTrackingCallCount = 0
+    private(set) var callOrder: [String] = []
 
     func flushReplaysRequest(
         _ replays: [[AnyHashable: Any]],
@@ -23,7 +27,21 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
         completionHandler?(flushStatus, nil)
     }
 
-    func flushReplays() {}
+    func flushReplays() {
+        flushReplaysCallCount += 1
+        callOrder.append("flushReplays")
+    }
+
+    func stopIndoorTracking() {
+        stopIndoorTrackingCallCount += 1
+        callOrder.append("stopIndoorTracking")
+    }
+
+    func updateTracking() {
+        updateTrackingCallCount += 1
+        callOrder.append("updateTracking")
+    }
+
     func logOpenedAppConversion() {}
     func geofenceIds() -> [String]? { nil }
     func beaconIds() -> [String]? { nil }

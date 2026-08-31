@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions;
 
 + (void)restartPreviousTrackingOptions;
++ (void)stopTrackingOnLocationManager:(CLLocationManager *)locationManager
+                      activityManager:(nullable id)activityManager;
 
 + (NSArray<NSString *> *)matchBeaconIdsWithRanged:(NSArray<RadarBeacon *> *)rangedBeacons
                                            synced:(NSArray<RadarBeacon *> *)syncedBeacons;

@@ -220,6 +220,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)stopTracking {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift stopTrackingOnLocationManager:self.locationManager activityManager:self.activityManager];
+        return;
+    }
+
     [RadarSettings setTracking:NO];
 
     // Stops indoor scanning
