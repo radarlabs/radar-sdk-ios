@@ -28,7 +28,7 @@ struct RadarTimeZoneTests {
     private static let fixtureDate = Date(timeIntervalSince1970: 1_705_329_000)
 
     private func timeZone(from json: String) throws -> RadarTimeZone {
-        let object = try #require(JSONSerialization.jsonObject(with: Data(json.utf8)))
+        let object = try JSONSerialization.jsonObject(with: Data(json.utf8))
         return try #require(RadarTimeZone(object: object))
     }
 
@@ -139,7 +139,7 @@ struct RadarTimeZoneTests {
 
     @Test("rejects non-dictionary payloads")
     func rejectsNonDictionaryPayloads() throws {
-        let object = try #require(JSONSerialization.jsonObject(with: Data("[]".utf8)))
+        let object = try JSONSerialization.jsonObject(with: Data("[]".utf8))
         #expect(RadarTimeZone(object: object) == nil)
         #expect(RadarTimeZone(object: "not a dictionary") == nil)
     }
