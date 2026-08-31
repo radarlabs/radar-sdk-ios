@@ -180,8 +180,8 @@ class RadarTrip: NSObject {
         }
 
         let coordinate = CLLocationCoordinate2D(
-            latitude: CLLocationDegrees(latitude.floatValue),
-            longitude: CLLocationDegrees(longitude.floatValue)
+            latitude: CLLocationDegrees(latitude.doubleValue),
+            longitude: CLLocationDegrees(longitude.doubleValue)
         )
 
         return RadarCoordinate(coordinate: coordinate)

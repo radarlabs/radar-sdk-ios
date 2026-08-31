@@ -64,6 +64,24 @@ struct RadarTripTests {
         #expect(abs(destination.coordinate.longitude - -73.975365) < 0.000_001)
     }
 
+    @Test("preserves destination coordinate precision")
+    func preservesDestinationCoordinatePrecision() throws {
+        let expectedLongitude = -73.975365123456
+        let expectedLatitude = 40.783825123456
+
+        var dictionary = RadarTripTestFixtures.trip()
+        dictionary["destinationLocation"] = [
+            "type": "Point",
+            "coordinates": [expectedLongitude, expectedLatitude],
+        ]
+
+        let trip = try #require(RadarTrip(object: dictionary))
+        let destination = try #require(trip.destinationLocation)
+
+        #expect(destination.coordinate.latitude == expectedLatitude)
+        #expect(destination.coordinate.longitude == expectedLongitude)
+    }
+
     @Test("maps every recognized route mode")
     func parsesRouteModes() throws {
         let cases: [(String, RadarRouteMode)] = [
