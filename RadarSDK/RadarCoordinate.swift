@@ -11,15 +11,15 @@ import Foundation
 
 @objc(RadarCoordinate)
 final class RadarCoordinateSwift: NSObject, Codable, Sendable {
-    
+
     let latitude: Double
     let longitude: Double
-    
+
     @objc
     public var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
-    
+
     var clLocationCoordinate2D: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
@@ -27,18 +27,18 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
     var clLocation: CLLocation {
         CLLocation(latitude: latitude, longitude: longitude)
     }
-    
+
     init(latitude: Double, longitude: Double) {
         self.latitude = latitude
         self.longitude = longitude
     }
-    
+
     @objc
     public init(coordinate: CLLocationCoordinate2D) {
         self.latitude = coordinate.latitude
         self.longitude = coordinate.longitude
     }
-    
+
     @objc
     internal static func coordinatesFrom(object: Any) -> [RadarCoordinateSwift]? {
         guard let array = object as? [Any] else {
@@ -46,15 +46,15 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         }
         return array.compactMap(RadarCoordinateSwift.init)
     }
-    
+
     @objc
     public func dictionaryValue() -> [String: Any] {
         return [
             "type": "Point",
-            "coordinates": [longitude, latitude]
+            "coordinates": [longitude, latitude],
         ]
     }
-    
+
     @objc
     internal init?(object: Any?) {
         guard let dict = object as? [String: Any] else {
@@ -69,5 +69,23 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         self.longitude = coords[0]
         self.latitude = coords[1]
     }
-}
 
+    // Matches what Codable synthesis produced for the previous `struct` definition,
+    // so persisted state (e.g. RadarSyncState) round-trips unchanged.
+    enum CodingKeys: String, CodingKey {
+        case latitude
+        case longitude
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.latitude = try container.decode(Double.self, forKey: .latitude)
+        self.longitude = try container.decode(Double.self, forKey: .longitude)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(latitude, forKey: .latitude)
+        try container.encode(longitude, forKey: .longitude)
+    }
+}
