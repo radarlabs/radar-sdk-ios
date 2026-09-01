@@ -20,6 +20,9 @@
 - (void)flushReplays;
 - (void)flushReplaysRequest:(NSArray<NSDictionary *> * _Nonnull)replays
           completionHandler:(void (^_Nullable)(RadarStatus status, NSDictionary * _Nullable res))completionHandler;
+- (void)stopIndoorTracking;
+- (void)updateTracking;
+- (void)updateTrackingFromInitialize;
 - (void)logOpenedAppConversion;
 
 - (NSArray<NSString *> * _Nullable)geofenceIds;
