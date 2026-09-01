@@ -100,10 +100,6 @@
     [[RadarLocationManager sharedInstance] handleLocation:location source:source];
 }
 
-- (void)updateTracking {
-    [[RadarLocationManager sharedInstance] updateTracking];
-}
-
 - (RadarUser * _Nullable)radarUser {
     return [RadarState radarUser];
 }
