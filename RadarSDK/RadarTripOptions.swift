@@ -184,7 +184,7 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
 
     @objc(tripOptionsFromDictionary:)
     public static func tripOptions(
-        fromDictionary dictionary: [AnyHashable: Any]?
+        from dictionary: [AnyHashable: Any]?
     ) -> RadarTripOptions? {
         RadarTripOptions(from: dictionary)
     }
