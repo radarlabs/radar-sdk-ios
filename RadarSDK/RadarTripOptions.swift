@@ -304,7 +304,15 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
     private func hasMatchingValues(
         _ other: RadarTripOptions
     ) -> Bool {
-        externalId == other.externalId && destinationGeofenceTag == other.destinationGeofenceTag && destinationGeofenceExternalId == other.destinationGeofenceExternalId
+        guard
+            let externalId,
+            let otherExternalId = other.externalId,
+            externalId == otherExternalId
+        else {
+            return false
+        }
+
+        return destinationGeofenceTag == other.destinationGeofenceTag && destinationGeofenceExternalId == other.destinationGeofenceExternalId
             && scheduledArrivalAt == other.scheduledArrivalAt && mode == other.mode && approachingThreshold == other.approachingThreshold && startTracking == other.startTracking
     }
 

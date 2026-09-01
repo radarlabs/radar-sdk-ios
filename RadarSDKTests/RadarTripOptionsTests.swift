@@ -444,6 +444,14 @@ struct RadarTripOptionsTests {  // swiftlint:disable:this type_body_length
         #expect(options.isEqual(matching))
     }
 
+    @Test("distinct options without external IDs are not equal")
+    func missingExternalIdsAreNotEqual() throws {
+        let first = try #require(RadarTripOptions(from: [:]))
+        let second = try #require(RadarTripOptions(from: [:]))
+
+        #expect(first.isEqual(second) == false)
+    }
+
     @Test("options are not equal to nil or another type")
     func rejectsUnrelatedEqualityValues() {
         let options = makeCompleteOptions()

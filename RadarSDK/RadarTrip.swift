@@ -120,7 +120,6 @@ class RadarTrip: NSObject {
 
     public func dictionaryValue() -> [AnyHashable: Any] {
         var dictionary: [AnyHashable: Any] = [
-            "externalId": externalId as Any,
             "mode": Self.string(for: mode),
             "eta": [
                 "distance": etaDistance,
@@ -128,6 +127,10 @@ class RadarTrip: NSObject {
             ],
             "status": Self.string(for: status),
         ]
+
+        if let externalId {
+            dictionary["externalId"] = externalId
+        }
 
         if let id = _id {
             dictionary["_id"] = id
