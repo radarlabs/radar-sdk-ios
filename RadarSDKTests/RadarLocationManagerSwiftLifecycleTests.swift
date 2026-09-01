@@ -70,7 +70,7 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
 
 extension RadarSerializedTests {
     @Suite(.serialized)
-    actor RadarLocationManagerSwiftLifecycleTests { // swiftlint:disable:this type_body_length
+    actor RadarLocationManagerSwiftLifecycleTests {  // swiftlint:disable:this type_body_length
 
         // MARK: - startUpdates
 

@@ -46,7 +46,7 @@ private final class RadarLocationManagerSwiftHostBox: @unchecked Sendable {
 }
 
 @objc(RadarLocationManagerSwift)
-final class RadarLocationManagerSwift: NSObject { // swiftlint:disable:this type_body_length
+final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this type_body_length
 
     // Mirror of the identifier prefix constants in RadarLocationManager.m. Kept in sync by
     // hand until that file is fully ported.
