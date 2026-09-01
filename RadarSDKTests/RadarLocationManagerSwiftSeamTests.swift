@@ -332,48 +332,50 @@ extension RadarSerializedTests {
 
             RadarLocationManager.sharedInstance().replaceSyncedBeacons([])
         }
+    }
+}
 
-        @Test("ObjC startTrackingWithOptions: does not require the main thread")
-        func publicStartTrackingSurvivesBackgroundThread() async {
-            await withCheckedContinuation { continuation in
-                DispatchQueue.global(qos: .userInitiated).async {
-                    RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies { bridge in
-                        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-                            "useSwiftLocationManager": true
-                        ])
-                        #expect(!Thread.isMainThread)
+extension RadarSerializedTests.RadarLocationManagerSwiftSeamTests {
+    @Test("ObjC startTrackingWithOptions: does not require the main thread")
+    func publicStartTrackingSurvivesBackgroundThread() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies { bridge in
+                    RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                        "useSwiftLocationManager": true
+                    ])
+                    #expect(!Thread.isMainThread)
 
-                        RadarLocationManager.sharedInstance().startTracking(with: .presetResponsive)
+                    RadarLocationManager.sharedInstance().startTracking(with: .presetResponsive)
 
-                        #expect(bridge.updateTrackingCallCount == 1)
-                        #expect(RadarSettings.tracking == true)
-                    }
-                    continuation.resume()
+                    #expect(bridge.updateTrackingCallCount == 1)
+                    #expect(RadarSettings.tracking == true)
                 }
+                continuation.resume()
             }
         }
+    }
 
-        @Test("restartPreviousTrackingOptions round-trips through ObjC off the main thread")
-        func restartPreviousTrackingOptionsSurvivesBackgroundThread() async {
-            await withCheckedContinuation { continuation in
-                DispatchQueue.global(qos: .userInitiated).async {
-                    RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies { bridge in
-                        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-                            "useSwiftLocationManager": true
-                        ])
-                        let previousOptions = RadarTrackingOptions.presetResponsive
-                        RadarSettings.previousTrackingOptions = previousOptions
-                        #expect(!Thread.isMainThread)
+    @Test("restartPreviousTrackingOptions round-trips through ObjC off the main thread")
+    func restartPreviousTrackingOptionsSurvivesBackgroundThread() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies { bridge in
+                    RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                        "useSwiftLocationManager": true
+                    ])
+                    let previousOptions = RadarTrackingOptions.presetResponsive
+                    RadarSettings.previousTrackingOptions = previousOptions
+                    #expect(!Thread.isMainThread)
 
-                        RadarLocationManagerSwift.restartPreviousTrackingOptions()
+                    RadarLocationManagerSwift.restartPreviousTrackingOptions()
 
-                        #expect(RadarSettings.previousTrackingOptions == nil)
-                        #expect(RadarSettings.tracking == true)
-                        #expect(RadarSettings.trackingOptions == previousOptions)
-                        #expect(bridge.updateTrackingCallCount == 1)
-                    }
-                    continuation.resume()
+                    #expect(RadarSettings.previousTrackingOptions == nil)
+                    #expect(RadarSettings.tracking == true)
+                    #expect(RadarSettings.trackingOptions == previousOptions)
+                    #expect(bridge.updateTrackingCallCount == 1)
                 }
+                continuation.resume()
             }
         }
     }
