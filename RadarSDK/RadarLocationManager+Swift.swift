@@ -58,6 +58,8 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     private static let syncGeofenceIdentifierPrefix = "radar_geofence_"
     private static let syncBeaconIdentifierPrefix = "radar_beacon_"
     private static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
+    private static let trackingShutdownDelay: TimeInterval = 10
+    private static let immediateShutdownDelay: TimeInterval = 0
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
 
     @objc(startTrackingWithOptions:)
@@ -162,20 +164,20 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
     @objc(stopUpdatesWithHost:locationManager:)
     static func stopUpdates(host: RadarLocationManagerSwiftHost, locationManager: CLLocationManager) {
-        guard host.timer() != nil else {
+        guard let timer = host.timer() else {
             return
         }
 
         RadarLogger.shared.debug("🦅 Stopping timer")
 
-        host.timer()?.invalidate()
+        timer.invalidate()
         locationManager.stopUpdatingLocation()
 
         host.setStarted(false)
         host.setStartedInterval(0)
 
         if !host.sending() {
-            let delay: TimeInterval = RadarSettings.tracking ? 10 : 0
+            let delay = RadarSettings.tracking ? Self.trackingShutdownDelay : Self.immediateShutdownDelay
 
             RadarLogger.shared.debug("🦅 Scheduling shutdown")
             host.scheduleShutdown(after: delay)
