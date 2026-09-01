@@ -35,8 +35,8 @@
 #import "RadarSDK-Swift.h"
 #endif
 
-// Temporary migration seam for the Swift timer twins. The manager keeps ownership of its
-// private state while Swift runs the timer logic. Remove this conformance when the manager
+// Temporary migration seam for the Swift lifecycle twins. The manager keeps ownership of its
+// private state while Swift runs the lifecycle logic. Remove this conformance when the manager
 // is fully ported.
 @interface RadarLocationManager () <RadarLocationManagerSwiftHost>
 
@@ -165,10 +165,27 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift getLocationWithHost:self
+                                      authorizationStatus:[self.permissionsHelper locationAuthorizationStatus]
+                                        locationManager:self.locationManager
+                                       completionHandler:completionHandler];
+        return;
+    }
+
     [self getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
 }
 
 - (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift getLocationWithDesiredAccuracyOnHost:self
+                                                       authorizationStatus:[self.permissionsHelper locationAuthorizationStatus]
+                                                         locationManager:self.locationManager
+                                                        desiredAccuracy:desiredAccuracy
+                                                       completionHandler:completionHandler];
+        return;
+    }
+
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
