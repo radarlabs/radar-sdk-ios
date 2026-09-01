@@ -23,6 +23,9 @@ import Foundation
 // `RadarSDK-Swift.h`. Methods that need access to the manager's CLLocationManager
 // receive it as an explicit argument. Timer methods use the host protocol below because
 // they also need private timer state and shutdown scheduling.
+// This protocol is a temporary migration seam. Remove it when RadarLocationManager is
+// fully ported to Swift and the timer state no longer needs an Objective-C host.
+// `@objc public` keeps the seam visible to the generated Objective-C header; it is not a new SDK API.
 @objc public protocol RadarLocationManagerSwiftHost: AnyObject {
     func started() -> Bool
     func setStarted(_ started: Bool)

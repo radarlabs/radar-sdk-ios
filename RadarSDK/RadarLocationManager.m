@@ -35,6 +35,9 @@
 #import "RadarSDK-Swift.h"
 #endif
 
+// Temporary migration seam for the Swift timer twins. The manager keeps ownership of its
+// private state while Swift runs the timer logic. Remove this conformance when the manager
+// is fully ported.
 @interface RadarLocationManager () <RadarLocationManagerSwiftHost>
 
 /**
@@ -328,6 +331,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 }
 
+// Temporary callbacks used by the Swift timer twin. They keep shutdown scheduling in the
+// existing Objective-C manager until the manager is fully ported.
 - (void)cancelPendingShutdown {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(shutDown) object:nil];
 }
