@@ -35,7 +35,7 @@
 #import "RadarSDK-Swift.h"
 #endif
 
-@interface RadarLocationManager ()
+@interface RadarLocationManager () <RadarLocationManagerSwiftHost>
 
 /**
  `YES` if `startUpdates()` has started the `timer` for location updates.
@@ -260,6 +260,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)startUpdates:(int)interval blueBar:(BOOL)blueBar {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift startUpdatesWithHost:self
+                                       locationManager:self.locationManager
+                                lowPowerLocationManager:self.lowPowerLocationManager
+                                               interval:interval
+                                                blueBar:blueBar];
+        return;
+    }
+
     if (!self.started || interval != self.startedInterval) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d", interval]];
 
@@ -292,6 +301,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)stopUpdates {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift stopUpdatesWithHost:self locationManager:self.locationManager];
+        return;
+    }
+
     if (!self.timer) {
         return;
     }
@@ -312,6 +326,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         [self performSelector:@selector(shutDown) withObject:nil afterDelay:delay];
     }
+}
+
+- (void)cancelPendingShutdown {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(shutDown) object:nil];
+}
+
+- (void)scheduleShutdownAfter:(NSTimeInterval)delay {
+    [self performSelector:@selector(shutDown) withObject:nil afterDelay:delay];
 }
 
 - (void)shutDown {
