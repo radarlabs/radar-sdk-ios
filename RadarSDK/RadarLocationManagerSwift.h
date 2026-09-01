@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (CLLocationAccuracy)clLocationAccuracyForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
 + (BOOL)shouldBypassDeviceLocationStateForSource:(RadarLocationSource)source;
 
++ (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions;
+
 + (void)restartPreviousTrackingOptions;
 
 + (NSArray<NSString *> *)matchBeaconIdsWithRanged:(NSArray<RadarBeacon *> *)rangedBeacons
