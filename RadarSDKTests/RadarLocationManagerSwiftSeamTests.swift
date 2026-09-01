@@ -62,6 +62,8 @@ extension RadarSerializedTests {
                 #expect(bridge.updateTrackingCallCount == 0)
                 #expect(RadarSettings.tracking == false)
             }
+        }
+
         // MARK: - updateTrackingFromMeta — public method routing
 
         @Test("Public updateTrackingFromMeta routes to the Swift twin when useSwiftLocationManager is enabled")
