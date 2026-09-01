@@ -26,10 +26,6 @@ private func invokeStopUpdates(on manager: RadarLocationManager) {
     manager.perform(NSSelectorFromString("stopUpdates"))
 }
 
-private func invokeGetLocation(on manager: RadarLocationManager) {
-    manager.perform(NSSelectorFromString("getLocationWithCompletionHandler:"), with: nil)
-}
-
 extension RadarSerializedTests {
     @Suite(.serialized)
     actor RadarLocationManagerSwiftSeamTests {
@@ -132,56 +128,6 @@ extension RadarSerializedTests {
 
             #expect(RadarSettings.remoteTrackingOptions == options)
             #expect(bridge.callOrder.isEmpty)
-        }
-
-        // MARK: - getLocation — public method routing
-
-        @Test("Public getLocation routes to the Swift twin when useSwiftLocationManager is enabled")
-        func publicGetLocationRoutesToSwiftTwinWhenFlagEnabled() {
-            RadarLocationManagerSwiftTestHelpers.clearState()
-            let bridge = MockRadarSwiftBridge()
-            let originalBridge = RadarSwift.bridge
-            let manager = RadarLocationManager.sharedInstance()
-            let originalPermissionsHelper = manager.permissionsHelper
-            RadarSwift.bridge = bridge
-            defer {
-                RadarSwift.bridge = originalBridge
-                manager.permissionsHelper = originalPermissionsHelper
-                RadarLocationManagerSwiftTestHelpers.clearState()
-            }
-
-            let permissionsHelper = RadarPermissionsHelperMock()
-            permissionsHelper.mockLocationAuthorizationStatus = .notDetermined
-            manager.permissionsHelper = permissionsHelper
-            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": true])
-
-            invokeGetLocation(on: manager)
-
-            #expect(bridge.lastFailStatus == .errorPermissions)
-        }
-
-        @Test("Public getLocation keeps the Objective-C body when useSwiftLocationManager is disabled")
-        func publicGetLocationUsesObjCBodyWhenFlagDisabled() {
-            RadarLocationManagerSwiftTestHelpers.clearState()
-            let bridge = MockRadarSwiftBridge()
-            let originalBridge = RadarSwift.bridge
-            let manager = RadarLocationManager.sharedInstance()
-            let originalPermissionsHelper = manager.permissionsHelper
-            RadarSwift.bridge = bridge
-            defer {
-                RadarSwift.bridge = originalBridge
-                manager.permissionsHelper = originalPermissionsHelper
-                RadarLocationManagerSwiftTestHelpers.clearState()
-            }
-
-            let permissionsHelper = RadarPermissionsHelperMock()
-            permissionsHelper.mockLocationAuthorizationStatus = .notDetermined
-            manager.permissionsHelper = permissionsHelper
-            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": false])
-
-            invokeGetLocation(on: manager)
-
-            #expect(bridge.lastFailStatus == nil)
         }
 
         // MARK: - startUpdates and stopUpdates — public method routing
