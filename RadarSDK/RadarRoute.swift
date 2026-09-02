@@ -21,7 +21,7 @@ struct RadarRoute: Codable {
     struct Geometry: Codable {
         let coordinates: [RadarCoordinateSwift]
     }
-    let geometry: Geometry
+    let geometry: Geometry?
 }
 
 // ObjC classes, backed by RadarRoute struct
@@ -73,7 +73,7 @@ class RadarRouteDuration: NSObject {
 
 @objc(RadarRouteGeometry)
 class RadarRouteGeometry: NSObject {
-    @objc public var coordinates: [RadarCoordinate] { route.geometry.coordinates as? [RadarCoordinate] ?? [] }
+    @objc public var coordinates: [RadarCoordinate] { route.geometry?.coordinates as? [RadarCoordinate] ?? [] }
     
     let route: RadarRoute
     init(route: RadarRoute) {
@@ -87,7 +87,7 @@ class RadarRouteObjc: NSObject {
     
     @objc public let distance: RadarRouteDistance
     @objc public let duration: RadarRouteDuration
-    @objc public let geometry: RadarRouteGeometry
+    @objc public let geometry: RadarRouteGeometry?
     
     init(route: RadarRoute) {
         self.route = route
@@ -104,6 +104,7 @@ class RadarRouteObjc: NSObject {
         }
         
         let jsonString = RadarUtils.dictionaryToJson(dict)
+        print(jsonString)
         
         let decoder = JSONDecoder()
         decoder.userInfo[RadarCoordinateSwift.codingStrategy] = RadarCoordinateSwift.CodingStrategy.LngLatArray
