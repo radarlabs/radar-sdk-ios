@@ -76,7 +76,10 @@ class RadarRouteGeometry: NSObject {
     @objc public var coordinates: [RadarCoordinate] { route.geometry?.coordinates as? [RadarCoordinate] ?? [] }
     
     let route: RadarRoute
-    init(route: RadarRoute) {
+    init?(route: RadarRoute) {
+        guard route.geometry != nil else {
+            return nil
+        }
         self.route = route
     }
 }
