@@ -8,13 +8,13 @@
 
 // swiftlint:disable file_length
 
-import Testing
 import Foundation
+import Testing
 
 @testable import RadarSDK
 
 @Suite("RadarTrackingOptionsTests")
-struct RadarTrackingOptionsTests {
+struct RadarTrackingOptionsTests { // swiftlint:disable:this type_body_length
 
     @Test("continuous preset preserves existing configuration")
     func continuousPreset() {
@@ -130,8 +130,8 @@ struct RadarTrackingOptionsTests {
     @Test("maps desired accuracy values and strings")
     func mapsDesiredAccuracy() throws {
         let unknown = try #require(
-                RadarTrackingOptionsDesiredAccuracy(rawValue: 999)
-            )
+            RadarTrackingOptionsDesiredAccuracy(rawValue: 999)
+        )
 
         let cases: [(RadarTrackingOptionsDesiredAccuracy, String)] = [
             (.high, "high"),
@@ -150,13 +150,13 @@ struct RadarTrackingOptionsTests {
         #expect(RadarTrackingOptions.desiredAccuracy(for: "unknown") == .medium)
         #expect(RadarTrackingOptions.desiredAccuracy(for: "") == .medium)
     }
-    
+
     @Test("maps replay values and strings")
     func mapsReplay() throws {
         let unknown = try #require(
-                RadarTrackingOptionsReplay(rawValue: 999)
-            )
-    
+            RadarTrackingOptionsReplay(rawValue: 999)
+        )
+
         let cases: [(RadarTrackingOptionsReplay, String)] = [
             (.stops, "stops"),
             (.none, "none"),
@@ -176,8 +176,8 @@ struct RadarTrackingOptionsTests {
     @Test("maps sync values and strings")
     func mapsSyncLocations() throws {
         let unknown = try #require(
-                RadarTrackingOptionsSyncLocations(rawValue: 999)
-            )
+            RadarTrackingOptionsSyncLocations(rawValue: 999)
+        )
 
         let cases: [(RadarTrackingOptionsSyncLocations, String)] = [
             (.all, "all"),
@@ -201,8 +201,8 @@ struct RadarTrackingOptionsTests {
     @Test("maps tracking option types and strings")
     func mapsTypes() throws {
         let unknown = try #require(
-                RadarTrackingOptionsType(rawValue: 999)
-            )
+            RadarTrackingOptionsType(rawValue: 999)
+        )
 
         let cases: [(RadarTrackingOptionsType, String)] = [
             (.default, "default"),
@@ -257,7 +257,7 @@ struct RadarTrackingOptionsTests {
     }
 
     @Test("parses a complete tracking options dictionary")
-    func parsesCompleteDictionary() throws {
+    func parsesCompleteDictionary() throws { // swiftlint:disable:this function_body_length
         let startTrackingAfter = Date(
             timeIntervalSince1970: 1_788_200_000
         )
@@ -427,7 +427,7 @@ struct RadarTrackingOptionsTests {
     // MARK: - Dictionary Serialization
 
     @Test("serializes every tracking option using the existing dictionary format")
-    func serializesCompleteOptions() {
+    func serializesCompleteOptions() { // swiftlint:disable:this function_body_length
         let options = RadarTrackingOptions()
         let startTrackingAfter = Date(
             timeIntervalSince1970: 1_788_200_000
@@ -507,86 +507,156 @@ struct RadarTrackingOptionsTests {
     // MARK: - Equality
 
     @Test("compares every field currently included in equality")
-    func comparesEqualityFields() throws {
-        let mutations: [
-            (String, (RadarTrackingOptions) -> Void)
-        ] = [
-            ("desiredStoppedUpdateInterval", {
-                $0.desiredStoppedUpdateInterval += 1
-            }),
-            ("desiredMovingUpdateInterval", {
-                $0.desiredMovingUpdateInterval += 1
-            }),
-            ("desiredSyncInterval", {
-                $0.desiredSyncInterval += 1
-            }),
-            ("desiredAccuracy", {
-                $0.desiredAccuracy = .low
-            }),
-            ("stopDuration", {
-                $0.stopDuration += 1
-            }),
-            ("stopDistance", {
-                $0.stopDistance += 1
-            }),
-            ("startTrackingAfter", {
-                $0.startTrackingAfter = Date(
-                    timeIntervalSince1970: 1_788_200_000
-                )
-            }),
-            ("stopTrackingAfter", {
-                $0.stopTrackingAfter = Date(
-                    timeIntervalSince1970: 1_788_200_000
-                )
-            }),
-            ("syncLocations", {
-                $0.syncLocations = .events
-            }),
-            ("replay", {
-                $0.replay = .all
-            }),
-            ("showBlueBar", {
-                $0.showBlueBar.toggle()
-            }),
-            ("useStoppedGeofence", {
-                $0.useStoppedGeofence.toggle()
-            }),
-            ("stoppedGeofenceRadius", {
-                $0.stoppedGeofenceRadius += 1
-            }),
-            ("useMovingGeofence", {
-                $0.useMovingGeofence.toggle()
-            }),
-            ("movingGeofenceRadius", {
-                $0.movingGeofenceRadius += 1
-            }),
-            ("syncGeofences", {
-                $0.syncGeofences.toggle()
-            }),
-            ("useVisits", {
-                $0.useVisits.toggle()
-            }),
-            ("useSignificantLocationChanges", {
-                $0.useSignificantLocationChanges.toggle()
-            }),
-            ("beacons", {
-                $0.beacons.toggle()
-            }),
-            ("useIndoorScan", {
-                $0.useIndoorScan.toggle()
-            }),
-            ("useMotion", {
-                $0.useMotion.toggle()
-            }),
-            ("usePressure", {
-                $0.usePressure.toggle()
-            }),
-            ("batchInterval", {
-                $0.batchInterval += 1
-            }),
-            ("batchSize", {
-                $0.batchSize += 1
-            }),
+    func comparesEqualityFields() throws { // swiftlint:disable:this function_body_length
+        let mutations: [(String, (RadarTrackingOptions) -> Void)] = [
+            (
+                "desiredStoppedUpdateInterval",
+                {
+                    $0.desiredStoppedUpdateInterval += 1
+                }
+            ),
+            (
+                "desiredMovingUpdateInterval",
+                {
+                    $0.desiredMovingUpdateInterval += 1
+                }
+            ),
+            (
+                "desiredSyncInterval",
+                {
+                    $0.desiredSyncInterval += 1
+                }
+            ),
+            (
+                "desiredAccuracy",
+                {
+                    $0.desiredAccuracy = .low
+                }
+            ),
+            (
+                "stopDuration",
+                {
+                    $0.stopDuration += 1
+                }
+            ),
+            (
+                "stopDistance",
+                {
+                    $0.stopDistance += 1
+                }
+            ),
+            (
+                "startTrackingAfter",
+                {
+                    $0.startTrackingAfter = Date(
+                        timeIntervalSince1970: 1_788_200_000
+                    )
+                }
+            ),
+            (
+                "stopTrackingAfter",
+                {
+                    $0.stopTrackingAfter = Date(
+                        timeIntervalSince1970: 1_788_200_000
+                    )
+                }
+            ),
+            (
+                "syncLocations",
+                {
+                    $0.syncLocations = .events
+                }
+            ),
+            (
+                "replay",
+                {
+                    $0.replay = .all
+                }
+            ),
+            (
+                "showBlueBar",
+                {
+                    $0.showBlueBar.toggle()
+                }
+            ),
+            (
+                "useStoppedGeofence",
+                {
+                    $0.useStoppedGeofence.toggle()
+                }
+            ),
+            (
+                "stoppedGeofenceRadius",
+                {
+                    $0.stoppedGeofenceRadius += 1
+                }
+            ),
+            (
+                "useMovingGeofence",
+                {
+                    $0.useMovingGeofence.toggle()
+                }
+            ),
+            (
+                "movingGeofenceRadius",
+                {
+                    $0.movingGeofenceRadius += 1
+                }
+            ),
+            (
+                "syncGeofences",
+                {
+                    $0.syncGeofences.toggle()
+                }
+            ),
+            (
+                "useVisits",
+                {
+                    $0.useVisits.toggle()
+                }
+            ),
+            (
+                "useSignificantLocationChanges",
+                {
+                    $0.useSignificantLocationChanges.toggle()
+                }
+            ),
+            (
+                "beacons",
+                {
+                    $0.beacons.toggle()
+                }
+            ),
+            (
+                "useIndoorScan",
+                {
+                    $0.useIndoorScan.toggle()
+                }
+            ),
+            (
+                "useMotion",
+                {
+                    $0.useMotion.toggle()
+                }
+            ),
+            (
+                "usePressure",
+                {
+                    $0.usePressure.toggle()
+                }
+            ),
+            (
+                "batchInterval",
+                {
+                    $0.batchInterval += 1
+                }
+            ),
+            (
+                "batchSize",
+                {
+                    $0.batchSize += 1
+                }
+            ),
         ]
 
         for (name, mutate) in mutations {

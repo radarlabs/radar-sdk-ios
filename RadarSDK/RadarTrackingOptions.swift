@@ -8,6 +8,8 @@
 
 import Foundation
 
+// swiftlint:disable file_length
+
 @objc
 @implementation
 extension RadarTrackingOptions {
@@ -29,7 +31,7 @@ extension RadarTrackingOptions {
         get { storedStopTrackingAfter as Date? }
         set { storedStopTrackingAfter = newValue as NSDate? }
     }
-    
+
     public var replay: RadarTrackingOptionsReplay = .stops
     public var syncLocations: RadarTrackingOptionsSyncLocations = .all
     public var showBlueBar = false
@@ -238,7 +240,7 @@ extension RadarTrackingOptions {
     }
 
     @nonobjc
-    private convenience init?(
+    private convenience init?( // swiftlint:disable:this function_body_length
         dictionary: [AnyHashable: Any]?
     ) {
         guard let dictionary else {
