@@ -8,6 +8,16 @@
 import CoreLocation
 import Foundation
 
+private final class RadarBeaconRegionStateBox: @unchecked Sendable {
+    let location: CLLocation
+    let region: CLBeaconRegion
+
+    init(location: CLLocation, region: CLBeaconRegion) {
+        self.location = location
+        self.region = region
+    }
+}
+
 // The `CLLocationManagerDelegate` half of `RadarLocationManager`
 extension RadarLocationManagerSwift {
 
@@ -64,6 +74,59 @@ extension RadarLocationManagerSwift {
             ? .visitArrival
             : .visitDeparture
         RadarSwift.bridge?.handleLocation(location, source: source)
+    }
+
+    @objc(didDetermineStateOnLocationManager:state:region:)
+    static func didDetermineState(locationManager: CLLocationManager, state: CLRegionState, region: CLRegion) {
+        let identifier = region.identifier
+        guard identifier.hasPrefix(syncBeaconIdentifierPrefix) || identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) else {
+            return
+        }
+
+        guard let location = effectiveLocation(for: locationManager), let beaconRegion = region as? CLBeaconRegion else {
+            return
+        }
+
+        let isInside = state == .inside
+        let source: RadarLocationSource = isInside ? .beaconEnter : .beaconExit
+        let stateBox = RadarBeaconRegionStateBox(location: location, region: beaconRegion)
+        RadarLogger.shared.debug("🦅 \(isInside ? "Inside" : "Outside") beacon region | identifier = \(identifier)")
+
+        runOnMainThread { [stateBox] in
+            MainActor.assumeIsolated {
+                let beaconManager = RadarBeaconManagerSwift.shared
+                let completionHandler: RadarBeaconCompletionHandler = { _, _ in
+                    RadarSwift.bridge?.handleLocation(stateBox.location, source: source)
+                }
+
+                if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
+                    if isInside {
+                        beaconManager.handleBeaconUUIDEntry(for: stateBox.region, completionHandler: completionHandler)
+                    } else {
+                        beaconManager.handleBeaconUUIDExit(for: stateBox.region, completionHandler: completionHandler)
+                    }
+                } else if isInside {
+                    beaconManager.handleBeaconEntry(for: stateBox.region, completionHandler: completionHandler)
+                } else {
+                    beaconManager.handleBeaconExit(for: stateBox.region, completionHandler: completionHandler)
+                }
+            }
+        }
+    }
+
+    // Core Location may call this delegate off the main thread, while beacon state is main-actor owned.
+    private static func runOnMainThread(_ work: @escaping @MainActor @Sendable () -> Void) {
+        if Thread.isMainThread {
+            MainActor.assumeIsolated {
+                work()
+            }
+        } else {
+            DispatchQueue.main.async {
+                MainActor.assumeIsolated {
+                    work()
+                }
+            }
+        }
     }
 
     @objc(didUpdateHeading:)

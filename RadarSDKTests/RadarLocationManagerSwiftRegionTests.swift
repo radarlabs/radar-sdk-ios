@@ -268,5 +268,78 @@ extension RadarSerializedTests {
                 #expect(RadarLocationManagerSwift.shouldHandleRegion(identifier: identifier, action: "entry"))
             }
         }
+
+        // MARK: - didDetermineState
+
+        @Test("didDetermineState ignores non-beacon regions")
+        @MainActor
+        func didDetermineStateIgnoresNonBeaconRegions() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer {
+                RadarSwift.bridge = originalBridge
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            let locationManager = TrackingCLLocationManager()
+            locationManager.mockLocation = CLLocation(latitude: 40.7, longitude: -74.0)
+            let region = CLCircularRegion(
+                center: locationManager.mockLocation!.coordinate,
+                radius: 100,
+                identifier: "radar_geofence_not_a_beacon"
+            )
+
+            RadarLocationManagerSwift.didDetermineState(
+                locationManager: locationManager,
+                state: .inside,
+                region: region
+            )
+
+            #expect(bridge.lastHandledLocation == nil)
+        }
+
+        @Test("didDetermineState handles synced beacon entry and exit")
+        @MainActor
+        func didDetermineStateHandlesSyncedBeaconEntryAndExit() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer {
+                RadarSwift.bridge = originalBridge
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                "useRadarModifiedBeacon": false
+            ])
+            let locationManager = TrackingCLLocationManager()
+            let location = CLLocation(latitude: 40.7, longitude: -74.0)
+            locationManager.mockLocation = location
+            let region = CLBeaconRegion(
+                uuid: UUID(),
+                identifier: "radar_beacon_\(UUID().uuidString)"
+            )
+
+            RadarLocationManagerSwift.didDetermineState(
+                locationManager: locationManager,
+                state: .inside,
+                region: region
+            )
+
+            #expect(bridge.lastHandledLocation === location)
+            #expect(bridge.lastHandledSource == .beaconEnter)
+
+            RadarLocationManagerSwift.didDetermineState(
+                locationManager: locationManager,
+                state: .outside,
+                region: region
+            )
+
+            #expect(bridge.lastHandledLocation === location)
+            #expect(bridge.lastHandledSource == .beaconExit)
+        }
     }
 }
