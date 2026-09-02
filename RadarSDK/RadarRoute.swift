@@ -99,12 +99,18 @@ class RadarRouteObjc: NSObject {
     @objc
     internal convenience init?(object: Any) {
         guard let dict = object as? [String: Any] else {
+            print("Cannot convert to dict")
             return nil
         }
         
         let jsonString = RadarUtils.dictionaryToJson(dict)
+        
+        let decoder = JSONDecoder()
+        decoder.userInfo[RadarCoordinateSwift.codingStrategy] = RadarCoordinateSwift.CodingStrategy.LngLatArray
+        
         guard let data = jsonString.data(using: .utf8),
-              let route = try? JSONDecoder().decode(RadarRoute.self, from: data) else {
+              let route = try? decoder.decode(RadarRoute.self, from: data) else {
+            print("Cannot decode")
             return nil
         }
         self.init(route: route)
