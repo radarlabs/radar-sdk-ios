@@ -223,10 +223,15 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsType) {
 + (RadarTrackingOptionsReplay)replayForString:(NSString *)str;
 + (NSString *)stringForSyncLocations:(RadarTrackingOptionsSyncLocations)syncLocations;
 + (RadarTrackingOptionsSyncLocations)syncLocationsForString:(NSString *)str;
-+ (RadarTrackingOptions *_Nullable)trackingOptionsFromDictionary:(NSDictionary *_Nonnull)dictionary;
 + (NSString *)stringForType:(RadarTrackingOptionsType)type;
 + (RadarTrackingOptionsType)typeForString:(NSString *)str;
 - (NSDictionary *)dictionaryValue;
+
+@end
+
+@interface RadarTrackingOptions (Dictionary)
+
++ (RadarTrackingOptions *_Nullable)trackingOptionsFromDictionary:(NSDictionary *_Nullable)dictionary;
 
 @end
 
