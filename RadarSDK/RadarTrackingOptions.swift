@@ -240,7 +240,7 @@ extension RadarTrackingOptions {
     }
 
     @nonobjc
-    private convenience init?( // swiftlint:disable:this function_body_length
+    private convenience init?(  // swiftlint:disable:this function_body_length
         dictionary: [AnyHashable: Any]?
     ) {
         guard let dictionary else {

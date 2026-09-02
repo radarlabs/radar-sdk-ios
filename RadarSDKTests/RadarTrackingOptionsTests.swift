@@ -14,7 +14,7 @@ import Testing
 @testable import RadarSDK
 
 @Suite("RadarTrackingOptionsTests")
-struct RadarTrackingOptionsTests { // swiftlint:disable:this type_body_length
+struct RadarTrackingOptionsTests {  // swiftlint:disable:this type_body_length
 
     @Test("continuous preset preserves existing configuration")
     func continuousPreset() {
@@ -257,7 +257,7 @@ struct RadarTrackingOptionsTests { // swiftlint:disable:this type_body_length
     }
 
     @Test("parses a complete tracking options dictionary")
-    func parsesCompleteDictionary() throws { // swiftlint:disable:this function_body_length
+    func parsesCompleteDictionary() throws {  // swiftlint:disable:this function_body_length
         let startTrackingAfter = Date(
             timeIntervalSince1970: 1_788_200_000
         )
@@ -427,7 +427,7 @@ struct RadarTrackingOptionsTests { // swiftlint:disable:this type_body_length
     // MARK: - Dictionary Serialization
 
     @Test("serializes every tracking option using the existing dictionary format")
-    func serializesCompleteOptions() { // swiftlint:disable:this function_body_length
+    func serializesCompleteOptions() {  // swiftlint:disable:this function_body_length
         let options = RadarTrackingOptions()
         let startTrackingAfter = Date(
             timeIntervalSince1970: 1_788_200_000
@@ -507,7 +507,7 @@ struct RadarTrackingOptionsTests { // swiftlint:disable:this type_body_length
     // MARK: - Equality
 
     @Test("compares every field currently included in equality")
-    func comparesEqualityFields() throws { // swiftlint:disable:this function_body_length
+    func comparesEqualityFields() throws {  // swiftlint:disable:this function_body_length
         let mutations: [(String, (RadarTrackingOptions) -> Void)] = [
             (
                 "desiredStoppedUpdateInterval",
