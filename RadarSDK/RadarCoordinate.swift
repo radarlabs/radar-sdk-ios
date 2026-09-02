@@ -1,17 +1,16 @@
-//
-//  RadarCoordinate.swift
-//  RadarSDK
-//
-//  Created by Alan Charles on 3/19/26.
-//  Copyright © 2026 Radar Labs, Inc. All rights reserved.
-//
-
 import CoreLocation
 import Foundation
+
 
 @objc(RadarCoordinate)
 final class RadarCoordinateSwift: NSObject, Codable, Sendable {
 
+    static let codingStrategy = CodingUserInfoKey(rawValue: "coordinateDecodingStrategy")!
+    enum CodingStrategy: Sendable {
+        case LngLatArray
+        case LatLngDictionary
+    }
+    
     let latitude: Double
     let longitude: Double
 
@@ -78,15 +77,29 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
     }
 
     init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.latitude = try container.decode(Double.self, forKey: .latitude)
-        self.longitude = try container.decode(Double.self, forKey: .longitude)
+        let strategy = decoder.userInfo[RadarCoordinateSwift.codingStrategy] as? CodingStrategy
+        if (strategy == CodingStrategy.LngLatArray) {
+            var container = try decoder.unkeyedContainer()
+            self.longitude = try container.decode(Double.self)
+            self.latitude = try container.decode(Double.self)
+        } else { // CodingStrategy.LatLngDictionary or default
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.latitude = try container.decode(Double.self, forKey: .latitude)
+            self.longitude = try container.decode(Double.self, forKey: .longitude)
+        }
     }
 
     func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(latitude, forKey: .latitude)
-        try container.encode(longitude, forKey: .longitude)
+        let strategy = encoder.userInfo[RadarCoordinateSwift.codingStrategy] as? CodingStrategy
+        if (strategy == CodingStrategy.LngLatArray) {
+            var container = encoder.unkeyedContainer()
+            try container.encode(longitude)
+            try container.encode(latitude)
+        } else { // CodingStrategy.LatLngDictionary or default
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(latitude, forKey: .latitude)
+            try container.encode(longitude, forKey: .longitude)
+        }
     }
 
     // `==` on an NSObject subclass routes through `isEqual:`, which defaults to identity.
