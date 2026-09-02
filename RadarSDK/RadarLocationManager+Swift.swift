@@ -21,10 +21,10 @@ import Foundation
 // auto-synthesized Swift module, so we cannot extend `RadarLocationManager` from Swift.
 // Static methods on this class are called from `RadarLocationManager.m` via
 // `RadarSDK-Swift.h`. Methods that need access to the manager's CLLocationManager
-// receive it as an explicit argument. Timer methods use the host protocol below because
-// they also need private timer state and shutdown scheduling.
+// receive it as an explicit argument. Lifecycle methods use the host protocol below
+// because they also need private timer state, completion storage, and shutdown scheduling.
 // This protocol is a temporary migration seam. Remove it when RadarLocationManager is
-// fully ported to Swift and the timer state no longer needs an Objective-C host.
+// fully ported to Swift and the manager no longer needs an Objective-C host for that state.
 // `@objc public` keeps the seam visible to the generated Objective-C header; it is not a new SDK API.
 @objc public protocol RadarLocationManagerSwiftHost: AnyObject {
     func started() -> Bool
@@ -38,6 +38,9 @@ import Foundation
     func cancelPendingShutdown()
     func requestLocation()
     func scheduleShutdown(after delay: TimeInterval)
+
+    // Keep completion storage in Objective-C until the location callback and timeout paths move together.
+    func addCompletionHandler(_ completionHandler: RadarLocationCompletionHandler?)
 }
 
 private final class RadarLocationManagerSwiftHostBox: @unchecked Sendable {
@@ -182,6 +185,44 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
             RadarLogger.shared.debug("🦅 Scheduling shutdown")
             host.scheduleShutdown(after: delay)
         }
+    }
+
+    @objc(getLocationWithHost:authorizationStatus:locationManager:completionHandler:)
+    static func getLocation(
+        host: RadarLocationManagerSwiftHost,
+        authorizationStatus: CLAuthorizationStatus,
+        locationManager: CLLocationManager,
+        completionHandler: RadarLocationCompletionHandler?
+    ) {
+        getLocation(
+            host: host,
+            authorizationStatus: authorizationStatus,
+            locationManager: locationManager,
+            desiredAccuracy: .medium,
+            completionHandler: completionHandler
+        )
+    }
+
+    @objc(getLocationWithDesiredAccuracyOnHost:authorizationStatus:locationManager:desiredAccuracy:completionHandler:)
+    static func getLocation(
+        host: RadarLocationManagerSwiftHost,
+        authorizationStatus: CLAuthorizationStatus,
+        locationManager: CLLocationManager,
+        desiredAccuracy: RadarTrackingOptionsDesiredAccuracy,
+        completionHandler: RadarLocationCompletionHandler?
+    ) {
+        guard authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways else {
+            RadarSwift.bridge?.didFail(status: .errorPermissions)
+            completionHandler?(.errorPermissions, nil, false)
+            return
+        }
+
+        if let completionHandler {
+            host.addCompletionHandler(completionHandler)
+        }
+
+        locationManager.desiredAccuracy = clLocationAccuracy(for: desiredAccuracy)
+        requestLocation(locationManager: locationManager)
     }
 
     @objc(matchBeaconIdsWithRanged:synced:)

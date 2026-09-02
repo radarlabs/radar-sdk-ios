@@ -11,6 +11,10 @@ import Testing
 
 @testable import RadarSDK
 
+private func invokeGetLocation(on manager: RadarLocationManager) {
+    manager.perform(NSSelectorFromString("getLocationWithCompletionHandler:"), with: nil)
+}
+
 // Keep lifecycle seam tests together so the direct twins and their shared host stay easy to compare.
 // swiftlint:disable file_length
 
@@ -40,6 +44,7 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
     private(set) var cancelPendingShutdownCallCount = 0
     private(set) var scheduledShutdownDelays: [TimeInterval] = []
     private(set) var requestLocationCallCount = 0
+    private(set) var addCompletionHandlerCallCount = 0
 
     func started() -> Bool { startedValue }
 
@@ -65,6 +70,10 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
 
     func scheduleShutdown(after delay: TimeInterval) {
         scheduledShutdownDelays.append(delay)
+    }
+
+    func addCompletionHandler(_ completionHandler: RadarLocationCompletionHandler?) {
+        addCompletionHandlerCallCount += 1
     }
 }
 
@@ -401,5 +410,145 @@ extension RadarSerializedTests {
 
             #expect(locationManager.requestLocationCallCount == 1)
         }
+
+        // MARK: - getLocation
+
+        @Test("getLocation uses high accuracy for authorized when-in-use requests")
+        func getLocationUsesHighAccuracyForAuthorizedWhenInUse() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.getLocation(
+                host: host,
+                authorizationStatus: .authorizedWhenInUse,
+                locationManager: locationManager,
+                desiredAccuracy: .high,
+                completionHandler: { _, _, _ in }
+            )
+
+            #expect(host.addCompletionHandlerCallCount == 1)
+            #expect(locationManager.desiredAccuracy == kCLLocationAccuracyBest)
+            #expect(locationManager.requestLocationCallCount == 1)
+        }
+
+        @Test("getLocation uses low accuracy for authorized-always requests")
+        func getLocationUsesLowAccuracyForAuthorizedAlways() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.getLocation(
+                host: host,
+                authorizationStatus: .authorizedAlways,
+                locationManager: locationManager,
+                desiredAccuracy: .low,
+                completionHandler: nil
+            )
+
+            #expect(host.addCompletionHandlerCallCount == 0)
+            #expect(locationManager.desiredAccuracy == kCLLocationAccuracyKilometer)
+            #expect(locationManager.requestLocationCallCount == 1)
+        }
+
+        @Test("getLocation uses medium accuracy in the default overload")
+        func getLocationUsesMediumAccuracyByDefault() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.getLocation(
+                host: host,
+                authorizationStatus: .authorizedAlways,
+                locationManager: locationManager,
+                completionHandler: nil
+            )
+
+            #expect(locationManager.desiredAccuracy == kCLLocationAccuracyHundredMeters)
+            #expect(locationManager.requestLocationCallCount == 1)
+        }
+
+        @Test("getLocation reports permissions errors before changing location state")
+        func getLocationReportsPermissionsErrorBeforeChangingLocationState() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+            let originalAccuracy = locationManager.desiredAccuracy
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer { RadarSwift.bridge = originalBridge }
+
+            var callbackStatus: RadarStatus?
+            var callbackLocation: CLLocation?
+            var callbackStopped: Bool?
+            RadarLocationManagerSwift.getLocation(
+                host: host,
+                authorizationStatus: .notDetermined,
+                locationManager: locationManager,
+                desiredAccuracy: .high,
+                completionHandler: { status, location, stopped in
+                    callbackStatus = status
+                    callbackLocation = location
+                    callbackStopped = stopped
+                }
+            )
+
+            #expect(bridge.lastFailStatus == .errorPermissions)
+            #expect(callbackStatus == .errorPermissions)
+            #expect(callbackLocation == nil)
+            #expect(callbackStopped == false)
+            #expect(host.addCompletionHandlerCallCount == 0)
+            #expect(locationManager.desiredAccuracy == originalAccuracy)
+            #expect(locationManager.requestLocationCallCount == 0)
+        }
+    }
+}
+
+extension RadarSerializedTests.RadarLocationManagerSwiftLifecycleTests {
+    // MARK: - getLocation — public method routing
+
+    @Test("Public getLocation routes to the Swift twin when useSwiftLocationManager is enabled")
+    func publicGetLocationRoutesToSwiftTwinWhenFlagEnabled() {
+        RadarLocationManagerSwiftTestHelpers.clearState()
+        let bridge = MockRadarSwiftBridge()
+        let originalBridge = RadarSwift.bridge
+        let manager = RadarLocationManager.sharedInstance()
+        let originalPermissionsHelper = manager.permissionsHelper
+        RadarSwift.bridge = bridge
+        defer {
+            RadarSwift.bridge = originalBridge
+            manager.permissionsHelper = originalPermissionsHelper
+            RadarLocationManagerSwiftTestHelpers.clearState()
+        }
+
+        let permissionsHelper = RadarPermissionsHelperMock()
+        permissionsHelper.mockLocationAuthorizationStatus = .notDetermined
+        manager.permissionsHelper = permissionsHelper
+        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": true])
+
+        invokeGetLocation(on: manager)
+
+        #expect(bridge.lastFailStatus == .errorPermissions)
+    }
+
+    @Test("Public getLocation keeps the Objective-C body when useSwiftLocationManager is disabled")
+    func publicGetLocationUsesObjCBodyWhenFlagDisabled() {
+        RadarLocationManagerSwiftTestHelpers.clearState()
+        let bridge = MockRadarSwiftBridge()
+        let originalBridge = RadarSwift.bridge
+        let manager = RadarLocationManager.sharedInstance()
+        let originalPermissionsHelper = manager.permissionsHelper
+        RadarSwift.bridge = bridge
+        defer {
+            RadarSwift.bridge = originalBridge
+            manager.permissionsHelper = originalPermissionsHelper
+            RadarLocationManagerSwiftTestHelpers.clearState()
+        }
+
+        let permissionsHelper = RadarPermissionsHelperMock()
+        permissionsHelper.mockLocationAuthorizationStatus = .notDetermined
+        manager.permissionsHelper = permissionsHelper
+        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": false])
+
+        invokeGetLocation(on: manager)
+
+        #expect(bridge.lastFailStatus == nil)
     }
 }

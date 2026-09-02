@@ -39,6 +39,15 @@ NS_ASSUME_NONNULL_BEGIN
                        blueBar:(BOOL)blueBar;
 + (void)stopUpdatesWithHost:(id<RadarLocationManagerSwiftHost>)host
              locationManager:(CLLocationManager *)locationManager;
++ (void)getLocationWithHost:(id<RadarLocationManagerSwiftHost>)host
+          authorizationStatus:(CLAuthorizationStatus)authorizationStatus
+              locationManager:(CLLocationManager *)locationManager
+             completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler;
++ (void)getLocationWithDesiredAccuracyOnHost:(id<RadarLocationManagerSwiftHost>)host
+                           authorizationStatus:(CLAuthorizationStatus)authorizationStatus
+                               locationManager:(CLLocationManager *)locationManager
+                              desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
+                             completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler;
 
 + (NSArray<NSString *> *)matchBeaconIdsWithRanged:(NSArray<RadarBeacon *> *)rangedBeacons
                                            synced:(NSArray<RadarBeacon *> *)syncedBeacons;
