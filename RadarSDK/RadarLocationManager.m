@@ -35,7 +35,10 @@
 #import "RadarSDK-Swift.h"
 #endif
 
-@interface RadarLocationManager ()
+// Temporary migration seam for the Swift timer twins. The manager keeps ownership of its
+// private state while Swift runs the timer logic. Remove this conformance when the manager
+// is fully ported.
+@interface RadarLocationManager () <RadarLocationManagerSwiftHost>
 
 /**
  `YES` if `startUpdates()` has started the `timer` for location updates.
@@ -260,6 +263,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)startUpdates:(int)interval blueBar:(BOOL)blueBar {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift startUpdatesWithHost:self
+                                       locationManager:self.locationManager
+                                lowPowerLocationManager:self.lowPowerLocationManager
+                                               interval:interval
+                                                blueBar:blueBar];
+        return;
+    }
+
     if (!self.started || interval != self.startedInterval) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d", interval]];
 
@@ -292,6 +304,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)stopUpdates {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift stopUpdatesWithHost:self locationManager:self.locationManager];
+        return;
+    }
+
     if (!self.timer) {
         return;
     }
@@ -312,6 +329,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         [self performSelector:@selector(shutDown) withObject:nil afterDelay:delay];
     }
+}
+
+// Temporary callbacks used by the Swift timer twin. They keep shutdown scheduling in the
+// existing Objective-C manager until the manager is fully ported.
+- (void)cancelPendingShutdown {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(shutDown) object:nil];
+}
+
+- (void)scheduleShutdownAfter:(NSTimeInterval)delay {
+    [self performSelector:@selector(shutDown) withObject:nil afterDelay:delay];
 }
 
 - (void)shutDown {

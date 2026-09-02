@@ -11,6 +11,21 @@ import Testing
 
 @testable import RadarSDK
 
+private func invokeStartUpdates(on manager: RadarLocationManager, interval: Int32, blueBar: Bool) {
+    typealias StartUpdatesFunction = @convention(c) (AnyObject, Selector, Int32, Bool) -> Void
+
+    let selector = NSSelectorFromString("startUpdates:blueBar:")
+    guard let implementation = manager.method(for: selector) else {
+        preconditionFailure("RadarLocationManager does not respond to startUpdates:blueBar:")
+    }
+
+    unsafeBitCast(implementation, to: StartUpdatesFunction.self)(manager, selector, interval, blueBar)
+}
+
+private func invokeStopUpdates(on manager: RadarLocationManager) {
+    manager.perform(NSSelectorFromString("stopUpdates"))
+}
+
 extension RadarSerializedTests {
     @Suite(.serialized)
     actor RadarLocationManagerSwiftSeamTests {
@@ -113,6 +128,66 @@ extension RadarSerializedTests {
 
             #expect(RadarSettings.remoteTrackingOptions == options)
             #expect(bridge.callOrder.isEmpty)
+        }
+
+        // MARK: - startUpdates and stopUpdates — public method routing
+
+        @Test("Public timer methods route to Swift when useSwiftLocationManager is enabled")
+        func publicTimerMethodsRouteToSwiftTwinWhenFlagEnabled() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let manager = RadarLocationManager.sharedInstance()
+            let originalLocationManager = manager.locationManager
+            let originalLowPowerLocationManager = manager.lowPowerLocationManager
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+            defer {
+                invokeStopUpdates(on: manager)
+                manager.perform(NSSelectorFromString("cancelPendingShutdown"))
+                manager.locationManager = originalLocationManager
+                manager.lowPowerLocationManager = originalLowPowerLocationManager
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": true])
+            RadarSettings.tracking = true
+            manager.locationManager = locationManager
+            manager.lowPowerLocationManager = lowPowerLocationManager
+
+            invokeStartUpdates(on: manager, interval: 5, blueBar: true)
+            invokeStopUpdates(on: manager)
+
+            #expect(locationManager.startUpdatingLocationCallCount == 1)
+            #expect(locationManager.stopUpdatingLocationCallCount == 1)
+            #expect(lowPowerLocationManager.startUpdatingLocationCallCount == 1)
+        }
+
+        @Test("Public timer methods keep the Objective-C body when useSwiftLocationManager is disabled")
+        func publicTimerMethodsUseObjCBodyWhenFlagDisabled() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let manager = RadarLocationManager.sharedInstance()
+            let originalLocationManager = manager.locationManager
+            let originalLowPowerLocationManager = manager.lowPowerLocationManager
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+            defer {
+                invokeStopUpdates(on: manager)
+                manager.perform(NSSelectorFromString("cancelPendingShutdown"))
+                manager.locationManager = originalLocationManager
+                manager.lowPowerLocationManager = originalLowPowerLocationManager
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": false])
+            RadarSettings.tracking = true
+            manager.locationManager = locationManager
+            manager.lowPowerLocationManager = lowPowerLocationManager
+
+            invokeStartUpdates(on: manager, interval: 5, blueBar: true)
+            invokeStopUpdates(on: manager)
+
+            #expect(locationManager.startUpdatingLocationCallCount == 1)
+            #expect(locationManager.stopUpdatingLocationCallCount == 1)
+            #expect(lowPowerLocationManager.startUpdatingLocationCallCount == 1)
         }
 
         // MARK: - stopTracking — public method routing
@@ -257,48 +332,50 @@ extension RadarSerializedTests {
 
             RadarLocationManager.sharedInstance().replaceSyncedBeacons([])
         }
+    }
+}
 
-        @Test("ObjC startTrackingWithOptions: does not require the main thread")
-        func publicStartTrackingSurvivesBackgroundThread() async {
-            await withCheckedContinuation { continuation in
-                DispatchQueue.global(qos: .userInitiated).async {
-                    RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies { bridge in
-                        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-                            "useSwiftLocationManager": true
-                        ])
-                        #expect(!Thread.isMainThread)
+extension RadarSerializedTests.RadarLocationManagerSwiftSeamTests {
+    @Test("ObjC startTrackingWithOptions: does not require the main thread")
+    func publicStartTrackingSurvivesBackgroundThread() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies { bridge in
+                    RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                        "useSwiftLocationManager": true
+                    ])
+                    #expect(!Thread.isMainThread)
 
-                        RadarLocationManager.sharedInstance().startTracking(with: .presetResponsive)
+                    RadarLocationManager.sharedInstance().startTracking(with: .presetResponsive)
 
-                        #expect(bridge.updateTrackingCallCount == 1)
-                        #expect(RadarSettings.tracking == true)
-                    }
-                    continuation.resume()
+                    #expect(bridge.updateTrackingCallCount == 1)
+                    #expect(RadarSettings.tracking == true)
                 }
+                continuation.resume()
             }
         }
+    }
 
-        @Test("restartPreviousTrackingOptions round-trips through ObjC off the main thread")
-        func restartPreviousTrackingOptionsSurvivesBackgroundThread() async {
-            await withCheckedContinuation { continuation in
-                DispatchQueue.global(qos: .userInitiated).async {
-                    RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies { bridge in
-                        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-                            "useSwiftLocationManager": true
-                        ])
-                        let previousOptions = RadarTrackingOptions.presetResponsive
-                        RadarSettings.previousTrackingOptions = previousOptions
-                        #expect(!Thread.isMainThread)
+    @Test("restartPreviousTrackingOptions round-trips through ObjC off the main thread")
+    func restartPreviousTrackingOptionsSurvivesBackgroundThread() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies { bridge in
+                    RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                        "useSwiftLocationManager": true
+                    ])
+                    let previousOptions = RadarTrackingOptions.presetResponsive
+                    RadarSettings.previousTrackingOptions = previousOptions
+                    #expect(!Thread.isMainThread)
 
-                        RadarLocationManagerSwift.restartPreviousTrackingOptions()
+                    RadarLocationManagerSwift.restartPreviousTrackingOptions()
 
-                        #expect(RadarSettings.previousTrackingOptions == nil)
-                        #expect(RadarSettings.tracking == true)
-                        #expect(RadarSettings.trackingOptions == previousOptions)
-                        #expect(bridge.updateTrackingCallCount == 1)
-                    }
-                    continuation.resume()
+                    #expect(RadarSettings.previousTrackingOptions == nil)
+                    #expect(RadarSettings.tracking == true)
+                    #expect(RadarSettings.trackingOptions == previousOptions)
+                    #expect(bridge.updateTrackingCallCount == 1)
                 }
+                continuation.resume()
             }
         }
     }

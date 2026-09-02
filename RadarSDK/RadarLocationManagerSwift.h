@@ -18,6 +18,8 @@
 #import "RadarMeta.h"
 #import "RadarTrackingOptions.h"
 
+@protocol RadarLocationManagerSwiftHost;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLocationManagerSwift : NSObject
@@ -30,6 +32,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)restartPreviousTrackingOptions;
 + (void)stopTrackingOnLocationManager:(CLLocationManager *)locationManager
                       activityManager:(nullable id)activityManager;
++ (void)startUpdatesWithHost:(id<RadarLocationManagerSwiftHost>)host
+              locationManager:(CLLocationManager *)locationManager
+       lowPowerLocationManager:(CLLocationManager *)lowPowerLocationManager
+                      interval:(int)interval
+                       blueBar:(BOOL)blueBar;
++ (void)stopUpdatesWithHost:(id<RadarLocationManagerSwiftHost>)host
+             locationManager:(CLLocationManager *)locationManager;
 
 + (NSArray<NSString *> *)matchBeaconIdsWithRanged:(NSArray<RadarBeacon *> *)rangedBeacons
                                            synced:(NSArray<RadarBeacon *> *)syncedBeacons;
