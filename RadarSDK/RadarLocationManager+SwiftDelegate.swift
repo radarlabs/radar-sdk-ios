@@ -93,23 +93,21 @@ extension RadarLocationManagerSwift {
         RadarLogger.shared.debug("🦅 \(isInside ? "Inside" : "Outside") beacon region | identifier = \(identifier)")
 
         runOnMainThread { [stateBox] in
-            MainActor.assumeIsolated {
-                let beaconManager = RadarBeaconManagerSwift.shared
-                let completionHandler: RadarBeaconCompletionHandler = { _, _ in
-                    RadarSwift.bridge?.handleLocation(stateBox.location, source: source)
-                }
+            let beaconManager = RadarBeaconManagerSwift.shared
+            let completionHandler: RadarBeaconCompletionHandler = { _, _ in
+                RadarSwift.bridge?.handleLocation(stateBox.location, source: source)
+            }
 
-                if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
-                    if isInside {
-                        beaconManager.handleBeaconUUIDEntry(for: stateBox.region, completionHandler: completionHandler)
-                    } else {
-                        beaconManager.handleBeaconUUIDExit(for: stateBox.region, completionHandler: completionHandler)
-                    }
-                } else if isInside {
-                    beaconManager.handleBeaconEntry(for: stateBox.region, completionHandler: completionHandler)
+            if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
+                if isInside {
+                    beaconManager.handleBeaconUUIDEntry(for: stateBox.region, completionHandler: completionHandler)
                 } else {
-                    beaconManager.handleBeaconExit(for: stateBox.region, completionHandler: completionHandler)
+                    beaconManager.handleBeaconUUIDExit(for: stateBox.region, completionHandler: completionHandler)
                 }
+            } else if isInside {
+                beaconManager.handleBeaconEntry(for: stateBox.region, completionHandler: completionHandler)
+            } else {
+                beaconManager.handleBeaconExit(for: stateBox.region, completionHandler: completionHandler)
             }
         }
     }
