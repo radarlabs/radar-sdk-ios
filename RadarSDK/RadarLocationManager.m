@@ -1394,6 +1394,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift didEnterRegionOnLocationManager:manager region:region];
+        return;
+    }
+
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         if (![RadarLocationManagerSwift shouldHandleRegionWithIdentifier:region.identifier action:@"entry"]) {
             return;
         }
@@ -1441,6 +1446,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift didExitRegionOnLocationManager:manager region:region];
+        return;
+    }
+
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         if (![RadarLocationManagerSwift shouldHandleRegionWithIdentifier:region.identifier action:@"exit"]) {
             return;

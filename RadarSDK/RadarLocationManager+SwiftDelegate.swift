@@ -66,6 +66,74 @@ extension RadarLocationManagerSwift {
         RadarSwift.bridge?.handleLocation(location, source: source)
     }
 
+    @objc(didEnterRegionOnLocationManager:region:)
+    static func didEnterRegion(locationManager: CLLocationManager, region: CLRegion) {
+        handleRegion(
+            locationManager: locationManager,
+            region: region,
+            action: "entry",
+            isEntry: true
+        )
+    }
+
+    @objc(didExitRegionOnLocationManager:region:)
+    static func didExitRegion(locationManager: CLLocationManager, region: CLRegion) {
+        handleRegion(
+            locationManager: locationManager,
+            region: region,
+            action: "exit",
+            isEntry: false
+        )
+    }
+
+    private static func handleRegion(
+        locationManager: CLLocationManager,
+        region: CLRegion,
+        action: String,
+        isEntry: Bool
+    ) {
+        guard shouldHandleRegion(identifier: region.identifier, action: action) else {
+            return
+        }
+
+        let identifier = region.identifier
+        let location = effectiveLocation(for: locationManager)
+        let beaconSource: RadarLocationSource = isEntry ? .beaconEnter : .beaconExit
+        let geofenceSource: RadarLocationSource = isEntry ? .geofenceEnter : .geofenceExit
+
+        if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) || identifier.hasPrefix(syncBeaconIdentifierPrefix) {
+            guard let location, let beaconRegion = region as? CLBeaconRegion else {
+                return
+            }
+
+            let stateBox = RadarBeaconRegionStateBox(location: location, region: beaconRegion)
+            runOnMainThread { [stateBox] in
+                let beaconManager = RadarBeaconManagerSwift.shared
+                let completionHandler: RadarBeaconCompletionHandler = { _, nearbyBeacons in
+                    RadarSwift.bridge?.handleLocation(
+                        stateBox.location,
+                        source: beaconSource,
+                        beacons: nearbyBeacons
+                    )
+                }
+
+                if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
+                    if isEntry {
+                        beaconManager.handleBeaconUUIDEntry(for: stateBox.region, completionHandler: completionHandler)
+                    } else {
+                        beaconManager.handleBeaconUUIDExit(for: stateBox.region, completionHandler: completionHandler)
+                    }
+                } else if isEntry {
+                    beaconManager.handleBeaconEntry(for: stateBox.region, completionHandler: completionHandler)
+                } else {
+                    beaconManager.handleBeaconExit(for: stateBox.region, completionHandler: completionHandler)
+                }
+            }
+        } else if let location = locationManager.location {
+            RadarSwift.bridge?.handleLocation(location, source: geofenceSource)
+        }
+    }
+
     @MainActor
     @objc(didDetermineState:region:completionHandler:)
     static func didDetermineState(

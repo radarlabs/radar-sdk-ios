@@ -552,3 +552,152 @@ extension RadarSerializedTests.RadarLocationManagerSwiftLifecycleTests {
         #expect(bridge.lastFailStatus == nil)
     }
 }
+
+extension RadarSerializedTests.RadarLocationManagerSwiftLifecycleTests {
+    // MARK: - didEnterRegion and didExitRegion
+
+    @Test("region callbacks handle synced beacon entry and exit with nearby beacons")
+    @MainActor
+    func regionCallbacksHandleSyncedBeaconEntryAndExit() {
+        RadarLocationManagerSwiftTestHelpers.clearState()
+        let bridge = MockRadarSwiftBridge()
+        let originalBridge = RadarSwift.bridge
+        RadarSwift.bridge = bridge
+        defer {
+            RadarSwift.bridge = originalBridge
+            RadarLocationManagerSwiftTestHelpers.clearState()
+        }
+
+        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+            "useRadarModifiedBeacon": false
+        ])
+        RadarSettings.tracking = true
+        let locationManager = TrackingCLLocationManager()
+        let location = CLLocation(latitude: 40.7, longitude: -74.0)
+        locationManager.mockLocation = location
+        let region = CLBeaconRegion(
+            uuid: UUID(),
+            identifier: "radar_beacon_\(UUID().uuidString)"
+        )
+
+        RadarLocationManagerSwift.didEnterRegion(locationManager: locationManager, region: region)
+
+        #expect(bridge.lastHandledLocation === location)
+        #expect(bridge.lastHandledSource == .beaconEnter)
+        #expect(bridge.lastHandledBeacons?.isEmpty == false)
+
+        RadarLocationManagerSwift.didExitRegion(locationManager: locationManager, region: region)
+
+        #expect(bridge.lastHandledLocation === location)
+        #expect(bridge.lastHandledSource == .beaconExit)
+    }
+
+    @Test("region callbacks use the current location for geofence entry and exit")
+    @MainActor
+    func regionCallbacksHandleGeofenceEntryAndExit() {
+        RadarLocationManagerSwiftTestHelpers.clearState()
+        let bridge = MockRadarSwiftBridge()
+        let originalBridge = RadarSwift.bridge
+        RadarSwift.bridge = bridge
+        defer {
+            RadarSwift.bridge = originalBridge
+            RadarLocationManagerSwiftTestHelpers.clearState()
+        }
+
+        RadarSettings.tracking = true
+        let locationManager = TrackingCLLocationManager()
+        let location = CLLocation(latitude: 40.7, longitude: -74.0)
+        locationManager.mockLocation = location
+        let region = CLCircularRegion(
+            center: location.coordinate,
+            radius: 100,
+            identifier: "radar_geofence_\(UUID().uuidString)"
+        )
+
+        RadarLocationManagerSwift.didEnterRegion(locationManager: locationManager, region: region)
+
+        #expect(bridge.lastHandledLocation === location)
+        #expect(bridge.lastHandledSource == .geofenceEnter)
+
+        RadarLocationManagerSwift.didExitRegion(locationManager: locationManager, region: region)
+
+        #expect(bridge.lastHandledLocation === location)
+        #expect(bridge.lastHandledSource == .geofenceExit)
+    }
+}
+
+extension RadarSerializedTests.RadarLocationManagerSwiftSeamTests {
+    @Test("Public region callbacks route to the Swift twins when enabled")
+    @MainActor
+    func publicRegionCallbacksRouteToSwiftTwinsWhenFlagEnabled() {
+        RadarLocationManagerSwiftTestHelpers.clearState()
+        let bridge = MockRadarSwiftBridge()
+        let originalBridge = RadarSwift.bridge
+        let manager = RadarLocationManager.sharedInstance()
+        let originalLocationManager = manager.locationManager
+        RadarSwift.bridge = bridge
+        defer {
+            RadarSwift.bridge = originalBridge
+            manager.locationManager = originalLocationManager
+            RadarLocationManagerSwiftTestHelpers.clearState()
+        }
+
+        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+            "useSwiftLocationManager": true
+        ])
+        RadarSettings.tracking = true
+        let locationManager = TrackingCLLocationManager()
+        let location = CLLocation(latitude: 40.7, longitude: -74.0)
+        locationManager.mockLocation = location
+        manager.locationManager = locationManager
+        let region = CLCircularRegion(
+            center: location.coordinate,
+            radius: 100,
+            identifier: "radar_geofence_\(UUID().uuidString)"
+        )
+
+        manager.locationManager(locationManager, didEnterRegion: region)
+        #expect(bridge.lastHandledLocation === location)
+        #expect(bridge.lastHandledSource == .geofenceEnter)
+
+        manager.locationManager(locationManager, didExitRegion: region)
+        #expect(bridge.lastHandledLocation === location)
+        #expect(bridge.lastHandledSource == .geofenceExit)
+    }
+
+    @Test("Public region callbacks keep the Objective-C body when disabled")
+    @MainActor
+    func publicRegionCallbacksUseObjCBodyWhenFlagDisabled() {
+        RadarLocationManagerSwiftTestHelpers.clearState()
+        let bridge = MockRadarSwiftBridge()
+        let originalBridge = RadarSwift.bridge
+        let manager = RadarLocationManager.sharedInstance()
+        let originalLocationManager = manager.locationManager
+        RadarSwift.bridge = bridge
+        defer {
+            RadarSwift.bridge = originalBridge
+            manager.locationManager = originalLocationManager
+            RadarLocationManagerSwiftTestHelpers.clearState()
+        }
+
+        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+            "useSwiftLocationManager": false
+        ])
+        RadarSettings.tracking = true
+        let locationManager = TrackingCLLocationManager()
+        let location = CLLocation(latitude: 40.7, longitude: -74.0)
+        locationManager.mockLocation = location
+        manager.locationManager = locationManager
+        let region = CLCircularRegion(
+            center: location.coordinate,
+            radius: 100,
+            identifier: "radar_geofence_\(UUID().uuidString)"
+        )
+
+        manager.locationManager(locationManager, didEnterRegion: region)
+        manager.locationManager(locationManager, didExitRegion: region)
+
+        #expect(bridge.lastHandledLocation == nil)
+        #expect(bridge.lastHandledSource == nil)
+    }
+}

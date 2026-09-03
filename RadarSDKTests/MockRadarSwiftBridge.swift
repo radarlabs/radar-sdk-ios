@@ -71,9 +71,15 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     }
     private(set) var lastHandledLocation: CLLocation?
     private(set) var lastHandledSource: RadarLocationSource?
+    private(set) var lastHandledBeacons: [RadarBeacon]?
     func handleLocation(_ location: CLLocation, source: RadarLocationSource) {
         lastHandledLocation = location
         lastHandledSource = source
+    }
+    func handleLocation(_ location: CLLocation, source: RadarLocationSource, beacons: [RadarBeacon]?) {
+        lastHandledLocation = location
+        lastHandledSource = source
+        lastHandledBeacons = beacons
     }
     func radarUser() -> RadarUser? { nil }
     private(set) var lastFailStatus: RadarStatus?
