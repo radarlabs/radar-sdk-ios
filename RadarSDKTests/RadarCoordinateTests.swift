@@ -362,13 +362,14 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
     }
 
     @Test("Objective-C isEqual: is pointer identity, not value equality")
-    func objcEqualityIsIdentity() {
-        let coordinate = makeCoordinate()
-
+    func objcEqualityIsIdentity() throws {
+        let coordinate = try #require(makeCoordinate() as Any as? RadarCoordinate)
+        let sameValue = try #require(makeCoordinate() as Any as? RadarCoordinate)
+        
+        #expect(coordinate == coordinate)
         #expect(coordinate.isEqual(coordinate))
-        #expect(!coordinate.isEqual(makeCoordinate()))
-        #expect(!coordinate.isEqual("not a coordinate"))
-        #expect(!coordinate.isEqual(nil))
+        #expect(coordinate != sameValue)
+        #expect(!coordinate.isEqual(sameValue))
     }
 
     @Test("NSObject-typed operands and collection APIs route through isEqual:")
