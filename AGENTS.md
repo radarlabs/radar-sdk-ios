@@ -27,6 +27,10 @@ Large stateful managers may use a temporary Swift seam only when a user explicit
 that staged migration. The nightly workflow does not select managers or leave parallel
 implementations for ordinary files.
 
+## Concurrency
+
+For work that can happen asynchronously on the main actor, prefer `Task { @MainActor in ... }` over `DispatchQueue.main.async` or a `runOnMainThread` helper. Use synchronous main-thread dispatch only when the caller must complete that work before returning.
+
 ## Build & Test
 
 ```bash
