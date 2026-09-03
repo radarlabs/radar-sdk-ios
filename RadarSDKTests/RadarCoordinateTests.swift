@@ -48,8 +48,8 @@ struct RadarCoordinateTests {
     private func encode(
         _ coordinate: RadarCoordinateSwift,
         strategy: RadarCoordinateSwift.CodingStrategy? = nil
-    ) throws -> String {
-        String(decoding: try makeEncoder(strategy).encode(coordinate), as: UTF8.self)
+    ) throws -> String? {
+        String(data: try makeEncoder(strategy).encode(coordinate), encoding: .utf8)
     }
 
     // MARK: - LatLngDictionary coding strategy
@@ -65,7 +65,7 @@ struct RadarCoordinateTests {
     @Test("decodes a lat/lng dictionary with the LatLngDictionary strategy")
     func decodesDictionaryStrategy() throws {
         let coordinate = try decode(
-            #"{"latitude": 40.78382, "longitude": -73.97536}"#, strategy: .LatLngDictionary)
+            #"{"latitude": 40.78382, "longitude": -73.97536}"#, strategy: .latLngDictionary)
 
         #expect(coordinate == RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude))
     }
@@ -81,7 +81,7 @@ struct RadarCoordinateTests {
     func encodesDictionaryStrategy() throws {
         let json = try encode(
             RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude),
-            strategy: .LatLngDictionary)
+            strategy: .latLngDictionary)
 
         #expect(json == #"{"latitude":40.78382,"longitude":-73.97536}"#)
     }
@@ -89,14 +89,14 @@ struct RadarCoordinateTests {
     @Test("missing latitude fails to decode as a dictionary")
     func missingLatitudeThrows() {
         #expect(throws: (any Error).self) {
-            try decode(#"{"longitude": -73.97536}"#, strategy: .LatLngDictionary)
+            try decode(#"{"longitude": -73.97536}"#, strategy: .latLngDictionary)
         }
     }
 
     @Test("an array fails to decode with the dictionary strategy")
     func arrayFailsWithDictionaryStrategy() {
         #expect(throws: (any Error).self) {
-            try decode("[-73.97536, 40.78382]", strategy: .LatLngDictionary)
+            try decode("[-73.97536, 40.78382]", strategy: .latLngDictionary)
         }
     }
 
@@ -104,7 +104,7 @@ struct RadarCoordinateTests {
 
     @Test("decodes a [lng, lat] array with the LngLatArray strategy")
     func decodesArrayStrategy() throws {
-        let coordinate = try decode("[-73.97536, 40.78382]", strategy: .LngLatArray)
+        let coordinate = try decode("[-73.97536, 40.78382]", strategy: .lngLatArray)
 
         #expect(coordinate.latitude == Self.latitude)
         #expect(coordinate.longitude == Self.longitude)
@@ -114,7 +114,7 @@ struct RadarCoordinateTests {
     func encodesArrayStrategy() throws {
         let json = try encode(
             RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude),
-            strategy: .LngLatArray)
+            strategy: .lngLatArray)
 
         #expect(json == "[-73.97536,40.78382]")
     }
@@ -122,14 +122,14 @@ struct RadarCoordinateTests {
     @Test("a short array fails to decode with the array strategy")
     func shortArrayThrows() {
         #expect(throws: (any Error).self) {
-            try decode("[-73.97536]", strategy: .LngLatArray)
+            try decode("[-73.97536]", strategy: .lngLatArray)
         }
     }
 
     @Test("a dictionary fails to decode with the array strategy")
     func dictionaryFailsWithArrayStrategy() {
         #expect(throws: (any Error).self) {
-            try decode(#"{"latitude": 40.78382, "longitude": -73.97536}"#, strategy: .LngLatArray)
+            try decode(#"{"latitude": 40.78382, "longitude": -73.97536}"#, strategy: .lngLatArray)
         }
     }
 
@@ -139,8 +139,8 @@ struct RadarCoordinateTests {
     func roundTrips() throws {
         let coordinate = RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)
 
-        for strategy in [RadarCoordinateSwift.CodingStrategy.LatLngDictionary, .LngLatArray] {
-            let json = try encode(coordinate, strategy: strategy)
+        for strategy in [RadarCoordinateSwift.CodingStrategy.latLngDictionary, .lngLatArray] {
+            let json = try #require(encode(coordinate, strategy: strategy))
             #expect(try decode(json, strategy: strategy) == coordinate)
         }
     }
@@ -156,11 +156,11 @@ struct RadarCoordinateTests {
             RadarCoordinateSwift(latitude: 0, longitude: 0),
         ])
 
-        let data = try makeEncoder(.LngLatArray).encode(geometry)
+        let data = try makeEncoder(.lngLatArray).encode(geometry)
         #expect(
-            String(decoding: data, as: UTF8.self) == #"{"coordinates":[[-73.97536,40.78382],[0,0]]}"#)
+            String(data: data, encoding: .utf8) == #"{"coordinates":[[-73.97536,40.78382],[0,0]]}"#)
 
-        let decoded = try makeDecoder(.LngLatArray).decode(Geometry.self, from: data)
+        let decoded = try makeDecoder(.lngLatArray).decode(Geometry.self, from: data)
         #expect(decoded == geometry)
     }
 
