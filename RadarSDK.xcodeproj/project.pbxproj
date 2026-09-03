@@ -32,7 +32,6 @@
 		0107AA2B26220066008AB52F /* RadarUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0323099B8400EB88F9 /* RadarUtils.h */; };
 		0107AA7A26220128008AB52F /* RadarAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 78156B9623A8210E0094410E /* RadarAddress.m */; };
 		0107AA832622013A008AB52F /* RadarBeacon.m in Sources */ = {isa = PBXBuildFile; fileRef = DD6F4F8525741B1700AFA38B /* RadarBeacon.m */; };
-		0107AA8926220140008AB52F /* RadarChain.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CB62308812700EB88F9 /* RadarChain.m */; };
 		0107AA8F26220146008AB52F /* RadarCircleGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CA52308812600EB88F9 /* RadarCircleGeometry.m */; };
 		0107AA952622014C008AB52F /* RadarCoordinate.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CBA2308812700EB88F9 /* RadarCoordinate.m */; };
 		0107AA9B26220153008AB52F /* RadarContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 5343FFD923E38BA300808D93 /* RadarContext.m */; };
@@ -496,7 +495,6 @@
 		DD236CAB2308812600EB88F9 /* RadarPolygonGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarPolygonGeometry.m; sourceTree = "<group>"; };
 		DD236CAE2308812600EB88F9 /* RadarGeofenceGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarGeofenceGeometry.m; sourceTree = "<group>"; };
 		DD236CB22308812600EB88F9 /* RadarPlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarPlace.m; sourceTree = "<group>"; };
-		DD236CB62308812700EB88F9 /* RadarChain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarChain.m; sourceTree = "<group>"; };
 		DD236CB82308812700EB88F9 /* RadarEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarEvent.m; sourceTree = "<group>"; };
 		DD236CBA2308812700EB88F9 /* RadarCoordinate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarCoordinate.m; sourceTree = "<group>"; };
 		DD236CBB2308812700EB88F9 /* RadarUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarUser.m; sourceTree = "<group>"; };
@@ -921,7 +919,6 @@
 				96A5A0B027AD9F40007B960B /* RadarBeacon+Internal.h */,
 				DD6F4F8525741B1700AFA38B /* RadarBeacon.m */,
 				96A5A0AF27AD9F40007B960B /* RadarChain+Internal.h */,
-				DD236CB62308812700EB88F9 /* RadarChain.m */,
 				96A5A0AC27AD9F40007B960B /* RadarCircleGeometry+Internal.h */,
 				DD236CA52308812600EB88F9 /* RadarCircleGeometry.m */,
 				96A5A0BA27AD9F41007B960B /* RadarContext+Internal.h */,
@@ -1272,7 +1269,6 @@
 				0107AB2F262201FB008AB52F /* RadarUtils.m in Sources */,
 				CA5E9A0230A3000000000002 /* RadarInitializeOptions.swift in Sources */,
 				BA353F8F2F8D4D0E00E553A1 /* RadarOfflineEventManager.swift in Sources */,
-				0107AA8926220140008AB52F /* RadarChain.m in Sources */,
 				CA5E9A0430A5000000000002 /* RadarFraud.swift in Sources */,
 				CA5E9A0330A4000000000002 /* RadarTimeZone.swift in Sources */,
 				F6EFF1952F71972000E48CE1 /* RadarSdkConfiguration.swift in Sources */,

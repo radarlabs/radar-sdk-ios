@@ -43,3 +43,58 @@ struct RadarChainSwift: Codable, Sendable {
         try container.encodeIfPresent(metadata, forKey: .metadata)
     }
 }
+
+@objc(RadarChain)
+@objcMembers
+final class RadarChain: NSObject {
+    let slug: String
+    let name: String
+    let externalId: String?
+    let metadata: NSDictionary?
+
+    /// Keeps the hand-written Objective-C initializer working after the implementation moved to Swift.
+    @objc(initWithSlug:name:externalId:metadata:)
+    init(slug: String, name: String, externalId: String?, metadata: NSDictionary?) {
+        self.slug = slug
+        self.name = name
+        self.externalId = externalId
+        self.metadata = metadata
+        super.init()
+    }
+
+    /// Keeps the hand-written Objective-C parser working for existing SDK callers.
+    @objc(initWithObject:)
+    init?(object: Any) {
+        guard let dictionary = object as? NSDictionary,
+            let slug = dictionary["slug"] as? String,
+            let name = dictionary["name"] as? String
+        else {
+            return nil
+        }
+
+        self.slug = slug
+        self.name = name
+        self.externalId = dictionary["externalId"] as? String
+        self.metadata = dictionary["metadata"] as? NSDictionary
+        super.init()
+    }
+
+    @objc(arrayForChains:)
+    static func arrayForChains(_ chains: [RadarChain]?) -> [[String: Any]]? {
+        chains?.map { $0.dictionaryValue() }
+    }
+
+    func dictionaryValue() -> [String: Any] {
+        var dictionary: [String: Any] = [
+            "slug": slug,
+            "name": name,
+        ]
+        if let externalId {
+            dictionary["externalId"] = externalId
+        }
+        if let metadata {
+            dictionary["metadata"] = metadata
+        }
+        return dictionary
+    }
+}

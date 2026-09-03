@@ -10,10 +10,7 @@ import Testing
 
 @testable import RadarSDK
 
-/// Covers `RadarChainSwift`, the Swift value type that replaces the ObjC `RadarChain`'s
-/// `initWithObject:` / `dictionaryValue` JSON handling. The legacy `RadarChain.m` is still on
-/// disk and still parses `/places` responses, so several tests assert *parity* against it —
-/// the two must agree on what a payload means before any caller can be moved over.
+/// Covers the Swift value type and the Objective-C-compatible `RadarChain` facade.
 struct RadarChainSwiftTests {
 
     private static func decode(_ json: String) throws -> RadarChainSwift {
@@ -71,7 +68,7 @@ struct RadarChainSwiftTests {
         #expect(metadata["aBool"] == .bool(false))
     }
 
-    @Test("Rejects a payload missing slug, matching the ObjC parser")
+    @Test("Rejects a payload missing slug")
     func rejectsMissingSlug() {
         let json = #"{"name": "Starbucks"}"#
 
@@ -79,7 +76,7 @@ struct RadarChainSwiftTests {
         #expect(RadarChain(object: ["name": "Starbucks"]) == nil)
     }
 
-    @Test("Rejects a payload missing name, matching the ObjC parser")
+    @Test("Rejects a payload missing name")
     func rejectsMissingName() {
         let json = #"{"slug": "starbucks"}"#
 
@@ -87,7 +84,7 @@ struct RadarChainSwiftTests {
         #expect(RadarChain(object: ["slug": "starbucks"]) == nil)
     }
 
-    @Test("Rejects a non-string slug, matching the ObjC parser")
+    @Test("Rejects a non-string slug")
     func rejectsNonStringSlug() {
         let json = #"{"slug": 1, "name": "Starbucks"}"#
 
@@ -111,15 +108,14 @@ struct RadarChainSwiftTests {
         #expect((dict["metadata"] as? [String: Any])?["customFlag"] as? Bool == true)
     }
 
-    @Test("Omits nil fields when encoding, matching dictionaryValue")
+    @Test("Omits nil fields when encoding")
     func encodeOmitsNilFields() throws {
         let dict = try Self.encodeToDictionary(RadarChainSwift(slug: "starbucks", name: "Starbucks"))
 
         #expect(dict.keys.sorted() == ["name", "slug"])
 
-        // `dictionaryValue` uses `setValue:forKey:`, which drops nil values the same way.
-        let objcChain = try #require(RadarChain(object: ["slug": "starbucks", "name": "Starbucks"]))
-        #expect(objcChain.dictionaryValue().keys.compactMap { $0 as? String }.sorted() == ["name", "slug"])
+        let compatibilityChain = try #require(RadarChain(object: ["slug": "starbucks", "name": "Starbucks"]))
+        #expect(compatibilityChain.dictionaryValue().keys.sorted() == ["name", "slug"])
     }
 
     @Test("Round-trips through encode and decode without losing fields")
@@ -139,8 +135,8 @@ struct RadarChainSwiftTests {
         #expect(decoded.metadata == original.metadata)
     }
 
-    @Test("Agrees with the ObjC parser on a real /places chain payload")
-    func matchesObjCParserOnPlacesPayload() throws {
+    @Test("Parses a real /places chain payload")
+    func parsesPlacesPayload() throws {
         let payload: [String: Any] = [
             "slug": "starbucks",
             "name": "Starbucks",
@@ -150,23 +146,62 @@ struct RadarChainSwiftTests {
 
         let swiftChain = try JSONDecoder().decode(
             RadarChainSwift.self, from: JSONSerialization.data(withJSONObject: payload))
-        let objcChain = try #require(RadarChain(object: payload))
+        let compatibilityChain = try #require(RadarChain(object: payload))
 
-        #expect(swiftChain.slug == objcChain.slug)
-        #expect(swiftChain.name == objcChain.name)
-        #expect(swiftChain.externalId == objcChain.externalId)
+        #expect(swiftChain.slug == compatibilityChain.slug)
+        #expect(swiftChain.name == compatibilityChain.name)
+        #expect(swiftChain.externalId == compatibilityChain.externalId)
         #expect(
             swiftChain.metadata?["customFlag"]?.anyValue as? Bool
-                == objcChain.metadata?["customFlag"] as? Bool
+                == compatibilityChain.metadata?["customFlag"] as? Bool
         )
     }
 
-    @Test("Ignores unrecognized keys the ObjC parser also drops")
+    @Test("Ignores unrecognized keys")
     func ignoresUnknownKeys() throws {
         let chain = try Self.decode(
             #"{"slug": "starbucks", "name": "Starbucks", "unexpected": "value"}"#)
 
         #expect(chain.slug == "starbucks")
         #expect(try Self.encodeToDictionary(chain).keys.sorted() == ["name", "slug"])
+    }
+
+    // MARK: - Objective-C compatibility
+
+    @Test("The Objective-C facade preserves all fields")
+    func compatibilityFacadePreservesFields() throws {
+        let metadata: NSDictionary = ["customFlag": true]
+        let chain = RadarChain(
+            slug: "starbucks",
+            name: "Starbucks",
+            externalId: "123",
+            metadata: metadata
+        )
+
+        #expect(chain.slug == "starbucks")
+        #expect(chain.name == "Starbucks")
+        #expect(chain.externalId == "123")
+        #expect(chain.metadata == metadata)
+        #expect(
+            chain.dictionaryValue() as NSDictionary == [
+                "slug": "starbucks",
+                "name": "Starbucks",
+                "externalId": "123",
+                "metadata": metadata,
+            ])
+    }
+
+    @Test("The Objective-C facade serializes chain arrays")
+    func compatibilityFacadeSerializesArrays() throws {
+        let chain = RadarChain(slug: "starbucks", name: "Starbucks", externalId: nil, metadata: nil)
+
+        #expect(RadarChain.arrayForChains([chain]) as NSArray? == [["slug": "starbucks", "name": "Starbucks"]])
+        #expect(RadarChain.arrayForChains(nil) == nil)
+    }
+
+    @Test("The Objective-C facade rejects non-dictionary payloads")
+    func compatibilityFacadeRejectsNonDictionaryPayloads() {
+        #expect(RadarChain(object: []) == nil)
+        #expect(RadarChain(object: "not a dictionary") == nil)
     }
 }
