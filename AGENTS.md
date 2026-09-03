@@ -15,10 +15,10 @@ When working in an existing Objective-C file, consider migrating the file to Swi
 
 **Sanctioned exception — the nightly batch migration.** The scheduled workflow
 `.github/workflows/objc-to-swift-nightly.yml` runs the `objc-to-swift` skill (from
-`radarlabs/clankers`) in its unattended batch mode: each run selects one deterministic,
-eligible implementation, replaces it with a same-basename Swift implementation while
-preserving compatibility, deletes the old `.m` from the project, and opens a PR labeled
-`swift-migration`. In that context the
+`radarlabs/clankers`) in its unattended batch mode: each run asks the skill to choose one
+eligible implementation using its candidacy rules, replaces it with a same-basename Swift
+implementation while preserving compatibility, deletes the old `.m` from the project, and
+opens a PR labeled `swift-migration`. In that context the
 "ask the user" requirement is satisfied by human review of that PR — nothing merges without
 an explicit approval — and at most one such PR may be open at a time. Interactive sessions
 must still ask before migrating.

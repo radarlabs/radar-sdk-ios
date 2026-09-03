@@ -1,10 +1,10 @@
 name: Nightly ObjC to Swift migration
 
-# Converts ONE deterministic, eligible Objective-C implementation to Swift per run
-# and opens a PR for human review. Approval happens at PR review (see AGENTS.md
-# "Language Policy"). The skill replaces the selected implementation while preserving
-# its Objective-C contract. This job runs the same macOS validation as PR CI before
-# publication; PR CI remains the independent verifier.
+# Converts ONE eligible Objective-C implementation to Swift per run and opens a PR
+# for human review. The migration skill chooses the simplest candidate using explicit
+# candidacy rules, then replaces it while preserving its Objective-C contract. Approval
+# happens at PR review (see AGENTS.md "Language Policy"). This job runs the same macOS
+# validation as PR CI before publication; PR CI remains the independent verifier.
 
 on:
   schedule:
@@ -80,33 +80,17 @@ jobs:
           cp -R clankers-skill/skills/objc-to-swift .claude/skills/objc-to-swift
           rm -rf clankers-skill
 
-      - name: Select deterministic migration target
-        id: candidate
-        if: steps.guard.outputs.open == '0'
-        run: |
-          TARGET="$(bash .claude/skills/objc-to-swift/scripts/find-next-candidate.sh "$GITHUB_WORKSPACE")"
-          if [ -z "$TARGET" ]; then
-            echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No eligible Objective-C implementation remains; skipping migration."
-            exit 0
-          fi
-
-          echo "available=true" >> "$GITHUB_OUTPUT"
-          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
-          echo "MIGRATION_TARGET=$TARGET" >> "$GITHUB_ENV"
-          echo "Selected $TARGET"
-
       - name: Use the PR CI Xcode version
-        if: steps.guard.outputs.open == '0' && steps.candidate.outputs.available == 'true'
+        if: steps.guard.outputs.open == '0'
         run: |
           sudo xcode-select -switch /Applications/Xcode_26.3.app
 
       - name: Install Swift validation tools
-        if: steps.guard.outputs.open == '0' && steps.candidate.outputs.available == 'true'
+        if: steps.guard.outputs.open == '0'
         run: brew install swift-format swiftlint
 
       - name: Pick an available iPhone simulator
-        if: steps.guard.outputs.open == '0' && steps.candidate.outputs.available == 'true'
+        if: steps.guard.outputs.open == '0'
         run: |
           SIMULATOR_ID=$(xcrun simctl list devices --json \
             | jq -r '
@@ -127,19 +111,22 @@ jobs:
           echo "MIGRATION_DESTINATION=platform=iOS Simulator,id=$SIMULATOR_ID" >> "$GITHUB_ENV"
 
       - name: Run the migration agent
-        if: steps.guard.outputs.open == '0' && steps.candidate.outputs.available == 'true'
+        if: steps.guard.outputs.open == '0'
         uses: anthropics/claude-code-action@v1
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          MIGRATION_TARGET: ${{ steps.candidate.outputs.target }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ steps.app-token.outputs.token }}
           prompt: |
             /objc-to-swift batch
 
-            Convert exactly the preselected file at
-            ${{ steps.candidate.outputs.target }}. Do not select another file or leave
-            the Objective-C implementation beside the Swift replacement. The workflow
-            provides MIGRATION_TARGET, GH_TOKEN, and MIGRATION_DESTINATION.
+            Inspect the full RadarSDK Objective-C backlog and choose exactly one eligible
+            implementation. Prefer the smallest implementation, then the least coupled,
+            then the filename. Exclude managers, partial migrations, and models already
+            represented elsewhere. State the selected file and rationale before editing.
+            Replace it with a same-basename Swift implementation, preserve Objective-C
+            compatibility, delete the old .m and project references, and do not select
+            another file or leave the old implementation beside Swift. The workflow
+            provides GH_TOKEN and MIGRATION_DESTINATION.
           claude_args: '--allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 80'
