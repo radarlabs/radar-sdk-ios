@@ -10,9 +10,9 @@ import Foundation
 
 // swiftlint:disable file_length
 
-@objc
-@implementation
-extension RadarTrackingOptions {
+@objc(RadarTrackingOptions)
+@objcMembers
+class RadarTrackingOptionsSwift: NSObject {
     public var desiredStoppedUpdateInterval: Int32 = 0
     public var desiredMovingUpdateInterval: Int32 = 0
     public var desiredSyncInterval: Int32 = 0
@@ -50,8 +50,8 @@ extension RadarTrackingOptions {
     public var batchSize: Int32 = 0
     public var type: RadarTrackingOptionsType = .default
 
-    public class var presetContinuous: RadarTrackingOptions {
-        let options = RadarTrackingOptions()
+    public class var presetContinuous: RadarTrackingOptionsSwift {
+        let options = RadarTrackingOptionsSwift()
 
         options.desiredStoppedUpdateInterval = 30
         options.desiredMovingUpdateInterval = 30
@@ -67,8 +67,8 @@ extension RadarTrackingOptions {
         return options
     }
 
-    public class var presetResponsive: RadarTrackingOptions {
-        let options = RadarTrackingOptions()
+    public class var presetResponsive: RadarTrackingOptionsSwift {
+        let options = RadarTrackingOptionsSwift()
 
         options.desiredMovingUpdateInterval = 150
         options.desiredSyncInterval = 20
@@ -88,8 +88,8 @@ extension RadarTrackingOptions {
         return options
     }
 
-    public class var presetEfficient: RadarTrackingOptions {
-        let options = RadarTrackingOptions()
+    public class var presetEfficient: RadarTrackingOptionsSwift {
+        let options = RadarTrackingOptionsSwift()
 
         options.desiredAccuracy = .medium
         options.syncLocations = .all
@@ -181,7 +181,7 @@ extension RadarTrackingOptions {
     }
 
     @objc(syncLocationsForString:)
-    public class func syncLocations(
+    public static func syncLocations(
         for string: String
     ) -> RadarTrackingOptionsSyncLocations {
         switch string {
@@ -197,7 +197,7 @@ extension RadarTrackingOptions {
     }
 
     @objc(stringForType:)
-    public class func string(
+    public static func string(
         for type: RadarTrackingOptionsType
     ) -> String {
         switch type {
@@ -215,7 +215,7 @@ extension RadarTrackingOptions {
     }
 
     @objc(typeForString:)
-    public class func type(
+    class func type(
         for string: String
     ) -> RadarTrackingOptionsType {
         switch string {
@@ -232,15 +232,15 @@ extension RadarTrackingOptions {
 
     // MARK: - Dictionary Parsing
 
-    @objc(radar_trackingOptionsFromDictionary:)
-    private class func radarTrackingOptions(
+    @objc(trackingOptionsFromDictionary:)
+    public static func radarTrackingOptions(
         from dictionary: [AnyHashable: Any]?
-    ) -> RadarTrackingOptions? {
-        RadarTrackingOptions(dictionary: dictionary)
+    ) -> RadarTrackingOptionsSwift? {
+        RadarTrackingOptionsSwift(dictionary: dictionary)
     }
 
     @nonobjc
-    private convenience init?(  // swiftlint:disable:this function_body_length
+    convenience init?(  // swiftlint:disable:this function_body_length
         dictionary: [AnyHashable: Any]?
     ) {
         guard let dictionary else {
@@ -422,7 +422,7 @@ extension RadarTrackingOptions {
     private static let dateEqualityTolerance: TimeInterval = 0.001
 
     public override func isEqual(_ object: Any?) -> Bool {
-        guard let options = object as? RadarTrackingOptions else {
+        guard let options = object as? RadarTrackingOptionsSwift else {
             return false
         }
 
