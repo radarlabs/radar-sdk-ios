@@ -12,7 +12,7 @@ import Testing
 @testable import RadarSDK
 
 @Suite("RadarCoordinateTests")
-struct RadarCoordinateTests {
+struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
 
     private static let latitude = 40.78382
     private static let longitude = -73.97536
@@ -337,5 +337,51 @@ struct RadarCoordinateTests {
         #expect(coordinates[0].coordinate.latitude == Self.latitude)
         #expect(coordinates[0].coordinate.longitude == Self.longitude)
         #expect(RadarCoordinate.coordinates(from: "not an array") == nil)
+    }
+
+    // MARK: - Equality
+    //
+    // RadarCoordinateSwift declares `static func ==` but does not override `isEqual:`, so equality
+    // means different things on each side of the bridge: Swift compares latitude/longitude, while
+    // Objective-C gets NSObject's default, which is pointer identity.
+
+    private func makeCoordinate() -> RadarCoordinateSwift {
+        RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)
+    }
+
+    @Test("Swift == compares latitude and longitude")
+    func swiftEqualityComparesValues() {
+        let coordinate = makeCoordinate()
+        let sameValue = makeCoordinate()
+
+        // Distinct instances, so this can only pass through the value-comparing overload.
+        #expect(coordinate !== sameValue)
+        #expect(coordinate == sameValue)
+        #expect(coordinate != RadarCoordinateSwift(latitude: Self.latitude, longitude: 0))
+        #expect(coordinate != RadarCoordinateSwift(latitude: 0, longitude: Self.longitude))
+    }
+
+    @Test("Objective-C isEqual: is pointer identity, not value equality")
+    func objcEqualityIsIdentity() {
+        let coordinate = makeCoordinate()
+
+        #expect(coordinate.isEqual(coordinate))
+        #expect(!coordinate.isEqual(makeCoordinate()))
+        #expect(!coordinate.isEqual("not a coordinate"))
+        #expect(!coordinate.isEqual(nil))
+    }
+
+    @Test("NSObject-typed operands and collection APIs route through isEqual:")
+    func nsObjectAndCollectionsUseIdentity() {
+        let coordinate = makeCoordinate()
+        let sameValue = makeCoordinate()
+
+        // The `==` overload is only picked when both operands are statically typed as
+        // RadarCoordinateSwift. NSObject-typed operands, `Array.==`, `contains` and `Set` all go
+        // through the Equatable/Hashable conformance NSObject supplies, i.e. `isEqual:`/`hash`.
+        #expect((coordinate as NSObject) != (sameValue as NSObject))
+        #expect([coordinate] != [sameValue])
+        #expect(![coordinate].contains(sameValue))
+        #expect(Set([coordinate, sameValue]).count == 2)
     }
 }

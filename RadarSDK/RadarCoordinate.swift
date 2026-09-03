@@ -109,20 +109,8 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
             try container.encode(longitude, forKey: .longitude)
         }
     }
-
-    // `==` on an NSObject subclass routes through `isEqual:`, which defaults to identity.
-    // Compare values instead, matching the `Equatable` synthesis of the previous `struct`.
-    override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? RadarCoordinateSwift else {
-            return false
-        }
-        return latitude == other.latitude && longitude == other.longitude
-    }
-
-    override var hash: Int {
-        var hasher = Hasher()
-        hasher.combine(latitude)
-        hasher.combine(longitude)
-        return hasher.finalize()
+    
+    static func == (lhs: RadarCoordinateSwift, rhs: RadarCoordinateSwift) -> Bool {
+        return lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude
     }
 }
