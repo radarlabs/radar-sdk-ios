@@ -17,7 +17,7 @@ private let lon = -87.656036
 
 @Suite
 struct CLLocationRadarTests {
-
+    
     func assertValidLocation(latitude: CLLocationDegrees, longitude: CLLocationDegrees, horizontalAccuracy: CLLocationDegrees, shouldBeValid: Bool) {
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let location = CLLocation(coordinate: coordinate, altitude: 1.0, horizontalAccuracy: horizontalAccuracy, verticalAccuracy: 1.0, timestamp: Date())
