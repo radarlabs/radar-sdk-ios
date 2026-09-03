@@ -17,3 +17,4 @@
 #import "../RadarSDK/RadarBeacon+Internal.h"
 #import "../RadarSDK/RadarSegment+Internal.h"
 #import "../RadarSDK/RadarCoordinate+Internal.h"
+#import "../RadarSDK/RadarTimeZone+Internal.h"

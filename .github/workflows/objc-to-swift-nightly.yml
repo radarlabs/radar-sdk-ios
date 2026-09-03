@@ -73,6 +73,9 @@ jobs:
       - name: Install the skill for this run
         if: steps.guard.outputs.open == '0'
         run: |
+          # The skill is runtime input from clankers, not a migration change.
+          # Keep other checked-in Claude skills visible to Git.
+          printf '%s\n' '.claude/skills/objc-to-swift/' >> .git/info/exclude
           mkdir -p .claude/skills
           cp -R clankers-skill/skills/objc-to-swift .claude/skills/objc-to-swift
           rm -rf clankers-skill

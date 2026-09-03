@@ -17,7 +17,9 @@ import Foundation
 final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
     private(set) var trackedRegions = Set<CLRegion>()
     private(set) var requestStateRegions: [CLRegion] = []
+    private(set) var startUpdatingLocationCallCount = 0
     private(set) var stopUpdatingLocationCallCount = 0
+    private(set) var stopUpdatingHeadingCallCount = 0
     private(set) var requestLocationCallCount = 0
     var mockLocation: CLLocation?
 
@@ -38,6 +40,14 @@ final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
 
     override func stopUpdatingLocation() {
         stopUpdatingLocationCallCount += 1
+    }
+
+    override func startUpdatingLocation() {
+        startUpdatingLocationCallCount += 1
+    }
+
+    override func stopUpdatingHeading() {
+        stopUpdatingHeadingCallCount += 1
     }
 
     override func requestLocation() {

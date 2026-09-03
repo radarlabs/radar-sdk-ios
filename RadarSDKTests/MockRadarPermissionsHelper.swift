@@ -7,19 +7,41 @@
 //
 
 import CoreLocation
+import Foundation
 
 @testable import RadarSDK
 
-@MainActor
-final class MockRadarPermissionsHelper: RadarPermissionsHelping {
-    var mockAuthorizationStatus: CLAuthorizationStatus = .authorizedAlways
-    var mockRangingAvailable: Bool = true
+final class MockRadarPermissionsHelper: RadarPermissionsHelping, @unchecked Sendable {
+    private let lock = NSLock()
+    private var _mockAuthorizationStatus: CLAuthorizationStatus = .authorizedAlways
+    private var _mockRangingAvailable = true
 
-    func locationAuthorizationStatus() -> CLAuthorizationStatus {
-        mockAuthorizationStatus
+    var mockAuthorizationStatus: CLAuthorizationStatus {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _mockAuthorizationStatus
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _mockAuthorizationStatus = newValue
+        }
     }
 
-    func isRangingAvailable() -> Bool {
-        mockRangingAvailable
+    var mockRangingAvailable: Bool {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _mockRangingAvailable
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _mockRangingAvailable = newValue
+        }
     }
+
+    func locationAuthorizationStatus() -> CLAuthorizationStatus { mockAuthorizationStatus }
+    func isRangingAvailable() -> Bool { mockRangingAvailable }
 }

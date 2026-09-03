@@ -14,6 +14,8 @@ import Foundation
 protocol RadarSwiftBridgeProtocol {
     func flushReplays()
     func flushReplaysRequest(_ replays: [[AnyHashable: Any]], completionHandler: ((RadarStatus, [AnyHashable: Any]?) -> Void)?)
+    func stopIndoorTracking()
+    func updateTrackingFromInitialize()
     func logOpenedAppConversion()
     func geofenceIds() -> [String]?
     func beaconIds() -> [String]?
@@ -29,6 +31,7 @@ protocol RadarSwiftBridgeProtocol {
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser)
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource)
     func handleLocation(_ location: CLLocation, source: RadarLocationSource)
+    func updateTracking()
     func radarUser() -> RadarUser?
     func didFail(status: RadarStatus)
     func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon
