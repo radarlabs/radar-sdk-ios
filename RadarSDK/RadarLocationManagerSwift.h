@@ -76,6 +76,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)didUpdateLocations:(nullable NSArray<CLLocation *> *)updates completionHandlerCount:(NSUInteger)completionHandlerCount;
 + (void)didVisitOnLocationManager:(CLLocationManager *)locationManager visit:(CLVisit *)visit;
++ (void)didEnterRegionOnLocationManager:(CLLocationManager *)locationManager
+                                 region:(CLRegion *)region;
++ (void)didExitRegionOnLocationManager:(CLLocationManager *)locationManager
+                                region:(CLRegion *)region;
 + (void)didDetermineStateOnLocationManager:(CLLocationManager *)locationManager
                                      state:(CLRegionState)state
                                     region:(CLRegion *)region;
