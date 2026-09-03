@@ -1,7 +1,6 @@
 import CoreLocation
 import Foundation
 
-
 @objc(RadarCoordinate)
 final class RadarCoordinateSwift: NSObject, Codable, Sendable {
 
