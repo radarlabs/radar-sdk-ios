@@ -7,50 +7,28 @@
 
 import Foundation
 
-struct RadarChainSwift: Codable, Sendable {
+@objc(RadarChain)
+@objcMembers
+final class RadarChain: NSObject, Codable {
     let slug: String
     let name: String
     let externalId: String?
-    let metadata: [String: RadarMetadataValue]?
+    let metadata: NSDictionary?
 
-    enum CodingKeys: String, CodingKey {
+    private enum CodingKeys: String, CodingKey {
         case slug
         case name
         case externalId
         case metadata
     }
 
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        slug = try container.decode(String.self, forKey: .slug)
-        name = try container.decode(String.self, forKey: .name)
-        externalId = try container.decodeIfPresent(String.self, forKey: .externalId)
-        metadata = try container.decodeIfPresent([String: RadarMetadataValue].self, forKey: .metadata)
+    override init() {
+        slug = ""
+        name = ""
+        externalId = nil
+        metadata = nil
+        super.init()
     }
-
-    init(slug: String, name: String, externalId: String? = nil, metadata: [String: RadarMetadataValue]? = nil) {
-        self.slug = slug
-        self.name = name
-        self.externalId = externalId
-        self.metadata = metadata
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(slug, forKey: .slug)
-        try container.encode(name, forKey: .name)
-        try container.encodeIfPresent(externalId, forKey: .externalId)
-        try container.encodeIfPresent(metadata, forKey: .metadata)
-    }
-}
-
-@objc(RadarChain)
-@objcMembers
-final class RadarChain: NSObject {
-    let slug: String
-    let name: String
-    let externalId: String?
-    let metadata: NSDictionary?
 
     /// Keeps the hand-written Objective-C initializer working after the implementation moved to Swift.
     @objc(initWithSlug:name:externalId:metadata:)
@@ -77,6 +55,38 @@ final class RadarChain: NSObject {
         self.externalId = dictionary["externalId"] as? String
         self.metadata = dictionary["metadata"] as? NSDictionary
         super.init()
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        slug = try container.decode(String.self, forKey: .slug)
+        name = try container.decode(String.self, forKey: .name)
+        externalId = try container.decodeIfPresent(String.self, forKey: .externalId)
+
+        if let metadata = try container.decodeIfPresent([String: RadarMetadataValue].self, forKey: .metadata) {
+            let foundationMetadata = metadata.reduce(into: [AnyHashable: Any]()) { result, entry in
+                result[entry.key] = entry.value.anyValue
+            }
+            self.metadata = NSDictionary(dictionary: foundationMetadata)
+        } else {
+            self.metadata = nil
+        }
+
+        super.init()
+    }
+
+    /// JSON cannot encode NSDictionary directly, so use the same primitive values as Codable metadata.
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(slug, forKey: .slug)
+        try container.encode(name, forKey: .name)
+        try container.encodeIfPresent(externalId, forKey: .externalId)
+
+        if let metadata {
+            let data = try JSONSerialization.data(withJSONObject: metadata)
+            let codableMetadata = try JSONDecoder().decode([String: RadarMetadataValue].self, from: data)
+            try container.encode(codableMetadata, forKey: .metadata)
+        }
     }
 
     @objc(arrayForChains:)
