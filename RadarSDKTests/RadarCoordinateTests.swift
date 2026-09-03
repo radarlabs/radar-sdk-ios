@@ -303,29 +303,17 @@ struct RadarCoordinateTests {
         #expect(try #require(RadarCoordinateSwift.coordinatesFrom(object: [Any]())).isEmpty)
     }
 
-    @Test("coordinatesFromObject returns nil when any entry cannot be parsed")
-    func coordinatesFromObjectReturnsNilForMalformedEntries() {
-        let valid = Self.geoJSON(longitude: Self.longitude, latitude: Self.latitude)
-
-        // [valid, invalid] -> nil: one bad entry invalidates the whole array.
-        #expect(RadarCoordinateSwift.coordinatesFrom(object: [valid, "not a coordinate"]) == nil)
-        #expect(
-            RadarCoordinateSwift.coordinatesFrom(object: [valid, ["coordinates": [Self.longitude]]])
-                == nil)
-        #expect(RadarCoordinateSwift.coordinatesFrom(object: [valid, ["type": "Point"]]) == nil)
-
-        // ...and it holds regardless of where the bad entry sits.
-        #expect(RadarCoordinateSwift.coordinatesFrom(object: ["not a coordinate", valid]) == nil)
-        #expect(RadarCoordinateSwift.coordinatesFrom(object: [valid, "not a coordinate", valid]) == nil)
-    }
-
-    @Test("coordinatesFromObject returns nil when any entry cannot be parsed, from Objective-C")
-    func objcCoordinatesFromObjectReturnsNilForMalformedEntries() {
-        let objects: [Any] = [
-            Self.geoJSON(longitude: Self.longitude, latitude: Self.latitude),
-            "not a coordinate",
-        ]
-
+    // One unparseable entry invalidates the whole array, wherever it sits.
+    @Test(
+        "coordinatesFromObject returns nil when any entry cannot be parsed",
+        arguments: [
+            [Self.geoJSON(longitude: longitude, latitude: latitude), "not a coordinate"],
+            [Self.geoJSON(longitude: longitude, latitude: latitude), ["coordinates": [longitude]]],
+            [Self.geoJSON(longitude: longitude, latitude: latitude), ["type": "Point"]],
+            ["not a coordinate", Self.geoJSON(longitude: longitude, latitude: latitude)],
+        ] as [[Any]])
+    func coordinatesFromObjectReturnsNilForMalformedEntries(objects: [Any]) {
+        #expect(RadarCoordinateSwift.coordinatesFrom(object: objects) == nil)
         #expect(RadarCoordinate.coordinates(from: objects) == nil)
     }
 
