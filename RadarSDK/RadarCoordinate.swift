@@ -63,7 +63,10 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         guard let array = object as? [Any] else {
             return nil
         }
-        return array.compactMap(RadarCoordinateSwift.init)
+        guard let result = array.map(RadarCoordinateSwift.init) as? [RadarCoordinateSwift] else {
+            return nil
+        }
+        return result
     }
 
     @objc
