@@ -1,10 +1,10 @@
 name: Nightly ObjC to Swift migration
 
-# Converts ONE safe Objective-C file to Swift per run and opens a PR for human
-# review. Approval happens at PR review (see AGENTS.md "Language Policy") — the
-# agent only picks conservative leaf files, and skips the run entirely while a
-# previous migration PR is still open. This job runs the same macOS validation
-# as PR CI before publication; PR CI remains the independent verifier.
+# Converts ONE deterministic, eligible Objective-C implementation to Swift per run
+# and opens a PR for human review. Approval happens at PR review (see AGENTS.md
+# "Language Policy"). The skill replaces the selected implementation while preserving
+# its Objective-C contract. This job runs the same macOS validation as PR CI before
+# publication; PR CI remains the independent verifier.
 
 on:
   schedule:
@@ -80,17 +80,33 @@ jobs:
           cp -R clankers-skill/skills/objc-to-swift .claude/skills/objc-to-swift
           rm -rf clankers-skill
 
-      - name: Use the PR CI Xcode version
+      - name: Select deterministic migration target
+        id: candidate
         if: steps.guard.outputs.open == '0'
+        run: |
+          TARGET="$(bash .claude/skills/objc-to-swift/scripts/find-next-candidate.sh "$GITHUB_WORKSPACE")"
+          if [ -z "$TARGET" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No eligible Objective-C implementation remains; skipping migration."
+            exit 0
+          fi
+
+          echo "available=true" >> "$GITHUB_OUTPUT"
+          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
+          echo "MIGRATION_TARGET=$TARGET" >> "$GITHUB_ENV"
+          echo "Selected $TARGET"
+
+      - name: Use the PR CI Xcode version
+        if: steps.guard.outputs.open == '0' && steps.candidate.outputs.available == 'true'
         run: |
           sudo xcode-select -switch /Applications/Xcode_26.3.app
 
       - name: Install Swift validation tools
-        if: steps.guard.outputs.open == '0'
+        if: steps.guard.outputs.open == '0' && steps.candidate.outputs.available == 'true'
         run: brew install swift-format swiftlint
 
       - name: Pick an available iPhone simulator
-        if: steps.guard.outputs.open == '0'
+        if: steps.guard.outputs.open == '0' && steps.candidate.outputs.available == 'true'
         run: |
           SIMULATOR_ID=$(xcrun simctl list devices --json \
             | jq -r '
@@ -111,17 +127,19 @@ jobs:
           echo "MIGRATION_DESTINATION=platform=iOS Simulator,id=$SIMULATOR_ID" >> "$GITHUB_ENV"
 
       - name: Run the migration agent
-        if: steps.guard.outputs.open == '0'
+        if: steps.guard.outputs.open == '0' && steps.candidate.outputs.available == 'true'
         uses: anthropics/claude-code-action@v1
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          MIGRATION_TARGET: ${{ steps.candidate.outputs.target }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ steps.app-token.outputs.token }}
           prompt: |
             /objc-to-swift batch
 
-            This is the unattended nightly migration run. Follow the skill's
-            "Batch mode (unattended CI runs)" section exactly. The workflow
-            provides GH_TOKEN and MIGRATION_DESTINATION for that procedure.
+            Convert exactly the preselected file at
+            ${{ steps.candidate.outputs.target }}. Do not select another file or leave
+            the Objective-C implementation beside the Swift replacement. The workflow
+            provides MIGRATION_TARGET, GH_TOKEN, and MIGRATION_DESTINATION.
           claude_args: '--allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 80'
