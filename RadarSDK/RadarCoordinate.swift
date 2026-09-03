@@ -1,11 +1,3 @@
-//
-//  RadarCoordinate.swift
-//  RadarSDK
-//
-//  Created by Alan Charles on 3/19/26.
-//  Copyright © 2026 Radar Labs, Inc. All rights reserved.
-//
-
 import CoreLocation
 import Foundation
 
@@ -15,10 +7,10 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
 
     static let codingStrategy = CodingUserInfoKey(rawValue: "coordinateDecodingStrategy")!
     enum CodingStrategy: Sendable {
-        case LngLatArray
-        case LatLngDictionary
+        case lngLatArray
+        case latLngDictionary
     }
-    
+
     let latitude: Double
     let longitude: Double
 
@@ -47,6 +39,27 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
     }
 
     @objc
+    internal init?(object: Any?) {
+        guard let dict = object as? [String: Any] else {
+            return nil
+        }
+        guard let coords = dict["coordinates"] as? [Double] else {
+            return nil
+        }
+        guard coords.count == 2 else {
+            return nil
+        }
+        self.longitude = coords[0]
+        self.latitude = coords[1]
+    }
+
+    @objc
+    public override init() {
+        self.latitude = 0
+        self.longitude = 0
+    }
+
+    @objc
     internal static func coordinatesFrom(object: Any) -> [RadarCoordinateSwift]? {
         guard let array = object as? [Any] else {
             return nil
@@ -62,21 +75,6 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         ]
     }
 
-    @objc
-    internal init?(object: Any?) {
-        guard let dict = object as? [String: Any] else {
-            return nil
-        }
-        guard let coords = dict["coordinates"] as? [Double] else {
-            return nil
-        }
-        guard coords.count == 2 else {
-            return nil
-        }
-        self.longitude = coords[0]
-        self.latitude = coords[1]
-    }
-
     // Matches what Codable synthesis produced for the previous `struct` definition,
     // so persisted state (e.g. RadarSyncState) round-trips unchanged.
     enum CodingKeys: String, CodingKey {
@@ -86,11 +84,11 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
 
     init(from decoder: Decoder) throws {
         let strategy = decoder.userInfo[RadarCoordinateSwift.codingStrategy] as? CodingStrategy
-        if (strategy == CodingStrategy.LngLatArray) {
+        if strategy == CodingStrategy.lngLatArray {
             var container = try decoder.unkeyedContainer()
             self.longitude = try container.decode(Double.self)
             self.latitude = try container.decode(Double.self)
-        } else { // CodingStrategy.LatLngDictionary or default
+        } else {  // CodingStrategy.LatLngDictionary or default
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.latitude = try container.decode(Double.self, forKey: .latitude)
             self.longitude = try container.decode(Double.self, forKey: .longitude)
@@ -99,11 +97,11 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
 
     func encode(to encoder: Encoder) throws {
         let strategy = encoder.userInfo[RadarCoordinateSwift.codingStrategy] as? CodingStrategy
-        if (strategy == CodingStrategy.LngLatArray) {
+        if strategy == CodingStrategy.lngLatArray {
             var container = encoder.unkeyedContainer()
             try container.encode(longitude)
             try container.encode(latitude)
-        } else { // CodingStrategy.LatLngDictionary or default
+        } else {  // CodingStrategy.LatLngDictionary or default
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(latitude, forKey: .latitude)
             try container.encode(longitude, forKey: .longitude)

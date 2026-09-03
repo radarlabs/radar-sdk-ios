@@ -35,7 +35,10 @@
 #import "RadarSDK-Swift.h"
 #endif
 
-@interface RadarLocationManager ()
+// Temporary migration seam for the Swift lifecycle twins. The manager keeps ownership of its
+// private state while Swift runs the lifecycle logic. Remove this conformance when the manager
+// is fully ported.
+@interface RadarLocationManager () <RadarLocationManagerSwiftHost>
 
 /**
  `YES` if `startUpdates()` has started the `timer` for location updates.
@@ -162,10 +165,27 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift getLocationWithHost:self
+                                      authorizationStatus:[self.permissionsHelper locationAuthorizationStatus]
+                                        locationManager:self.locationManager
+                                       completionHandler:completionHandler];
+        return;
+    }
+
     [self getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
 }
 
 - (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift getLocationWithDesiredAccuracyOnHost:self
+                                                       authorizationStatus:[self.permissionsHelper locationAuthorizationStatus]
+                                                         locationManager:self.locationManager
+                                                        desiredAccuracy:desiredAccuracy
+                                                       completionHandler:completionHandler];
+        return;
+    }
+
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
@@ -202,6 +222,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift startTrackingWithOptions:trackingOptions];
+        return;
+    }
+
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
@@ -215,6 +240,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)stopTracking {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift stopTrackingOnLocationManager:self.locationManager activityManager:self.activityManager];
+        return;
+    }
+
     [RadarSettings setTracking:NO];
 
     // Stops indoor scanning
@@ -250,6 +280,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)startUpdates:(int)interval blueBar:(BOOL)blueBar {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift startUpdatesWithHost:self
+                                       locationManager:self.locationManager
+                                lowPowerLocationManager:self.lowPowerLocationManager
+                                               interval:interval
+                                                blueBar:blueBar];
+        return;
+    }
+
     if (!self.started || interval != self.startedInterval) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d", interval]];
 
@@ -282,6 +321,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)stopUpdates {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift stopUpdatesWithHost:self locationManager:self.locationManager];
+        return;
+    }
+
     if (!self.timer) {
         return;
     }
@@ -302,6 +346,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         [self performSelector:@selector(shutDown) withObject:nil afterDelay:delay];
     }
+}
+
+// Temporary callbacks used by the Swift timer twin. They keep shutdown scheduling in the
+// existing Objective-C manager until the manager is fully ported.
+- (void)cancelPendingShutdown {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(shutDown) object:nil];
+}
+
+- (void)scheduleShutdownAfter:(NSTimeInterval)delay {
+    [self performSelector:@selector(shutDown) withObject:nil afterDelay:delay];
 }
 
 - (void)shutDown {
@@ -540,8 +594,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)updateTrackingFromMeta:(RadarMeta *_Nullable)meta {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        [RadarLocationManagerSwift applyRemoteTrackingOptions:meta];
-    } else if (meta) {
+        [RadarLocationManagerSwift updateTrackingFromMeta:meta];
+        return;
+    }
+
+    if (meta) {
         if ([meta trackingOptions]) {
             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                message:[NSString stringWithFormat:@"Setting remote tracking options | trackingOptions = %@", meta.trackingOptions]];
@@ -611,22 +668,20 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
+    // Xcode's XCTest agent has no app bundle proxy, which UNUserNotificationCenter requires.
+    // Avoid an unavailable service while retaining geofence-replacement coverage in both routes.
+    BOOL shouldRegisterGeofenceNotifications = NSClassFromString(@"XCTestCase") == nil;
+
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        [[RadarNotificationHelper_Swift shared] registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
-                                                                        completionHandler:^(){
-                                                                        }];
+        if (shouldRegisterGeofenceNotifications) {
+            [[RadarNotificationHelper_Swift shared] registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
+                                                                            completionHandler:^(){}];
+        }
         [RadarLocationManagerSwift replaceSyncedGeofencesOnLocationManager:self.locationManager geofences:geofences];
         return;
     }
 
-    // Skip notification registration under XCTest. RadarNotificationHelper_Swift.shared resolves its
-    // notification center from UNUserNotificationCenter.current(), which has no app bundle or
-    // notification entitlements in the unit-test host and misbehaves there. This call used to be
-    // gated behind the useNotificationDiffV2 flag (false in tests); removing the flag made it
-    // unconditional, so the guard preserves the prior "skip in tests" behavior. This matches the
-    // existing XCTestCase guards elsewhere in the SDK. TODO: route through the injectable
-    // NotificationCenterProtocol seam instead so tests can use a mock and this guard can be deleted.0
-    if (NSClassFromString(@"XCTestCase") == nil) {
+    if (shouldRegisterGeofenceNotifications) {
         [[RadarNotificationHelper_Swift shared]
             registerGeofenceNotificationsWithGeofences:[RadarGeofence arrayForGeofences:geofences]
             completionHandler:^() {}
