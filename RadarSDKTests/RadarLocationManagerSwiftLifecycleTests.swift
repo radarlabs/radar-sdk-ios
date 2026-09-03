@@ -567,11 +567,12 @@ extension RadarSerializedTests.RadarLocationManagerSwiftSeamTests {
 
     @Test("Public didDetermineState routes to the Swift twin when useSwiftLocationManager is enabled")
     @MainActor
-    func publicDidDetermineStateRoutesToSwiftTwinWhenFlagEnabled() {
+    func publicDidDetermineStateRoutesToSwiftTwinWhenFlagEnabled() async {
         RadarLocationManagerSwiftTestHelpers.clearState()
         let bridge = MockRadarSwiftBridge()
         let originalBridge = RadarSwift.bridge
         RadarSwift.bridge = bridge
+        let replacementBridge = MockRadarSwiftBridge()
         defer {
             RadarSwift.bridge = originalBridge
             RadarLocationManagerSwiftTestHelpers.clearState()
@@ -588,6 +589,47 @@ extension RadarSerializedTests.RadarLocationManagerSwiftSeamTests {
             uuid: UUID(),
             identifier: "radar_beacon_\(UUID().uuidString)"
         )
+        let handledLocationEvents = bridge.handledLocationEvents()
+
+        invokeDidDetermineState(
+            on: RadarLocationManager.sharedInstance(),
+            locationManager: locationManager,
+            state: .inside,
+            region: region
+        )
+        RadarSwift.bridge = replacementBridge
+        #expect(await RadarLocationManagerSwiftTestHelpers.waitForHandledLocation(handledLocationEvents))
+
+        #expect(bridge.lastHandledLocation === location)
+        #expect(bridge.lastHandledSource == .beaconEnter)
+        #expect(bridge.lastHandledBeacons?.count == 1)
+        #expect(replacementBridge.lastHandledLocation == nil)
+    }
+
+    @Test("Public didDetermineState keeps the Objective-C body when useSwiftLocationManager is disabled")
+    @MainActor
+    func publicDidDetermineStateUsesObjCBodyWhenFlagDisabled() async {
+        RadarLocationManagerSwiftTestHelpers.clearState()
+        let bridge = MockRadarSwiftBridge()
+        let originalBridge = RadarSwift.bridge
+        RadarSwift.bridge = bridge
+        defer {
+            RadarSwift.bridge = originalBridge
+            RadarLocationManagerSwiftTestHelpers.clearState()
+        }
+
+        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+            "useSwiftLocationManager": false,
+            "useRadarModifiedBeacon": false,
+        ])
+        let locationManager = TrackingCLLocationManager()
+        let location = CLLocation(latitude: 40.7, longitude: -74.0)
+        locationManager.mockLocation = location
+        let region = CLBeaconRegion(
+            uuid: UUID(),
+            identifier: "radar_beacon_\(UUID().uuidString)"
+        )
+        let handledLocationEvents = bridge.handledLocationEvents()
 
         invokeDidDetermineState(
             on: RadarLocationManager.sharedInstance(),
@@ -596,7 +638,9 @@ extension RadarSerializedTests.RadarLocationManagerSwiftSeamTests {
             region: region
         )
 
+        #expect(await RadarLocationManagerSwiftTestHelpers.waitForHandledLocation(handledLocationEvents))
         #expect(bridge.lastHandledLocation === location)
         #expect(bridge.lastHandledSource == .beaconEnter)
+        #expect(bridge.lastHandledBeacons?.count == 1)
     }
 }

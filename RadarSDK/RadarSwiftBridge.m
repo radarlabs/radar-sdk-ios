@@ -19,6 +19,12 @@
 #import "RadarIndoors.h"
 #import "RadarLocationManager.h"
 
+@interface RadarLocationManager (RadarSwiftBridgeInternal)
+- (void)handleLocation:(CLLocation *)location
+                source:(RadarLocationSource)source
+               beacons:(NSArray<RadarBeacon *> * _Nullable)beacons;
+@end
+
 @implementation RadarSwiftBridge
 
 - (void)flushReplays {
@@ -98,6 +104,12 @@
 
 - (void)handleLocation:(CLLocation *)location source:(RadarLocationSource)source {
     [[RadarLocationManager sharedInstance] handleLocation:location source:source];
+}
+
+- (void)handleLocation:(CLLocation *)location
+                source:(RadarLocationSource)source
+               beacons:(NSArray<RadarBeacon *> * _Nullable)beacons {
+    [[RadarLocationManager sharedInstance] handleLocation:location source:source beacons:beacons];
 }
 
 - (RadarUser * _Nullable)radarUser {

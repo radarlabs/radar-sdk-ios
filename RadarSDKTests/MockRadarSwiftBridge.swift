@@ -71,9 +71,40 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     }
     private(set) var lastHandledLocation: CLLocation?
     private(set) var lastHandledSource: RadarLocationSource?
-    func handleLocation(_ location: CLLocation, source: RadarLocationSource) {
+    private(set) var lastHandledBeacons: [RadarBeacon]?
+    private let handledLocationLock = NSLock()
+    private var handledLocationContinuations: [AsyncStream<Void>.Continuation] = []
+
+    // Delegate callbacks are asynchronous, so tests wait for the callback instead of guessing a delay.
+    func handledLocationEvents() -> AsyncStream<Void> {
+        AsyncStream { continuation in
+            handledLocationLock.lock()
+            handledLocationContinuations.append(continuation)
+            handledLocationLock.unlock()
+        }
+    }
+
+    private func recordHandledLocation(
+        _ location: CLLocation,
+        source: RadarLocationSource,
+        beacons: [RadarBeacon]?
+    ) {
         lastHandledLocation = location
         lastHandledSource = source
+        lastHandledBeacons = beacons
+
+        handledLocationLock.lock()
+        let continuations = handledLocationContinuations
+        handledLocationLock.unlock()
+        continuations.forEach { _ = $0.yield(()) }
+    }
+
+    func handleLocation(_ location: CLLocation, source: RadarLocationSource) {
+        recordHandledLocation(location, source: source, beacons: nil)
+    }
+
+    func handleLocation(_ location: CLLocation, source: RadarLocationSource, beacons: [RadarBeacon]?) {
+        recordHandledLocation(location, source: source, beacons: beacons)
     }
     func radarUser() -> RadarUser? { nil }
     private(set) var lastFailStatus: RadarStatus?

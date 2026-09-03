@@ -82,13 +82,15 @@ extension RadarLocationManagerSwift {
         let beaconUUID = beaconRegion.uuid
         let beaconMajor = beaconRegion.major?.uint16Value
         let beaconMinor = beaconRegion.minor?.uint16Value
+        // Capture the bridge with the event so delayed work cannot deliver it to a different bridge.
+        let bridge = RadarSwift.bridge
+        let completionHandler: RadarBeaconCompletionHandler = { _, nearbyBeacons in
+            bridge?.handleLocation(location, source: source, beacons: nearbyBeacons)
+        }
         RadarLogger.shared.debug("🦅 \(isInside ? "Inside" : "Outside") beacon region | identifier = \(identifier)")
 
         Task { @MainActor in
             let beaconManager = RadarBeaconManagerSwift.shared
-            let completionHandler: RadarBeaconCompletionHandler = { _, _ in
-                RadarSwift.bridge?.handleLocation(location, source: source)
-            }
 
             if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
                 if isInside {

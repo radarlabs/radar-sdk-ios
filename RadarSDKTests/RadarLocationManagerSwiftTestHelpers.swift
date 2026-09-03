@@ -17,6 +17,28 @@ import Foundation
 
 enum RadarLocationManagerSwiftTestHelpers {
 
+    /// Wait for an asynchronous delegate callback without making the test depend on a scheduling delay.
+    static func waitForHandledLocation(_ events: AsyncStream<Void>) async -> Bool {
+        await withTaskGroup(of: Bool.self) { group in
+            group.addTask {
+                var iterator = events.makeAsyncIterator()
+                return await iterator.next() != nil
+            }
+            group.addTask {
+                do {
+                    try await Task.sleep(nanoseconds: 1_000_000_000)
+                    return false
+                } catch {
+                    return false
+                }
+            }
+
+            let result = await group.next() ?? false
+            group.cancelAll()
+            return result
+        }
+    }
+
     /// Swift tracking crosses both injection seams; keeping their lifetime scoped together
     /// prevents a test's bridge or authorization state from leaking into the next test.
     static func withMockedSwiftTrackingDependencies(

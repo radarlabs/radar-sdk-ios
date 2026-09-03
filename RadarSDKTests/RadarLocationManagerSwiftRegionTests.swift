@@ -11,6 +11,9 @@ import Testing
 
 @testable import RadarSDK
 
+// Keep direct region handling and UUID coverage together while this migration is in progress.
+// swiftlint:disable file_length
+
 extension RadarSerializedTests {
     @Suite(.serialized)
     actor RadarLocationManagerSwiftRegionTests {
@@ -322,26 +325,86 @@ extension RadarSerializedTests {
                 uuid: UUID(),
                 identifier: "radar_beacon_\(UUID().uuidString)"
             )
+            let handledLocationEvents = bridge.handledLocationEvents()
 
             RadarLocationManagerSwift.didDetermineState(
                 locationManager: locationManager,
                 state: .inside,
                 region: region
             )
-            await Task.yield()
+            #expect(await RadarLocationManagerSwiftTestHelpers.waitForHandledLocation(handledLocationEvents))
 
             #expect(bridge.lastHandledLocation === location)
             #expect(bridge.lastHandledSource == .beaconEnter)
+            #expect(bridge.lastHandledBeacons?.count == 1)
 
             RadarLocationManagerSwift.didDetermineState(
                 locationManager: locationManager,
                 state: .outside,
                 region: region
             )
-            await Task.yield()
+            #expect(await RadarLocationManagerSwiftTestHelpers.waitForHandledLocation(handledLocationEvents))
 
             #expect(bridge.lastHandledLocation === location)
             #expect(bridge.lastHandledSource == .beaconExit)
+            #expect(bridge.lastHandledBeacons?.isEmpty == true)
+        }
+
+    }
+}
+
+extension RadarSerializedTests {
+    @Suite(.serialized)
+    actor RadarLocationManagerSwiftUUIDRegionTests {
+
+        @Test("didDetermineState forwards UUID beacon entry and exit events")
+        @MainActor
+        func didDetermineStateHandlesSyncedBeaconUUIDEntryAndExit() async {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            let beaconManager = RadarBeaconManagerSwift.shared
+            let originalPermissionsHelper = beaconManager.permissionsHelper
+            let originalBeaconUUIDs = RadarSettings.beaconUUIDs
+            RadarSwift.bridge = bridge
+            defer {
+                RadarSwift.bridge = originalBridge
+                beaconManager.permissionsHelper = originalPermissionsHelper
+                RadarSettings.beaconUUIDs = originalBeaconUUIDs
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            beaconManager.permissionsHelper = MockRadarPermissionsHelper()
+            RadarSettings.beaconUUIDs = []
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+                "useRadarModifiedBeacon": false
+            ])
+            let locationManager = TrackingCLLocationManager()
+            let location = CLLocation(latitude: 40.7, longitude: -74.0)
+            locationManager.mockLocation = location
+            let region = CLBeaconRegion(
+                uuid: UUID(),
+                identifier: "radar_uuid_\(UUID().uuidString)"
+            )
+            let handledLocationEvents = bridge.handledLocationEvents()
+
+            RadarLocationManagerSwift.didDetermineState(
+                locationManager: locationManager,
+                state: .inside,
+                region: region
+            )
+            #expect(await RadarLocationManagerSwiftTestHelpers.waitForHandledLocation(handledLocationEvents))
+            #expect(bridge.lastHandledSource == .beaconEnter)
+            #expect(bridge.lastHandledBeacons?.isEmpty == true)
+
+            RadarLocationManagerSwift.didDetermineState(
+                locationManager: locationManager,
+                state: .outside,
+                region: region
+            )
+            #expect(await RadarLocationManagerSwiftTestHelpers.waitForHandledLocation(handledLocationEvents))
+            #expect(bridge.lastHandledSource == .beaconExit)
+            #expect(bridge.lastHandledBeacons?.isEmpty == true)
         }
     }
 }
