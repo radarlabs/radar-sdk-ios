@@ -303,18 +303,20 @@ struct RadarCoordinateTests {
         #expect(try #require(RadarCoordinateSwift.coordinatesFrom(object: [Any]())).isEmpty)
     }
 
-    // One unparseable entry invalidates the whole array, wherever it sits.
-    @Test(
-        "coordinatesFromObject returns nil when any entry cannot be parsed",
-        arguments: [
-            [Self.geoJSON(longitude: longitude, latitude: latitude), "not a coordinate"],
-            [Self.geoJSON(longitude: longitude, latitude: latitude), ["coordinates": [longitude]]],
-            [Self.geoJSON(longitude: longitude, latitude: latitude), ["type": "Point"]],
-            ["not a coordinate", Self.geoJSON(longitude: longitude, latitude: latitude)],
-        ] as [[Any]])
-    func coordinatesFromObjectReturnsNilForMalformedEntries(objects: [Any]) {
-        #expect(RadarCoordinateSwift.coordinatesFrom(object: objects) == nil)
-        #expect(RadarCoordinate.coordinates(from: objects) == nil)
+    @Test("coordinatesFromObject returns nil when any entry cannot be parsed")
+    func coordinatesFromObjectReturnsNilForMalformedEntries() {
+        let valid = Self.geoJSON(longitude: Self.longitude, latitude: Self.latitude)
+
+        // One unparseable entry invalidates the whole array, wherever it sits.
+        for objects in [
+            [valid, "not a coordinate"],
+            [valid, ["coordinates": [Self.longitude]]],
+            [valid, ["type": "Point"]],
+            ["not a coordinate", valid],
+        ] as [[Any]] {
+            #expect(RadarCoordinateSwift.coordinatesFrom(object: objects) == nil)
+            #expect(RadarCoordinate.coordinates(from: objects) == nil)
+        }
     }
 
     @Test("coordinatesFromObject returns nil for a non-array")
