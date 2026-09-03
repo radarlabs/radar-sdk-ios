@@ -365,7 +365,7 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
     func objcEqualityIsIdentity() throws {
         let coordinate = try #require(makeCoordinate() as Any as? RadarCoordinate)
         let sameValue = try #require(makeCoordinate() as Any as? RadarCoordinate)
-        
+
         #expect(coordinate == coordinate)
         #expect(coordinate.isEqual(coordinate))
         #expect(coordinate != sameValue)
