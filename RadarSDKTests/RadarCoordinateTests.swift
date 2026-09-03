@@ -140,7 +140,7 @@ struct RadarCoordinateTests {
         let coordinate = RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)
 
         for strategy in [RadarCoordinateSwift.CodingStrategy.latLngDictionary, .lngLatArray] {
-            let json = try #require(encode(coordinate, strategy: strategy))
+            let json = try #require(try encode(coordinate, strategy: strategy))
             #expect(try decode(json, strategy: strategy) == coordinate)
         }
     }
