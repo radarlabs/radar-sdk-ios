@@ -92,7 +92,7 @@ extension RadarLocationManagerSwift {
         let stateBox = RadarBeaconRegionStateBox(location: location, region: beaconRegion)
         RadarLogger.shared.debug("🦅 \(isInside ? "Inside" : "Outside") beacon region | identifier = \(identifier)")
 
-        runOnMainThread { [stateBox] in
+        Task { @MainActor [stateBox] in
             let beaconManager = RadarBeaconManagerSwift.shared
             let completionHandler: RadarBeaconCompletionHandler = { _, _ in
                 RadarSwift.bridge?.handleLocation(stateBox.location, source: source)
@@ -108,21 +108,6 @@ extension RadarLocationManagerSwift {
                 beaconManager.handleBeaconEntry(for: stateBox.region, completionHandler: completionHandler)
             } else {
                 beaconManager.handleBeaconExit(for: stateBox.region, completionHandler: completionHandler)
-            }
-        }
-    }
-
-    // Core Location may call this delegate off the main thread, while beacon state is main-actor owned.
-    private static func runOnMainThread(_ work: @escaping @MainActor @Sendable () -> Void) {
-        if Thread.isMainThread {
-            MainActor.assumeIsolated {
-                work()
-            }
-        } else {
-            DispatchQueue.main.async {
-                MainActor.assumeIsolated {
-                    work()
-                }
             }
         }
     }
