@@ -37,6 +37,27 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         self.latitude = coordinate.latitude
         self.longitude = coordinate.longitude
     }
+    
+    @objc
+    internal init?(object: Any?) {
+        guard let dict = object as? [String: Any] else {
+            return nil
+        }
+        guard let coords = dict["coordinates"] as? [Double] else {
+            return nil
+        }
+        guard coords.count == 2 else {
+            return nil
+        }
+        self.longitude = coords[0]
+        self.latitude = coords[1]
+    }
+    
+    @objc
+    public override init() {
+        self.latitude = 0
+        self.longitude = 0
+    }
 
     @objc
     internal static func coordinatesFrom(object: Any) -> [RadarCoordinateSwift]? {
@@ -52,21 +73,6 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
             "type": "Point",
             "coordinates": [longitude, latitude],
         ]
-    }
-
-    @objc
-    internal init?(object: Any?) {
-        guard let dict = object as? [String: Any] else {
-            return nil
-        }
-        guard let coords = dict["coordinates"] as? [Double] else {
-            return nil
-        }
-        guard coords.count == 2 else {
-            return nil
-        }
-        self.longitude = coords[0]
-        self.latitude = coords[1]
     }
 
     // Matches what Codable synthesis produced for the previous `struct` definition,

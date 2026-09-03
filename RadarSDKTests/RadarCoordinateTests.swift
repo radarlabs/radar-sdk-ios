@@ -189,6 +189,28 @@ struct RadarCoordinateTests {
         #expect(coordinate.coordinate.longitude == Self.longitude)
     }
 
+    @Test("[[RadarCoordinate alloc] init] returns a zeroed coordinate")
+    func objcAllocInit() throws {
+        let coordinate = RadarCoordinate()
+
+        #expect(coordinate.coordinate.latitude == 0)
+        #expect(coordinate.coordinate.longitude == 0)
+        #expect(try #require(coordinate as Any as? RadarCoordinateSwift) == RadarCoordinateSwift())
+    }
+
+    @Test("[RadarCoordinate new] returns a zeroed coordinate")
+    func objcNew() throws {
+        // `+new` has no Swift spelling, so go through the Objective-C runtime. It is a
+        // +1 returning selector, hence `takeRetainedValue()`.
+        let coordinate = try #require(
+            (RadarCoordinate.self as AnyObject).perform(NSSelectorFromString("new"))?
+                .takeRetainedValue() as? RadarCoordinate)
+
+        #expect(coordinate.coordinate.latitude == 0)
+        #expect(coordinate.coordinate.longitude == 0)
+        #expect(try #require(coordinate as Any as? RadarCoordinateSwift) == RadarCoordinateSwift())
+    }
+
     @Test("the coordinate property mirrors the stored latitude and longitude")
     func coordinateProperty() {
         let coordinate = RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)
