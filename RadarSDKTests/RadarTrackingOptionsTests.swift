@@ -748,11 +748,4 @@ struct RadarTrackingOptionsTests {  // swiftlint:disable:this type_body_length
         #expect(options.batchSize == 0)
         #expect(options.type == .default)
     }
-
-    @Test("returns nil for a nil dictionary")
-    func returnsNilForNilDictionary() {
-        let dictionary: [AnyHashable: Any]? = nil
-
-        #expect(RadarTrackingOptions(from: dictionary) == nil)
-    }
 }

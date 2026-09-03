@@ -231,7 +231,7 @@ typedef NS_ENUM(NSInteger, RadarTrackingOptionsType) {
 
 @interface RadarTrackingOptions (Dictionary)
 
-+ (RadarTrackingOptions *_Nullable)trackingOptionsFromDictionary:(NSDictionary *_Nullable)dictionary;
++ (RadarTrackingOptions *_Nullable)trackingOptionsFromDictionary:(NSDictionary *_Nonnull)dictionary;
 
 @end
 
