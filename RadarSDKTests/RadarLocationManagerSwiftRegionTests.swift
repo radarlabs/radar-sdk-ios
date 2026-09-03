@@ -302,7 +302,7 @@ extension RadarSerializedTests {
 
         @Test("didDetermineState handles synced beacon entry and exit")
         @MainActor
-        func didDetermineStateHandlesSyncedBeaconEntryAndExit() {
+        func didDetermineStateHandlesSyncedBeaconEntryAndExit() async {
             RadarLocationManagerSwiftTestHelpers.clearState()
             let bridge = MockRadarSwiftBridge()
             let originalBridge = RadarSwift.bridge
@@ -328,6 +328,7 @@ extension RadarSerializedTests {
                 state: .inside,
                 region: region
             )
+            await Task.yield()
 
             #expect(bridge.lastHandledLocation === location)
             #expect(bridge.lastHandledSource == .beaconEnter)
@@ -337,6 +338,7 @@ extension RadarSerializedTests {
                 state: .outside,
                 region: region
             )
+            await Task.yield()
 
             #expect(bridge.lastHandledLocation === location)
             #expect(bridge.lastHandledSource == .beaconExit)
