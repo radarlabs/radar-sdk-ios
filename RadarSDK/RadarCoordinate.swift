@@ -87,7 +87,7 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
             var container = try decoder.unkeyedContainer()
             self.longitude = try container.decode(Double.self)
             self.latitude = try container.decode(Double.self)
-        } else { // CodingStrategy.LatLngDictionary or default
+        } else {  // CodingStrategy.LatLngDictionary or default
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.latitude = try container.decode(Double.self, forKey: .latitude)
             self.longitude = try container.decode(Double.self, forKey: .longitude)
@@ -100,7 +100,7 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
             var container = encoder.unkeyedContainer()
             try container.encode(longitude)
             try container.encode(latitude)
-        } else { // CodingStrategy.LatLngDictionary or default
+        } else {  // CodingStrategy.LatLngDictionary or default
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(latitude, forKey: .latitude)
             try container.encode(longitude, forKey: .longitude)
