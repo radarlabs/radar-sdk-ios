@@ -15,6 +15,15 @@ private func invokeGetLocation(on manager: RadarLocationManager) {
     manager.perform(NSSelectorFromString("getLocationWithCompletionHandler:"), with: nil)
 }
 
+private func invokeDidDetermineState(
+    on manager: RadarLocationManager,
+    locationManager: CLLocationManager,
+    state: CLRegionState,
+    region: CLRegion
+) {
+    manager.locationManager(locationManager, didDetermineState: state, for: region)
+}
+
 // Keep lifecycle seam tests together so the direct twins and their shared host stay easy to compare.
 // swiftlint:disable file_length
 
@@ -550,5 +559,44 @@ extension RadarSerializedTests.RadarLocationManagerSwiftLifecycleTests {
         invokeGetLocation(on: manager)
 
         #expect(bridge.lastFailStatus == nil)
+    }
+}
+
+extension RadarSerializedTests.RadarLocationManagerSwiftSeamTests {
+    // MARK: - didDetermineState — public method routing
+
+    @Test("Public didDetermineState routes to the Swift twin when useSwiftLocationManager is enabled")
+    @MainActor
+    func publicDidDetermineStateRoutesToSwiftTwinWhenFlagEnabled() {
+        RadarLocationManagerSwiftTestHelpers.clearState()
+        let bridge = MockRadarSwiftBridge()
+        let originalBridge = RadarSwift.bridge
+        RadarSwift.bridge = bridge
+        defer {
+            RadarSwift.bridge = originalBridge
+            RadarLocationManagerSwiftTestHelpers.clearState()
+        }
+
+        RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
+            "useSwiftLocationManager": true,
+            "useRadarModifiedBeacon": false,
+        ])
+        let locationManager = TrackingCLLocationManager()
+        let location = CLLocation(latitude: 40.7, longitude: -74.0)
+        locationManager.mockLocation = location
+        let region = CLBeaconRegion(
+            uuid: UUID(),
+            identifier: "radar_beacon_\(UUID().uuidString)"
+        )
+
+        invokeDidDetermineState(
+            on: RadarLocationManager.sharedInstance(),
+            locationManager: locationManager,
+            state: .inside,
+            region: region
+        )
+
+        #expect(bridge.lastHandledLocation === location)
+        #expect(bridge.lastHandledSource == .beaconEnter)
     }
 }

@@ -26,15 +26,6 @@ private func invokeStopUpdates(on manager: RadarLocationManager) {
     manager.perform(NSSelectorFromString("stopUpdates"))
 }
 
-private func invokeDidDetermineState(
-    on manager: RadarLocationManager,
-    locationManager: CLLocationManager,
-    state: CLRegionState,
-    region: CLRegion
-) {
-    manager.locationManager(locationManager, didDetermineState: state, for: region)
-}
-
 extension RadarSerializedTests {
     @Suite(.serialized)
     actor RadarLocationManagerSwiftSeamTests {
@@ -137,43 +128,6 @@ extension RadarSerializedTests {
 
             #expect(RadarSettings.remoteTrackingOptions == options)
             #expect(bridge.callOrder.isEmpty)
-        }
-
-        // MARK: - didDetermineState — public method routing
-
-        @Test("Public didDetermineState routes to the Swift twin when useSwiftLocationManager is enabled")
-        @MainActor
-        func publicDidDetermineStateRoutesToSwiftTwinWhenFlagEnabled() {
-            RadarLocationManagerSwiftTestHelpers.clearState()
-            let bridge = MockRadarSwiftBridge()
-            let originalBridge = RadarSwift.bridge
-            RadarSwift.bridge = bridge
-            defer {
-                RadarSwift.bridge = originalBridge
-                RadarLocationManagerSwiftTestHelpers.clearState()
-            }
-
-            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: [
-                "useSwiftLocationManager": true,
-                "useRadarModifiedBeacon": false,
-            ])
-            let locationManager = TrackingCLLocationManager()
-            let location = CLLocation(latitude: 40.7, longitude: -74.0)
-            locationManager.mockLocation = location
-            let region = CLBeaconRegion(
-                uuid: UUID(),
-                identifier: "radar_beacon_\(UUID().uuidString)"
-            )
-
-            invokeDidDetermineState(
-                on: RadarLocationManager.sharedInstance(),
-                locationManager: locationManager,
-                state: .inside,
-                region: region
-            )
-
-            #expect(bridge.lastHandledLocation === location)
-            #expect(bridge.lastHandledSource == .beaconEnter)
         }
 
         // MARK: - startUpdates and stopUpdates — public method routing
