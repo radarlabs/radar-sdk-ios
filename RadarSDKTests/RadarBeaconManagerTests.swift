@@ -308,10 +308,9 @@ extension RadarSerializedTests {
         func handleBeaconUUIDEntry_useRadarModifiedBeacon_earlyReturn() {
             setUseRadarModifiedBeacon(true)
 
-            let region = Self.makeRegion()
             var called = false
 
-            beaconManager.handleBeaconUUIDEntry(for: region) { _, _ in
+            beaconManager.handleBeaconUUIDEntry { _, _ in
                 called = true
             }
 
@@ -322,10 +321,9 @@ extension RadarSerializedTests {
         func handleBeaconUUIDExit_useRadarModifiedBeacon_earlyReturn() {
             setUseRadarModifiedBeacon(true)
 
-            let region = Self.makeRegion()
             var called = false
 
-            beaconManager.handleBeaconUUIDExit(for: region) { _, _ in
+            beaconManager.handleBeaconUUIDExit { _, _ in
                 called = true
             }
 

@@ -8,16 +8,6 @@
 import CoreLocation
 import Foundation
 
-private final class RadarBeaconRegionStateBox: @unchecked Sendable {
-    let location: CLLocation
-    let region: CLBeaconRegion
-
-    init(location: CLLocation, region: CLBeaconRegion) {
-        self.location = location
-        self.region = region
-    }
-}
-
 // The `CLLocationManagerDelegate` half of `RadarLocationManager`
 extension RadarLocationManagerSwift {
 
@@ -89,25 +79,47 @@ extension RadarLocationManagerSwift {
 
         let isInside = state == .inside
         let source: RadarLocationSource = isInside ? .beaconEnter : .beaconExit
-        let stateBox = RadarBeaconRegionStateBox(location: location, region: beaconRegion)
+        let beaconUUID = beaconRegion.uuid
+        let beaconMajor = beaconRegion.major?.uint16Value
+        let beaconMinor = beaconRegion.minor?.uint16Value
         RadarLogger.shared.debug("🦅 \(isInside ? "Inside" : "Outside") beacon region | identifier = \(identifier)")
 
-        Task { @MainActor [stateBox] in
+        Task { @MainActor in
             let beaconManager = RadarBeaconManagerSwift.shared
             let completionHandler: RadarBeaconCompletionHandler = { _, _ in
-                RadarSwift.bridge?.handleLocation(stateBox.location, source: source)
+                RadarSwift.bridge?.handleLocation(location, source: source)
             }
 
             if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
                 if isInside {
-                    beaconManager.handleBeaconUUIDEntry(for: stateBox.region, completionHandler: completionHandler)
+                    beaconManager.handleBeaconUUIDEntry(completionHandler: completionHandler)
                 } else {
-                    beaconManager.handleBeaconUUIDExit(for: stateBox.region, completionHandler: completionHandler)
+                    beaconManager.handleBeaconUUIDExit(completionHandler: completionHandler)
                 }
-            } else if isInside {
-                beaconManager.handleBeaconEntry(for: stateBox.region, completionHandler: completionHandler)
             } else {
-                beaconManager.handleBeaconExit(for: stateBox.region, completionHandler: completionHandler)
+                let beaconRegion: CLBeaconRegion
+                if let beaconMajor, let beaconMinor {
+                    beaconRegion = CLBeaconRegion(
+                        uuid: beaconUUID,
+                        major: beaconMajor,
+                        minor: beaconMinor,
+                        identifier: identifier
+                    )
+                } else if let beaconMajor {
+                    beaconRegion = CLBeaconRegion(
+                        uuid: beaconUUID,
+                        major: beaconMajor,
+                        identifier: identifier
+                    )
+                } else {
+                    beaconRegion = CLBeaconRegion(uuid: beaconUUID, identifier: identifier)
+                }
+
+                if isInside {
+                    beaconManager.handleBeaconEntry(for: beaconRegion, completionHandler: completionHandler)
+                } else {
+                    beaconManager.handleBeaconExit(for: beaconRegion, completionHandler: completionHandler)
+                }
             }
         }
     }

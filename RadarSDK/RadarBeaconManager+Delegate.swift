@@ -158,9 +158,8 @@ extension RadarBeaconManagerSwift {
         }
     }
 
-    @objc(handleBeaconUUIDEntryForRegion:completionHandler:)
+    @objc(handleBeaconUUIDEntryWithCompletionHandler:)
     func handleBeaconUUIDEntry(
-        for region: CLBeaconRegion,
         completionHandler: @escaping RadarBeaconCompletionHandler
     ) {
         if RadarSettings.useRadarModifiedBeacon { return }
@@ -169,9 +168,8 @@ extension RadarBeaconManagerSwift {
         rangeBeaconUUIDs(uuids, completionHandler: completionHandler)
     }
 
-    @objc(handleBeaconUUIDExitForRegion:completionHandler:)
+    @objc(handleBeaconUUIDExitWithCompletionHandler:)
     func handleBeaconUUIDExit(
-        for region: CLBeaconRegion,
         completionHandler: @escaping RadarBeaconCompletionHandler
     ) {
         if RadarSettings.useRadarModifiedBeacon { return }

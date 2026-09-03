@@ -32,11 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleBeaconExitForRegion:(CLBeaconRegion *)region
                 completionHandler:(RadarBeaconCompletionHandler)completionHandler;
 
-- (void)handleBeaconUUIDEntryForRegion:(CLBeaconRegion *)region
-                     completionHandler:(RadarBeaconCompletionHandler)completionHandler;
+- (void)handleBeaconUUIDEntryWithCompletionHandler:(RadarBeaconCompletionHandler)completionHandler;
 
-- (void)handleBeaconUUIDExitForRegion:(CLBeaconRegion *)region
-                    completionHandler:(RadarBeaconCompletionHandler)completionHandler;
+- (void)handleBeaconUUIDExitWithCompletionHandler:(RadarBeaconCompletionHandler)completionHandler;
 
 - (void)registerBeaconRegionNotificationsFromArray:(NSArray<NSDictionary<NSString *, id> *> *)beaconArray;
 
