@@ -134,6 +134,23 @@ extension RadarSerializedTests {
             }
         }
 
+        @Test("didDetermineState treats an unknown state as a beacon exit")
+        func treatsUnknownStateAsBeaconExit() {
+            withBeaconDependencies {
+                let region = makeRegion(identifier: "radar_beacon_unknown_state_test")
+                var exitStatus: RadarStatus?
+                beaconManager.nearbyBeaconIdentifiers.insert(region.identifier)
+
+                RadarLocationManagerSwift.didDetermineState(.unknown, region: region) { status, beacons in
+                    exitStatus = status
+                    #expect(beacons?.isEmpty == true)
+                }
+
+                #expect(exitStatus == .success)
+                #expect(!beaconManager.nearbyBeaconIdentifiers.contains(region.identifier))
+            }
+        }
+
         @Test("Public didDetermineState uses the Swift path when enabled")
         func publicMethodUsesSwiftPath() {
             withBeaconDependencies {
