@@ -558,7 +558,7 @@ extension RadarSerializedTests.RadarLocationManagerSwiftLifecycleTests {
 
     @Test("region callbacks handle synced beacon entry and exit with nearby beacons")
     @MainActor
-    func regionCallbacksHandleSyncedBeaconEntryAndExit() {
+    func regionCallbacksHandleSyncedBeaconEntryAndExit() async {
         RadarLocationManagerSwiftTestHelpers.clearState()
         let bridge = MockRadarSwiftBridge()
         let originalBridge = RadarSwift.bridge
@@ -572,21 +572,37 @@ extension RadarSerializedTests.RadarLocationManagerSwiftLifecycleTests {
             "useRadarModifiedBeacon": false
         ])
         RadarSettings.tracking = true
+        let beaconManager = RadarBeaconManagerSwift.shared
+        beaconManager.stopRanging()
         let locationManager = TrackingCLLocationManager()
-        let location = CLLocation(latitude: 40.7, longitude: -74.0)
+        let location = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 40.7, longitude: -74.0),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            timestamp: Date()
+        )
         locationManager.mockLocation = location
         let region = CLBeaconRegion(
             uuid: UUID(),
             identifier: "radar_beacon_\(UUID().uuidString)"
         )
 
-        RadarLocationManagerSwift.didEnterRegion(locationManager: locationManager, region: region)
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            bridge.onHandledLocation = { continuation.resume() }
+            RadarLocationManagerSwift.didEnterRegion(locationManager: locationManager, region: region)
+        }
+        bridge.onHandledLocation = nil
 
         #expect(bridge.lastHandledLocation === location)
         #expect(bridge.lastHandledSource == .beaconEnter)
         #expect(bridge.lastHandledBeacons?.isEmpty == false)
 
-        RadarLocationManagerSwift.didExitRegion(locationManager: locationManager, region: region)
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            bridge.onHandledLocation = { continuation.resume() }
+            RadarLocationManagerSwift.didExitRegion(locationManager: locationManager, region: region)
+        }
+        bridge.onHandledLocation = nil
 
         #expect(bridge.lastHandledLocation === location)
         #expect(bridge.lastHandledSource == .beaconExit)
