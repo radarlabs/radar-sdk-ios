@@ -139,31 +139,31 @@ extension RadarLocationManagerSwift {
                 )
             }
 
+            let beaconRegion: CLBeaconRegion
+            if let beaconMajor, let beaconMinor {
+                beaconRegion = CLBeaconRegion(
+                    uuid: beaconUUID,
+                    major: beaconMajor,
+                    minor: beaconMinor,
+                    identifier: identifier
+                )
+            } else if let beaconMajor {
+                beaconRegion = CLBeaconRegion(
+                    uuid: beaconUUID,
+                    major: beaconMajor,
+                    identifier: identifier
+                )
+            } else {
+                beaconRegion = CLBeaconRegion(uuid: beaconUUID, identifier: identifier)
+            }
+
             if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
                 if isEntry {
-                    beaconManager.handleBeaconUUIDEntry(completionHandler: completionHandler)
+                    beaconManager.handleBeaconUUIDEntry(for: beaconRegion, completionHandler: completionHandler)
                 } else {
-                    beaconManager.handleBeaconUUIDExit(completionHandler: completionHandler)
+                    beaconManager.handleBeaconUUIDExit(for: beaconRegion, completionHandler: completionHandler)
                 }
             } else {
-                let beaconRegion: CLBeaconRegion
-                if let beaconMajor, let beaconMinor {
-                    beaconRegion = CLBeaconRegion(
-                        uuid: beaconUUID,
-                        major: beaconMajor,
-                        minor: beaconMinor,
-                        identifier: identifier
-                    )
-                } else if let beaconMajor {
-                    beaconRegion = CLBeaconRegion(
-                        uuid: beaconUUID,
-                        major: beaconMajor,
-                        identifier: identifier
-                    )
-                } else {
-                    beaconRegion = CLBeaconRegion(uuid: beaconUUID, identifier: identifier)
-                }
-
                 if isEntry {
                     beaconManager.handleBeaconEntry(for: beaconRegion, completionHandler: completionHandler)
                 } else {
