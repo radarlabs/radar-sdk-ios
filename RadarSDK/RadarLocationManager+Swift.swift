@@ -59,8 +59,8 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     static let identifierPrefix = "radar_"
     private static let bubbleGeofenceIdentifierPrefix = "radar_bubble_"
     private static let syncGeofenceIdentifierPrefix = "radar_geofence_"
-    private static let syncBeaconIdentifierPrefix = "radar_beacon_"
-    private static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
+    static let syncBeaconIdentifierPrefix = "radar_beacon_"
+    static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
     private static let trackingShutdownDelay: TimeInterval = 10
     private static let immediateShutdownDelay: TimeInterval = 0
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()

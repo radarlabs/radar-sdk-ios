@@ -76,6 +76,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)didUpdateLocations:(nullable NSArray<CLLocation *> *)updates completionHandlerCount:(NSUInteger)completionHandlerCount;
 + (void)didVisitOnLocationManager:(CLLocationManager *)locationManager visit:(CLVisit *)visit;
++ (void)didDetermineState:(CLRegionState)state
+                   region:(CLRegion *)region
+        completionHandler:(RadarBeaconCompletionHandler)completionHandler;
 
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
