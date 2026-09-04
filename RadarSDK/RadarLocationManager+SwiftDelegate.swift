@@ -157,19 +157,31 @@ extension RadarLocationManagerSwift {
                 beaconRegion = CLBeaconRegion(uuid: beaconUUID, identifier: identifier)
             }
 
-            if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
-                if isEntry {
-                    beaconManager.handleBeaconUUIDEntry(for: beaconRegion, completionHandler: completionHandler)
-                } else {
-                    beaconManager.handleBeaconUUIDExit(for: beaconRegion, completionHandler: completionHandler)
-                }
+            handleBeacon(
+                region: beaconRegion,
+                isEntry: isEntry,
+                completionHandler: completionHandler
+            )
+        }
+    }
+
+    @MainActor
+    private static func handleBeacon(
+        region: CLBeaconRegion,
+        isEntry: Bool,
+        completionHandler: @escaping RadarBeaconCompletionHandler
+    ) {
+        let beaconManager = RadarBeaconManagerSwift.shared
+        if region.identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
+            if isEntry {
+                beaconManager.handleBeaconUUIDEntry(for: region, completionHandler: completionHandler)
             } else {
-                if isEntry {
-                    beaconManager.handleBeaconEntry(for: beaconRegion, completionHandler: completionHandler)
-                } else {
-                    beaconManager.handleBeaconExit(for: beaconRegion, completionHandler: completionHandler)
-                }
+                beaconManager.handleBeaconUUIDExit(for: region, completionHandler: completionHandler)
             }
+        } else if isEntry {
+            beaconManager.handleBeaconEntry(for: region, completionHandler: completionHandler)
+        } else {
+            beaconManager.handleBeaconExit(for: region, completionHandler: completionHandler)
         }
     }
 
@@ -190,18 +202,11 @@ extension RadarLocationManagerSwift {
         let isInside = state == .inside
         RadarLogger.shared.debug("🦅 \(isInside ? "Inside" : "Outside") beacon region | identifier = \(identifier)")
 
-        let beaconManager = RadarBeaconManagerSwift.shared
-        if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
-            if isInside {
-                beaconManager.handleBeaconUUIDEntry(for: beaconRegion, completionHandler: completionHandler)
-            } else {
-                beaconManager.handleBeaconUUIDExit(for: beaconRegion, completionHandler: completionHandler)
-            }
-        } else if isInside {
-            beaconManager.handleBeaconEntry(for: beaconRegion, completionHandler: completionHandler)
-        } else {
-            beaconManager.handleBeaconExit(for: beaconRegion, completionHandler: completionHandler)
-        }
+        handleBeacon(
+            region: beaconRegion,
+            isEntry: isInside,
+            completionHandler: completionHandler
+        )
     }
 
     @objc(didUpdateHeading:)

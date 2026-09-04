@@ -1398,29 +1398,21 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
-    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        if (![RadarLocationManagerSwift shouldHandleRegionWithIdentifier:region.identifier action:@"entry"]) {
-            return;
-        }
-    } else {
-        if (![region.identifier hasPrefix:kIdentifierPrefix]) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: wrong prefix"];
+    if (![region.identifier hasPrefix:kIdentifierPrefix]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: wrong prefix"];
 
-            return;
-        }
+        return;
+    }
 
-        BOOL tracking = [RadarSettings tracking];
-        if (!tracking) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: not tracking"];
+    BOOL tracking = [RadarSettings tracking];
+    if (!tracking) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: not tracking"];
 
-            return;
-        }
+        return;
     }
 
     CLLocation *location;
-    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        location = [RadarLocationManagerSwift effectiveLocationForLocationManager:manager];
-    } else if (manager.location.isValid) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
@@ -1451,29 +1443,21 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
-    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        if (![RadarLocationManagerSwift shouldHandleRegionWithIdentifier:region.identifier action:@"exit"]) {
-            return;
-        }
-    } else {
-        if (![region.identifier hasPrefix:kIdentifierPrefix]) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: wrong prefix"];
+    if (![region.identifier hasPrefix:kIdentifierPrefix]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: wrong prefix"];
 
-            return;
-        }
+        return;
+    }
 
-        BOOL tracking = [RadarSettings tracking];
-        if (!tracking) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: not tracking"];
+    BOOL tracking = [RadarSettings tracking];
+    if (!tracking) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: not tracking"];
 
-            return;
-        }
+        return;
     }
 
     CLLocation *location;
-    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        location = [RadarLocationManagerSwift effectiveLocationForLocationManager:manager];
-    } else if (manager.location.isValid) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
@@ -1522,9 +1506,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 
     CLLocation *location;
-    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        location = [RadarLocationManagerSwift effectiveLocationForLocationManager:manager];
-    } else if (manager.location.isValid) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
