@@ -110,10 +110,7 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         }
     }
 
-    // only implement == so that swift's RadarCoordinateSwift comparison uses value comparison
-    // while ObjectiveC's RadarCoordinate uses pointer comparison
-    // swiftlint:disable:next nsobject_prefer_isequal
-    static func == (lhs: RadarCoordinateSwift, rhs: RadarCoordinateSwift) -> Bool {
-        return lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude
+    func valueEquals(_ other: RadarCoordinateSwift) -> Bool {
+        return latitude == other.latitude && longitude == other.longitude
     }
 }
