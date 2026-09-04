@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           submodules: recursive
           token: ${{ secrets.SUBMODULESTOKEN }}
@@ -50,7 +50,7 @@ jobs:
         run: xcodebuild -create-xcframework -framework RadarSDK-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDK.framework -debug-symbols "$(pwd -P)"/RadarSDK-iphonesimulator.xcarchive/dSYMs/RadarSDK.framework.dSYM -framework RadarSDK-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDK.framework -debug-symbols "$(pwd -P)"/RadarSDK-iphoneos.xcarchive/dSYMs/RadarSDK.framework.dSYM -output RadarSDK.xcframework
 
       - name: Build XCFramework (RadarSDKMotion)
-        run: xcodebuild -create-xcframework -framework RadarSDKMotion-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -debug-symbols ""$(pwd -P)"/RadarSDKMotion-iphonesimulator.xcarchive/dSYMs/RadarSDKMotion.framework.dSYM" -framework RadarSDKMotion-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -debug-symbols "$(pwd -P)"/RadarSDKMotion-iphoneos.xcarchive/dSYMs/RadarSDKMotion.framework.dSYM -output RadarSDKMotion.xcframework
+        run: xcodebuild -create-xcframework -framework RadarSDKMotion-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -debug-symbols "$(pwd -P)/RadarSDKMotion-iphonesimulator.xcarchive/dSYMs/RadarSDKMotion.framework.dSYM" -framework RadarSDKMotion-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDKMotion.framework -debug-symbols "$(pwd -P)/RadarSDKMotion-iphoneos.xcarchive/dSYMs/RadarSDKMotion.framework.dSYM" -output RadarSDKMotion.xcframework
       
       - name: Build XCFramework (RadarSDKIndoors)
         run: xcodebuild -create-xcframework -framework RadarSDKIndoors-iphonesimulator.xcarchive/Products/Library/Frameworks/RadarSDKIndoors.framework -debug-symbols "$(pwd -P)"/RadarSDKIndoors-iphonesimulator.xcarchive/dSYMs/RadarSDKIndoors.framework.dSYM -framework RadarSDKIndoors-iphoneos.xcarchive/Products/Library/Frameworks/RadarSDKIndoors.framework -debug-symbols "$(pwd -P)"/RadarSDKIndoors-iphoneos.xcarchive/dSYMs/RadarSDKIndoors.framework.dSYM -output RadarSDKIndoors.xcframework
@@ -65,17 +65,17 @@ jobs:
         run: zip -r RadarSDKIndoors.xcframework.zip RadarSDKIndoors.xcframework -x ".*" -x "__MACOSX" -D
 
       - name: Upload XCFramework to release (RadarSDK)
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de # v2
         with:
           file: RadarSDK.xcframework.zip
       
       - name: Upload XCFramework to release (RadarSDKMotion)
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de # v2
         with:
           file: RadarSDKMotion.xcframework.zip
       
       - name: Upload XCFramework to release (RadarSDKIndoors)
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de # v2
         with:
           file: RadarSDKIndoors.xcframework.zip
       
@@ -93,9 +93,43 @@ jobs:
         run: echo "checksum=$(shasum -a 256 RadarSDKIndoors.xcframework.zip | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
 
       - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3
         with:
           token: ${{ secrets.SUBMODULESTOKEN }}
           repository: radarlabs/radar-sdk-ios-spm
           event-type: update-xcframework
           client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum_radarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksum_motion": "${{ steps.checksum_radarsdkmotion.outputs.checksum }}", "checksum_indoors": "${{ steps.checksum_radarsdkindoors.outputs.checksum }}"}'
+
+      - name: Resolve stable release commit
+        if: github.event_name == 'release' && !github.event.release.prerelease
+        id: react-native-release
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          SOURCE_SHA=$(git rev-list -n 1 "$RELEASE_TAG")
+          echo "eligible=true" >> "$GITHUB_OUTPUT"
+          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Generate SDK sync token
+        if: steps.react-native-release.outputs.eligible == 'true'
+        id: sdk-sync-token
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        with:
+          app-id: ${{ secrets.SDK_SYNC_GH_APP_ID }}
+          private-key: ${{ secrets.SDK_SYNC_GH_APP_PRIVATE_KEY }}
+          owner: radarlabs
+          repositories: react-native-radar
+          permission-contents: write
+
+      - name: Dispatch React Native SDK update
+        if: steps.react-native-release.outputs.eligible == 'true'
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3
+        with:
+          token: ${{ steps.sdk-sync-token.outputs.token }}
+          repository: radarlabs/react-native-radar
+          event-type: ios-sdk-release
+          client-payload: '{"release": "${{ github.event.release.tag_name }}", "release_url": "${{ github.event.release.html_url }}", "source_sha": "${{ steps.react-native-release.outputs.source_sha }}"}'
