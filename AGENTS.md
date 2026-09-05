@@ -15,12 +15,17 @@ When working in an existing Objective-C file, consider migrating the file to Swi
 
 **Sanctioned exception — the nightly batch migration.** The scheduled workflow
 `.github/workflows/objc-to-swift-nightly.yml` runs the `objc-to-swift` skill (from
-`radarlabs/clankers`) in its unattended batch mode: each run picks the most trivial
-remaining leaf file (smallest, least-coupled, no risky flags), converts that one file, and
+`radarlabs/clankers`) in its unattended batch mode: each run asks the skill to choose one
+eligible implementation using its candidacy rules, replaces it with a same-basename Swift
+implementation while preserving compatibility, deletes the old `.m` from the project, and
 opens a PR labeled `swift-migration`. In that context the
 "ask the user" requirement is satisfied by human review of that PR — nothing merges without
 an explicit approval — and at most one such PR may be open at a time. Interactive sessions
 must still ask before migrating.
+
+Large stateful managers may use a temporary Swift seam only when a user explicitly approves
+that staged migration. The nightly workflow does not select managers or leave parallel
+implementations for ordinary files.
 
 ## Build & Test
 
@@ -74,7 +79,11 @@ Run `git submodule update --init --recursive` to initialize submodules.
 
 ## Xcode Project
 
-The Xcode project is `RadarSDK.xcodeproj`. When adding new Swift files, add them to the project file (`project.pbxproj`) so they are compiled. Remove the corresponding `.m` and `.h` files from the project when migrating a class.
+The Xcode project is `RadarSDK.xcodeproj`. When adding new Swift files, add them to the
+project file (`project.pbxproj`) so they are compiled. Remove the corresponding `.m` file
+and project references when migrating a class. Keep the `.h` file and its Headers entry
+while Objective-C consumers still import the compatibility surface; remove it only after
+confirming it is unused.
 
 ## Debugging CI Failures
 
