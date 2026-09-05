@@ -1,0 +1,380 @@
+//
+//  RadarCoordinateTests.swift
+//  RadarSDKTests
+//
+//  Copyright © 2026 Radar Labs, Inc. All rights reserved.
+//
+
+import CoreLocation
+import Foundation
+import Testing
+
+@testable import RadarSDK
+
+@Suite("RadarCoordinateTests")
+struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
+
+    private static let latitude = 40.78382
+    private static let longitude = -73.97536
+
+    private static func geoJSON(longitude: Double, latitude: Double) -> [String: Any] {
+        ["type": "Point", "coordinates": [longitude, latitude]]
+    }
+
+    private func makeDecoder(_ strategy: RadarCoordinateSwift.CodingStrategy?) -> JSONDecoder {
+        let decoder = JSONDecoder()
+        if let strategy {
+            decoder.userInfo[RadarCoordinateSwift.codingStrategy] = strategy
+        }
+        return decoder
+    }
+
+    private func makeEncoder(_ strategy: RadarCoordinateSwift.CodingStrategy?) -> JSONEncoder {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        if let strategy {
+            encoder.userInfo[RadarCoordinateSwift.codingStrategy] = strategy
+        }
+        return encoder
+    }
+
+    private func decode(
+        _ json: String,
+        strategy: RadarCoordinateSwift.CodingStrategy? = nil
+    ) throws -> RadarCoordinateSwift {
+        try makeDecoder(strategy).decode(RadarCoordinateSwift.self, from: Data(json.utf8))
+    }
+
+    private func encode(
+        _ coordinate: RadarCoordinateSwift,
+        strategy: RadarCoordinateSwift.CodingStrategy? = nil
+    ) throws -> String? {
+        String(data: try makeEncoder(strategy).encode(coordinate), encoding: .utf8)
+    }
+
+    // MARK: - LatLngDictionary coding strategy
+
+    @Test("decodes a lat/lng dictionary when no strategy is set")
+    func decodesDictionaryByDefault() throws {
+        let coordinate = try decode(#"{"latitude": 40.78382, "longitude": -73.97536}"#)
+
+        #expect(coordinate.latitude == Self.latitude)
+        #expect(coordinate.longitude == Self.longitude)
+    }
+
+    @Test("decodes a lat/lng dictionary with the LatLngDictionary strategy")
+    func decodesDictionaryStrategy() throws {
+        let coordinate = try decode(
+            #"{"latitude": 40.78382, "longitude": -73.97536}"#, strategy: .latLngDictionary)
+
+        #expect(coordinate.valueEquals(RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)))
+    }
+
+    @Test("encodes a lat/lng dictionary when no strategy is set")
+    func encodesDictionaryByDefault() throws {
+        let json = try encode(RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude))
+
+        #expect(json == #"{"latitude":40.78382,"longitude":-73.97536}"#)
+    }
+
+    @Test("encodes a lat/lng dictionary with the LatLngDictionary strategy")
+    func encodesDictionaryStrategy() throws {
+        let json = try encode(
+            RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude),
+            strategy: .latLngDictionary)
+
+        #expect(json == #"{"latitude":40.78382,"longitude":-73.97536}"#)
+    }
+
+    @Test("missing latitude fails to decode as a dictionary")
+    func missingLatitudeThrows() {
+        #expect(throws: (any Error).self) {
+            try decode(#"{"longitude": -73.97536}"#, strategy: .latLngDictionary)
+        }
+    }
+
+    @Test("an array fails to decode with the dictionary strategy")
+    func arrayFailsWithDictionaryStrategy() {
+        #expect(throws: (any Error).self) {
+            try decode("[-73.97536, 40.78382]", strategy: .latLngDictionary)
+        }
+    }
+
+    // MARK: - LngLatArray coding strategy
+
+    @Test("decodes a [lng, lat] array with the LngLatArray strategy")
+    func decodesArrayStrategy() throws {
+        let coordinate = try decode("[-73.97536, 40.78382]", strategy: .lngLatArray)
+
+        #expect(coordinate.latitude == Self.latitude)
+        #expect(coordinate.longitude == Self.longitude)
+    }
+
+    @Test("encodes a [lng, lat] array with the LngLatArray strategy")
+    func encodesArrayStrategy() throws {
+        let json = try encode(
+            RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude),
+            strategy: .lngLatArray)
+
+        #expect(json == "[-73.97536,40.78382]")
+    }
+
+    @Test("a short array fails to decode with the array strategy")
+    func shortArrayThrows() {
+        #expect(throws: (any Error).self) {
+            try decode("[-73.97536]", strategy: .lngLatArray)
+        }
+    }
+
+    @Test("a dictionary fails to decode with the array strategy")
+    func dictionaryFailsWithArrayStrategy() {
+        #expect(throws: (any Error).self) {
+            try decode(#"{"latitude": 40.78382, "longitude": -73.97536}"#, strategy: .lngLatArray)
+        }
+    }
+
+    // MARK: - Strategy round trips
+
+    @Test("round trips through each strategy")
+    func roundTrips() throws {
+        let coordinate = RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)
+
+        for strategy in [RadarCoordinateSwift.CodingStrategy.latLngDictionary, .lngLatArray] {
+            let json = try #require(try encode(coordinate, strategy: strategy))
+            #expect(try decode(json, strategy: strategy).valueEquals(coordinate))
+        }
+    }
+
+    private struct Geometry: Codable {
+        let coordinates: [RadarCoordinateSwift]
+    }
+
+    @Test("the strategy applies to nested coordinates")
+    func strategyAppliesToNestedCoordinates() throws {
+        let geometry = Geometry(coordinates: [
+            RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude),
+            RadarCoordinateSwift(latitude: 0, longitude: 0),
+        ])
+
+        let data = try makeEncoder(.lngLatArray).encode(geometry)
+        #expect(
+            String(data: data, encoding: .utf8) == #"{"coordinates":[[-73.97536,40.78382],[0,0]]}"#)
+
+        let decoded = try makeDecoder(.lngLatArray).decode(Geometry.self, from: data)
+        #expect(decoded.coordinates.count == geometry.coordinates.count)
+        #expect(decoded.coordinates[0].valueEquals(geometry.coordinates[0]))
+        #expect(decoded.coordinates[1].valueEquals(geometry.coordinates[1]))
+    }
+
+    // MARK: - Objective-C surface
+
+    @Test("the Swift class is exported to the Objective-C runtime as RadarCoordinate")
+    func exportedUnderObjectiveCName() throws {
+        #expect(NSStringFromClass(RadarCoordinateSwift.self) == "RadarCoordinate")
+
+        let objc = RadarCoordinate(
+            coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude))!
+        let swift = try #require(objc as Any as? RadarCoordinateSwift)
+
+        #expect(swift.valueEquals(RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)))
+        #expect(objc.coordinate.latitude == Self.latitude)
+        #expect(objc.coordinate.longitude == Self.longitude)
+    }
+
+    @Test("initWithCoordinate: and the coordinate property are reachable from Objective-C")
+    func objcInitWithCoordinate() throws {
+        let coordinate = try #require(
+            RadarCoordinate(
+                coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude)))
+
+        #expect(coordinate.coordinate.latitude == Self.latitude)
+        #expect(coordinate.coordinate.longitude == Self.longitude)
+    }
+
+    @Test("[[RadarCoordinate alloc] init] returns a zeroed coordinate")
+    func objcAllocInit() throws {
+        let coordinate = RadarCoordinate()
+
+        #expect(coordinate.coordinate.latitude == 0)
+        #expect(coordinate.coordinate.longitude == 0)
+        #expect(try #require(coordinate as Any as? RadarCoordinateSwift).valueEquals(RadarCoordinateSwift()))
+    }
+
+    @Test("[RadarCoordinate new] returns a zeroed coordinate")
+    func objcNew() throws {
+        // `+new` has no Swift spelling, so go through the Objective-C runtime. It is a
+        // +1 returning selector, hence `takeRetainedValue()`.
+        let coordinate = try #require(
+            (RadarCoordinate.self as AnyObject).perform(NSSelectorFromString("new"))?
+                .takeRetainedValue() as? RadarCoordinate)
+
+        #expect(coordinate.coordinate.latitude == 0)
+        #expect(coordinate.coordinate.longitude == 0)
+        #expect(try #require(coordinate as Any as? RadarCoordinateSwift).valueEquals(RadarCoordinateSwift()))
+    }
+
+    @Test("the coordinate property mirrors the stored latitude and longitude")
+    func coordinateProperty() {
+        let coordinate = RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)
+
+        #expect(coordinate.coordinate.latitude == Self.latitude)
+        #expect(coordinate.coordinate.longitude == Self.longitude)
+        #expect(coordinate.clLocationCoordinate2D.latitude == Self.latitude)
+        #expect(coordinate.clLocation.coordinate.longitude == Self.longitude)
+    }
+
+    @Test("dictionaryValue is a GeoJSON point")
+    func dictionaryValue() throws {
+        let dictionary = RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)
+            .dictionaryValue()
+
+        #expect(dictionary["type"] as? String == "Point")
+        #expect(try #require(dictionary["coordinates"] as? [Double]) == [Self.longitude, Self.latitude])
+    }
+
+    @Test("dictionaryValue is reachable from Objective-C")
+    func objcDictionaryValue() throws {
+        let coordinate = try #require(
+            RadarCoordinate(
+                coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude)))
+        let dictionary = coordinate.dictionaryValue()
+
+        #expect(dictionary["type"] as? String == "Point")
+        #expect(try #require(dictionary["coordinates"] as? [Double]) == [Self.longitude, Self.latitude])
+    }
+
+    // MARK: - initWithObject: (internal)
+
+    @Test("initWithObject: parses a GeoJSON point")
+    func initWithObject() throws {
+        let coordinate = try #require(
+            RadarCoordinateSwift(
+                object: Self.geoJSON(longitude: Self.longitude, latitude: Self.latitude)))
+
+        #expect(coordinate.valueEquals(RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)))
+    }
+
+    @Test("initWithObject: round trips dictionaryValue")
+    func initWithObjectRoundTripsDictionaryValue() throws {
+        let coordinate = RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)
+
+        let fromDict = try #require(RadarCoordinateSwift(object: coordinate.dictionaryValue()))
+        #expect(fromDict.valueEquals(coordinate))
+    }
+
+    @Test("initWithObject: returns nil for malformed input")
+    func initWithObjectReturnsNil() {
+        #expect(RadarCoordinateSwift(object: nil) == nil)
+        #expect(RadarCoordinateSwift(object: "not a dictionary") == nil)
+        #expect(RadarCoordinateSwift(object: ["type": "Point"]) == nil)
+        #expect(RadarCoordinateSwift(object: ["coordinates": "not an array"]) == nil)
+        #expect(RadarCoordinateSwift(object: ["coordinates": [Self.longitude]]) == nil)
+        #expect(RadarCoordinateSwift(object: ["coordinates": [Self.longitude, Self.latitude, 0.0]]) == nil)
+        #expect(RadarCoordinateSwift(object: ["coordinates": ["-73.97536", "40.78382"]]) == nil)
+    }
+
+    @Test("initWithObject: is reachable from Objective-C")
+    func objcInitWithObject() throws {
+        let coordinate = try #require(
+            RadarCoordinate(object: Self.geoJSON(longitude: Self.longitude, latitude: Self.latitude)))
+
+        #expect(coordinate.coordinate.latitude == Self.latitude)
+        #expect(coordinate.coordinate.longitude == Self.longitude)
+        #expect(RadarCoordinate(object: "not a dictionary") == nil)
+    }
+
+    // MARK: - coordinatesFromObject: (internal)
+
+    @Test("coordinatesFromObject parses an array of GeoJSON points")
+    func coordinatesFromObject() throws {
+        let objects: [Any] = [
+            Self.geoJSON(longitude: Self.longitude, latitude: Self.latitude),
+            Self.geoJSON(longitude: 0, latitude: 1),
+        ]
+
+        let coordinates = try #require(RadarCoordinateSwift.coordinatesFrom(object: objects))
+        let expected = [
+            RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude),
+            RadarCoordinateSwift(latitude: 1, longitude: 0),
+        ]
+        #expect(coordinates.count == expected.count)
+        #expect(coordinates[0].valueEquals(expected[0]))
+        #expect(coordinates[1].valueEquals(expected[1]))
+    }
+
+    @Test("coordinatesFromObject returns an empty array for an empty array")
+    func coordinatesFromEmptyArray() throws {
+        #expect(try #require(RadarCoordinateSwift.coordinatesFrom(object: [Any]())).isEmpty)
+    }
+
+    @Test("coordinatesFromObject returns nil when any entry cannot be parsed")
+    func coordinatesFromObjectReturnsNilForMalformedEntries() {
+        let valid = Self.geoJSON(longitude: Self.longitude, latitude: Self.latitude)
+
+        // One unparseable entry invalidates the whole array, wherever it sits.
+        for objects in [
+            [valid, "not a coordinate"],
+            [valid, ["coordinates": [Self.longitude]]],
+            [valid, ["type": "Point"]],
+            ["not a coordinate", valid],
+        ] as [[Any]] {
+            #expect(RadarCoordinateSwift.coordinatesFrom(object: objects) == nil)
+            #expect(RadarCoordinate.coordinates(from: objects) == nil)
+        }
+    }
+
+    @Test("coordinatesFromObject returns nil for a non-array")
+    func coordinatesFromNonArray() {
+        #expect(RadarCoordinateSwift.coordinatesFrom(object: "not an array") == nil)
+        #expect(
+            RadarCoordinateSwift.coordinatesFrom(
+                object: Self.geoJSON(longitude: Self.longitude, latitude: Self.latitude)) == nil)
+    }
+
+    @Test("coordinatesFromObject is reachable from Objective-C")
+    func objcCoordinatesFromObject() throws {
+        let objects: [Any] = [Self.geoJSON(longitude: Self.longitude, latitude: Self.latitude)]
+
+        let coordinates = try #require(RadarCoordinate.coordinates(from: objects))
+
+        #expect(coordinates.count == 1)
+        #expect(coordinates[0].coordinate.latitude == Self.latitude)
+        #expect(coordinates[0].coordinate.longitude == Self.longitude)
+        #expect(RadarCoordinate.coordinates(from: "not an array") == nil)
+    }
+
+    // MARK: - Equality
+    //
+    // RadarCoordinateSwift declares `static func ==` but does not override `isEqual:`, so equality
+    // means different things on each side of the bridge: Swift compares latitude/longitude, while
+    // Objective-C gets NSObject's default, which is pointer identity.
+
+    private func makeCoordinate() -> RadarCoordinateSwift {
+        RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)
+    }
+
+    @Test("Objective-C isEqual: is pointer identity, not value equality")
+    func objcEqualityIsIdentity() throws {
+        let coordinate = try #require(makeCoordinate() as Any as? RadarCoordinate)
+        let sameValue = try #require(makeCoordinate() as Any as? RadarCoordinate)
+
+        #expect(coordinate == coordinate)
+        #expect(coordinate.isEqual(coordinate))
+        #expect(coordinate != sameValue)
+        #expect(!coordinate.isEqual(sameValue))
+    }
+
+    @Test("NSObject-typed operands and collection APIs route through isEqual:")
+    func nsObjectAndCollectionsUseIdentity() {
+        let coordinate = makeCoordinate()
+        let sameValue = makeCoordinate()
+
+        // The `==` overload is only picked when both operands are statically typed as
+        // RadarCoordinateSwift. NSObject-typed operands, `Array.==`, `contains` and `Set` all go
+        // through the Equatable/Hashable conformance NSObject supplies, i.e. `isEqual:`/`hash`.
+        #expect((coordinate as NSObject) != (sameValue as NSObject))
+        #expect([coordinate] != [sameValue])
+        #expect(![coordinate].contains(sameValue))
+        #expect(Set([coordinate, sameValue]).count == 2)
+    }
+}
