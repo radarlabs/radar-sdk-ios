@@ -27,6 +27,12 @@ Large stateful managers may use a temporary Swift seam only when a user explicit
 that staged migration. The nightly workflow does not select managers or leave parallel
 implementations for ordinary files.
 
+## Concurrency
+
+When Swift starts work that can run later on the main actor, prefer `Task { @MainActor in ... }`
+over `DispatchQueue.main.async`. Objective-C cannot enforce Swift actor isolation, so it may use
+`runOnMainThread` before calling Swift code that owns main-actor state.
+
 ## Build & Test
 
 ```bash
