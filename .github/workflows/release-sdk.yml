@@ -100,22 +100,8 @@ jobs:
           event-type: update-xcframework
           client-payload: '{"release": "${{ github.event.release.tag_name }}", "checksum": "${{ steps.checksum_radarsdk.outputs.checksum }}", "url": "${{ github.event.release.html_url }}", "checksum_motion": "${{ steps.checksum_radarsdkmotion.outputs.checksum }}", "checksum_indoors": "${{ steps.checksum_radarsdkindoors.outputs.checksum }}"}'
 
-      - name: Resolve stable release commit
-        if: github.event_name == 'release' && !github.event.release.prerelease
-        id: react-native-release
-        env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: |
-          if [[ ! "$RELEASE_TAG" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
-            echo "eligible=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          SOURCE_SHA=$(git rev-list -n 1 "$RELEASE_TAG")
-          echo "eligible=true" >> "$GITHUB_OUTPUT"
-          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
-
       - name: Generate SDK sync token
-        if: steps.react-native-release.outputs.eligible == 'true'
+        if: github.event_name == 'release' && !github.event.release.prerelease
         id: sdk-sync-token
         uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
         with:
@@ -126,10 +112,10 @@ jobs:
           permission-contents: write
 
       - name: Dispatch React Native SDK update
-        if: steps.react-native-release.outputs.eligible == 'true'
+        if: github.event_name == 'release' && !github.event.release.prerelease
         uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3
         with:
           token: ${{ steps.sdk-sync-token.outputs.token }}
           repository: radarlabs/react-native-radar
           event-type: ios-sdk-release
-          client-payload: '{"release": "${{ github.event.release.tag_name }}", "release_url": "${{ github.event.release.html_url }}", "source_sha": "${{ steps.react-native-release.outputs.source_sha }}"}'
+          client-payload: '{}'
