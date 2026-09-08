@@ -26,8 +26,6 @@ public struct RadarRoute: Codable, Sendable {
 
     let distance: Distance
     let duration: Duration
-    // Nullable to match the ObjC original, which returned a route with nil geometry when the
-    // payload had no `geometry` key. Synthesized encoding omits the key when nil.
     let geometry: Geometry?
 }
 
