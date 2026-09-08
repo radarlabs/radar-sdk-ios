@@ -826,7 +826,7 @@
 			isa = PBXGroup;
 			children = (
 				F66D639E30508C9E00B95B82 /* Helpers */,
-				F66D639F30508CB000B95B82 /* Model */,
+				F66D639F30508CB000B95B82 /* Models */,
 				DD236C852308797B00EB88F9 /* Info.plist */,
 				6BEA1981B9F1BE2A536837C4 /* CLLocation+RadarTests.swift */,
 				D1FACB1BB65B49969B63CEA7 /* RadarAPIHelperTests.swift */,
@@ -978,7 +978,7 @@
 			name = Helpers;
 			sourceTree = "<group>";
 		};
-		F66D639F30508CB000B95B82 /* Model */ = {
+		F66D639F30508CB000B95B82 /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				CA5E9A0130B1000000000003 /* RadarChainTests.swift */,
@@ -999,7 +999,7 @@
 				BAE805723045E66D000DA607 /* RadarTripOrderTests.swift */,
 				BAE8050530423742000DA607 /* RadarTripTests.swift */,
 			);
-			name = Model;
+			name = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
