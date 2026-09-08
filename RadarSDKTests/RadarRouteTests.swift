@@ -450,7 +450,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
 
         #expect(decoded.distance.value == original.distance.value)
         #expect(decoded.duration.text == original.duration.text)
-        
+
         let decodedCoords = try #require(decoded.geometry?.coordinates as? [RadarCoordinateSwift])
         let originalCoords = try #require(original.geometry?.coordinates as? [RadarCoordinateSwift])
         #expect(decodedCoords.count == originalCoords.count)
