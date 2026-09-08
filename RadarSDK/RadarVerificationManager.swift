@@ -81,53 +81,28 @@ public final class RadarVerificationManager: NSObject, @unchecked Sendable {
     }
     
     public func trackVerified() async -> (RadarStatus, RadarVerifiedLocationToken?) {
-        return await trackVerified(beacons: false, desiredAccuracy: .medium, reason: nil, transactionId: nil)
+        // TODO: implement track verified
+        return (.errorUnknown, nil)
     }
     
     public func trackVerified(beacons: Bool, desiredAccuracy: RadarTrackingOptionsDesiredAccuracy, reason: String?, transactionId: String?) async -> (RadarStatus, RadarVerifiedLocationToken?) {
-        
-        guard let locationManagerHost else {
-            // locationManagerHost must exist
-            return (.errorUnknown, nil)
-        }
-        
-        
-        let reason = reason ?? "manual"
-        let foreground = await RadarUtils.foreground
-        let autoFailover = RadarSettings.initializeOptions?.trackVerifiedAutoFailover ?? false
-        
-        async let locationPromise = RadarLocationManagerSwift.getLocation(host: locationManagerHost, authorizationStatus: .authorizedAlways)
-        
-        // TODO: complete
-        var config: RadarConfig?
-        do {
-            let config = try await apiClient.getConfig(usage: "verify", host: .verifiedHost)
-        } catch {
-            
-        }
-        
-        
-        
-        let location = await locationPromise
-        
-        
-        return (.success, nil)
+        // TODO: implement track verified
+        return (.errorUnknown, nil)
     }
     
     public func startTrackingVerified(interval: TimeInterval) {
-        
+        // TODO: implement start tracking verified
     }
     
     func stopTrackingVerified() {
-        
+        // TODO: implement stop tracking verified
     }
     
     func updateMonitoringState() {
-        
+        // TODO: implement update monitoring state
     }
     
     func getVerifiedLocationToken(beacons: Bool, desiredAccuracy: RadarTrackingOptionsDesiredAccuracy) async -> RadarVerifiedLocationToken? {
-        
         return nil
     }
     
