@@ -78,7 +78,7 @@ class MockWindow: UIWindow {
 }
 
 @Suite
-actor InAppMessageTest {
+actor RadarInAppMessageTest {
     @MainActor
     let message = RadarInAppMessage.fromDictionary([
         "title": [
