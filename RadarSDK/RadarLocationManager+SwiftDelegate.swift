@@ -66,6 +66,37 @@ extension RadarLocationManagerSwift {
         RadarSwift.bridge?.handleLocation(location, source: source)
     }
 
+    @MainActor
+    @objc(didDetermineState:region:completionHandler:)
+    static func didDetermineState(
+        _ state: CLRegionState,
+        region: CLRegion,
+        completionHandler: @escaping RadarBeaconCompletionHandler
+    ) {
+        let identifier = region.identifier
+        guard identifier.hasPrefix(syncBeaconIdentifierPrefix) || identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix),
+            let beaconRegion = region as? CLBeaconRegion
+        else {
+            return
+        }
+
+        let isInside = state == .inside
+        RadarLogger.shared.debug("🦅 \(isInside ? "Inside" : "Outside") beacon region | identifier = \(identifier)")
+
+        let beaconManager = RadarBeaconManagerSwift.shared
+        if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
+            if isInside {
+                beaconManager.handleBeaconUUIDEntry(for: beaconRegion, completionHandler: completionHandler)
+            } else {
+                beaconManager.handleBeaconUUIDExit(for: beaconRegion, completionHandler: completionHandler)
+            }
+        } else if isInside {
+            beaconManager.handleBeaconEntry(for: beaconRegion, completionHandler: completionHandler)
+        } else {
+            beaconManager.handleBeaconExit(for: beaconRegion, completionHandler: completionHandler)
+        }
+    }
+
     @objc(didUpdateHeading:)
     static func didUpdateHeading(_ heading: CLHeading) {
         RadarState().lastHeadingData = [
