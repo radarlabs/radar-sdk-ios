@@ -63,7 +63,10 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         guard let array = object as? [Any] else {
             return nil
         }
-        return array.compactMap(RadarCoordinateSwift.init)
+        guard let result = array.map(RadarCoordinateSwift.init) as? [RadarCoordinateSwift] else {
+            return nil
+        }
+        return result
     }
 
     @objc
@@ -107,19 +110,7 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         }
     }
 
-    // `==` on an NSObject subclass routes through `isEqual:`, which defaults to identity.
-    // Compare values instead, matching the `Equatable` synthesis of the previous `struct`.
-    override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? RadarCoordinateSwift else {
-            return false
-        }
+    func valueEquals(_ other: RadarCoordinateSwift) -> Bool {
         return latitude == other.latitude && longitude == other.longitude
-    }
-
-    override var hash: Int {
-        var hasher = Hasher()
-        hasher.combine(latitude)
-        hasher.combine(longitude)
-        return hasher.finalize()
     }
 }

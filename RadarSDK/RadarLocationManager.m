@@ -1489,6 +1489,24 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        CLLocation *location = [RadarLocationManagerSwift effectiveLocationForLocationManager:manager];
+        if (!location) {
+            return;
+        }
+
+        RadarLocationSource source = state == CLRegionStateInside ? RadarLocationSourceBeaconEnter : RadarLocationSourceBeaconExit;
+        RadarBeaconCompletionHandler completionHandler = ^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
+            [self handleLocation:location source:source beacons:nearbyBeacons];
+        };
+
+        // Swift owns beacon state on the main actor, so Objective-C must move there before calling it.
+        [RadarUtilsDeprecated runOnMainThread:^{
+            [RadarLocationManagerSwift didDetermineState:state region:region completionHandler:completionHandler];
+        }];
+        return;
+    }
+
     if (!([region.identifier hasPrefix:kSyncBeaconIdentifierPrefix] || [region.identifier hasPrefix:kSyncBeaconUUIDIdentifierPrefix])) {
         return;
     }
