@@ -105,7 +105,7 @@ actor RadarInAppMessageTest {
 
     @Test("In app message construction")
     @MainActor
-    func InAppMessageTestConstruction() throws {
+    func inAppMessageTestConstruction() throws {
         let message = message as? RadarInAppMessage_Swift
 
         #expect(message != nil)
@@ -123,7 +123,7 @@ actor RadarInAppMessageTest {
 
     @Test("In app message to dictionary")
     @MainActor
-    func InAppMessageTestToDictionary() throws {
+    func inAppMessageTestToDictionary() throws {
         let dict = message?.toDictionary()
         #expect(dict != nil)
 
@@ -156,7 +156,7 @@ actor RadarInAppMessageTest {
     @Test("In app message received calls create view")
     @MainActor
     @available(iOS 14.0, *)
-    func InAppMessageTestCreateView() async throws {
+    func inAppMessageTestCreateView() async throws {
         let manager = RadarInAppMessageManager()
         let mockDelegate = MockRadarInAppMessageDelegate(manager: manager)
         manager.setDelegate(mockDelegate)
@@ -182,7 +182,7 @@ actor RadarInAppMessageTest {
 
     @Test("if there is already an IAM, don't show another")
     @MainActor
-    func InAppMessageViewAlreadyExist() async throws {
+    func inAppMessageViewAlreadyExist() async throws {
         let manager = RadarInAppMessageManager()
         let mockDelegate = MockRadarInAppMessageDelegate(manager: manager)
         manager.setDelegate(mockDelegate)
