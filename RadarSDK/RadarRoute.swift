@@ -56,13 +56,15 @@ class RadarRouteDistance: NSObject {
             return nil
         }
         guard let value = dict["value"] as? Double,
-              let text = dict["text"] as? String else {
+            let text = dict["text"] as? String
+        else {
             return nil
         }
-        self.init(route: RadarRoute(
-            distance: RadarRoute.Distance(value: value, text: text),
-            duration: RadarRoute.Duration(value: 0, text: ""),
-            geometry: RadarRoute.Geometry(coordinates: []))
+        self.init(
+            route: RadarRoute(
+                distance: RadarRoute.Distance(value: value, text: text),
+                duration: RadarRoute.Duration(value: 0, text: ""),
+                geometry: RadarRoute.Geometry(coordinates: []))
         )
     }
 
@@ -97,7 +99,7 @@ class RadarRouteGeometry: NSObject {
     @objc public func dictionaryValue() -> [String: Any] {
         return [
             "type": "LineString",
-            "coordinates": coordinates.map { [$0.coordinate.longitude, $0.coordinate.latitude] }
+            "coordinates": coordinates.map { [$0.coordinate.longitude, $0.coordinate.latitude] },
         ]
     }
 
@@ -141,7 +143,8 @@ class RadarRouteObjc: NSObject {
         decoder.userInfo[RadarCoordinateSwift.codingStrategy] = RadarCoordinateSwift.CodingStrategy.lngLatArray
 
         guard let data = jsonString.data(using: .utf8),
-              let route = try? decoder.decode(RadarRoute.self, from: data) else {
+            let route = try? decoder.decode(RadarRoute.self, from: data)
+        else {
             return nil
         }
         self.init(route: route)
