@@ -269,7 +269,12 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         #expect(reparsed.distance.text == original.distance.text)
         #expect(reparsed.duration.value == original.duration.value)
         #expect(reparsed.duration.text == original.duration.text)
-        #expect(reparsed.geometry?.coordinates == original.geometry?.coordinates)
+        let reparsedCoords = try #require(reparsed.geometry?.coordinates as? [RadarCoordinateSwift])
+        let originalCoords = try #require(original.geometry?.coordinates as? [RadarCoordinateSwift])
+        #expect(reparsedCoords.count == originalCoords.count)
+        for (a, b) in zip(reparsedCoords, originalCoords) {
+            #expect(a.valueEquals(b))
+        }
     }
 
     @Test
@@ -445,7 +450,13 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
 
         #expect(decoded.distance.value == original.distance.value)
         #expect(decoded.duration.text == original.duration.text)
-        #expect(decoded.geometry?.coordinates == original.geometry?.coordinates)
+        
+        let decodedCoords = try #require(decoded.geometry?.coordinates as? [RadarCoordinateSwift])
+        let originalCoords = try #require(original.geometry?.coordinates as? [RadarCoordinateSwift])
+        #expect(decodedCoords.count == originalCoords.count)
+        for (a, b) in zip(decodedCoords, originalCoords) {
+            #expect(a.valueEquals(b))
+        }
     }
 
     @Test
