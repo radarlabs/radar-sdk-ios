@@ -39,6 +39,7 @@
 @property (assign, nonatomic) NSTimeInterval lastIPChangeDeliveredAt;
 @property (copy, nonatomic) NSString *expectedCountryCode;
 @property (copy, nonatomic) NSString *expectedStateCode;
+@property (weak, nonatomic) RadarVerificationManagerSwift *swiftInstance;
 
 @end
 
@@ -49,12 +50,16 @@
     static id sharedInstance;
     if ([NSThread isMainThread]) {
         dispatch_once(&once, ^{
-            sharedInstance = [self new];
+            RadarVerificationManager* instance = [self new];
+            instance.swiftInstance = [RadarVerificationManagerSwift sharedInstance];
+            sharedInstance = instance;
         });
     } else {
         dispatch_sync(dispatch_get_main_queue(), ^{
             dispatch_once(&once, ^{
-                sharedInstance = [self new];
+                RadarVerificationManager* instance = [self new];
+                instance.swiftInstance = [RadarVerificationManagerSwift sharedInstance];
+                sharedInstance = instance;
             });
         });
     }
@@ -406,11 +411,20 @@
 }
 
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode {
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && self.swiftInstance) {
+        [[RadarVerificationManagerSwift sharedInstance] setExpectedJurisdictionWithCountryCode:countryCode stateCode:stateCode];
+        return;
+    }
+
     self.expectedCountryCode = countryCode;
     self.expectedStateCode = stateCode;
 }
 
 - (BOOL)isSharing {
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && self.swiftInstance) {
+        return [[RadarVerificationManagerSwift sharedInstance] isSharing];
+    }
+
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
         return NO;
@@ -434,6 +448,11 @@
 }
 
 - (void)clearSharing {
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && self.swiftInstance) {
+        [[RadarVerificationManagerSwift sharedInstance] clearSharing];
+        return;
+    }
+
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
         return;

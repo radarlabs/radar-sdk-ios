@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 // duplicate interface, with swift implementations
-@interface RadarVerificationmanagerSwift : RadarVerificationManager
+@interface RadarVerificationManagerSwift : RadarVerificationManager
 @end
 
 @protocol RadarVerificationManagerSwiftHost
