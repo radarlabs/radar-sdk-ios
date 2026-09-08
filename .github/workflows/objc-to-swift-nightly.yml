@@ -1,10 +1,10 @@
 name: Nightly ObjC to Swift migration
 
-# Converts ONE safe Objective-C file to Swift per run and opens a PR for human
-# review. Approval happens at PR review (see AGENTS.md "Language Policy") — the
-# agent only picks conservative leaf files, and skips the run entirely while a
-# previous migration PR is still open. This job runs the same macOS validation
-# as PR CI before publication; PR CI remains the independent verifier.
+# Converts ONE eligible Objective-C implementation to Swift per run and opens a PR
+# for human review. The migration skill chooses the simplest candidate using explicit
+# candidacy rules, then replaces it while preserving its Objective-C contract. Approval
+# happens at PR review (see AGENTS.md "Language Policy"). This job runs the same macOS
+# validation as PR CI before publication; PR CI remains the independent verifier.
 
 on:
   schedule:
@@ -121,7 +121,12 @@ jobs:
           prompt: |
             /objc-to-swift batch
 
-            This is the unattended nightly migration run. Follow the skill's
-            "Batch mode (unattended CI runs)" section exactly. The workflow
-            provides GH_TOKEN and MIGRATION_DESTINATION for that procedure.
+            Inspect the full RadarSDK Objective-C backlog and choose exactly one eligible
+            implementation. Prefer the smallest implementation, then the least coupled,
+            then the filename. Exclude managers, partial migrations, and models already
+            represented elsewhere. State the selected file and rationale before editing.
+            Replace it with a same-basename Swift implementation, preserve Objective-C
+            compatibility, delete the old .m and project references, and do not select
+            another file or leave the old implementation beside Swift. The workflow
+            provides GH_TOKEN and MIGRATION_DESTINATION.
           claude_args: '--allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 80'

@@ -39,7 +39,7 @@ func makeGeofence(
     metadata: NSDictionary? = nil
 ) -> RadarGeofence {
     let coord = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: 40.0, longitude: -74.0))!
-    let geometry = RadarCircleGeometry(center: coord, radius: 100.0)!
+    let geometry = RadarCircleGeometry(center: coord, radius: 100.0)
     return RadarGeofence(
         id: id,
         description: "Test Geofence",
