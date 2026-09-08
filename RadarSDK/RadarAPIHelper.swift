@@ -115,14 +115,13 @@ final class RadarAPIHelper: Sendable {
         case verifiedSecondaryHost
     }
     func radarRequest(host: RadarHost, method: String, url: String, query: [URLQueryItem] = [], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
-        let hostUrl: String
-        switch host {
+        let hostUrl = switch host {
         case .defaultHost:
-            hostUrl = RadarSettings.DefaultHost
+            RadarSettings.DefaultHost
         case .verifiedHost:
-            hostUrl = RadarSettings.DefaultVerifiedHost
+            RadarSettings.DefaultVerifiedHost
         case .verifiedSecondaryHost:
-            hostUrl = RadarSettings.DefaultVerifiedHostSecondary
+            RadarSettings.DefaultVerifiedHostSecondary
         }
         
         let headers = try await addRadarHeaders(headers)

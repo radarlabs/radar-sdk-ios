@@ -20,44 +20,53 @@ import Network
     var lastIPChangeDeliveredAt: TimeInterval { get set }
     var expectedCountryCode: String { get set }
     var expectedStateCode: String { get set }
+    var swiftInstance: RadarVerificationManager { get set }
 }
 
 
 @objc(RadarVerificationManagerSwift)
 @objcMembers
-public final class RadarVerificationManager: NSObject, @unchecked Sendable {
+final class RadarVerificationManager: NSObject, @unchecked Sendable {
     
     @objc(sharedInstance)
-    static let shared = RadarVerificationManager(
-        apiClient: RadarAPIClient.shared,
-        fraudSDK: RadarSDKFraud.shared,
-        locationManagerHost: {
+    static let shared = {
+        let sharedLocationManager: RadarLocationManagerSwiftHost? = {
             guard let clas = NSClassFromString("RadarLocationManager") as? NSObject.Type else {
                 return nil
             }
             let sharedInstanceSelector = NSSelectorFromString("sharedInstance")
             guard clas.responds(to: sharedInstanceSelector),
-                let result = clas.perform(sharedInstanceSelector),
-                let instance = result.takeRetainedValue() as? RadarLocationManagerSwiftHost
-            else {
-                return nil
-            }
-            return instance
-        }(),
-        verificationmanagerHost: {
-            guard let clas = NSClassFromString("RadarVerificationManager") as? NSObject.Type else {
-                return nil
-            }
-            let sharedInstanceSelector = NSSelectorFromString("sharedInstance")
-            guard clas.responds(to: sharedInstanceSelector),
-                let result = clas.perform(sharedInstanceSelector),
-                let instance = result.takeRetainedValue() as? RadarVerificationManagerSwiftHost
+                  let result = clas.perform(sharedInstanceSelector),
+                  let instance = result.takeRetainedValue() as? RadarLocationManagerSwiftHost
             else {
                 return nil
             }
             return instance
         }()
-    )
+
+        let sharedVerificationManager: RadarVerificationManagerSwiftHost? = {
+            guard let clas = NSClassFromString("RadarVerificationManager") as? NSObject.Type else {
+                return nil
+            }
+            let sharedInstanceSelector = NSSelectorFromString("sharedInstance")
+            guard clas.responds(to: sharedInstanceSelector),
+                  let result = clas.perform(sharedInstanceSelector),
+                  let instance = result.takeRetainedValue() as? RadarVerificationManagerSwiftHost
+            else {
+                return nil
+            }
+            return instance
+        }()
+
+        let instance = RadarVerificationManager(
+            apiClient: RadarAPIClient.shared,
+            fraudSDK: RadarSDKFraud.shared,
+            locationManagerHost: sharedLocationManager,
+            verificationmanagerHost: sharedVerificationManager,
+        )
+        sharedVerificationManager?.swiftInstance = instance
+        return instance
+    }()
 
     let apiClient: RadarAPIClient
     let fraudSDK: RadarSDKFraud?

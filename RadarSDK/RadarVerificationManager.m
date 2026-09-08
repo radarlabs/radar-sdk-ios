@@ -50,16 +50,12 @@
     static id sharedInstance;
     if ([NSThread isMainThread]) {
         dispatch_once(&once, ^{
-            RadarVerificationManager* instance = [self new];
-            instance.swiftInstance = [RadarVerificationManagerSwift sharedInstance];
-            sharedInstance = instance;
+            sharedInstance = [self new];
         });
     } else {
         dispatch_sync(dispatch_get_main_queue(), ^{
             dispatch_once(&once, ^{
-                RadarVerificationManager* instance = [self new];
-                instance.swiftInstance = [RadarVerificationManagerSwift sharedInstance];
-                sharedInstance = instance;
+                sharedInstance = [self new];
             });
         });
     }
