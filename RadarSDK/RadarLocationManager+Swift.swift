@@ -41,6 +41,8 @@ import Foundation
 
     // Keep completion storage in Objective-C until the location callback and timeout paths move together.
     func addCompletionHandler(_ completionHandler: RadarLocationCompletionHandler?)
+    
+    var locationManager: CLLocationManager { get }
 }
 
 private final class RadarLocationManagerSwiftHostBox: @unchecked Sendable {
@@ -201,6 +203,23 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
             desiredAccuracy: .medium,
             completionHandler: completionHandler
         )
+    }
+    
+    static func getLocation(
+        host: RadarLocationManagerSwiftHost,
+        authorizationStatus: CLAuthorizationStatus
+    ) async -> (RadarStatus, CLLocation?, Bool) {
+        let result = await withCheckedContinuation { continuation in
+            getLocation(
+                host: host,
+                authorizationStatus: authorizationStatus,
+                locationManager: host.locationManager,
+                completionHandler: { status, location, stopped in
+                    continuation.resume(returning: (status, location, stopped))
+                }
+            )
+        }
+        return result
     }
 
     @objc(getLocationWithDesiredAccuracyOnHost:authorizationStatus:locationManager:desiredAccuracy:completionHandler:)

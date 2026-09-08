@@ -28,4 +28,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+// duplicate interface, with swift implementations
+@interface RadarVerificationmanagerSwift : RadarVerificationManager
+@end
+
+@protocol RadarVerificationManagerSwiftHost
+
+@property (assign, nonatomic) NSTimeInterval startedInterval;
+@property (assign, nonatomic) BOOL startedBeacons;
+@property (strong, nonatomic) NSTimer *intervalTimer;
+@property (nonatomic, retain) nw_path_monitor_t monitor;
+@property (strong, nonatomic) RadarVerifiedLocationToken *lastToken;
+@property (assign, nonatomic) NSTimeInterval lastTokenSystemUptime;
+@property (assign, nonatomic) BOOL lastTokenBeacons;
+@property (strong, nonatomic) NSString *lastIPs;
+@property (assign, nonatomic) NSTimeInterval lastIPChangeDeliveredAt;
+@property (copy, nonatomic) NSString *expectedCountryCode;
+@property (copy, nonatomic) NSString *expectedStateCode;
+
+@end
+
+
 NS_ASSUME_NONNULL_END
