@@ -64,7 +64,8 @@ class RadarSdkConfiguration: NSObject {
         if let originalDict {
             return originalDict
         }
-        return [
+        
+        var dictionary: [String: Any] = [
             "logLevel": logLevel.toString(),
             "startTrackingOnInitialize": startTrackingOnInitialize,
             "trackOnceOnAppOpen": trackOnceOnAppOpen,
@@ -85,9 +86,12 @@ class RadarSdkConfiguration: NSObject {
             "offlineEventGenerationEnabled": offlineEventGenerationEnabled,
             "useSwiftLocationManager": useSwiftLocationManager,
             "startUpdatesWhileInUse": startUpdatesWhileInUse,
-            "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any,
             "useSwiftVerificationManager": useSwiftVerificationManager,
         ]
+        if let remoteTrackingOptions = RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) {
+            dictionary["remoteTrackingOptions"] = remoteTrackingOptions
+        }
+        return dictionary
     }
 }
 

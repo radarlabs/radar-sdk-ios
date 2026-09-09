@@ -6,17 +6,16 @@
 //
 
 import Foundation
-import Network
 
-@objc protocol RadarVerificationManagerSwiftHost: AnyObject {
+@objc(RadarVerificationManagerSwiftHost)
+protocol RadarVerificationManagerSwiftHost: AnyObject {
     var startedInterval: TimeInterval { get set }
     var startedBeacons: Bool { get set }
     var intervalTimer: Timer? { get set }
-    var monitor: nw_path_monitor_t? { get set }
     var lastToken: RadarVerifiedLocationToken? { get set }
     var lastTokenSystemUptime: TimeInterval { get set }
     var lastTokenBeacons: Bool { get set }
-    var lastIPs: String? { get set }
+    @objc(lastIPs) var lastIPs: String? { get set }
     var lastIPChangeDeliveredAt: TimeInterval { get set }
     var expectedCountryCode: String? { get set }
     var expectedStateCode: String? { get set }
@@ -45,15 +44,18 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
 
         let sharedVerificationManager: RadarVerificationManagerSwiftHost? = {
             guard let clas = NSClassFromString("RadarVerificationManager") as? NSObject.Type else {
+                RadarLogger.warning("RadarVerificationManager does not exist")
                 return nil
             }
             let sharedInstanceSelector = NSSelectorFromString("sharedInstance")
             guard clas.responds(to: sharedInstanceSelector),
                 let result = clas.perform(sharedInstanceSelector),
-                let instance = result.takeRetainedValue() as? RadarVerificationManagerSwiftHost
+                let instance = (result.takeRetainedValue() as AnyObject) as? RadarVerificationManagerSwiftHost
             else {
+                RadarLogger.warning("RadarVerificationManager cannot be cast to RadarVerificationManagerSwiftHost")
                 return nil
             }
+            RadarLogger.warning("RadarVerificationManager successfully casted to RadarVerificationManagerSwiftHost")
             return instance
         }()
 
