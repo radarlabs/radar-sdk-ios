@@ -428,13 +428,13 @@
 }
 
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode {
-//    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && self.swiftInstance) {
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && self.swiftInstance) {
         [[RadarVerificationManagerSwift sharedInstance] setExpectedJurisdictionWithCountryCode:countryCode stateCode:stateCode];
         return;
-//    }
+    }
 
-//    self.expectedCountryCode = countryCode;
-//    self.expectedStateCode = stateCode;
+    self.expectedCountryCode = countryCode;
+    self.expectedStateCode = stateCode;
 }
 
 - (BOOL)isSharing {
