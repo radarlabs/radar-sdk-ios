@@ -11,16 +11,16 @@ import Network
 @objc protocol RadarVerificationManagerSwiftHost: AnyObject {
     var startedInterval: TimeInterval { get set }
     var startedBeacons: Bool { get set }
-    var intervalTimer: Timer { get set }
-    var monitor: nw_path_monitor_t { get set }
-    var lastToken: RadarVerifiedLocationToken { get set }
+    var intervalTimer: Timer? { get set }
+    var monitor: nw_path_monitor_t? { get set }
+    var lastToken: RadarVerifiedLocationToken? { get set }
     var lastTokenSystemUptime: TimeInterval { get set }
     var lastTokenBeacons: Bool { get set }
-    var lastIPs: String { get set }
+    var lastIPs: String? { get set }
     var lastIPChangeDeliveredAt: TimeInterval { get set }
-    var expectedCountryCode: String { get set }
-    var expectedStateCode: String { get set }
-    var swiftInstance: RadarVerificationManager { get set }
+    var expectedCountryCode: String? { get set }
+    var expectedStateCode: String? { get set }
+    var swiftInstance: RadarVerificationManager? { get set }
 }
 
 
@@ -71,13 +71,28 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
     let apiClient: RadarAPIClient
     let fraudSDK: RadarSDKFraud?
     let locationManagerHost: RadarLocationManagerSwiftHost?
-    let verificationmanagerHost: RadarVerificationManagerSwiftHost?
+    let verificationManagerHost: RadarVerificationManagerSwiftHost?
     
     private let sharingLock = NSLock()
-    private var lastToken: RadarVerifiedLocationToken? = nil
-    private var lastTokenSystemUptime: TimeInterval = 0
-    private var expectedStateCode: String? = nil
-    private var expectedCountryCode: String? = nil
+    
+    // all properties are currently backed by the ObjectiveC instance, which can be directly translated to
+    // swift properties once we complete migration of the entire class and verify correctness.
+    private var lastToken: RadarVerifiedLocationToken? {
+        get { return verificationManagerHost?.lastToken }
+        set { verificationManagerHost?.lastToken = newValue }
+    }
+    private var lastTokenSystemUptime: TimeInterval {
+        get { return verificationManagerHost?.lastTokenSystemUptime ?? 0 }
+        set { verificationManagerHost?.lastTokenSystemUptime = newValue }
+    }
+    private var expectedStateCode: String? {
+        get { return verificationManagerHost?.expectedStateCode }
+        set { verificationManagerHost?.expectedStateCode = newValue }
+    }
+    private var expectedCountryCode: String? {
+        get { return verificationManagerHost?.expectedCountryCode }
+        set { verificationManagerHost?.expectedCountryCode = newValue }
+    }
     
     init(apiClient: RadarAPIClient,
          fraudSDK: RadarSDKFraud?,
@@ -86,7 +101,7 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
         self.apiClient = apiClient
         self.fraudSDK = fraudSDK
         self.locationManagerHost = locationManagerHost
-        self.verificationmanagerHost = verificationmanagerHost
+        self.verificationManagerHost = verificationmanagerHost
     }
     
     public func trackVerified() async -> (RadarStatus, RadarVerifiedLocationToken?) {
@@ -117,7 +132,7 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
     
     func clearVerifiedLocationToken() {
         sharingLock.lock()
-        lastToken = nil
+        self.lastToken = nil
         sharingLock.unlock()
     }
     
@@ -146,10 +161,6 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
         sharingLock.lock()
         self.expectedStateCode = stateCode
         self.expectedCountryCode = countryCode
-        // set expected state + country code for objc instance
-        // can be removed after full migration to swift
-        verificationmanagerHost?.expectedStateCode = stateCode
-        verificationmanagerHost?.expectedCountryCode = countryCode
         sharingLock.unlock()
     }
     
