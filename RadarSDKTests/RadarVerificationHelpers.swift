@@ -161,7 +161,7 @@ enum RadarVerificationManagerSwiftTestHelpers {
             "events": [],
         ]
 
-        guard let token = RadarVerifiedLocationToken(with: dict) else {
+        guard let token = RadarVerifiedLocationToken(object: dict) else {
             preconditionFailure("failed to build a RadarVerifiedLocationToken fixture")
         }
         return token
