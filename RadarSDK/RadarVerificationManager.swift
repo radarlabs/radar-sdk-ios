@@ -44,18 +44,15 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
 
         let sharedVerificationManager: RadarVerificationManagerSwiftHost? = {
             guard let clas = NSClassFromString("RadarVerificationManager") as? NSObject.Type else {
-                RadarLogger.warning("RadarVerificationManager does not exist")
                 return nil
             }
             let sharedInstanceSelector = NSSelectorFromString("sharedInstance")
             guard clas.responds(to: sharedInstanceSelector),
                 let result = clas.perform(sharedInstanceSelector),
-                let instance = (result.takeRetainedValue() as AnyObject) as? RadarVerificationManagerSwiftHost
+                let instance = result.takeRetainedValue() as? RadarVerificationManagerSwiftHost
             else {
-                RadarLogger.warning("RadarVerificationManager cannot be cast to RadarVerificationManagerSwiftHost")
                 return nil
             }
-            RadarLogger.warning("RadarVerificationManager successfully casted to RadarVerificationManagerSwiftHost")
             return instance
         }()
 

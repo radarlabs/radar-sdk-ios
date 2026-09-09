@@ -20,38 +20,40 @@ class RadarVerifiedLocationToken: NSObject {
     @objc(_id)
     let id: String?
     let fullDict: [String: Any]
-    
+
     func dictionaryValue() -> [String: Any] {
         return fullDict
     }
-    
+
     init?(with object: Any) {
         guard let dict = object as? [String: Any] else {
             return nil
         }
-        
+
         guard let userDict = dict["user"],
-              let user = RadarUser(object: userDict) else {
+            let user = RadarUser(object: userDict)
+        else {
             return nil
         }
         guard let eventsArray = dict["events"] as? [[String: Any]],
-              let events = eventsArray.map({ RadarSwift.bridge?.createEvent(dict: $0) }) as? [RadarEvent] else {
+            let events = eventsArray.map({ RadarSwift.bridge?.createEvent(dict: $0) }) as? [RadarEvent]
+        else {
             return nil
         }
         guard let expiresAtString = dict["expiresAt"] as? String,
-              let expiresAt = RadarUtils.isoDateFormatter.date(from: expiresAtString) else {
+            let expiresAt = RadarUtils.isoDateFormatter.date(from: expiresAtString)
+        else {
             return nil
         }
         guard let token = dict["token"] as? String else {
             return nil
         }
-        
+
         let expiresIn = dict["expiresIn"] as? TimeInterval ?? 0
         let passed = dict["passed"] as? Bool ?? false
         let id = dict["id"] as? String ?? ""
         let failureReasons = dict["failureReasons"] as? [String]
-        
-        
+
         self.user = user
         self.events = events
         self.expiresAt = expiresAt

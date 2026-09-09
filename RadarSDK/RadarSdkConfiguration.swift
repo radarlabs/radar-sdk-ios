@@ -64,7 +64,7 @@ class RadarSdkConfiguration: NSObject {
         if let originalDict {
             return originalDict
         }
-        
+
         var dictionary: [String: Any] = [
             "logLevel": logLevel.toString(),
             "startTrackingOnInitialize": startTrackingOnInitialize,
