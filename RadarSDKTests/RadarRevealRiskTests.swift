@@ -33,6 +33,33 @@ final class MockFraudInstance: NSObject, @unchecked Sendable {
     }
 }
 
+final class MockEncryptedFraudInstance: NSObject, @unchecked Sendable {
+    let result: [String: Any]?
+
+    init(result: [String: Any]?) {
+        self.result = result
+    }
+
+    @objc(initializeWithOptions:)
+    func initialize(options: [String: Any]) {}
+
+    @objc(getFraudPayloadWithOptions:completionHandler:)
+    func getFraudPayload(
+        options: [String: Any],
+        completionHandler: @escaping ([String: Any]?) -> Void
+    ) {
+        completionHandler(nil)
+    }
+
+    @objc(getEncryptedFraudPayloadWithOptions:completionHandler:)
+    func getEncryptedFraudPayload(
+        options: [String: Any],
+        completionHandler: @escaping ([String: Any]?) -> Void
+    ) {
+        completionHandler(result)
+    }
+}
+
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarRevealRiskTests {
@@ -237,6 +264,34 @@ extension RadarSerializedTests {
             } throws: { error in
                 (error as? RadarError)?.status == .errorPlugin
             }
+        }
+
+        @Test("Core forwards the encrypted fraud selector")
+        func encryptedFraudPayloadForwardsToFraudSDK() async throws {
+            let instance = MockEncryptedFraudInstance(
+                result: ["payload": "encrypted-payload"]
+            )
+            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
+
+            let (status, payload) = await fraudSDK.getEncryptedFraudPayload(
+                options: [:]
+            )
+
+            #expect(status == .success)
+            #expect(payload == "encrypted-payload")
+        }
+
+        @Test("Core tolerates an older fraud SDK without encryption support")
+        func encryptedFraudPayloadHandlesMissingSelector() async throws {
+            let instance = MockFraudInstance(result: nil)
+            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
+
+            let (status, payload) = await fraudSDK.getEncryptedFraudPayload(
+                options: [:]
+            )
+
+            #expect(status == .errorPlugin)
+            #expect(payload == nil)
         }
     }
 }

@@ -57,4 +57,38 @@ final class RadarSDKFraud: @unchecked Sendable {
         }
         return (.success, payload)
     }
+
+    static let getEncryptedFraudPayloadSelector = NSSelectorFromString(
+        "getEncryptedFraudPayloadWithOptions:completionHandler:"
+    )
+
+    public func getEncryptedFraudPayload(
+        options: [String: Any]
+    ) async -> (RadarStatus, String?) {
+        guard instance.responds(to: RadarSDKFraud.getEncryptedFraudPayloadSelector) else {
+            return (.errorPlugin, nil)
+        }
+
+        let result = await withCheckedContinuation { continuation in
+            let completionHandler: @convention(block) ([String: Sendable]?) -> Void = {
+                payload in
+                continuation.resume(returning: payload)
+            }
+
+            instance.perform(
+                RadarSDKFraud.getEncryptedFraudPayloadSelector,
+                with: options,
+                with: completionHandler
+            )
+        }
+
+        let error = result?["error"] as? String
+        let payload = result?["payload"] as? String
+
+        if result == nil || error != nil || payload == nil {
+            return (.errorUnknown, nil)
+        }
+
+        return (.success, payload)
+    }
 }
