@@ -51,7 +51,41 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
             throw RadarError(status: .errorPlugin)
         }
 
-        let (status, payload) = await fraudSDK.getFraudPayload(sdkConfiguration: RadarSettings.sdkConfiguration)
+        let requestHost =
+            useSecondaryVerifiedHost
+            ? RadarSettings.defaultVerifiedHostSecondary
+            : RadarSettings.verifiedHost
+
+        guard let environment = RadarSDKFraud.encryptionEnvironment(
+            forHost: requestHost
+        ) else {
+            throw RadarError(
+                status: .errorPlugin,
+                message: "Unsupported fraud encryption host"
+            )
+        }
+
+        let encryptionAttemptId = try RadarSDKFraud.makeEncryptionAttemptId()
+        let issuedAt = Int(Date().timeIntervalSince1970)
+
+        var encryptionOptions =
+        RadarSettings.sdkConfiguration?.dictionaryValue() ?? [:]
+
+        encryptionOptions["method"] = "POST"
+        encryptionOptions["canonicalRoute"] = "/v1/reveal/risk"
+        encryptionOptions["environment"] = environment
+        encryptionOptions["encryptionAttemptId"] = encryptionAttemptId
+        encryptionOptions["issuedAt"] = issuedAt
+        encryptionOptions["installId"] = RadarSettings.installId
+        encryptionOptions["origin"] = Bundle.main.bundleIdentifier
+        encryptionOptions["product"] = RadarSettings.product
+        encryptionOptions["sdkVersion"] = RadarUtils.sdkVersion
+        encryptionOptions["authorization"] = RadarSettings.publishableKey
+
+        let (status, payload) = await fraudSDK.getEncryptedFraudPayload(
+            options: encryptionOptions
+        )
+
         guard let payload, status == .success else {
             throw RadarError(status: status)
         }

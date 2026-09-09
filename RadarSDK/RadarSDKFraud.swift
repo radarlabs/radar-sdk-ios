@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Security
 
 final class RadarSDKFraud: @unchecked Sendable {
 
@@ -90,5 +91,48 @@ final class RadarSDKFraud: @unchecked Sendable {
         }
 
         return (.success, payload)
+    }
+
+    static func encryptionEnvironment(forHost host: String) -> String? {
+        let normalizedHost = host.trimmingCharacters(
+            in: CharacterSet(charactersIn: "/")
+        )
+
+        switch normalizedHost {
+        case "https://api.radar.io",
+             "https://api-verified.radar.io",
+             "https://api-verified.radar.com":
+            return "production"
+
+        case "https://api.radar-staging.com",
+             "https://api-verified.radar-staging.io":
+            return "staging"
+
+        default:
+            return nil
+        }
+    }
+
+    static func makeEncryptionAttemptId() throws -> String {
+        var bytes = [UInt8](repeating: 0, count: 16)
+
+        let status = SecRandomCopyBytes(
+            kSecRandomDefault,
+            bytes.count,
+            &bytes
+        )
+
+        guard status == errSecSuccess else {
+            throw RadarError(
+                status: .errorUnknown,
+                message: "Failed to generate encryption attempt ID"
+            )
+        }
+
+        return Data(bytes)
+            .base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 }
