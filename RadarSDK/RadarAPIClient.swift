@@ -26,7 +26,7 @@ public final class RadarAPIClient: Sendable {
             self.apiHelper = RadarAPIHelper()
         }
     }
-    
+
     private func assertResponseCode(_ code: Int) throws {
         if code == 401 {
             throw RadarError(status: .errorUnauthorized, message: "Unauthorized")
@@ -164,7 +164,7 @@ public final class RadarAPIClient: Sendable {
         ]
 
         let (data, response) = try await apiHelper.radarRequest(host: .verifiedHost, method: "POST", url: "reveal/risk", body: params)
-        
+
         try assertResponseCode(response.statusCode)
 
         guard let result = RadarRevealRiskToken.fromData(data) else {
@@ -187,16 +187,14 @@ public final class RadarAPIClient: Sendable {
         ].compactMap { key, value in
             value != nil ? URLQueryItem(name: key, value: value) : nil
         }
-        
+
         let (data, response) = try await apiHelper.radarRequest(host: host, method: "GET", url: "config")
-        
+
         try assertResponseCode(response.statusCode)
-        
+
         let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
         return RadarConfig.from(dictionary: json)
     }
-    
-    
-    
+
     // TODO: implement rest of RadarAPIClient
 }

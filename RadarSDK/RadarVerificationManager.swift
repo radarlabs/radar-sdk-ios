@@ -23,11 +23,10 @@ import Network
     var swiftInstance: RadarVerificationManager? { get set }
 }
 
-
 @objc(RadarVerificationManagerSwift)
 @objcMembers
 final class RadarVerificationManager: NSObject, @unchecked Sendable {
-    
+
     @objc(sharedInstance)
     static let shared = {
         let sharedLocationManager: RadarLocationManagerSwiftHost? = {
@@ -36,8 +35,8 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
             }
             let sharedInstanceSelector = NSSelectorFromString("sharedInstance")
             guard clas.responds(to: sharedInstanceSelector),
-                  let result = clas.perform(sharedInstanceSelector),
-                  let instance = result.takeRetainedValue() as? RadarLocationManagerSwiftHost
+                let result = clas.perform(sharedInstanceSelector),
+                let instance = result.takeRetainedValue() as? RadarLocationManagerSwiftHost
             else {
                 return nil
             }
@@ -50,8 +49,8 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
             }
             let sharedInstanceSelector = NSSelectorFromString("sharedInstance")
             guard clas.responds(to: sharedInstanceSelector),
-                  let result = clas.perform(sharedInstanceSelector),
-                  let instance = result.takeRetainedValue() as? RadarVerificationManagerSwiftHost
+                let result = clas.perform(sharedInstanceSelector),
+                let instance = result.takeRetainedValue() as? RadarVerificationManagerSwiftHost
             else {
                 return nil
             }
@@ -72,9 +71,9 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
     let fraudSDK: RadarSDKFraud?
     let locationManagerHost: RadarLocationManagerSwiftHost?
     let verificationManagerHost: RadarVerificationManagerSwiftHost?
-    
+
     private let sharingLock = NSLock()
-    
+
     // all properties are currently backed by the ObjectiveC instance, which can be directly translated to
     // swift properties once we complete migration of the entire class and verify correctness.
     private var lastToken: RadarVerifiedLocationToken? {
@@ -93,81 +92,85 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
         get { return verificationManagerHost?.expectedCountryCode }
         set { verificationManagerHost?.expectedCountryCode = newValue }
     }
-    
-    init(apiClient: RadarAPIClient,
-         fraudSDK: RadarSDKFraud?,
-         locationManagerHost: RadarLocationManagerSwiftHost?,
-         verificationmanagerHost: RadarVerificationManagerSwiftHost?) {
+
+    init(
+        apiClient: RadarAPIClient,
+        fraudSDK: RadarSDKFraud?,
+        locationManagerHost: RadarLocationManagerSwiftHost?,
+        verificationmanagerHost: RadarVerificationManagerSwiftHost?
+    ) {
         self.apiClient = apiClient
         self.fraudSDK = fraudSDK
         self.locationManagerHost = locationManagerHost
         self.verificationManagerHost = verificationmanagerHost
     }
-    
+
     public func trackVerified() async -> (RadarStatus, RadarVerifiedLocationToken?) {
         // TODO: implement track verified
         return (.errorUnknown, nil)
     }
-    
+
     public func trackVerified(beacons: Bool, desiredAccuracy: RadarTrackingOptionsDesiredAccuracy, reason: String?, transactionId: String?) async -> (RadarStatus, RadarVerifiedLocationToken?) {
         // TODO: implement track verified
         return (.errorUnknown, nil)
     }
-    
+
     public func startTrackingVerified(interval: TimeInterval) {
         // TODO: implement start tracking verified
     }
-    
+
     func stopTrackingVerified() {
         // TODO: implement stop tracking verified
     }
-    
+
     func updateMonitoringState() {
         // TODO: implement update monitoring state
     }
-    
+
     func getVerifiedLocationToken(beacons: Bool, desiredAccuracy: RadarTrackingOptionsDesiredAccuracy) async -> RadarVerifiedLocationToken? {
         return nil
     }
-    
+
     func clearVerifiedLocationToken() {
         sharingLock.lock()
         self.lastToken = nil
         sharingLock.unlock()
     }
-    
+
     func isLastTokenValid() -> Bool {
         sharingLock.lock()
         let lastToken = self.lastToken
         let lastTokenSystemUptime = self.lastTokenSystemUptime
         sharingLock.unlock()
-        
+
         guard let lastToken else {
             return false
         }
-        
+
         let lastDistanceToStateBorder = lastToken.user?.state?.distanceToBorder ?? -1
         let timeElapsed = ProcessInfo.processInfo.systemUptime - lastTokenSystemUptime
         let tokenPassed = lastToken.passed
-        
+
         let tokenValid = lastDistanceToStateBorder > 1609 && timeElapsed < lastToken.expiresIn && tokenPassed
-        
-        RadarLogger.debug("Last token \(tokenValid ? "valid" : "invalid") | lastToken.expiresIn = \(lastToken.expiresIn); lastTokenElapsed = \(timeElapsed); lastToken.passed = \(lastToken.passed); lastDistanceToStateBorder = \(lastDistanceToStateBorder)")
-        
+
+        RadarLogger.debug(
+            "Last token \(tokenValid ? "valid" : "invalid") | lastToken.expiresIn = \(lastToken.expiresIn); lastTokenElapsed = \(timeElapsed); lastToken.passed = \(lastToken.passed); lastDistanceToStateBorder = \(lastDistanceToStateBorder)"
+        )
+
         return tokenValid
     }
-    
+
     func setExpectedJurisdiction(countryCode: String, stateCode: String) {
         sharingLock.lock()
         self.expectedStateCode = stateCode
         self.expectedCountryCode = countryCode
         sharingLock.unlock()
     }
-    
+
     func isSharing() -> Bool {
         return fraudSDK?.isSharing() ?? false
     }
-    
+
     func clearSharing() {
         fraudSDK?.clearSharing()
     }

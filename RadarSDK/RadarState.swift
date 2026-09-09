@@ -48,7 +48,7 @@ class RadarState {
             RadarUserDefaults.set(Int(newValue.rawValue), forKey: .locationAuthorizationStatus)
         }
     }
-    
+
     public var notificationPermissionGranted: Bool {
         get {
             RadarUserDefaults.bool(forKey: .notificationPermissionGranted)

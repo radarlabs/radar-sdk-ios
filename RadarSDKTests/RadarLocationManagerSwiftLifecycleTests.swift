@@ -45,6 +45,7 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
     private(set) var scheduledShutdownDelays: [TimeInterval] = []
     private(set) var requestLocationCallCount = 0
     private(set) var addCompletionHandlerCallCount = 0
+    let locationManager: CLLocationManager = TrackingCLLocationManager()
 
     func started() -> Bool { startedValue }
 
