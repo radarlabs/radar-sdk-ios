@@ -11,106 +11,6 @@ import Testing
 
 @testable import RadarSDK
 
-/// A stand-in for the `RadarSDKFraud` submodule's shared instance.
-///
-/// `RadarSDKFraud` (the Swift wrapper) reaches into its wrapped `NSObject` via
-/// `perform(...)`, so a mock only needs to be an `NSObject` that responds to the
-/// `initializeWithOptions:` and `getFraudPayloadWithOptions:completionHandler:` selectors. It
-/// replays a canned result dictionary so tests control what payload the manager forwards to the API.
-final class MockFraudInstance: NSObject, @unchecked Sendable {
-    let result: [String: Any]?
-
-    init(result: [String: Any]?) {
-        self.result = result
-    }
-
-    @objc(initializeWithOptions:)
-    func initialize(options: [String: Any]) {}
-
-    @objc(getFraudPayloadWithOptions:completionHandler:)
-    func getFraudPayload(options: [String: Any], completionHandler: @escaping ([String: Any]?) -> Void) {
-        completionHandler(result)
-    }
-
-    @objc(getEncryptedFraudPayloadWithOptions:completionHandler:)
-    func getEncryptedFraudPayload(
-        options: [String: Any],
-        completionHandler: @escaping ([String: Any]?) -> Void
-    ) {
-        completionHandler(result)
-    }
-}
-
-final class MockLegacyFraudInstance: NSObject, @unchecked Sendable {
-    @objc(initializeWithOptions:)
-    func initialize(options: [String: Any]) {}
-
-    @objc(getFraudPayloadWithOptions:completionHandler:)
-    func getFraudPayload(
-        options: [String: Any],
-        completionHandler: @escaping ([String: Any]?) -> Void
-    ) {
-        completionHandler(nil)
-    }
-}
-
-final class MockEncryptedFraudInstance: NSObject, @unchecked Sendable {
-    private let optionsLock = NSLock()
-    private var capturedOptions: [[String: Any]] = []
-
-    let result: [String: Any]?
-
-    init(result: [String: Any]?) {
-        self.result = result
-    }
-
-    @objc(initializeWithOptions:)
-    func initialize(options: [String: Any]) {}
-
-    @objc(getFraudPayloadWithOptions:completionHandler:)
-    func getFraudPayload(
-        options: [String: Any],
-        completionHandler: @escaping ([String: Any]?) -> Void
-    ) {
-        completionHandler(nil)
-    }
-
-    @objc(getEncryptedFraudPayloadWithOptions:completionHandler:)
-    func getEncryptedFraudPayload(
-        options: [String: Any],
-        completionHandler: @escaping ([String: Any]?) -> Void
-    ) {
-        optionsLock.lock()
-        capturedOptions.append(options)
-        optionsLock.unlock()
-
-        completionHandler(result)
-    }
-
-    func recordedOptions() -> [[String: Any]] {
-        optionsLock.lock()
-        defer { optionsLock.unlock() }
-        return capturedOptions
-    }
-}
-
-private final class FraudCallbackCounter: @unchecked Sendable {
-    private let lock = NSLock()
-    private var value = 0
-
-    func increment() {
-        lock.lock()
-        defer { lock.unlock() }
-        value += 1
-    }
-
-    var count: Int {
-        lock.lock()
-        defer { lock.unlock() }
-        return value
-    }
-}
-
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarRevealRiskTests {
@@ -240,8 +140,9 @@ extension RadarSerializedTests {
 
         @Test("revealRisk passes the product up in the X-Radar-Product header when it is set")
         func revealRiskSendsProductHeader() async throws {
+            let originalProduct = RadarSettings.product
             RadarSettings.product = "trip-tracking"
-            defer { RadarSettings.product = nil }
+            defer { RadarSettings.product = originalProduct }
 
             let responseData = try #require(try? JSONSerialization.data(withJSONObject: RadarRevealRiskTests.revealRiskResponse))
             let session = MockURLSession()
@@ -262,7 +163,9 @@ extension RadarSerializedTests {
 
         @Test("revealRisk does not send the X-Radar-Product header when the product is not set")
         func revealRiskOmitsProductHeaderWhenUnset() async throws {
+            let originalProduct = RadarSettings.product
             RadarSettings.product = nil
+            defer { RadarSettings.product = originalProduct }
 
             let responseData = try #require(try? JSONSerialization.data(withJSONObject: RadarRevealRiskTests.revealRiskResponse))
             let session = MockURLSession()
@@ -317,184 +220,6 @@ extension RadarSerializedTests {
             }
         }
 
-        @Test("Core forwards the encrypted fraud selector")
-        func encryptedFraudPayloadForwardsToFraudSDK() async throws {
-            let instance = MockEncryptedFraudInstance(
-                result: ["payload": "encrypted-payload"]
-            )
-            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
-
-            let (status, payload) = await fraudSDK.getEncryptedFraudPayload(
-                options: [:]
-            )
-
-            #expect(status == .success)
-            #expect(payload == "encrypted-payload")
-        }
-
-        @Test("Core tolerates an older fraud SDK without encryption support")
-        func encryptedFraudPayloadHandlesMissingSelector() async throws {
-            let instance = MockLegacyFraudInstance()
-            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
-
-            let (status, payload) = await fraudSDK.getEncryptedFraudPayload(
-                options: [:]
-            )
-
-            #expect(status == .errorPlugin)
-            #expect(payload == nil)
-        }
-
-        @Test("Fraud encryption environment matches the configured host")
-        func encryptionEnvironmentMatchesHost() {
-            let productionHosts = [
-                "https://api.radar.io",
-                "https://api-verified.radar.io",
-                "https://api-verified.radar.com",
-            ]
-
-            let stagingHosts = [
-                "https://api.radar-staging.com",
-                "https://api-verified.radar-staging.io",
-            ]
-
-            for host in productionHosts {
-                #expect(
-                    RadarSDKFraud.encryptionEnvironment(forHost: host)
-                        == "production"
-                )
-            }
-
-            for host in stagingHosts {
-                #expect(
-                    RadarSDKFraud.encryptionEnvironment(forHost: host)
-                        == "staging"
-                )
-            }
-
-            #expect(
-                RadarSDKFraud.encryptionEnvironment(
-                    forHost: "https://custom.example.com"
-                ) == nil
-            )
-        }
-
-        @Test("Encryption attempt IDs are random 128-bit Base64URL values")
-        func encryptionAttemptIdHasExpectedFormat() throws {
-            let first = try RadarSDKFraud.makeEncryptionAttemptId()
-            let second = try RadarSDKFraud.makeEncryptionAttemptId()
-
-            #expect(first != second)
-            #expect(!first.isEmpty)
-            #expect(!second.isEmpty)
-
-            let allowedCharacters = CharacterSet(
-                charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
-            )
-
-            #expect(
-                first.unicodeScalars.allSatisfy {
-                    allowedCharacters.contains($0)
-                }
-            )
-
-            #expect(
-                second.unicodeScalars.allSatisfy {
-                    allowedCharacters.contains($0)
-                }
-            )
-
-            func decodeBase64URL(_ value: String) -> Data? {
-                var base64 = value
-                    .replacingOccurrences(of: "-", with: "+")
-                    .replacingOccurrences(of: "_", with: "/")
-
-                while base64.count % 4 != 0 {
-                    base64.append("=")
-                }
-
-                return Data(base64Encoded: base64)
-            }
-
-            #expect(decodeBase64URL(first)?.count == 16)
-            #expect(decodeBase64URL(second)?.count == 16)
-        }
-
-        @Test("Tracking accepts a valid encrypted fraud response")
-        func trackingAcceptsEncryptedFraudPayload() {
-            let manager = RadarVerificationManager()
-            let instance = MockFraudInstance(
-                result: ["payload": "encrypted-envelope"]
-            )
-            let callbackCounter = FraudCallbackCounter()
-
-            manager.requestEncryptedFraudPayload(
-                from: instance,
-                options: [:]
-            ) { status, payload in
-                callbackCounter.increment()
-                #expect(status == .success)
-                #expect(payload == "encrypted-envelope")
-            }
-
-            #expect(callbackCounter.count == 1)
-        }
-
-        @Test("Tracking rejects malformed or failed fraud responses")
-        func trackingRejectsInvalidFraudResponses() {
-            let manager = RadarVerificationManager()
-            let invalidResults: [[String: Any]?] = [
-                nil,
-                [:],
-                ["payload": ""],
-                ["payload": 123],
-                ["payload": NSNull()],
-                ["error": "Encryption failed"],
-                ["error": "Encryption failed", "payload": "must-not-send"],
-            ]
-
-            for result in invalidResults {
-                let instance = MockFraudInstance(result: result)
-                let callbackCounter = FraudCallbackCounter()
-
-                manager.requestEncryptedFraudPayload(
-                    from: instance,
-                    options: [:]
-                ) { status, payload in
-                    callbackCounter.increment()
-                    #expect(status == .errorUnknown)
-                    #expect(payload == nil)
-                }
-
-                #expect(callbackCounter.count == 1)
-            }
-        }
-
-        @Test("Tracking rejects absent or unsupported fraud instances")
-        func trackingRejectsUnsupportedFraudInstances() {
-            let manager = RadarVerificationManager()
-            let instances: [NSObject?] = [
-                nil,
-                NSObject(),
-                MockLegacyFraudInstance(),
-            ]
-
-            for instance in instances {
-                let callbackCounter = FraudCallbackCounter()
-
-                manager.requestEncryptedFraudPayload(
-                    from: instance,
-                    options: [:]
-                ) { status, payload in
-                    callbackCounter.increment()
-                    #expect(status == .errorPlugin)
-                    #expect(payload == nil)
-                }
-
-                #expect(callbackCounter.count == 1)
-            }
-        }
-
         @Test("Reveal retry requests fresh encryption with outgoing request context")
         func revealRetryRefreshesEncryptionContext() async throws {
             Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
@@ -536,6 +261,13 @@ extension RadarSerializedTests {
             #expect(!firstId.isEmpty)
             #expect(firstId != retryId)
 
+            try assertRetryContexts(options: options, requests: requests, issuedBetween: startedAt...finishedAt)
+
+        }
+
+        private func assertRetryContexts(
+            options: [[String: Any]], requests: [URLRequest], issuedBetween: ClosedRange<Int>
+        ) throws {
             for index in requests.indices {
                 let request = requests[index]
                 let context = options[index]
@@ -545,8 +277,7 @@ extension RadarSerializedTests {
                 )
 
                 #expect(
-                    request.url?.absoluteString ==
-                        "\(RadarSettings.defaultVerifiedHostSecondary)/v1/reveal/risk"
+                    request.url?.absoluteString == "\(RadarSettings.defaultVerifiedHostSecondary)/v1/reveal/risk"
                 )
                 #expect(request.httpMethod == "POST")
                 #expect(context["method"] as? String == request.httpMethod)
@@ -564,134 +295,15 @@ extension RadarSerializedTests {
 
                 for (optionName, headerName) in fields {
                     #expect(
-                        context[optionName] as? String ==
-                            request.value(forHTTPHeaderField: headerName)
+                        context[optionName] as? String == request.value(forHTTPHeaderField: headerName)
                     )
                 }
 
                 let issuedAt = try #require(context["issuedAt"] as? Int)
-                #expect(issuedAt >= startedAt)
-                #expect(issuedAt <= finishedAt)
+                #expect(issuedAt >= issuedBetween.lowerBound)
+                #expect(issuedAt <= issuedBetween.upperBound)
             }
         }
 
-        @Test(
-            "Tracking preparation bridges success and fraud SDK failures",
-            arguments: [
-                "success",
-                "missing-module",
-                "legacy-module",
-                "payload-error",
-                "empty-payload",
-            ]
-        )
-        func trackingPreparationBridge(scenario: String) async throws {
-            let fraudSDK: RadarSDKFraud?
-            let expectedStatus: RadarStatus
-
-            switch scenario {
-            case "missing-module":
-                fraudSDK = nil
-                expectedStatus = .errorPlugin
-
-            case "legacy-module":
-                fraudSDK = try #require(
-                    RadarSDKFraud(instance: MockLegacyFraudInstance())
-                )
-                expectedStatus = .errorPlugin
-
-            case "payload-error":
-                fraudSDK = try #require(
-                    RadarSDKFraud(
-                        instance: MockEncryptedFraudInstance(
-                            result: ["error": "encryption failed"]
-                        )
-                    )
-                )
-                expectedStatus = .errorUnknown
-
-            case "empty-payload":
-                fraudSDK = try #require(
-                    RadarSDKFraud(
-                        instance: MockEncryptedFraudInstance(
-                            result: ["payload": ""]
-                        )
-                    )
-                )
-                expectedStatus = .errorUnknown
-
-            default:
-                fraudSDK = try #require(
-                    RadarSDKFraud(
-                        instance: MockEncryptedFraudInstance(
-                            result: ["payload": "encrypted-envelope"]
-                        )
-                    )
-                )
-                expectedStatus = .success
-            }
-
-            let preparer = RadarTrackVerifiedRequestPreparer(
-                fraudSDK: fraudSDK,
-                options: [:]
-            )
-
-            #expect(
-                preparer.responds(
-                    to: NSSelectorFromString("prepareRequest:completionHandler:")
-                )
-            )
-
-            var request = URLRequest(
-                url: try #require(
-                    URL(string: "https://api-verified.radar.io/v1/track")
-                )
-            )
-            request.httpMethod = "POST"
-            request.httpBody = try JSONSerialization.data(
-                withJSONObject: [
-                    "installId": "test-install",
-                    "latitude": 47.0,
-                ]
-            )
-
-            let (status, preparedRequest, error) = await withCheckedContinuation {
-                (
-                    continuation: CheckedContinuation<
-                        (RadarStatus, URLRequest?, NSError?),
-                        Never
-                    >
-                ) in
-                preparer.prepareRequest(request) { status, preparedRequest, error in
-                    continuation.resume(
-                        returning: (status, preparedRequest, error)
-                    )
-                }
-            }
-
-            #expect(status == expectedStatus)
-
-            if scenario == "success" {
-                #expect(error == nil)
-
-                let preparedRequest = try #require(preparedRequest)
-                #expect(preparedRequest.url == request.url)
-                #expect(preparedRequest.httpMethod == "POST")
-
-                let bodyData = try #require(preparedRequest.httpBody)
-                let bodyObject = try JSONSerialization.jsonObject(with: bodyData)
-                let body = try #require(bodyObject as? [String: Any])
-
-                #expect(body["fraudPayload"] as? String == "encrypted-envelope")
-                #expect(body["installId"] as? String == "test-install")
-                #expect(body["latitude"] as? Double == 47.0)
-            } else {
-                #expect(preparedRequest == nil)
-
-                if scenario != "missing-module" {
-                    #expect(error != nil)
-                }
-            }
-        }
     }
 }

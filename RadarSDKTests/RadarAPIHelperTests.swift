@@ -14,30 +14,30 @@ actor RetryTestSession: RadarURLSessionProtocol {
     private let failures: [URLError.Code]
     private let responseData: Data
     private var requests: [URLRequest] = []
-    
+
     init(failures: [URLError.Code], responseData: Data = Data()) {
         self.failures = failures
         self.responseData = responseData
     }
-    
+
     func data(for request: URLRequest) async throws -> (Data, URLResponse) {
         let attempt = requests.count
         requests.append(request)
-        
+
         if attempt < failures.count {
             throw URLError(failures[attempt])
         }
-        
+
         let response = HTTPURLResponse(
             url: request.url!,
             statusCode: 200,
             httpVersion: nil,
             headerFields: nil
         )!
-        
+
         return (responseData, response)
     }
-    
+
     func recordedRequests() -> [URLRequest] {
         requests
     }
