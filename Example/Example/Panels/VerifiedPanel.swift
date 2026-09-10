@@ -50,6 +50,9 @@ struct VerifiedPanel: View {
                     )
                 }
             }
+            ActionButton("setExpectedJurisdiction") {
+                Radar.setExpectedJurisdiction(countryCode: "US", stateCode: "CA")
+            }
         }
     }
 }

@@ -7,6 +7,7 @@
 //
 
 #import "Radar.h"
+@import Network;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,6 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isSharing;
 - (void)clearSharing;
 
+@end
+
+// duplicate interface, with swift implementations
+@interface RadarVerificationManagerSwift : RadarVerificationManager
 @end
 
 NS_ASSUME_NONNULL_END
