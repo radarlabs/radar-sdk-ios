@@ -46,55 +46,25 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
         }
     }
 
-    func revealRisk(useSecondaryVerifiedHost: Bool) async throws -> RadarRevealRiskToken {
+    func revealRisk(
+        useSecondaryVerifiedHost: Bool
+    ) async throws -> RadarRevealRiskToken {
         guard let fraudSDK else {
             throw RadarError(status: .errorPlugin)
         }
 
-        let requestHost =
-            useSecondaryVerifiedHost
-            ? RadarSettings.defaultVerifiedHostSecondary
-            : RadarSettings.verifiedHost
+        let fraudOptions = RadarSettings.sdkConfiguration?.dictionaryValue() ?? [:]
 
-        guard let environment = RadarSDKFraud.encryptionEnvironment(
-            forHost: requestHost
-        ) else {
-            throw RadarError(
-                status: .errorPlugin,
-                message: "Unsupported fraud encryption host"
-            )
-        }
-
-        let encryptionAttemptId = try RadarUtils.makeFraudEncryptionAttemptId()
-        let issuedAt = Int(Date().timeIntervalSince1970)
-
-        var encryptionOptions =
-        RadarSettings.sdkConfiguration?.dictionaryValue() ?? [:]
-
-        encryptionOptions["method"] = "POST"
-        encryptionOptions["canonicalRoute"] = "/v1/reveal/risk"
-        encryptionOptions["environment"] = environment
-        encryptionOptions["encryptionAttemptId"] = encryptionAttemptId
-        encryptionOptions["issuedAt"] = issuedAt
-        encryptionOptions["installId"] = RadarSettings.installId
-        encryptionOptions["origin"] = Bundle.main.bundleIdentifier
-        encryptionOptions["product"] = RadarSettings.product
-        encryptionOptions["sdkVersion"] = RadarUtils.sdkVersion
-        encryptionOptions["authorization"] = RadarSettings.publishableKey
-
-        let (status, payload) = await fraudSDK.getEncryptedFraudPayload(
-            options: encryptionOptions
+        return try await apiClient.revealRisk(
+            useSecondaryVerifiedHost: useSecondaryVerifiedHost,
+            prepareRequest: { request in
+                try await fraudSDK.prepareEncryptedRequest(
+                    request,
+                    canonicalRoute: "/v1/reveal/risk",
+                    options: fraudOptions
+                )
+            }
         )
-
-        guard let payload, status == .success else {
-            throw RadarError(status: status)
-        }
-
-        let revealRisk = try await apiClient.revealRisk(
-            fraudPayload: payload,
-            useSecondaryVerifiedHost: useSecondaryVerifiedHost
-        )
-        return revealRisk
     }
 
     @objc

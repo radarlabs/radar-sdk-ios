@@ -93,6 +93,87 @@ final class RadarSDKFraud: @unchecked Sendable {
         return (.success, payload)
     }
 
+    func prepareEncryptedRequest(
+        _ request: URLRequest,
+        canonicalRoute: String,
+        options fraudOptions: [String: Any]
+    ) async throws -> URLRequest {
+        guard
+            let url = request.url,
+            request.httpMethod == "POST",
+            url.path == canonicalRoute,
+            var components = URLComponents(
+                url: url,
+                resolvingAgainstBaseURL: false
+            ),
+            let bodyData = request.httpBody,
+            var body = try JSONSerialization.jsonObject(
+                with: bodyData
+            ) as? [String: Any],
+            let installId = body["installId"] as? String
+        else {
+            throw RadarError(
+                status: .errorUnknown,
+                message: "Invalid fraud encryption request"
+            )
+        }
+        
+        components.path = ""
+        components.query = nil
+        components.fragment = nil
+
+        guard
+            let requestHost = components.string,
+            let environment = Self.encryptionEnvironment(forHost: requestHost)
+        else {
+            throw RadarError(
+                status: .errorPlugin,
+                message: "Unsupported fraud encryption host"
+            )
+        }
+
+        var options = fraudOptions
+           options["method"] = request.httpMethod
+           options["canonicalRoute"] = canonicalRoute
+           options["environment"] = environment
+           options["encryptionAttemptId"] =
+               try RadarUtils.makeFraudEncryptionAttemptId()
+           options["issuedAt"] = Int(Date().timeIntervalSince1970)
+           options["installId"] = installId
+           options["origin"] =
+               request.value(forHTTPHeaderField: "Origin")
+           options["product"] =
+               request.value(forHTTPHeaderField: "X-Radar-Product")
+           options["sdkVersion"] =
+               request.value(forHTTPHeaderField: "X-Radar-SDK-Version")
+           options["authorization"] =
+               request.value(forHTTPHeaderField: "Authorization")
+
+           let (status, payload) = await getEncryptedFraudPayload(
+               options: options
+           )
+
+        guard status == .success else {
+            throw RadarError(status: status)
+        }
+        
+        guard let payload, !payload.isEmpty else {
+            throw RadarError(
+                status: .errorUnknown,
+                message: "Missing encrypted fraud payload"
+            )
+        }
+
+        body["fraudPayload"] = payload
+
+        var encryptedRequest = request
+        encryptedRequest.httpBody = try JSONSerialization.data(
+            withJSONObject: body
+        )
+
+        return encryptedRequest
+    }
+
     static func encryptionEnvironment(forHost host: String) -> String? {
         let normalizedHost = host.trimmingCharacters(
             in: CharacterSet(charactersIn: "/")

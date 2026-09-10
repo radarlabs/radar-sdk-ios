@@ -55,6 +55,9 @@ final class MockLegacyFraudInstance: NSObject, @unchecked Sendable {
 }
 
 final class MockEncryptedFraudInstance: NSObject, @unchecked Sendable {
+    private let optionsLock = NSLock()
+    private var capturedOptions: [[String: Any]] = []
+
     let result: [String: Any]?
 
     init(result: [String: Any]?) {
@@ -77,7 +80,17 @@ final class MockEncryptedFraudInstance: NSObject, @unchecked Sendable {
         options: [String: Any],
         completionHandler: @escaping ([String: Any]?) -> Void
     ) {
+        optionsLock.lock()
+        capturedOptions.append(options)
+        optionsLock.unlock()
+
         completionHandler(result)
+    }
+
+    func recordedOptions() -> [[String: Any]] {
+        optionsLock.lock()
+        defer { optionsLock.unlock() }
+        return capturedOptions
     }
 }
 
@@ -479,6 +492,86 @@ extension RadarSerializedTests {
                 }
 
                 #expect(callbackCounter.count == 1)
+            }
+        }
+
+        @Test("Reveal retry requests fresh encryption with outgoing request context")
+        func revealRetryRefreshesEncryptionContext() async throws {
+            Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
+
+            let responseData = try JSONSerialization.data(
+                withJSONObject: Self.revealRiskResponse
+            )
+            let session = RetryTestSession(
+                failures: [.networkConnectionLost],
+                responseData: responseData
+            )
+            let instance = MockEncryptedFraudInstance(
+                result: ["payload": "mock-encrypted-envelope"]
+            )
+            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
+            let manager = RadarRevealRiskManager(
+                apiClient: RadarAPIClient(
+                    apiHelper: RadarAPIHelper(session: session)
+                ),
+                fraudSDK: fraudSDK
+            )
+
+            let startedAt = Int(Date().timeIntervalSince1970)
+            let token = try await manager.revealRisk(
+                useSecondaryVerifiedHost: true
+            )
+            let finishedAt = Int(Date().timeIntervalSince1970)
+
+            #expect(token.id == "risk-token-123")
+
+            let options = instance.recordedOptions()
+            let requests = await session.recordedRequests()
+            #expect(options.count == 2)
+            #expect(requests.count == 2)
+            guard options.count == 2, requests.count == 2 else { return }
+
+            let firstId = try #require(options[0]["encryptionAttemptId"] as? String)
+            let retryId = try #require(options[1]["encryptionAttemptId"] as? String)
+            #expect(!firstId.isEmpty)
+            #expect(firstId != retryId)
+
+            for index in requests.indices {
+                let request = requests[index]
+                let context = options[index]
+                let bodyData = try #require(request.httpBody)
+                let body = try #require(
+                    try JSONSerialization.jsonObject(with: bodyData) as? [String: Any]
+                )
+
+                #expect(
+                    request.url?.absoluteString ==
+                        "\(RadarSettings.defaultVerifiedHostSecondary)/v1/reveal/risk"
+                )
+                #expect(request.httpMethod == "POST")
+                #expect(context["method"] as? String == request.httpMethod)
+                #expect(context["canonicalRoute"] as? String == "/v1/reveal/risk")
+                #expect(context["environment"] as? String == "production")
+                #expect(context["installId"] as? String == body["installId"] as? String)
+                #expect(body["fraudPayload"] as? String == "mock-encrypted-envelope")
+
+                let fields = [
+                    ("origin", "Origin"),
+                    ("product", "X-Radar-Product"),
+                    ("sdkVersion", "X-Radar-SDK-Version"),
+                    ("authorization", "Authorization"),
+                ]
+
+                for (optionName, headerName) in fields {
+                    #expect(
+                        context[optionName] as? String ==
+                            request.value(forHTTPHeaderField: headerName)
+                    )
+                }
+
+                let issuedAt = try #require(context["issuedAt"] as? Int)
+                #expect(issuedAt >= startedAt)
+                #expect(issuedAt <= finishedAt)
             }
         }
     }

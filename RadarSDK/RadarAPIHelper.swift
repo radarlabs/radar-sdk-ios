@@ -27,23 +27,39 @@ final class RadarAPIHelper: Sendable {
         }
     }
 
-    func retryingRequest(for request: URLRequest) async throws -> (Data, URLResponse) {
-        do {
-            let (data, response) = try await session.data(for: request)
-            return (data, response)
-        } catch {
-            if let error = error as? URLError,
-                error.code == .networkConnectionLost
-            {
-                let (data, response) = try await session.data(for: request)
-                return (data, response)
-            }
-
-            throw error
-        }
+    func retryingRequest(
+        for request: URLRequest
+    ) async throws -> (Data, URLResponse) {
+        try await retryingRequest(makeRequest: { request })
     }
 
-    func request(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
+    func retryingRequest(
+        makeRequest: () async throws -> URLRequest
+    ) async throws -> (Data, URLResponse) {
+        let firstRequest = try await makeRequest()
+
+        do {
+            return try await session.data(for: firstRequest)
+        } catch {
+            guard let networkError = error as? URLError,
+                  networkError.code == .networkConnectionLost
+            else {
+                throw error
+            }
+        }
+
+        let retryRequest = try await makeRequest()
+        return try await session.data(for: retryRequest)
+    }
+
+    func request(
+        method: String,
+        url: String,
+        query: [String: String] = [:],
+        headers: [String: String] = [:],
+        body: [String: Any?] = [:],
+        prepareRequest: ((URLRequest) async throws -> URLRequest)? = nil
+    ) async throws -> (Data, HTTPURLResponse) {
         let queryString =
             query.isEmpty
             ? ""
@@ -67,11 +83,18 @@ final class RadarAPIHelper: Sendable {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
 
+        let baseRequest = request
         let startTime = Date()
         let data: Data
         let response: URLResponse
         do {
-            (data, response) = try await retryingRequest(for: request)
+            (data, response) = try await retryingRequest(makeRequest: {
+                guard let prepareRequest else {
+                    return baseRequest
+                }
+
+                return try await prepareRequest(baseRequest)
+            })
         } catch {
             let elapsedMs = Int(Date().timeIntervalSince(startTime) * 1000)
             RadarLogger.shared.log(
@@ -123,14 +146,31 @@ final class RadarAPIHelper: Sendable {
         return (data, response)
     }
 
-    func radarVerifiedRequest(method: String, url: String, query: [String: String] = [:], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
-
+    func radarVerifiedRequest(
+        method: String,
+        url: String,
+        query: [String: String] = [:],
+        headers: [String: String] = [:],
+        body: [String: Any?] = [:],
+        useSecondaryVerifiedHost: Bool = false,
+        prepareRequest: ((URLRequest) async throws -> URLRequest)? = nil
+    ) async throws -> (Data, HTTPURLResponse) {
         let headers = try await addRadarHeaders(headers)
-        let url = "\(RadarSettings.verifiedHost)/v1/\(url)"
+        
+        let host = useSecondaryVerifiedHost
+            ? RadarSettings.DefaultVerifiedHostSecondary
+            : RadarSettings.verifiedHost
 
-        let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
-
-        return (data, response)
+        let requestURL = "\(host)/v1/\(url)"
+        
+        return try await request(
+            method: method,
+            url: requestURL,
+            query: query,
+            headers: headers,
+            body: body,
+            prepareRequest: prepareRequest
+        )
     }
 
     static func networkErrorMessage(host: String?, error: Error, elapsedMs: Int) -> String {

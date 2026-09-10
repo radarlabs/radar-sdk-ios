@@ -120,8 +120,8 @@ public final class RadarAPIClient: Sendable {
     }
 
     func revealRisk(
-        fraudPayload: String,
         useSecondaryVerifiedHost: Bool,
+        prepareRequest: @escaping (URLRequest) async throws -> URLRequest
     ) async throws -> RadarRevealRiskToken {
         let params: [String: Any?] = [
             "installId": RadarSettings.installId,
@@ -138,7 +138,6 @@ public final class RadarAPIClient: Sendable {
             "country": RadarUtils.country,
             "timeZoneOffset": RadarUtils.timeZoneOffset,
             "lang": RadarSettings.userLanguage,
-            "fraudPayload": fraudPayload,
             "appId": Bundle.main.bundleIdentifier,
             "appName": Bundle.main.object(forInfoDictionaryKey: "CFBundleName"),
             "appVersion": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString"),
@@ -147,7 +146,13 @@ public final class RadarAPIClient: Sendable {
             "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
         ]
 
-        let (data, response) = try await apiHelper.radarVerifiedRequest(method: "POST", url: "reveal/risk", body: params)
+        let (data, response) = try await apiHelper.radarVerifiedRequest(
+            method: "POST",
+            url: "reveal/risk",
+            body: params,
+            useSecondaryVerifiedHost: useSecondaryVerifiedHost,
+            prepareRequest: prepareRequest
+        )
 
         if response.statusCode == 401 {
             throw RadarError(status: .errorUnauthorized, message: "Unauthorized")
