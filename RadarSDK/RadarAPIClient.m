@@ -614,14 +614,8 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
             }
         }];
     } else {
-        [self.apiHelper requestWithMethod:@"POST"
-                                    url:url
-                                headers:headers
-                                params:requestParams
-                                    sleep:YES
-                            logPayload:YES
-                        extendedTimeout:NO
-                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
+        RadarAPICompletionHandler trackCompletion =
+            ^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
@@ -790,7 +784,28 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
             
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
-                        }];
+            };
+
+            if (verified && prepareRequest) {
+                [self.apiHelper requestWithMethod:@"POST"
+                                             url:url
+                                         headers:headers
+                                          params:requestParams
+                                           sleep:YES
+                                      logPayload:YES
+                                 extendedTimeout:NO
+                                  prepareRequest:prepareRequest
+                               completionHandler:trackCompletion];
+            } else {
+                [self.apiHelper requestWithMethod:@"POST"
+                                             url:url
+                                         headers:headers
+                                          params:requestParams
+                                           sleep:YES
+                                      logPayload:YES
+                                 extendedTimeout:NO
+                               completionHandler:trackCompletion];
+            }
     }
 }
 

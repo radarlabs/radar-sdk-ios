@@ -22,6 +22,7 @@
 #import "RadarUtils.h"
 #import "RadarSDKFraudProtocol.h"
 #import "RadarRevealRiskManager.h"
+#import "RadarTrackVerifiedRequestPreparer.h"
 
 #include <ifaddrs.h>
 #include <arpa/inet.h>
@@ -155,91 +156,18 @@
                 return;
             }
 
-            NSString *attemptId = RadarMakeFraudEncryptionAttemptId();
-
-            if (!attemptId) {
-                [RadarUtilsDeprecated runOnMainThread:^{
-                    [[RadarDelegateHolder sharedInstance]
-                        didFailWithStatus:RadarStatusErrorUnknown];
-
-                    if (completionHandler) {
-                        completionHandler(RadarStatusErrorUnknown, nil);
-                    }
-                }];
-                return;
-            }
-            
             NSMutableDictionary *options = [NSMutableDictionary dictionary];
+
             if (location) {
                 options[@"location"] = location;
             }
+
             if (config.nonce) {
                 options[@"nonce"] = config.nonce;
             }
 
-            NSString *requestHost = useSecondaryVerifiedHost
-                ? [RadarSettings defaultVerifiedHostSecondary]
-                : [RadarSettings verifiedHost];
-
-            NSString *environment = nil;
-
-            if ([requestHost isEqualToString:@"https://api.radar-staging.com"] ||
-                [requestHost isEqualToString:@"https://api-verified.radar-staging.io"]) {
-                environment = @"staging";
-            } else if ([requestHost isEqualToString:@"https://api.radar.io"] ||
-                       [requestHost isEqualToString:@"https://api-verified.radar.io"] ||
-                       [requestHost isEqualToString:@"https://api-verified.radar.com"]) {
-                environment = @"production";
-            } else {
-                [RadarUtilsDeprecated runOnMainThread:^{
-                    [[RadarDelegateHolder sharedInstance]
-                        didFailWithStatus:RadarStatusErrorPlugin];
-
-                    if (completionHandler) {
-                        completionHandler(RadarStatusErrorPlugin, nil);
-                    }
-                }];
-                return;
-            }
-
-            options[@"method"] = @"POST";
-            options[@"canonicalRoute"] = @"/v1/track";
-            options[@"environment"] = environment;
-            options[@"encryptionAttemptId"] = attemptId;
-            options[@"issuedAt"] = @((NSInteger)[[NSDate date] timeIntervalSince1970]);
-            options[@"installId"] = [RadarSettings installId];
-            options[@"origin"] = [[NSBundle mainBundle] bundleIdentifier];
-            options[@"product"] = [RadarSettings product];
-            options[@"sdkVersion"] = [RadarUtils sdkVersion];
-            options[@"authorization"] = [RadarSettings publishableKey];
-
-            // TODO: migrate to swift and use RadarSDKFraud in swift.
-            if (![RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
-                [RadarUtilsDeprecated runOnMainThread:^{
-                    [[RadarDelegateHolder sharedInstance]
-                        didFailWithStatus:RadarStatusErrorPlugin];
-
-                    if (completionHandler) {
-                        completionHandler(RadarStatusErrorPlugin, nil);
-                    }
-                }];
-                return;
-            }
-
-            [self requestEncryptedFraudPayloadFromInstance:[RadarSDKFraud sharedInstance]
-                                                  options:options
-                                               completion:^(RadarStatus payloadStatus, NSString *_Nullable fraudPayload) {
-                if (payloadStatus != RadarStatusSuccess) {
-                    [RadarUtilsDeprecated runOnMainThread:^{
-                        [[RadarDelegateHolder sharedInstance]
-                            didFailWithStatus:payloadStatus];
-
-                        if (completionHandler) {
-                            completionHandler(payloadStatus, nil);
-                        }
-                    }];
-                    return;
-                }
+            RadarTrackVerifiedRequestPreparer *requestPreparer =
+                [[RadarTrackVerifiedRequestPreparer alloc] initWithOptions:options];
 
                 NSString *revealRiskId = [RadarRevealRiskManager shared].revealRiskId;
                 
@@ -253,13 +181,18 @@
                  beacons:beacons
                  indoorLocation:nil
                  verified:YES
-                 fraudPayload:fraudPayload
+                 fraudPayload:nil
                  expectedCountryCode:self.expectedCountryCode
                  expectedStateCode:self.expectedStateCode
                  reason:reason
                  transactionId:transactionId
                  revealRiskId:revealRiskId
                  useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                 prepareRequest:^(NSURLRequest *request,
+                                  RadarRequestPreparationCompletion preparationCompletion) {
+                     [requestPreparer prepareRequest:request
+                                   completionHandler:preparationCompletion];
+                 }
                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                      RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                      RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
@@ -328,7 +261,6 @@
                 } else {
                     callTrackAPI(nil);
                 }
-            }];
         }];
     };
 
