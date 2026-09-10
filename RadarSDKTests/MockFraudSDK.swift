@@ -32,12 +32,12 @@ final class MockFraudSDK: NSObject, @unchecked Sendable {
     func getFraudPayload(options: [String: Any], completionHandler: @escaping ([String: Any]?) -> Void) {
         completionHandler(result)
     }
-    
+
     @objc(isSharing)
     func isSharing() -> Bool {
         return false
     }
-    
+
     @objc(clearSharing)
     func clearSharing() {}
 }

@@ -47,7 +47,7 @@ final class RadarAPIHelper: Sendable {
         guard var urlComponents = URLComponents(string: url) else {
             throw URLError(.badURL)
         }
-        if (!query.isEmpty) {
+        if !query.isEmpty {
             urlComponents.queryItems = query
         }
         guard let url = urlComponents.url else {
