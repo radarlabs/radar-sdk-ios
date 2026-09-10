@@ -126,7 +126,7 @@ public final class RadarAPIClient: Sendable {
             "logs": logs.map(\.dict),
         ]
 
-        let (data, response) = try await apiHelper.radarRequest(method: "POST", url: "logs", body: body)
+        let (_, response) = try await apiHelper.radarRequest(method: "POST", url: "logs", body: body)
 
         if response.statusCode >= 200 && response.statusCode < 300 {
             return
