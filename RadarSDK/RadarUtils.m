@@ -10,8 +10,39 @@
 #import <sys/utsname.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#import <Security/Security.h>
 
 #import "RadarUtils.h"
+
+NSString *_Nullable RadarMakeFraudEncryptionAttemptId(void) {
+    uint8_t bytes[16] = {0};
+
+    if (SecRandomCopyBytes(
+            kSecRandomDefault,
+            sizeof(bytes),
+            bytes
+        ) != errSecSuccess) {
+        return nil;
+    }
+
+    NSData *data = [NSData dataWithBytes:bytes length:sizeof(bytes)];
+
+    NSString *base64 = [data base64EncodedStringWithOptions:0];
+
+    NSString *urlSafe = [
+        base64 stringByReplacingOccurrencesOfString:@"+" withString:@"-"
+    ];
+
+    urlSafe = [
+        urlSafe stringByReplacingOccurrencesOfString:@"/" withString:@"_"
+    ];
+
+    urlSafe = [
+        urlSafe stringByReplacingOccurrencesOfString:@"=" withString:@""
+    ];
+
+    return urlSafe;
+}
 
 @implementation RadarUtilsDeprecated
 

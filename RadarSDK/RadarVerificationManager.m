@@ -61,6 +61,34 @@
     return sharedInstance;
 }
 
+- (void)requestEncryptedFraudPayloadFromInstance:(id)fraudInstance
+                                       options:(NSDictionary<NSString *, id> *)options
+                                    completion:(void (^)(RadarStatus, NSString *_Nullable))completion {
+    if (![fraudInstance respondsToSelector:
+            @selector(getEncryptedFraudPayloadWithOptions:completionHandler:)]) {
+        completion(RadarStatusErrorPlugin, nil);
+        return;
+    }
+
+    [(id<RadarSDKFraudProtocol>)fraudInstance
+        getEncryptedFraudPayloadWithOptions:options
+        completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
+            if (!result || result[@"error"] != nil) {
+                completion(RadarStatusErrorUnknown, nil);
+                return;
+            }
+
+            id payload = result[@"payload"];
+            if (![payload isKindOfClass:[NSString class]] ||
+                [(NSString *)payload length] == 0) {
+                completion(RadarStatusErrorUnknown, nil);
+                return;
+            }
+
+            completion(RadarStatusSuccess, (NSString *)payload);
+        }];
+}
+
 - (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
     [self trackVerifiedWithBeacons:NO desiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium reason:nil transactionId:nil completionHandler:completionHandler];
 }
@@ -127,6 +155,20 @@
                 return;
             }
 
+            NSString *attemptId = RadarMakeFraudEncryptionAttemptId();
+
+            if (!attemptId) {
+                [RadarUtilsDeprecated runOnMainThread:^{
+                    [[RadarDelegateHolder sharedInstance]
+                        didFailWithStatus:RadarStatusErrorUnknown];
+
+                    if (completionHandler) {
+                        completionHandler(RadarStatusErrorUnknown, nil);
+                    }
+                }];
+                return;
+            }
+            
             NSMutableDictionary *options = [NSMutableDictionary dictionary];
             if (location) {
                 options[@"location"] = location;
@@ -134,40 +176,71 @@
             if (config.nonce) {
                 options[@"nonce"] = config.nonce;
             }
+
+            NSString *requestHost = useSecondaryVerifiedHost
+                ? [RadarSettings defaultVerifiedHostSecondary]
+                : [RadarSettings verifiedHost];
+
+            NSString *environment = nil;
+
+            if ([requestHost isEqualToString:@"https://api.radar-staging.com"] ||
+                [requestHost isEqualToString:@"https://api-verified.radar-staging.io"]) {
+                environment = @"staging";
+            } else if ([requestHost isEqualToString:@"https://api.radar.io"] ||
+                       [requestHost isEqualToString:@"https://api-verified.radar.io"] ||
+                       [requestHost isEqualToString:@"https://api-verified.radar.com"]) {
+                environment = @"production";
+            } else {
+                [RadarUtilsDeprecated runOnMainThread:^{
+                    [[RadarDelegateHolder sharedInstance]
+                        didFailWithStatus:RadarStatusErrorPlugin];
+
+                    if (completionHandler) {
+                        completionHandler(RadarStatusErrorPlugin, nil);
+                    }
+                }];
+                return;
+            }
+
+            options[@"method"] = @"POST";
+            options[@"canonicalRoute"] = @"/v1/track";
+            options[@"environment"] = environment;
+            options[@"encryptionAttemptId"] = attemptId;
+            options[@"issuedAt"] = @((NSInteger)[[NSDate date] timeIntervalSince1970]);
+            options[@"installId"] = [RadarSettings installId];
+            options[@"origin"] = [[NSBundle mainBundle] bundleIdentifier];
+            options[@"product"] = [RadarSettings product];
+            options[@"sdkVersion"] = [RadarUtils sdkVersion];
+            options[@"authorization"] = [RadarSettings publishableKey];
+
             // TODO: migrate to swift and use RadarSDKFraud in swift.
             if (![RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
-                completionHandler(RadarStatusErrorPlugin, nil);
+                [RadarUtilsDeprecated runOnMainThread:^{
+                    [[RadarDelegateHolder sharedInstance]
+                        didFailWithStatus:RadarStatusErrorPlugin];
+
+                    if (completionHandler) {
+                        completionHandler(RadarStatusErrorPlugin, nil);
+                    }
+                }];
                 return;
             }
-            if (![[RadarSDKFraud sharedInstance] respondsToSelector:@selector(getFraudPayloadWithOptions:completionHandler:)]) {
-                completionHandler(RadarStatusErrorPlugin, nil);
-                return;
-            }
-            [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
-                if (!result) {
+
+            [self requestEncryptedFraudPayloadFromInstance:[RadarSDKFraud sharedInstance]
+                                                  options:options
+                                               completion:^(RadarStatus payloadStatus, NSString *_Nullable fraudPayload) {
+                if (payloadStatus != RadarStatusSuccess) {
                     [RadarUtilsDeprecated runOnMainThread:^{
-                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
-                        
+                        [[RadarDelegateHolder sharedInstance]
+                            didFailWithStatus:payloadStatus];
+
                         if (completionHandler) {
-                            completionHandler(RadarStatusErrorUnknown, nil);
+                            completionHandler(payloadStatus, nil);
                         }
                     }];
                     return;
                 }
-                
-                NSString *error = result[@"error"];
-                if (error) {
-                    [RadarUtilsDeprecated runOnMainThread:^{
-                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
-                        
-                        if (completionHandler) {
-                            completionHandler(RadarStatusErrorUnknown, nil);
-                        }
-                    }];
-                    return;
-                }
-                
-                NSString *fraudPayload = result[@"payload"];
+
                 NSString *revealRiskId = [RadarRevealRiskManager shared].revealRiskId;
                 
                 void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {

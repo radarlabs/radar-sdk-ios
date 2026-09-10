@@ -65,7 +65,7 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
             )
         }
 
-        let encryptionAttemptId = try RadarSDKFraud.makeEncryptionAttemptId()
+        let encryptionAttemptId = try RadarUtils.makeFraudEncryptionAttemptId()
         let issuedAt = Int(Date().timeIntervalSince1970)
 
         var encryptionOptions =

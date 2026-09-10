@@ -53,6 +53,9 @@ __attribute__((deprecated("Use RadarUtils for swift implementation instead, exce
 + (BOOL)foreground;
 + (NSTimeInterval)backgroundTimeRemaining;
 
+/// Returns a cryptographically random 128-bit Base64URL value without padding.
+FOUNDATION_EXPORT NSString *_Nullable RadarMakeFraudEncryptionAttemptId(void);
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -10,6 +10,7 @@ import CoreTelephony
 import Foundation
 import SystemConfiguration
 import UIKit
+import Security
 
 enum RadarConnectionType: String {
     case unknown = "unknown"
@@ -275,6 +276,29 @@ class RadarUtils: NSObject {
         guard let dict = dict else { return nil }
         let jsonObject: Any = JSONSerialization.isValidJSONObject(dict) ? dict : (jsonSanitized(dict) ?? [:])
         return try? JSONSerialization.data(withJSONObject: jsonObject)
+    }
+
+    static func makeFraudEncryptionAttemptId() throws -> String {
+        var bytes = [UInt8](repeating: 0, count: 16)
+
+        let status = SecRandomCopyBytes(
+            kSecRandomDefault,
+            bytes.count,
+            &bytes
+        )
+
+        guard status == errSecSuccess else {
+            throw RadarError(
+                status: .errorUnknown,
+                message: "Failed to generate encryption attempt ID"
+            )
+        }
+
+        return Data(bytes)
+            .base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 }
 
