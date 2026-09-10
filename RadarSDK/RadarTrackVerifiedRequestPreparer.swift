@@ -13,14 +13,14 @@ final class RadarTrackVerifiedRequestPreparer: NSObject, @unchecked Sendable {
     private let fraudSDK: RadarSDKFraud?
     private let options: [String: Any]
 
-    init(fraudSDK: RadarSDKFraud?, options: [String : Any]) {
+    init(fraudSDK: RadarSDKFraud?, options: [String: Any]) {
         self.fraudSDK = fraudSDK
         self.options = options
         super.init()
     }
 
     @objc(initWithOptions:)
-    convenience init(options: [String : Any]) {
+    convenience init(options: [String: Any]) {
         self.init(
             fraudSDK: RadarSDKFraud.shared,
             options: options
@@ -30,11 +30,12 @@ final class RadarTrackVerifiedRequestPreparer: NSObject, @unchecked Sendable {
     @objc(prepareRequest:completionHandler:)
     func prepareRequest(
         _ request: URLRequest,
-        completionHandler: @escaping @Sendable (
-            RadarStatus,
-            URLRequest?,
-            NSError?
-        ) -> Void
+        completionHandler:
+            @escaping @Sendable (
+                RadarStatus,
+                URLRequest?,
+                NSError?
+            ) -> Void
     ) {
         guard let fraudSDK else {
             completionHandler(.errorPlugin, nil, nil)
@@ -56,6 +57,5 @@ final class RadarTrackVerifiedRequestPreparer: NSObject, @unchecked Sendable {
             }
         }
     }
-    
-    
+
 }

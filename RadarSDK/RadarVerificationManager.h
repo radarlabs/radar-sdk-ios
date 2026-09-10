@@ -15,10 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic) BOOL started;
 
 + (instancetype)sharedInstance;
-- (void)requestEncryptedFraudPayloadFromInstance:(nullable id)fraudInstance
-                                       options:(NSDictionary<NSString *, id> *)options
-                                    completion:(void (^)(RadarStatus status, NSString *_Nullable payload))completion
-    NS_SWIFT_NAME(requestEncryptedFraudPayload(from:options:completion:));
 - (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;
 - (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *_Nullable)reason transactionId:(NSString *_Nullable)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;
 - (void)startTrackingVerifiedWithInterval:(NSTimeInterval)interval beacons:(BOOL)beacons;

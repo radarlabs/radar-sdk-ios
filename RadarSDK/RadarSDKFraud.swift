@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Security
 
 final class RadarSDKFraud: @unchecked Sendable {
 
@@ -40,25 +39,6 @@ final class RadarSDKFraud: @unchecked Sendable {
     }
 
     static let getFraudPayloadSelector = NSSelectorFromString("getFraudPayloadWithOptions:completionHandler:")
-    public func getFraudPayload(sdkConfiguration: RadarSdkConfiguration?) async -> (RadarStatus, String?) {
-        let options = sdkConfiguration?.dictionaryValue() ?? [:]
-
-        let result = await withCheckedContinuation { continuation in
-            let completionHandler: @convention(block) ([String: Sendable]?) -> Void = { payload in
-                continuation.resume(returning: payload)
-            }
-            instance.perform(RadarSDKFraud.getFraudPayloadSelector, with: options, with: completionHandler)
-        }
-
-        let error = result?["error"] as? String
-        let payload = result?["payload"] as? String
-
-        if result == nil || error != nil || payload == nil {
-            return (.errorUnknown, nil)
-        }
-        return (.success, payload)
-    }
-
     static let getEncryptedFraudPayloadSelector = NSSelectorFromString(
         "getEncryptedFraudPayloadWithOptions:completionHandler:"
     )
@@ -71,8 +51,7 @@ final class RadarSDKFraud: @unchecked Sendable {
         }
 
         let result = await withCheckedContinuation { continuation in
-            let completionHandler: @convention(block) ([String: Sendable]?) -> Void = {
-                payload in
+            let completionHandler: @convention(block) ([String: Sendable]?) -> Void = { payload in
                 continuation.resume(returning: payload)
             }
 
@@ -102,7 +81,7 @@ final class RadarSDKFraud: @unchecked Sendable {
             let url = request.url,
             request.httpMethod == "POST",
             url.path == canonicalRoute,
-            var components = URLComponents(
+            let components = URLComponents(
                 url: url,
                 resolvingAgainstBaseURL: false
             ),
@@ -117,46 +96,22 @@ final class RadarSDKFraud: @unchecked Sendable {
                 message: "Invalid fraud encryption request"
             )
         }
-        
-        components.path = ""
-        components.query = nil
-        components.fragment = nil
 
-        guard
-            let requestHost = components.string,
-            let environment = Self.encryptionEnvironment(forHost: requestHost)
-        else {
-            throw RadarError(
-                status: .errorPlugin,
-                message: "Unsupported fraud encryption host"
-            )
-        }
+        let environment = try Self.encryptionEnvironment(for: components)
 
-        var options = fraudOptions
-           options["method"] = request.httpMethod
-           options["canonicalRoute"] = canonicalRoute
-           options["environment"] = environment
-           options["encryptionAttemptId"] =
-               try RadarUtils.makeFraudEncryptionAttemptId()
-           options["issuedAt"] = Int(Date().timeIntervalSince1970)
-           options["installId"] = installId
-           options["origin"] =
-               request.value(forHTTPHeaderField: "Origin")
-           options["product"] =
-               request.value(forHTTPHeaderField: "X-Radar-Product")
-           options["sdkVersion"] =
-               request.value(forHTTPHeaderField: "X-Radar-SDK-Version")
-           options["authorization"] =
-               request.value(forHTTPHeaderField: "Authorization")
-
-           let (status, payload) = await getEncryptedFraudPayload(
-               options: options
-           )
+        let options = try Self.encryptionOptions(
+            for: request,
+            canonicalRoute: canonicalRoute,
+            installId: installId,
+            environment: environment,
+            options: fraudOptions
+        )
+        let (status, payload) = await getEncryptedFraudPayload(options: options)
 
         guard status == .success else {
             throw RadarError(status: status)
         }
-        
+
         guard let payload, !payload.isEmpty else {
             throw RadarError(
                 status: .errorUnknown,
@@ -174,6 +129,47 @@ final class RadarSDKFraud: @unchecked Sendable {
         return encryptedRequest
     }
 
+    private static func encryptionEnvironment(for components: URLComponents) throws -> String {
+        var components = components
+        components.path = ""
+        components.query = nil
+        components.fragment = nil
+
+        guard let requestHost = components.string,
+            let environment = encryptionEnvironment(forHost: requestHost)
+        else {
+            throw RadarError(status: .errorPlugin, message: "Unsupported fraud encryption host")
+        }
+        return environment
+    }
+
+    private static func encryptionOptions(
+        for request: URLRequest,
+        canonicalRoute: String,
+        installId: String,
+        environment: String,
+        options fraudOptions: [String: Any]
+    ) throws -> [String: Any] {
+        var options = fraudOptions
+        options["method"] = request.httpMethod
+        options["canonicalRoute"] = canonicalRoute
+        options["environment"] = environment
+        options["encryptionAttemptId"] =
+            try RadarUtils.makeFraudEncryptionAttemptId()
+        options["issuedAt"] = Int(Date().timeIntervalSince1970)
+        options["installId"] = installId
+        options["origin"] =
+            request.value(forHTTPHeaderField: "Origin")
+        options["product"] =
+            request.value(forHTTPHeaderField: "X-Radar-Product")
+        options["sdkVersion"] =
+            request.value(forHTTPHeaderField: "X-Radar-SDK-Version")
+        options["authorization"] =
+            request.value(forHTTPHeaderField: "Authorization")
+
+        return options
+    }
+
     static func encryptionEnvironment(forHost host: String) -> String? {
         let normalizedHost = host.trimmingCharacters(
             in: CharacterSet(charactersIn: "/")
@@ -181,12 +177,12 @@ final class RadarSDKFraud: @unchecked Sendable {
 
         switch normalizedHost {
         case "https://api.radar.io",
-             "https://api-verified.radar.io",
-             "https://api-verified.radar.com":
+            "https://api-verified.radar.io",
+            "https://api-verified.radar.com":
             return "production"
 
         case "https://api.radar-staging.com",
-             "https://api-verified.radar-staging.io":
+            "https://api-verified.radar-staging.io":
             return "staging"
 
         default:
@@ -194,26 +190,4 @@ final class RadarSDKFraud: @unchecked Sendable {
         }
     }
 
-    static func makeEncryptionAttemptId() throws -> String {
-        var bytes = [UInt8](repeating: 0, count: 16)
-
-        let status = SecRandomCopyBytes(
-            kSecRandomDefault,
-            bytes.count,
-            &bytes
-        )
-
-        guard status == errSecSuccess else {
-            throw RadarError(
-                status: .errorUnknown,
-                message: "Failed to generate encryption attempt ID"
-            )
-        }
-
-        return Data(bytes)
-            .base64EncodedString()
-            .replacingOccurrences(of: "+", with: "-")
-            .replacingOccurrences(of: "/", with: "_")
-            .replacingOccurrences(of: "=", with: "")
-    }
 }

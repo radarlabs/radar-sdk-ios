@@ -20,7 +20,6 @@
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
-#import "RadarSDKFraudProtocol.h"
 #import "RadarRevealRiskManager.h"
 #import "RadarTrackVerifiedRequestPreparer.h"
 
@@ -60,34 +59,6 @@
         });
     }
     return sharedInstance;
-}
-
-- (void)requestEncryptedFraudPayloadFromInstance:(id)fraudInstance
-                                       options:(NSDictionary<NSString *, id> *)options
-                                    completion:(void (^)(RadarStatus, NSString *_Nullable))completion {
-    if (![fraudInstance respondsToSelector:
-            @selector(getEncryptedFraudPayloadWithOptions:completionHandler:)]) {
-        completion(RadarStatusErrorPlugin, nil);
-        return;
-    }
-
-    [(id<RadarSDKFraudProtocol>)fraudInstance
-        getEncryptedFraudPayloadWithOptions:options
-        completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
-            if (!result || result[@"error"] != nil) {
-                completion(RadarStatusErrorUnknown, nil);
-                return;
-            }
-
-            id payload = result[@"payload"];
-            if (![payload isKindOfClass:[NSString class]] ||
-                [(NSString *)payload length] == 0) {
-                completion(RadarStatusErrorUnknown, nil);
-                return;
-            }
-
-            completion(RadarStatusSuccess, (NSString *)payload);
-        }];
 }
 
 - (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {

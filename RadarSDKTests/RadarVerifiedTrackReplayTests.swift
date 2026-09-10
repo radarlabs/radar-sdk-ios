@@ -50,7 +50,7 @@ extension RadarVerifiedHostOverrideTests {
 
         buffer.mutableReplayBuffer = []
         RadarSettings.remoteTrackingOptions = nil
-        
+
         let offlineOptions = RadarTrackingOptions.presetContinuous
         offlineOptions.desiredMovingUpdateInterval = 17
 
@@ -96,7 +96,29 @@ extension RadarVerifiedHostOverrideTests {
         let finished = expectation(description: "One tracking callback")
         finished.assertForOverFulfill = true
 
-        client.track(
+        trackForReplayTest { status, configMissing, trackingOptionsPresent, movingInterval in
+            let expectedStatus: RadarStatus = preparationFails ? .errorUnknown : .errorNetwork
+            XCTAssertEqual(status, expectedStatus)
+            if preparationFails {
+                XCTAssertTrue(configMissing)
+            } else {
+                XCTAssertTrue(trackingOptionsPresent)
+                XCTAssertEqual(movingInterval, 17)
+            }
+            finished.fulfill()
+        }
+
+        wait(for: [finished], timeout: 5.0)
+        XCTAssertEqual(delegate.recordedStatuses, preparationFails ? [] : [.errorNetwork])
+        XCTAssertEqual(helper.lastMethod, "POST")
+        XCTAssertEqual(helper.lastUrl, "\(RadarSettings.verifiedHost)/v1/track")
+        assertReplayAndOfflineState(preparationFails: preparationFails)
+    }
+
+    private func trackForReplayTest(
+        completion: @escaping @Sendable (RadarStatus, Bool, Bool, Int32?) -> Void
+    ) {
+        RadarAPIClient.sharedInstance().track(
             with: CLLocation(latitude: 40.0, longitude: -73.0),
             stopped: false,
             foreground: true,
@@ -116,32 +138,17 @@ extension RadarVerifiedHostOverrideTests {
                 completion(.success, request, nil)
             },
             completionHandler: { status, _, _, _, _, config, _ in
-                let expectedStatus: RadarStatus =
-                    preparationFails ? .errorUnknown : .errorNetwork
-                XCTAssertEqual(status, expectedStatus)
-
-                if preparationFails {
-                    XCTAssertNil(config)
-                } else {
-                    XCTAssertNotNil(config?.meta?.trackingOptions)
-                    XCTAssertEqual(
-                        config?.meta?.trackingOptions?.desiredMovingUpdateInterval,
-                        17
-                    )
-                }
-
-                finished.fulfill()
+                completion(
+                    status,
+                    config == nil,
+                    config?.meta?.trackingOptions != nil,
+                    config?.meta?.trackingOptions?.desiredMovingUpdateInterval
+                )
             }
         )
+    }
 
-        wait(for: [finished], timeout: 5.0)
-        XCTAssertEqual(
-            delegate.recordedStatuses,
-            preparationFails ? [] : [.errorNetwork]
-        )
-        XCTAssertEqual(helper.lastMethod, "POST")
-        XCTAssertEqual(helper.lastUrl, "\(RadarSettings.verifiedHost)/v1/track")
-
+    private func assertReplayAndOfflineState(preparationFails: Bool) {
         let replays = RadarReplayBuffer.sharedInstance.flushableReplays
         XCTAssertEqual(replays.count, preparationFails ? 0 : 1)
 

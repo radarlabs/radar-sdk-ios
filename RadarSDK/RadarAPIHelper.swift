@@ -42,7 +42,7 @@ final class RadarAPIHelper: Sendable {
             return try await session.data(for: firstRequest)
         } catch {
             guard let networkError = error as? URLError,
-                  networkError.code == .networkConnectionLost
+                networkError.code == .networkConnectionLost
             else {
                 throw error
             }
@@ -156,13 +156,14 @@ final class RadarAPIHelper: Sendable {
         prepareRequest: ((URLRequest) async throws -> URLRequest)? = nil
     ) async throws -> (Data, HTTPURLResponse) {
         let headers = try await addRadarHeaders(headers)
-        
-        let host = useSecondaryVerifiedHost
+
+        let host =
+            useSecondaryVerifiedHost
             ? RadarSettings.DefaultVerifiedHostSecondary
             : RadarSettings.verifiedHost
 
         let requestURL = "\(host)/v1/\(url)"
-        
+
         return try await request(
             method: method,
             url: requestURL,

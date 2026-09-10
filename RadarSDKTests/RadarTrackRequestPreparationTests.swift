@@ -20,6 +20,11 @@ extension RadarSerializedTests {
                 "legacy-module",
                 "payload-error",
                 "empty-payload",
+                "missing-result",
+                "empty-result",
+                "numeric-payload",
+                "null-payload",
+                "payload-and-error",
             ]
         )
         func trackingPreparationBridge(scenario: String) async throws {
@@ -97,38 +102,32 @@ extension RadarSerializedTests {
                 )
                 expectedStatus = .errorPlugin
 
-            case "payload-error":
-                fraudSDK = try #require(
-                    RadarSDKFraud(
-                        instance: MockEncryptedFraudInstance(
-                            result: ["error": "encryption failed"]
-                        )
-                    )
-                )
-                expectedStatus = .errorUnknown
-
-            case "empty-payload":
-                fraudSDK = try #require(
-                    RadarSDKFraud(
-                        instance: MockEncryptedFraudInstance(
-                            result: ["payload": ""]
-                        )
-                    )
-                )
-                expectedStatus = .errorUnknown
-
             default:
+                let result = fraudResult(scenario: scenario)
                 fraudSDK = try #require(
-                    RadarSDKFraud(
-                        instance: MockEncryptedFraudInstance(
-                            result: ["payload": "encrypted-envelope"]
-                        )
-                    )
+                    RadarSDKFraud(instance: MockEncryptedFraudInstance(result: result))
                 )
-                expectedStatus = .success
+                expectedStatus = scenario == "success" ? .success : .errorUnknown
             }
 
             return (fraudSDK, expectedStatus)
+        }
+
+        private func fraudResult(scenario: String) -> [String: Any]? {
+            switch scenario {
+            case "success": return ["payload": "encrypted-envelope"]
+            case "payload-error": return ["error": "encryption failed"]
+            case "empty-payload": return ["payload": ""]
+            case "missing-result": return nil
+            case "empty-result": return [:]
+            case "numeric-payload": return ["payload": 123]
+            case "null-payload": return ["payload": NSNull()]
+            case "payload-and-error":
+                return ["error": "encryption failed", "payload": "must-not-send"]
+            default:
+                Issue.record("Unknown preparation scenario: \(scenario)")
+                return nil
+            }
         }
     }
 }

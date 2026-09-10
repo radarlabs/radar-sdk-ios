@@ -97,8 +97,6 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
            indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
             fraudPayload:(NSString *_Nullable)fraudPayload
-         // -- payload encryption --
-         // fraudKeyVersion:(NSInteger)fraudKeyVersion
       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
         expectedStateCode:(NSString *_Nullable)expectedStateCode
                    reason:(NSString *_Nullable)reason

@@ -85,20 +85,3 @@ final class MockEncryptedFraudInstance: NSObject, @unchecked Sendable {
         return capturedOptions
     }
 }
-
-final class FraudCallbackCounter: @unchecked Sendable {
-    private let lock = NSLock()
-    private var value = 0
-
-    func increment() {
-        lock.lock()
-        defer { lock.unlock() }
-        value += 1
-    }
-
-    var count: Int {
-        lock.lock()
-        defer { lock.unlock() }
-        return value
-    }
-}

@@ -70,8 +70,8 @@ extension RadarSerializedTests {
 
         @Test("Encryption attempt IDs are random 128-bit Base64URL values")
         func encryptionAttemptIdHasExpectedFormat() throws {
-            let first = try RadarSDKFraud.makeEncryptionAttemptId()
-            let second = try RadarSDKFraud.makeEncryptionAttemptId()
+            let first = try RadarUtils.makeFraudEncryptionAttemptId()
+            let second = try RadarUtils.makeFraudEncryptionAttemptId()
 
             #expect(first != second)
             #expect(!first.isEmpty)
@@ -110,80 +110,9 @@ extension RadarSerializedTests {
             #expect(decodeBase64URL(second)?.count == 16)
         }
 
-        @Test("Tracking accepts a valid encrypted fraud response")
-        func trackingAcceptsEncryptedFraudPayload() {
-            let manager = RadarVerificationManager()
-            let instance = MockFraudInstance(
-                result: ["payload": "encrypted-envelope"]
-            )
-            let callbackCounter = FraudCallbackCounter()
-
-            manager.requestEncryptedFraudPayload(
-                from: instance,
-                options: [:]
-            ) { status, payload in
-                callbackCounter.increment()
-                #expect(status == .success)
-                #expect(payload == "encrypted-envelope")
-            }
-
-            #expect(callbackCounter.count == 1)
+        @Test("Core rejects an instance without the fraud SDK selectors")
+        func rejectsUnsupportedFraudInstance() {
+            #expect(RadarSDKFraud(instance: NSObject()) == nil)
         }
-
-        @Test("Tracking rejects malformed or failed fraud responses")
-        func trackingRejectsInvalidFraudResponses() {
-            let manager = RadarVerificationManager()
-            let invalidResults: [[String: Any]?] = [
-                nil,
-                [:],
-                ["payload": ""],
-                ["payload": 123],
-                ["payload": NSNull()],
-                ["error": "Encryption failed"],
-                ["error": "Encryption failed", "payload": "must-not-send"],
-            ]
-
-            for result in invalidResults {
-                let instance = MockFraudInstance(result: result)
-                let callbackCounter = FraudCallbackCounter()
-
-                manager.requestEncryptedFraudPayload(
-                    from: instance,
-                    options: [:]
-                ) { status, payload in
-                    callbackCounter.increment()
-                    #expect(status == .errorUnknown)
-                    #expect(payload == nil)
-                }
-
-                #expect(callbackCounter.count == 1)
-            }
-        }
-
-        @Test("Tracking rejects absent or unsupported fraud instances")
-        func trackingRejectsUnsupportedFraudInstances() {
-            let manager = RadarVerificationManager()
-            let instances: [NSObject?] = [
-                nil,
-                NSObject(),
-                MockLegacyFraudInstance(),
-            ]
-
-            for instance in instances {
-                let callbackCounter = FraudCallbackCounter()
-
-                manager.requestEncryptedFraudPayload(
-                    from: instance,
-                    options: [:]
-                ) { status, payload in
-                    callbackCounter.increment()
-                    #expect(status == .errorPlugin)
-                    #expect(payload == nil)
-                }
-
-                #expect(callbackCounter.count == 1)
-            }
-        }
-
     }
 }
