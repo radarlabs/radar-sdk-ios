@@ -19,3 +19,4 @@
 #import "../RadarSDK/RadarCoordinate+Internal.h"
 #import "../RadarSDK/RadarTimeZone+Internal.h"
 #import "../RadarSDK/RadarVerificationManager.h"
+#import "../RadarSDK/RadarDelegateHolder.h"

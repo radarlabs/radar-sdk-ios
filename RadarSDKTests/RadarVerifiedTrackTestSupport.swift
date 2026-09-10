@@ -18,10 +18,27 @@ final class PreparationRejectingAPIHelperMock: RadarAPIHelperMock {
         XCTFail("Ordinary tracking must use the original HTTP helper method")
         completionHandler?(.errorUnknown, nil, nil)
     }
+
+    override func request(
+        withMethod method: String,
+        url: String,
+        headers: [AnyHashable: Any]?,
+        params: [AnyHashable: Any]?,
+        sleep: Bool,
+        logPayload: Bool,
+        extendedTimeout: Bool,
+        prepareRequest: RadarRequestPreparation?,
+        preparationFailureHandler: RadarRequestPreparationFailureHandler?,
+        completionHandler: RadarAPICompletionHandler?
+    ) {
+        XCTFail("Ordinary tracking must use the original HTTP helper method")
+        completionHandler?(.errorUnknown, nil, nil)
+    }
 }
 
 final class PreparationCapturingAPIHelperMock: RadarAPIHelperMock {
     var capturedPreparation: RadarRequestPreparation?
+    var capturedPreparationFailureHandler: RadarRequestPreparationFailureHandler?
 
     override func request(
         withMethod method: String,
@@ -48,6 +65,32 @@ final class PreparationCapturingAPIHelperMock: RadarAPIHelperMock {
         )
     }
 
+    override func request(
+        withMethod method: String,
+        url: String,
+        headers: [AnyHashable: Any]?,
+        params: [AnyHashable: Any]?,
+        sleep: Bool,
+        logPayload: Bool,
+        extendedTimeout: Bool,
+        prepareRequest: RadarRequestPreparation?,
+        preparationFailureHandler: RadarRequestPreparationFailureHandler?,
+        completionHandler: RadarAPICompletionHandler?
+    ) {
+        capturedPreparationFailureHandler = preparationFailureHandler
+
+        self.request(
+            withMethod: method,
+            url: url,
+            headers: headers,
+            params: params,
+            sleep: sleep,
+            logPayload: logPayload,
+            extendedTimeout: extendedTimeout,
+            prepareRequest: prepareRequest,
+            completionHandler: completionHandler
+        )
+    }
 }
 
 final class RetryFailureRequestCounter: @unchecked Sendable {
@@ -195,5 +238,60 @@ struct VerifiedTrackRetryFixture {
             XCTAssertGreaterThanOrEqual(issuedAt, startedAt)
             XCTAssertLessThanOrEqual(issuedAt, finishedAt)
         }
+    }
+}
+
+final class VerifiedFailureAPIHelperMock: RadarAPIHelperMock {
+    var failDuringPreparation = true
+
+    override func request(
+        withMethod method: String,
+        url: String,
+        headers: [AnyHashable: Any]?,
+        params: [AnyHashable: Any]?,
+        sleep: Bool,
+        logPayload: Bool,
+        extendedTimeout: Bool,
+        prepareRequest: RadarRequestPreparation?,
+        preparationFailureHandler: RadarRequestPreparationFailureHandler?,
+        completionHandler: RadarAPICompletionHandler?
+    ) {
+        lastMethod = method
+        lastUrl = url
+        lastHeaders = headers
+        lastParams = params
+
+        XCTAssertNotNil(prepareRequest)
+
+        if failDuringPreparation {
+            XCTAssertNotNil(preparationFailureHandler)
+            preparationFailureHandler?(
+                .errorUnknown,
+                NSError(domain: "PreparationTest", code: 1)
+            )
+        } else {
+            completionHandler?(
+                .errorNetwork,
+                nil,
+                URLError(.networkConnectionLost)
+            )
+        }
+    }
+}
+
+final class VerifiedFailureDelegate: NSObject, RadarDelegate, @unchecked Sendable {
+    private let lock = NSLock()
+    private var failures: [RadarStatus] = []
+
+    func didFail(status: RadarStatus) {
+        lock.lock()
+        defer { lock.unlock() }
+        failures.append(status)
+    }
+
+    var recordedStatuses: [RadarStatus] {
+        lock.lock()
+        defer { lock.unlock() }
+        return failures
     }
 }

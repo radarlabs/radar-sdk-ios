@@ -88,6 +88,27 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
 }
 
 - (void)requestWithMethod:(NSString *)method
+                     url:(NSString *)url
+                 headers:(NSDictionary *_Nullable)headers
+                  params:(NSDictionary *_Nullable)params
+                   sleep:(BOOL)sleep
+              logPayload:(BOOL)logPayload
+         extendedTimeout:(BOOL)extendedTimeout
+          prepareRequest:(RadarRequestPreparation _Nullable)prepareRequest
+       completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler {
+    [self requestWithMethod:method
+                       url:url
+                   headers:headers
+                    params:params
+                     sleep:sleep
+                logPayload:logPayload
+           extendedTimeout:extendedTimeout
+            prepareRequest:prepareRequest
+ preparationFailureHandler:nil
+         completionHandler:completionHandler];
+}
+
+- (void)requestWithMethod:(NSString *)method
                       url:(NSString *)url
                   headers:(NSDictionary *)headers
                    params:(NSDictionary *)params
@@ -95,6 +116,7 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
            prepareRequest:(RadarRequestPreparation)prepareRequest
+        preparationFailureHandler:(RadarRequestPreparationFailureHandler _Nullable)preparationFailureHandler
         completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
         if (sleep) {
@@ -271,12 +293,10 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                             }
 
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                if (completionHandler) {
-                                    completionHandler(
-                                        failureStatus,
-                                        nil,
-                                        preparationError
-                                    );
+                                if (preparationFailureHandler) {
+                                    preparationFailureHandler(failureStatus, preparationError);
+                                } else if (completionHandler) {
+                                    completionHandler(failureStatus, nil, preparationError);
                                 }
                             });
                             return;

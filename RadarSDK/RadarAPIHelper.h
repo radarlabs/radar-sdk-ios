@@ -24,6 +24,11 @@ typedef void (^RadarRequestPreparation)(
     RadarRequestPreparationCompletion completion
 );
 
+typedef void (^RadarRequestPreparationFailureHandler)(
+    RadarStatus status,
+    NSError *_Nullable error
+);
+
 @interface RadarAPIHelper : NSObject
 
 - (void)requestWithMethod:(NSString *)method
@@ -43,6 +48,17 @@ typedef void (^RadarRequestPreparation)(
               logPayload:(BOOL)logPayload
          extendedTimeout:(BOOL)extendedTimeout
           prepareRequest:(RadarRequestPreparation _Nullable)prepareRequest
+       completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;
+
+- (void)requestWithMethod:(NSString *)method
+                     url:(NSString *)url
+                 headers:(NSDictionary *_Nullable)headers
+                  params:(NSDictionary *_Nullable)params
+                   sleep:(BOOL)sleep
+              logPayload:(BOOL)logPayload
+         extendedTimeout:(BOOL)extendedTimeout
+          prepareRequest:(RadarRequestPreparation _Nullable)prepareRequest
+preparationFailureHandler:(RadarRequestPreparationFailureHandler _Nullable)preparationFailureHandler
        completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;
 
 @end

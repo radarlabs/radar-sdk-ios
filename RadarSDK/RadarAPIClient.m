@@ -788,14 +788,17 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
 
             if (verified && prepareRequest) {
                 [self.apiHelper requestWithMethod:@"POST"
-                                             url:url
-                                         headers:headers
-                                          params:requestParams
-                                           sleep:YES
-                                      logPayload:YES
-                                 extendedTimeout:NO
-                                  prepareRequest:prepareRequest
-                               completionHandler:trackCompletion];
+                                         url:url
+                                     headers:headers
+                                      params:requestParams
+                                       sleep:YES
+                                  logPayload:YES
+                             extendedTimeout:NO
+                              prepareRequest:prepareRequest
+                   preparationFailureHandler:^(RadarStatus status, NSError *_Nullable error) {
+                       completionHandler(status, nil, nil, nil, nil, nil, nil);
+                   }
+                           completionHandler:trackCompletion];
             } else {
                 [self.apiHelper requestWithMethod:@"POST"
                                              url:url

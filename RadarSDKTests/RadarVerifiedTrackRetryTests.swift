@@ -98,4 +98,60 @@ extension RadarVerifiedHostOverrideTests {
         XCTAssertEqual(instance.recordedOptions().count, 1)
     }
 
+    func test_preparationFailure_usesDedicatedCallbackAndReleasesSemaphore() {
+        RetryPreparationFailureProtocol.requests.reset()
+
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [RetryPreparationFailureProtocol.self]
+        let session = URLSession(configuration: configuration)
+        defer { session.invalidateAndCancel() }
+
+        let helper = RadarAPIHelper()
+        helper.setValue(session, forKey: "standardSession")
+
+        let first = expectation(description: "First preparation failure")
+        let second = expectation(description: "Second preparation failure")
+        first.assertForOverFulfill = true
+        second.assertForOverFulfill = true
+
+        let expectedError = NSError(
+            domain: "RadarPreparationTest",
+            code: 42
+        )
+
+        for finished in [first, second] {
+            helper.request(
+                withMethod: "POST",
+                url: "https://api-verified.radar.io/v1/track",
+                headers: ["Content-Type": "application/json"],
+                params: ["installId": "test-install"],
+                sleep: true,
+                logPayload: false,
+                extendedTimeout: false,
+                prepareRequest: { _, completion in
+                    DispatchQueue.global().async {
+                        completion(.errorUnknown, nil, expectedError)
+                    }
+                },
+                preparationFailureHandler: { status, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertEqual(status, .errorUnknown)
+
+                    let actualError = error as NSError?
+                    XCTAssertEqual(actualError?.domain, expectedError.domain)
+                    XCTAssertEqual(actualError?.code, expectedError.code)
+
+                    finished.fulfill()
+                },
+                completionHandler: { _, _, _ in
+                    XCTFail(
+                        "Preparation failure must not invoke the normal completion handler"
+                    )
+                }
+            )
+        }
+
+        wait(for: [first, second], timeout: 5.0)
+        XCTAssertEqual(RetryPreparationFailureProtocol.requests.value, 0)
+    }
 }
