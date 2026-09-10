@@ -122,6 +122,24 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
+                 stopped:(BOOL)stopped
+              foreground:(BOOL)foreground
+                  source:(RadarLocationSource)source
+                replayed:(BOOL)replayed
+                 beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+          indoorLocation:(CLLocation *_Nullable)indoorLocation
+                verified:(BOOL)verified
+            fraudPayload:(NSString *_Nullable)fraudPayload
+     expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+       expectedStateCode:(NSString *_Nullable)expectedStateCode
+                  reason:(NSString *_Nullable)reason
+           transactionId:(NSString *_Nullable)transactionId
+            revealRiskId:(NSString *_Nullable)revealRiskId
+useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+          prepareRequest:(RadarRequestPreparation _Nullable)prepareRequest
+       completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
+
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;

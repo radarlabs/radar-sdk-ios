@@ -257,6 +257,41 @@
 }
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
+                 stopped:(BOOL)stopped
+              foreground:(BOOL)foreground
+                  source:(RadarLocationSource)source
+                replayed:(BOOL)replayed
+                 beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+          indoorLocation:(CLLocation *_Nullable)indoorLocation
+                verified:(BOOL)verified
+            fraudPayload:(NSString *_Nullable)fraudPayload
+     expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+       expectedStateCode:(NSString *_Nullable)expectedStateCode
+                  reason:(NSString *_Nullable)reason
+           transactionId:(NSString *_Nullable)transactionId
+            revealRiskId:(NSString *_Nullable)revealRiskId
+useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+       completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [self trackWithLocation:location
+                   stopped:stopped
+                foreground:foreground
+                    source:source
+                  replayed:replayed
+                   beacons:beacons
+            indoorLocation:indoorLocation
+                  verified:verified
+              fraudPayload:fraudPayload
+       expectedCountryCode:expectedCountryCode
+         expectedStateCode:expectedStateCode
+                    reason:reason
+             transactionId:transactionId
+              revealRiskId:revealRiskId
+  useSecondaryVerifiedHost:useSecondaryVerifiedHost
+            prepareRequest:nil
+         completionHandler:completionHandler];
+}
+
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
@@ -271,6 +306,7 @@
             transactionId:(NSString * _Nullable)transactionId
              revealRiskId:(NSString * _Nullable)revealRiskId
  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+           prepareRequest:(RadarRequestPreparation _Nullable)prepareRequest
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -502,6 +538,7 @@
                                                     publishableKey:publishableKey
                                             notificationsRemaining:notificationsRemaining
                                             locationMetadata:locationMetadata
+                                                    prepareRequest:(verified ? prepareRequest : nil)
                                                 completionHandler:completionHandler];
     }];
 }
@@ -516,6 +553,7 @@
                 publishableKey:(NSString *)publishableKey
                 notificationsRemaining:(NSArray *)notificationsRemaining
                 locationMetadata:(NSDictionary *)locationMetadata
+                prepareRequest:(RadarRequestPreparation _Nullable)prepareRequest
             completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
     
     BOOL batchingEnabled = (options.batchSize > 0 || options.batchInterval > 0);

@@ -574,5 +574,124 @@ extension RadarSerializedTests {
                 #expect(issuedAt <= finishedAt)
             }
         }
+
+        @Test(
+            "Tracking preparation bridges success and fraud SDK failures",
+            arguments: [
+                "success",
+                "missing-module",
+                "legacy-module",
+                "payload-error",
+                "empty-payload",
+            ]
+        )
+        func trackingPreparationBridge(scenario: String) async throws {
+            let fraudSDK: RadarSDKFraud?
+            let expectedStatus: RadarStatus
+
+            switch scenario {
+            case "missing-module":
+                fraudSDK = nil
+                expectedStatus = .errorPlugin
+
+            case "legacy-module":
+                fraudSDK = try #require(
+                    RadarSDKFraud(instance: MockLegacyFraudInstance())
+                )
+                expectedStatus = .errorPlugin
+
+            case "payload-error":
+                fraudSDK = try #require(
+                    RadarSDKFraud(
+                        instance: MockEncryptedFraudInstance(
+                            result: ["error": "encryption failed"]
+                        )
+                    )
+                )
+                expectedStatus = .errorUnknown
+
+            case "empty-payload":
+                fraudSDK = try #require(
+                    RadarSDKFraud(
+                        instance: MockEncryptedFraudInstance(
+                            result: ["payload": ""]
+                        )
+                    )
+                )
+                expectedStatus = .errorUnknown
+
+            default:
+                fraudSDK = try #require(
+                    RadarSDKFraud(
+                        instance: MockEncryptedFraudInstance(
+                            result: ["payload": "encrypted-envelope"]
+                        )
+                    )
+                )
+                expectedStatus = .success
+            }
+
+            let preparer = RadarTrackVerifiedRequestPreparer(
+                fraudSDK: fraudSDK,
+                options: [:]
+            )
+
+            #expect(
+                preparer.responds(
+                    to: NSSelectorFromString("prepareRequest:completionHandler:")
+                )
+            )
+
+            var request = URLRequest(
+                url: try #require(
+                    URL(string: "https://api-verified.radar.io/v1/track")
+                )
+            )
+            request.httpMethod = "POST"
+            request.httpBody = try JSONSerialization.data(
+                withJSONObject: [
+                    "installId": "test-install",
+                    "latitude": 47.0,
+                ]
+            )
+
+            let (status, preparedRequest, error) = await withCheckedContinuation {
+                (
+                    continuation: CheckedContinuation<
+                        (RadarStatus, URLRequest?, NSError?),
+                        Never
+                    >
+                ) in
+                preparer.prepareRequest(request) { status, preparedRequest, error in
+                    continuation.resume(
+                        returning: (status, preparedRequest, error)
+                    )
+                }
+            }
+
+            #expect(status == expectedStatus)
+
+            if scenario == "success" {
+                #expect(error == nil)
+
+                let preparedRequest = try #require(preparedRequest)
+                #expect(preparedRequest.url == request.url)
+                #expect(preparedRequest.httpMethod == "POST")
+
+                let bodyData = try #require(preparedRequest.httpBody)
+                let bodyObject = try JSONSerialization.jsonObject(with: bodyData)
+                let body = try #require(bodyObject as? [String: Any])
+
+                #expect(body["fraudPayload"] as? String == "encrypted-envelope")
+                #expect(body["installId"] as? String == "test-install")
+                #expect(body["latitude"] as? Double == 47.0)
+            } else {
+                #expect(preparedRequest == nil)
+
+                if scenario != "missing-module" {
+                    #expect(error != nil)
+                }
+            }
+        }
     }
 }
