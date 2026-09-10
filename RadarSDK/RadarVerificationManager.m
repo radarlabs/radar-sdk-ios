@@ -72,11 +72,23 @@
     if ([NSThread isMainThread]) {
         dispatch_once(&once, ^{
             sharedInstance = [self new];
+            
+            // this must run after sharedInstance has been initialized
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // touch swift shared instance to initialize it
+                [RadarVerificationManagerSwift sharedInstance];
+            });
         });
     } else {
         dispatch_sync(dispatch_get_main_queue(), ^{
             dispatch_once(&once, ^{
                 sharedInstance = [self new];
+                
+                // this must run after sharedInstance has been initialized
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    // touch swift shared instance to initialize it
+                    [RadarVerificationManagerSwift sharedInstance];
+                });
             });
         });
     }
@@ -428,8 +440,8 @@
 }
 
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode {
-    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && self.swiftInstance) {
-        [[RadarVerificationManagerSwift sharedInstance] setExpectedJurisdictionWithCountryCode:countryCode stateCode:stateCode];
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && swiftInstance) {
+        [swiftInstance setExpectedJurisdictionWithCountryCode:countryCode stateCode:stateCode];
         return;
     }
 
@@ -438,8 +450,8 @@
 }
 
 - (BOOL)isSharing {
-    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && self.swiftInstance) {
-        return [[RadarVerificationManagerSwift sharedInstance] isSharing];
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && swiftInstance) {
+        return [swiftInstance isSharing];
     }
 
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
@@ -465,8 +477,8 @@
 }
 
 - (void)clearSharing {
-    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && self.swiftInstance) {
-        [[RadarVerificationManagerSwift sharedInstance] clearSharing];
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && swiftInstance) {
+        [swiftInstance clearSharing];
         return;
     }
 
