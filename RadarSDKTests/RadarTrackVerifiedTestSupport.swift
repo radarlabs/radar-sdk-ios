@@ -223,7 +223,7 @@ struct VerifiedTrackRetryFixture {
         for options in attempts {
             XCTAssertEqual(options["method"] as? String, "POST")
             XCTAssertEqual(options["canonicalRoute"] as? String, "/v1/track")
-            XCTAssertEqual(options["environment"] as? String, "production")
+            XCTAssertNil(options["environment"])
             XCTAssertEqual(options["installId"] as? String, "test-install")
             XCTAssertEqual(options["nonce"] as? String, "test-nonce")
             XCTAssertEqual(options["product"] as? String, "test-product")

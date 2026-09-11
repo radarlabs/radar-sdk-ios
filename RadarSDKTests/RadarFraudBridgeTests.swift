@@ -34,38 +34,43 @@ extension RadarSerializedTests {
             #expect(payload == nil)
         }
 
-        @Test("Fraud encryption environment matches the configured host")
-        func encryptionEnvironmentMatchesHost() {
-            let productionHosts = [
+        @Test(
+            "Fraud request preparation does not select an environment from the host",
+            arguments: [
                 "https://api.radar.io",
                 "https://api-verified.radar.io",
                 "https://api-verified.radar.com",
-            ]
-
-            let stagingHosts = [
                 "https://api.radar-staging.com",
                 "https://api-verified.radar-staging.io",
-            ]
-
-            for host in productionHosts {
-                #expect(
-                    RadarSDKFraud.encryptionEnvironment(forHost: host)
-                        == "production"
-                )
-            }
-
-            for host in stagingHosts {
-                #expect(
-                    RadarSDKFraud.encryptionEnvironment(forHost: host)
-                        == "staging"
-                )
-            }
-
-            #expect(
-                RadarSDKFraud.encryptionEnvironment(
-                    forHost: "https://custom.example.com"
-                ) == nil
+                "https://custom.example.com",
+            ],
+            ["/v1/track", "/v1/reveal/risk"]
+        )
+        func preparationDoesNotSelectEnvironment(host: String, route: String) async throws {
+            let instance = MockEncryptedFraudInstance(result: ["payload": "encrypted-envelope"])
+            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
+            var request = URLRequest(url: try #require(URL(string: host + route)))
+            request.httpMethod = "POST"
+            request.httpBody = try JSONSerialization.data(
+                withJSONObject: ["installId": "test-install"]
             )
+
+            let prepared = try await fraudSDK.prepareEncryptedRequest(
+                request, canonicalRoute: route, options: [:]
+            )
+            let contexts = instance.recordedOptions()
+            #expect(contexts.count == 1)
+            let context = try #require(contexts.first)
+            #expect(context["environment"] == nil)
+            #expect(context["canonicalRoute"] as? String == route)
+            #expect(prepared.url == request.url)
+            #expect(prepared.httpMethod == "POST")
+            let bodyData = try #require(prepared.httpBody)
+            let body = try #require(
+                try JSONSerialization.jsonObject(with: bodyData) as? [String: Any]
+            )
+            #expect(body["installId"] as? String == "test-install")
+            #expect(body["fraudPayload"] as? String == "encrypted-envelope")
         }
 
         @Test("Encryption attempt IDs are random 128-bit Base64URL values")

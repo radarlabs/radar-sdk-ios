@@ -282,7 +282,7 @@ extension RadarSerializedTests {
                 #expect(request.httpMethod == "POST")
                 #expect(context["method"] as? String == request.httpMethod)
                 #expect(context["canonicalRoute"] as? String == "/v1/reveal/risk")
-                #expect(context["environment"] as? String == "production")
+                #expect(context["environment"] == nil)
                 #expect(context["installId"] as? String == body["installId"] as? String)
                 #expect(body["fraudPayload"] as? String == "mock-encrypted-envelope")
 
