@@ -212,14 +212,17 @@
                      source:source
                    replayed:replayed
                     beacons:beacons
-               indoorLocation:indoorLocation
+             indoorLocation:indoorLocation
                    verified:NO
-              fraudPayload:nil
+               fraudPayload:nil
         expectedCountryCode:nil
           expectedStateCode:nil
+            expectedAddress:nil
+      expectedAddressRadius:nil
                      reason:nil
               transactionId:nil
                revealRiskId:nil
+   useSecondaryVerifiedHost:NO
           completionHandler:completionHandler];
 }
 
@@ -231,42 +234,11 @@
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
            indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
-            fraudPayload:(NSString *_Nullable)fraudPayload
+             fraudPayload:(NSString * _Nullable)fraudPayload
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
-                   reason:(NSString * _Nullable)reason
-            transactionId:(NSString * _Nullable)transactionId
-             revealRiskId:(NSString * _Nullable)revealRiskId
-        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
-    [self trackWithLocation:location
-                    stopped:stopped
-                 foreground:foreground
-                     source:source
-                   replayed:replayed
-                    beacons:beacons
-                 indoorLocation:indoorLocation
-                   verified:verified
-               fraudPayload:fraudPayload
-        expectedCountryCode:expectedCountryCode
-          expectedStateCode:expectedStateCode
-                     reason:reason
-              transactionId:transactionId
-               revealRiskId:revealRiskId
-  useSecondaryVerifiedHost:NO
-          completionHandler:completionHandler];
-}
-
-- (void)trackWithLocation:(CLLocation *_Nonnull)location
-                  stopped:(BOOL)stopped
-               foreground:(BOOL)foreground
-                   source:(RadarLocationSource)source
-                 replayed:(BOOL)replayed
-                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-           indoorLocation:(CLLocation *_Nullable)indoorLocation
-                 verified:(BOOL)verified
-            fraudPayload:(NSString * _Nullable)fraudPayload
-      expectedCountryCode:(NSString * _Nullable)expectedCountryCode
-        expectedStateCode:(NSString * _Nullable)expectedStateCode
+          expectedAddress:(NSString *_Nullable)expectedAddress
+    expectedAddressRadius:(NSNumber *_Nullable)expectedAddressRadius
                    reason:(NSString * _Nullable)reason
             transactionId:(NSString * _Nullable)transactionId
              revealRiskId:(NSString * _Nullable)revealRiskId
@@ -388,6 +360,12 @@
         }
         if (expectedStateCode) {
             params[@"expectedStateCode"] = expectedStateCode;
+        }
+        if (expectedAddress) {
+            params[@"expectedAddress"] = expectedAddress;
+        }
+        if (expectedAddressRadius) {
+            params[@"expectedAddressRadius"] = expectedAddressRadius;
         }
         if (reason) {
             params[@"reason"] = reason;

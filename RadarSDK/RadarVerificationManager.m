@@ -39,6 +39,8 @@
 @property (assign, nonatomic) NSTimeInterval lastIPChangeDeliveredAt;
 @property (copy, nonatomic) NSString *expectedCountryCode;
 @property (copy, nonatomic) NSString *expectedStateCode;
+@property (copy, nonatomic) NSString *expectedAddress;
+@property (copy, nonatomic) NSNumber *expectedAddressRadius;
 
 @end
 
@@ -183,6 +185,8 @@
                  fraudPayload:fraudPayload
                  expectedCountryCode:self.expectedCountryCode
                  expectedStateCode:self.expectedStateCode
+                 expectedAddress:self.expectedAddress
+                 expectedAddressRadius:self.expectedAddressRadius
                  reason:reason
                  transactionId:transactionId
                  revealRiskId:revealRiskId
@@ -408,6 +412,11 @@
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode {
     self.expectedCountryCode = countryCode;
     self.expectedStateCode = stateCode;
+}
+
+- (void)setExpectedAddress:(NSString *)address radius:(NSNumber *)radius {
+    self.expectedAddress = address;
+    self.expectedAddressRadius = radius;
 }
 
 - (BOOL)isSharing {

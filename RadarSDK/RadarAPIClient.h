@@ -96,26 +96,11 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
            indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
-            fraudPayload:(NSString *_Nullable)fraudPayload
-         // -- payload encryption --
-         // fraudKeyVersion:(NSInteger)fraudKeyVersion
+             fraudPayload:(NSString *_Nullable)fraudPayload
       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
         expectedStateCode:(NSString *_Nullable)expectedStateCode
-                   reason:(NSString *_Nullable)reason
-            transactionId:(NSString *_Nullable)transactionId
-        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
-
-- (void)trackWithLocation:(CLLocation *_Nonnull)location
-                  stopped:(BOOL)stopped
-               foreground:(BOOL)foreground
-                   source:(RadarLocationSource)source
-                 replayed:(BOOL)replayed
-                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-           indoorLocation:(CLLocation *_Nullable)indoorLocation
-                 verified:(BOOL)verified
-            fraudPayload:(NSString *_Nullable)fraudPayload
-      expectedCountryCode:(NSString *_Nullable)expectedCountryCode
-        expectedStateCode:(NSString *_Nullable)expectedStateCode
+          expectedAddress:(NSString *_Nullable)expectedAddress
+    expectedAddressRadius:(NSNumber *_Nullable)expectedAddressRadius
                    reason:(NSString *_Nullable)reason
             transactionId:(NSString *_Nullable)transactionId
              revealRiskId:(NSString *_Nullable)revealRiskId
