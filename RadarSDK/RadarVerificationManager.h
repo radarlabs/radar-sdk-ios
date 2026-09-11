@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)getVerifiedLocationTokenWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;
 - (void)clearVerifiedLocationToken;
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode;
+- (void)setExpectedAddress:(NSString *)address radius:(NSNumber *) radius;
 - (BOOL)isSharing;
 - (void)clearSharing;
 

@@ -50,6 +50,9 @@ struct VerifiedPanel: View {
                     )
                 }
             }
+            ActionButton("setExpectedAddress") {
+                Radar.setExpectedAddress("111 5th Ave, NY", radius: 1)
+            }
         }
     }
 }
