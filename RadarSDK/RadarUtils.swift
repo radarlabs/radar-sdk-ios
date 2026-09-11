@@ -195,6 +195,15 @@ class RadarUtils: NSObject {
         }
     }
 
+    static func dictionary<T: Encodable>(from value: T) -> [String: Any]? {
+        guard let data = try? JSONEncoder().encode(value),
+            let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else {
+            return nil
+        }
+        return dict
+    }
+
     static func dictionaryToJson(_ dict: [String: Any]?) -> String {
         guard let dict = dict else { return "{}" }
 

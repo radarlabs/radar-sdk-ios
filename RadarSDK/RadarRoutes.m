@@ -7,7 +7,6 @@
 
 #import "RadarRoutes.h"
 #import "RadarRoute+Internal.h"
-#import "RadarRouteDistance+Internal.h"
 
 @implementation RadarRoutes
 
