@@ -40,7 +40,6 @@
 @property (copy, nonatomic) NSString *expectedCountryCode;
 @property (copy, nonatomic) NSString *expectedStateCode;
 @property (copy, nonatomic) NSString *expectedAddress;
-@property (copy, nonatomic) NSNumber *expectedAddressRadius;
 
 @end
 
@@ -186,7 +185,6 @@
                  expectedCountryCode:self.expectedCountryCode
                  expectedStateCode:self.expectedStateCode
                  expectedAddress:self.expectedAddress
-                 expectedAddressRadius:self.expectedAddressRadius
                  reason:reason
                  transactionId:transactionId
                  revealRiskId:revealRiskId
@@ -414,9 +412,8 @@
     self.expectedStateCode = stateCode;
 }
 
-- (void)setExpectedAddress:(NSString *)address radius:(NSNumber *)radius {
+- (void)setExpectedAddress:(NSString *)address {
     self.expectedAddress = address;
-    self.expectedAddressRadius = radius;
 }
 
 - (BOOL)isSharing {

@@ -730,9 +730,8 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  Optionally sets the user's expected address and the radius.
  
  @param address The user's expected address.
- @param radius The radius in meters where a user's GPS location will match around the expected address.
  */
-+ (void)setExpectedAddress:(NSString *_Nullable)address radius:(NSNumber *_Nullable)radius NS_SWIFT_NAME(setExpectedAddress(_:radius:));
++ (void)setExpectedAddress:(NSString *_Nullable)address NS_SWIFT_NAME(setExpectedAddress(_:));
 
 /**
  Starts tracking the user's location in the background with configurable tracking options.

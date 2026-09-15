@@ -100,7 +100,6 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
         expectedStateCode:(NSString *_Nullable)expectedStateCode
           expectedAddress:(NSString *_Nullable)expectedAddress
-    expectedAddressRadius:(NSNumber *_Nullable)expectedAddressRadius
                    reason:(NSString *_Nullable)reason
             transactionId:(NSString *_Nullable)transactionId
              revealRiskId:(NSString *_Nullable)revealRiskId

@@ -218,7 +218,6 @@
         expectedCountryCode:nil
           expectedStateCode:nil
             expectedAddress:nil
-      expectedAddressRadius:nil
                      reason:nil
               transactionId:nil
                revealRiskId:nil
@@ -238,7 +237,6 @@
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
           expectedAddress:(NSString *_Nullable)expectedAddress
-    expectedAddressRadius:(NSNumber *_Nullable)expectedAddressRadius
                    reason:(NSString * _Nullable)reason
             transactionId:(NSString * _Nullable)transactionId
              revealRiskId:(NSString * _Nullable)revealRiskId
@@ -363,9 +361,6 @@
         }
         if (expectedAddress) {
             params[@"expectedAddress"] = expectedAddress;
-        }
-        if (expectedAddressRadius) {
-            params[@"expectedAddressRadius"] = expectedAddressRadius;
         }
         if (reason) {
             params[@"reason"] = reason;
