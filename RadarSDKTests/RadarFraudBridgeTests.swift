@@ -119,5 +119,47 @@ extension RadarSerializedTests {
         func rejectsUnsupportedFraudInstance() {
             #expect(RadarSDKFraud(instance: NSObject()) == nil)
         }
+
+        @Test("Fraud body preparation preserves fields and forwards request context")
+        func encryptedBodyPreservesFieldsAndContext() async throws {
+            let instance = MockEncryptedFraudInstance(
+                result: ["payload": "encrypted-envelope"]
+            )
+            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
+            let preparer = RadarFraudPayloadPreparer(
+                fraudSDK: fraudSDK,
+                options: ["collectionOption": true]
+            )
+            let body: [String: Any] = [
+                "installId": "test-install",
+                "verified": true,
+            ]
+
+            let result = try await preparer.prepareBody(
+                body,
+                method: "POST",
+                canonicalRoute: "/v1/track",
+                headers: [
+                    "authorization": "test-publishable-key",
+                    "X-Radar-SDK-Version": "test-version",
+                ]
+            )
+
+            #expect(result["fraudPayload"] as? String == "encrypted-envelope")
+            #expect(result["installId"] as? String == "test-install")
+            #expect(result["verified"] as? Bool == true)
+            #expect(body["fraudPayload"] == nil)
+
+            let calls = instance.recordedOptions()
+            #expect(calls.count == 1)
+            let context = try #require(calls.first)
+            #expect(context["method"] as? String == "POST")
+            #expect(context["canonicalRoute"] as? String == "/v1/track")
+            #expect(context["authorization"] as? String == "test-publishable-key")
+            #expect(context["sdkVersion"] as? String == "test-version")
+            #expect(context["collectionOption"] as? Bool == true)
+            #expect(context["encryptionAttemptId"] as? String != nil)
+            #expect(context["issuedAt"] as? Int != nil)
+        }
     }
 }
