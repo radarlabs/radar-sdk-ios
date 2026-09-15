@@ -39,6 +39,7 @@
 #import <os/log.h>
 #import "RadarSDKFraudProtocol.h"
 #import "RadarOfflineEventManager.h"
+#import "RadarTrackVerifiedRequestPreparer.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -287,7 +288,7 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
              transactionId:transactionId
               revealRiskId:revealRiskId
   useSecondaryVerifiedHost:useSecondaryVerifiedHost
-            prepareRequest:nil
+     fraudPayloadPreparer:nil
          completionHandler:completionHandler];
 }
 
@@ -306,7 +307,7 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
             transactionId:(NSString * _Nullable)transactionId
              revealRiskId:(NSString * _Nullable)revealRiskId
  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
-           prepareRequest:(RadarRequestPreparation _Nullable)prepareRequest
+    fraudPayloadPreparer:(RadarTrackVerifiedRequestPreparer *_Nullable)fraudPayloadPreparer
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -538,7 +539,7 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                                                     publishableKey:publishableKey
                                             notificationsRemaining:notificationsRemaining
                                             locationMetadata:locationMetadata
-                                                    prepareRequest:(verified ? prepareRequest : nil)
+                                             fraudPayloadPreparer:(verified ? fraudPayloadPreparer : nil)
                                                 completionHandler:completionHandler];
     }];
 }
@@ -553,7 +554,7 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                 publishableKey:(NSString *)publishableKey
                 notificationsRemaining:(NSArray *)notificationsRemaining
                 locationMetadata:(NSDictionary *)locationMetadata
-                prepareRequest:(RadarRequestPreparation _Nullable)prepareRequest
+         fraudPayloadPreparer:(RadarTrackVerifiedRequestPreparer *_Nullable)fraudPayloadPreparer
             completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
     
     BOOL batchingEnabled = (options.batchSize > 0 || options.batchInterval > 0);
@@ -786,19 +787,27 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
             };
 
-            if (verified && prepareRequest) {
-                [self.apiHelper requestWithMethod:@"POST"
-                                         url:url
-                                     headers:headers
-                                      params:requestParams
-                                       sleep:YES
-                                  logPayload:YES
-                             extendedTimeout:NO
-                              prepareRequest:prepareRequest
-                   preparationFailureHandler:^(RadarStatus status, NSError *_Nullable error) {
-                       completionHandler(status, nil, nil, nil, nil, nil, nil);
-                   }
-                           completionHandler:trackCompletion];
+            if (verified && fraudPayloadPreparer) {
+                [fraudPayloadPreparer prepareBody:requestParams
+                                         headers:headers
+                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable encryptedBody, NSError *_Nullable error) {
+                    if (status != RadarStatusSuccess || !encryptedBody || error) {
+                        RadarStatus failureStatus = status == RadarStatusSuccess ? RadarStatusErrorUnknown : status;
+                        [RadarUtilsDeprecated runOnMainThread:^{
+                            completionHandler(failureStatus, nil, nil, nil, nil, nil, nil);
+                        }];
+                        return;
+                    }
+
+                    [self.apiHelper requestWithMethod:@"POST"
+                                                 url:url
+                                             headers:headers
+                                              params:encryptedBody
+                                               sleep:YES
+                                          logPayload:YES
+                                     extendedTimeout:NO
+                                   completionHandler:trackCompletion];
+                }];
             } else {
                 [self.apiHelper requestWithMethod:@"POST"
                                              url:url

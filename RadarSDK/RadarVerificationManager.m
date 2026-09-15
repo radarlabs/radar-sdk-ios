@@ -159,11 +159,7 @@
                  transactionId:transactionId
                  revealRiskId:revealRiskId
                  useSecondaryVerifiedHost:useSecondaryVerifiedHost
-                 prepareRequest:^(NSURLRequest *request,
-                                  RadarRequestPreparationCompletion preparationCompletion) {
-                     [requestPreparer prepareRequest:request
-                                   completionHandler:preparationCompletion];
-                 }
+                 fraudPayloadPreparer:requestPreparer
                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                      RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                      RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {

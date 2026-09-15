@@ -220,8 +220,8 @@ extension RadarSerializedTests {
             }
         }
 
-        @Test("Reveal retry requests fresh encryption with outgoing request context")
-        func revealRetryRefreshesEncryptionContext() async throws {
+        @Test("Reveal retry reuses the encrypted body and authenticated context")
+        func revealRetryReusesEncryptedBody() async throws {
             Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
 
             let responseData = try JSONSerialization.data(
@@ -252,25 +252,33 @@ extension RadarSerializedTests {
 
             let options = instance.recordedOptions()
             let requests = await session.recordedRequests()
-            #expect(options.count == 2)
+
+            #expect(options.count == 1)
             #expect(requests.count == 2)
-            guard options.count == 2, requests.count == 2 else { return }
+            guard options.count == 1, requests.count == 2 else { return }
 
-            let firstId = try #require(options[0]["encryptionAttemptId"] as? String)
-            let retryId = try #require(options[1]["encryptionAttemptId"] as? String)
-            #expect(!firstId.isEmpty)
-            #expect(firstId != retryId)
+            let attemptId = try #require(options[0]["encryptionAttemptId"] as? String)
+            #expect(!attemptId.isEmpty)
 
-            try assertRetryContexts(options: options, requests: requests, issuedBetween: startedAt...finishedAt)
+            let firstBody = try #require(requests[0].httpBody)
+            let retryBody = try #require(requests[1].httpBody)
+            #expect(firstBody == retryBody)
+            #expect(requests[0].url == requests[1].url)
+            #expect(requests[0].allHTTPHeaderFields == requests[1].allHTTPHeaderFields)
 
+            try assertRetryContexts(
+                context: options[0],
+                requests: requests,
+                issuedBetween: startedAt...finishedAt
+            )
         }
 
         private func assertRetryContexts(
-            options: [[String: Any]], requests: [URLRequest], issuedBetween: ClosedRange<Int>
+            context: [String: Any],
+            requests: [URLRequest],
+            issuedBetween: ClosedRange<Int>
         ) throws {
-            for index in requests.indices {
-                let request = requests[index]
-                let context = options[index]
+            for request in requests {
                 let bodyData = try #require(request.httpBody)
                 let body = try #require(
                     try JSONSerialization.jsonObject(with: bodyData) as? [String: Any]

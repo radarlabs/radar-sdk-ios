@@ -76,48 +76,6 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
               logPayload:(BOOL)logPayload
          extendedTimeout:(BOOL)extendedTimeout
        completionHandler:(RadarAPICompletionHandler)completionHandler {
-    [self requestWithMethod:method
-                       url:url
-                   headers:headers
-                    params:params
-                     sleep:sleep
-                logPayload:logPayload
-           extendedTimeout:extendedTimeout
-            prepareRequest:nil
-         completionHandler:completionHandler];
-}
-
-- (void)requestWithMethod:(NSString *)method
-                     url:(NSString *)url
-                 headers:(NSDictionary *_Nullable)headers
-                  params:(NSDictionary *_Nullable)params
-                   sleep:(BOOL)sleep
-              logPayload:(BOOL)logPayload
-         extendedTimeout:(BOOL)extendedTimeout
-          prepareRequest:(RadarRequestPreparation _Nullable)prepareRequest
-       completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler {
-    [self requestWithMethod:method
-                       url:url
-                   headers:headers
-                    params:params
-                     sleep:sleep
-                logPayload:logPayload
-           extendedTimeout:extendedTimeout
-            prepareRequest:prepareRequest
- preparationFailureHandler:nil
-         completionHandler:completionHandler];
-}
-
-- (void)requestWithMethod:(NSString *)method
-                      url:(NSString *)url
-                  headers:(NSDictionary *)headers
-                   params:(NSDictionary *)params
-                    sleep:(BOOL)sleep
-               logPayload:(BOOL)logPayload
-          extendedTimeout:(BOOL)extendedTimeout
-           prepareRequest:(RadarRequestPreparation)prepareRequest
-        preparationFailureHandler:(RadarRequestPreparationFailureHandler _Nullable)preparationFailureHandler
-        completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
         if (sleep) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
@@ -276,43 +234,10 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
             ) = ^(void (^attemptCompletion)(
                 NSData *, NSURLResponse *, NSError *
             )) {
-                RadarRequestPreparationCompletion prepared =
-                    ^(RadarStatus preparationStatus,
-                      NSURLRequest *_Nullable preparedRequest,
-                      NSError *_Nullable preparationError) {
-                        if (preparationStatus != RadarStatusSuccess ||
-                            !preparedRequest ||
-                            preparationError) {
-                            RadarStatus failureStatus =
-                                preparationStatus == RadarStatusSuccess
-                                ? RadarStatusErrorUnknown
-                                : preparationStatus;
-
-                            if (sleep) {
-                                dispatch_semaphore_signal(self.semaphore);
-                            }
-
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                if (preparationFailureHandler) {
-                                    preparationFailureHandler(failureStatus, preparationError);
-                                } else if (completionHandler) {
-                                    completionHandler(failureStatus, nil, preparationError);
-                                }
-                            });
-                            return;
-                        }
-
-                        NSURLSessionDataTask *task =
-                            [session dataTaskWithRequest:preparedRequest
-                                       completionHandler:attemptCompletion];
-                        [task resume];
-                    };
-
-                if (prepareRequest) {
-                    prepareRequest(baseRequest, prepared);
-                } else {
-                    prepared(RadarStatusSuccess, baseRequest, nil);
-                }
+                NSURLSessionDataTask *task =
+                    [session dataTaskWithRequest:baseRequest
+                              completionHandler:attemptCompletion];
+                [task resume];
             };
 
             void (^dataTaskRetryHandler)(

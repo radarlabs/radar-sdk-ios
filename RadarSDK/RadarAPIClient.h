@@ -21,6 +21,8 @@
 #import "RadarVerifiedLocationToken.h"
 #import "RadarTripLeg.h"
 
+@class RadarTrackVerifiedRequestPreparer;
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
@@ -135,7 +137,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
            transactionId:(NSString *_Nullable)transactionId
             revealRiskId:(NSString *_Nullable)revealRiskId
 useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
-          prepareRequest:(RadarRequestPreparation _Nullable)prepareRequest
+   fraudPayloadPreparer:(RadarTrackVerifiedRequestPreparer *_Nullable)fraudPayloadPreparer
        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler;

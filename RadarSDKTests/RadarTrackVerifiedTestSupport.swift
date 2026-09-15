@@ -3,6 +3,12 @@ import XCTest
 
 @testable import RadarSDK
 
+// Transfers one immutable test callback to main; it is invoked only once there.
+private final class TrackTestCallback: @unchecked Sendable {
+    let invoke: () -> Void
+    init(_ invoke: @escaping () -> Void) { self.invoke = invoke }
+}
+
 final class PreparationRejectingAPIHelperMock: RadarAPIHelperMock {
     override func request(
         withMethod method: String,
@@ -12,271 +18,115 @@ final class PreparationRejectingAPIHelperMock: RadarAPIHelperMock {
         sleep: Bool,
         logPayload: Bool,
         extendedTimeout: Bool,
-        prepareRequest: RadarRequestPreparation?,
         completionHandler: RadarAPICompletionHandler?
     ) {
-        XCTFail("Ordinary tracking must use the original HTTP helper method")
-        completionHandler?(.errorUnknown, nil, nil)
-    }
-
-    override func request(
-        withMethod method: String,
-        url: String,
-        headers: [AnyHashable: Any]?,
-        params: [AnyHashable: Any]?,
-        sleep: Bool,
-        logPayload: Bool,
-        extendedTimeout: Bool,
-        prepareRequest: RadarRequestPreparation?,
-        preparationFailureHandler: RadarRequestPreparationFailureHandler?,
-        completionHandler: RadarAPICompletionHandler?
-    ) {
-        XCTFail("Ordinary tracking must use the original HTTP helper method")
-        completionHandler?(.errorUnknown, nil, nil)
-    }
-}
-
-final class PreparationCapturingAPIHelperMock: RadarAPIHelperMock {
-    var capturedPreparation: RadarRequestPreparation?
-    var capturedPreparationFailureHandler: RadarRequestPreparationFailureHandler?
-
-    override func request(
-        withMethod method: String,
-        url: String,
-        headers: [AnyHashable: Any]?,
-        params: [AnyHashable: Any]?,
-        sleep: Bool,
-        logPayload: Bool,
-        extendedTimeout: Bool,
-        prepareRequest: RadarRequestPreparation?,
-        completionHandler: RadarAPICompletionHandler?
-    ) {
-        capturedPreparation = prepareRequest
-
+        // Match the real helper's main-thread callback contract after async encryption.
         super.request(
-            withMethod: method,
-            url: url,
-            headers: headers,
-            params: params,
-            sleep: sleep,
-            logPayload: logPayload,
-            extendedTimeout: extendedTimeout,
-            completionHandler: completionHandler
-        )
+            withMethod: method, url: url, headers: headers, params: params,
+            sleep: sleep, logPayload: logPayload, extendedTimeout: extendedTimeout
+        ) { status, response, error in
+            let callback = TrackTestCallback { completionHandler?(status, response, error) }
+            DispatchQueue.main.async { callback.invoke() }
+        }
+    }
+}
+extension RadarVerifiedHostOverrideTests {
+    func makeTrackPreparer(
+        instance: NSObject?,
+        options: [String: Any] = [:]
+    ) throws -> RadarTrackVerifiedRequestPreparer {
+        let fraudSDK: RadarSDKFraud?
+        if let instance {
+            fraudSDK = try XCTUnwrap(RadarSDKFraud(instance: instance))
+        } else {
+            fraudSDK = nil
+        }
+        return RadarTrackVerifiedRequestPreparer(fraudSDK: fraudSDK, options: options)
     }
 
-    override func request(
-        withMethod method: String,
-        url: String,
-        headers: [AnyHashable: Any]?,
-        params: [AnyHashable: Any]?,
-        sleep: Bool,
-        logPayload: Bool,
-        extendedTimeout: Bool,
-        prepareRequest: RadarRequestPreparation?,
-        preparationFailureHandler: RadarRequestPreparationFailureHandler?,
-        completionHandler: RadarAPICompletionHandler?
+    func trackForEncryptionTest(
+        _ preparer: RadarTrackVerifiedRequestPreparer,
+        verified: Bool = true,
+        secondary: Bool = false,
+        completion: @escaping RadarTrackAPICompletionHandler
     ) {
-        capturedPreparationFailureHandler = preparationFailureHandler
-
-        self.request(
-            withMethod: method,
-            url: url,
-            headers: headers,
-            params: params,
-            sleep: sleep,
-            logPayload: logPayload,
-            extendedTimeout: extendedTimeout,
-            prepareRequest: prepareRequest,
-            completionHandler: completionHandler
+        RadarTrackTestBridge.track(
+            withPreparer: preparer,
+            verified: verified,
+            secondary: secondary,
+            completion: completion
         )
     }
 }
 
-final class RetryFailureRequestCounter: @unchecked Sendable {
+final class TrackRetryTransportState: @unchecked Sendable {
     private let lock = NSLock()
-    private var count = 0
+    private var failures: [URLError.Code] = []
+    private var requests: [URLRequest] = []
 
-    func increment() {
+    func reset(failures: [URLError.Code]) {
         lock.lock()
         defer { lock.unlock() }
-        count += 1
+        self.failures = failures
+        requests = []
     }
 
-    func reset() {
+    func record(_ request: URLRequest) -> URLError.Code? {
         lock.lock()
         defer { lock.unlock() }
-        count = 0
+        let attempt = requests.count
+        requests.append(request)
+        return attempt < failures.count ? failures[attempt] : nil
     }
 
-    var value: Int {
+    func recordedRequests() -> [URLRequest] {
         lock.lock()
         defer { lock.unlock() }
-        return count
+        return requests
     }
 }
 
-final class RetryPreparationFailureProtocol: URLProtocol {
-    static let requests = RetryFailureRequestCounter()
+final class TrackRetryProtocol: URLProtocol {
+    static let state = TrackRetryTransportState()
 
-    override static func canInit(with request: URLRequest) -> Bool {
-        true
-    }
-
-    override static func canonicalRequest(
-        for request: URLRequest
-    ) -> URLRequest {
-        request
-    }
+    override static func canInit(with request: URLRequest) -> Bool { true }
+    override static func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
     override func startLoading() {
-        Self.requests.increment()
-        client?.urlProtocol(
-            self,
-            didFailWithError: URLError(.networkConnectionLost)
-        )
+        var captured = request
+        if captured.httpBody == nil, let stream = request.httpBodyStream {
+            stream.open()
+            defer { stream.close() }
+            var data = Data()
+            var buffer = [UInt8](repeating: 0, count: 4096)
+            while true {
+                let count = stream.read(&buffer, maxLength: buffer.count)
+                if count <= 0 {
+                    if count < 0 { XCTFail("Unable to read test request body") }
+                    break
+                }
+                data.append(contentsOf: buffer.prefix(count))
+            }
+            captured.httpBody = data
+        }
+        if let code = Self.state.record(captured) {
+            client?.urlProtocol(self, didFailWithError: URLError(code))
+            return
+        }
+        // A real server response ends transport retries. Use an error response to avoid
+        // unrelated success-path state updates and log flushing in this transport test.
+        guard let url = request.url,
+            let response = HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil)
+        else {
+            XCTFail("Invalid intercepted request URL")
+            return
+        }
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: Data("{}".utf8))
+        client?.urlProtocolDidFinishLoading(self)
     }
 
     override func stopLoading() {}
-}
-
-struct VerifiedTrackRetryFixture {
-    let session: URLSession
-    let helper = RadarAPIHelper()
-    let instance: MockEncryptedFraudInstance
-    let preparer: RadarTrackVerifiedRequestPreparer
-
-    init(protocolClass: AnyClass, options: [String: Any] = [:]) throws {
-        let configuration = URLSessionConfiguration.ephemeral
-        configuration.protocolClasses = [protocolClass]
-        session = URLSession(configuration: configuration)
-        helper.setValue(session, forKey: "standardSession")
-        instance = MockEncryptedFraudInstance(result: ["payload": "encrypted-envelope"])
-        let fraudSDK = try XCTUnwrap(RadarSDKFraud(instance: instance))
-        preparer = RadarTrackVerifiedRequestPreparer(fraudSDK: fraudSDK, options: options)
-    }
-
-    func prepareWithAttemptHeader(
-        _ request: URLRequest,
-        completion: @escaping @Sendable (RadarStatus, URLRequest?, Error?) -> Void
-    ) {
-        let instance = self.instance
-        // The retry must start from the original request.
-        XCTAssertNil(
-            request.value(forHTTPHeaderField: "X-Test-Attempt")
-        )
-
-        self.preparer.prepareRequest(request) { status, prepared, error in
-            guard status == .success, var prepared else {
-                XCTFail("Preparation failed: \(String(describing: error))")
-                completion(status, nil, error)
-                return
-            }
-
-            do {
-                let bodyData = try XCTUnwrap(prepared.httpBody)
-                let bodyObject = try JSONSerialization.jsonObject(
-                    with: bodyData
-                )
-                let body = try XCTUnwrap(
-                    bodyObject as? [String: Any]
-                )
-                XCTAssertEqual(
-                    body["fraudPayload"] as? String,
-                    "encrypted-envelope"
-                )
-                XCTAssertEqual(
-                    body["installId"] as? String,
-                    "test-install"
-                )
-            } catch {
-                XCTFail("Invalid prepared body: \(error)")
-                completion(.errorUnknown, nil, error as NSError)
-                return
-            }
-
-            // Only controls the test transport's simulated failure.
-            prepared.setValue(
-                String(instance.recordedOptions().count),
-                forHTTPHeaderField: "X-Test-Attempt"
-            )
-            completion(.success, prepared, nil)
-        }
-
-    }
-
-    func assertRetryContexts(startedAt: Int) throws {
-        let attempts = instance.recordedOptions()
-        XCTAssertEqual(attempts.count, 2)
-
-        let first = try XCTUnwrap(attempts.first)
-        let second = try XCTUnwrap(attempts.last)
-        let firstID = try XCTUnwrap(first["encryptionAttemptId"] as? String)
-        let secondID = try XCTUnwrap(second["encryptionAttemptId"] as? String)
-
-        XCTAssertEqual(firstID.count, 22)
-        XCTAssertEqual(secondID.count, 22)
-        XCTAssertNotEqual(firstID, secondID)
-
-        let finishedAt = Int(Date().timeIntervalSince1970)
-
-        for options in attempts {
-            XCTAssertEqual(options["method"] as? String, "POST")
-            XCTAssertEqual(options["canonicalRoute"] as? String, "/v1/track")
-            XCTAssertNil(options["environment"])
-            XCTAssertEqual(options["installId"] as? String, "test-install")
-            XCTAssertEqual(options["nonce"] as? String, "test-nonce")
-            XCTAssertEqual(options["product"] as? String, "test-product")
-            XCTAssertEqual(options["sdkVersion"] as? String, "test-version")
-            XCTAssertEqual(
-                options["authorization"] as? String,
-                "test-publishable-key"
-            )
-            XCTAssertNil(options["origin"])
-
-            let issuedAt = try XCTUnwrap(options["issuedAt"] as? Int)
-            XCTAssertGreaterThanOrEqual(issuedAt, startedAt)
-            XCTAssertLessThanOrEqual(issuedAt, finishedAt)
-        }
-    }
-}
-
-final class VerifiedFailureAPIHelperMock: RadarAPIHelperMock {
-    var failDuringPreparation = true
-
-    override func request(
-        withMethod method: String,
-        url: String,
-        headers: [AnyHashable: Any]?,
-        params: [AnyHashable: Any]?,
-        sleep: Bool,
-        logPayload: Bool,
-        extendedTimeout: Bool,
-        prepareRequest: RadarRequestPreparation?,
-        preparationFailureHandler: RadarRequestPreparationFailureHandler?,
-        completionHandler: RadarAPICompletionHandler?
-    ) {
-        lastMethod = method
-        lastUrl = url
-        lastHeaders = headers
-        lastParams = params
-
-        XCTAssertNotNil(prepareRequest)
-
-        if failDuringPreparation {
-            XCTAssertNotNil(preparationFailureHandler)
-            preparationFailureHandler?(
-                .errorUnknown,
-                NSError(domain: "PreparationTest", code: 1)
-            )
-        } else {
-            completionHandler?(
-                .errorNetwork,
-                nil,
-                URLError(.networkConnectionLost)
-            )
-        }
-    }
 }
 
 final class VerifiedFailureDelegate: NSObject, RadarDelegate, @unchecked Sendable {

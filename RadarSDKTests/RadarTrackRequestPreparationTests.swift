@@ -3,17 +3,11 @@ import Testing
 
 @testable import RadarSDK
 
-private struct PreparationResult: Sendable {
-    let status: RadarStatus
-    let request: URLRequest?
-    let error: NSError?
-}
-
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarTrackRequestPreparationTests {
         @Test(
-            "Tracking preparation bridges success and fraud SDK failures",
+            "Tracking body preparation preserves success and failure statuses",
             arguments: [
                 "success",
                 "missing-module",
@@ -27,9 +21,8 @@ extension RadarSerializedTests {
                 "payload-and-error",
             ]
         )
-        func trackingPreparationBridge(scenario: String) async throws {
+        func trackingBodyPreparationBridge(scenario: String) async throws {
             let (fraudSDK, expectedStatus) = try makeFraudSDK(scenario: scenario)
-
             let preparer = RadarTrackVerifiedRequestPreparer(
                 fraudSDK: fraudSDK,
                 options: [:]
@@ -37,56 +30,36 @@ extension RadarSerializedTests {
 
             #expect(
                 preparer.responds(
-                    to: NSSelectorFromString("prepareRequest:completionHandler:")
+                    to: NSSelectorFromString("prepareBody:headers:completionHandler:")
                 )
             )
 
-            var request = URLRequest(
-                url: try #require(
-                    URL(string: "https://api-verified.radar.io/v1/track")
-                )
-            )
-            request.httpMethod = "POST"
-            request.httpBody = try JSONSerialization.data(
-                withJSONObject: [
+            let (status, body, error) = await preparer.prepareBody(
+                [
                     "installId": "test-install",
                     "latitude": 47.0,
-                ]
+                ],
+                headers: ["Authorization": "test-key"]
             )
-
-            let result: PreparationResult = await withCheckedContinuation { continuation in
-                preparer.prepareRequest(request) { status, request, error in
-                    continuation.resume(returning: PreparationResult(status: status, request: request, error: error))
-                }
-            }
-            let status = result.status
-            let preparedRequest = result.request
-            let error = result.error
 
             #expect(status == expectedStatus)
 
             if scenario == "success" {
                 #expect(error == nil)
-
-                let preparedRequest = try #require(preparedRequest)
-                #expect(preparedRequest.url == request.url)
-                #expect(preparedRequest.httpMethod == "POST")
-
-                let bodyData = try #require(preparedRequest.httpBody)
-                let bodyObject = try JSONSerialization.jsonObject(with: bodyData)
-                let body = try #require(bodyObject as? [String: Any])
-
-                #expect(body["fraudPayload"] as? String == "encrypted-envelope")
-                #expect(body["installId"] as? String == "test-install")
-                #expect(body["latitude"] as? Double == 47.0)
+                let encryptedBody = try #require(body)
+                #expect(encryptedBody["fraudPayload"] as? String == "encrypted-envelope")
+                #expect(encryptedBody["installId"] as? String == "test-install")
+                #expect(encryptedBody["latitude"] as? Double == 47.0)
             } else {
-                #expect(preparedRequest == nil)
-
-                if scenario != "missing-module" {
+                #expect(body == nil)
+                if scenario == "missing-module" {
+                    #expect(error == nil)
+                } else {
                     #expect(error != nil)
                 }
             }
         }
+
         private func makeFraudSDK(scenario: String) throws -> (RadarSDKFraud?, RadarStatus) {
             let fraudSDK: RadarSDKFraud?
             let expectedStatus: RadarStatus
@@ -97,16 +70,20 @@ extension RadarSerializedTests {
                 expectedStatus = .errorPlugin
 
             case "legacy-module":
-                fraudSDK = try #require(
-                    RadarSDKFraud(instance: MockLegacyFraudInstance())
+                let candidate: RadarSDKFraud? = RadarSDKFraud(
+                    instance: MockLegacyFraudInstance()
                 )
+                let validatedSDK: RadarSDKFraud = try #require(candidate)
+                fraudSDK = validatedSDK
                 expectedStatus = .errorPlugin
 
             default:
                 let result = fraudResult(scenario: scenario)
-                fraudSDK = try #require(
-                    RadarSDKFraud(instance: MockEncryptedFraudInstance(result: result))
+                let candidate: RadarSDKFraud? = RadarSDKFraud(
+                    instance: MockEncryptedFraudInstance(result: result)
                 )
+                let validatedSDK: RadarSDKFraud = try #require(candidate)
+                fraudSDK = validatedSDK
                 expectedStatus = scenario == "success" ? .success : .errorUnknown
             }
 

@@ -4,145 +4,97 @@ import XCTest
 @testable import RadarSDK
 
 extension RadarVerifiedHostOverrideTests {
-    func test_track_nonVerified_ignoresPreparationHook() {
+    func test_track_nonVerified_ignoresFraudPreparer() throws {
         let client = RadarAPIClient.sharedInstance()
         let originalHelper = client.apiHelper
-
+        defer { client.apiHelper = originalHelper }
         let helper = PreparationRejectingAPIHelperMock()
-        helper.mockStatus = .success
+        helper.mockStatus = .errorServer
         helper.mockResponse = ["meta": ["config": [:]]]
-
         client.apiHelper = helper
-        defer {
-            client.apiHelper = originalHelper
-        }
 
+        let instance = MockEncryptedFraudInstance(result: ["error": "must not collect"])
+        let preparer = try makeTrackPreparer(instance: instance)
         let finished = expectation(description: "Ordinary track completes")
         finished.assertForOverFulfill = true
+        trackForEncryptionTest(preparer, verified: false, secondary: true) { _, _, _, _, _, _, _ in
+            finished.fulfill()
+        }
+        wait(for: [finished], timeout: 5)
 
-        client.track(
-            with: CLLocation(latitude: 40.0, longitude: -73.0),
-            stopped: false,
-            foreground: true,
-            source: .foregroundLocation,
-            replayed: false,
-            beacons: nil,
-            indoorLocation: nil,
-            verified: false,
-            fraudPayload: nil,
-            expectedCountryCode: nil,
-            expectedStateCode: nil,
-            reason: nil,
-            transactionId: nil,
-            revealRiskId: nil,
-            useSecondaryVerifiedHost: true,
-            prepareRequest: { _, completion in
-                XCTFail("Ordinary tracking must not invoke fraud preparation")
-                completion(.errorUnknown, nil, nil)
-            },
-            completionHandler: { _, _, _, _, _, _, _ in
-                finished.fulfill()
-            }
-        )
-
-        wait(for: [finished], timeout: 5.0)
-
+        XCTAssertTrue(instance.recordedOptions().isEmpty)
         XCTAssertEqual(helper.lastMethod, "POST")
-        XCTAssertEqual(
-            helper.lastUrl,
-            "\(RadarSettings.host)/v1/track"
-        )
-
-        let params = helper.lastParams
-        XCTAssertNotNil(params)
-        XCTAssertNil(params?["fraudPayload"])
-        XCTAssertEqual(params?["latitude"] as? Double, 40.0)
-        XCTAssertEqual(params?["longitude"] as? Double, -73.0)
+        XCTAssertEqual(helper.lastUrl, "\(RadarSettings.host)/v1/track")
+        XCTAssertNil(helper.lastParams?["fraudPayload"])
+        XCTAssertEqual(helper.lastParams?["latitude"] as? Double, 40.0)
+        XCTAssertEqual(helper.lastParams?["longitude"] as? Double, -73.0)
     }
 
-    func test_track_verified_forwardsPreparationOnBothHosts() throws {
+    func test_track_verified_encryptsBeforeHelperOnBothHosts() throws {
         let client = RadarAPIClient.sharedInstance()
         let originalHelper = client.apiHelper
-        defer {
-            client.apiHelper = originalHelper
-        }
+        defer { client.apiHelper = originalHelper }
 
-        for useSecondaryHost in [false, true] {
-            let helper = PreparationCapturingAPIHelperMock()
-            helper.mockStatus = .success
+        for secondary in [false, true] {
+            let helper = PreparationRejectingAPIHelperMock()
+            helper.mockStatus = .errorServer
             helper.mockResponse = ["meta": ["config": [:]]]
             client.apiHelper = helper
-
-            let finished = expectation(description: "Track completes")
+            let instance = MockEncryptedFraudInstance(result: ["payload": "encrypted-envelope"])
+            let preparer = try makeTrackPreparer(instance: instance, options: ["nonce": "test-nonce"])
+            let finished = expectation(description: "Verified track completes")
             finished.assertForOverFulfill = true
+            trackForEncryptionTest(preparer, secondary: secondary) { _, _, _, _, _, _, _ in
+                finished.fulfill()
+            }
+            wait(for: [finished], timeout: 5)
 
-            let hookCalled = expectation(description: "Supplied hook runs")
-            hookCalled.assertForOverFulfill = true
-
-            client.track(
-                with: CLLocation(latitude: 40.0, longitude: -73.0),
-                stopped: false,
-                foreground: true,
-                source: .foregroundLocation,
-                replayed: false,
-                beacons: nil,
-                indoorLocation: nil,
-                verified: true,
-                fraudPayload: nil,
-                expectedCountryCode: nil,
-                expectedStateCode: nil,
-                reason: nil,
-                transactionId: nil,
-                revealRiskId: nil,
-                useSecondaryVerifiedHost: useSecondaryHost,
-                prepareRequest: { request, completion in
-                    var prepared = request
-                    prepared.setValue("yes", forHTTPHeaderField: "X-Test-Prepared")
-                    hookCalled.fulfill()
-                    completion(.success, prepared, nil)
-                },
-                completionHandler: { _, _, _, _, _, _, _ in
-                    finished.fulfill()
-                }
-            )
-
-            wait(for: [finished], timeout: 5.0)
-
-            try assertForwardedPreparation(helper, useSecondaryHost: useSecondaryHost, hookCalled: hookCalled)
+            let host = secondary ? RadarSettings.defaultVerifiedHostSecondary : RadarSettings.verifiedHost
+            XCTAssertEqual(helper.lastUrl, "\(host)/v1/track")
+            XCTAssertEqual(helper.lastMethod, "POST")
+            XCTAssertEqual(helper.lastParams?["fraudPayload"] as? String, "encrypted-envelope")
+            XCTAssertEqual(helper.lastParams?["latitude"] as? Double, 40.0)
+            XCTAssertEqual(helper.lastParams?["longitude"] as? Double, -73.0)
+            XCTAssertEqual(instance.recordedOptions().count, 1)
+            let context = try XCTUnwrap(instance.recordedOptions().first)
+            XCTAssertEqual(context["method"] as? String, "POST")
+            XCTAssertEqual(context["canonicalRoute"] as? String, "/v1/track")
+            XCTAssertEqual(context["nonce"] as? String, "test-nonce")
+            XCTAssertEqual(context["installId"] as? String, helper.lastParams?["installId"] as? String)
+            for (field, header) in [
+                ("authorization", "Authorization"), ("product", "X-Radar-Product"),
+                ("sdkVersion", "X-Radar-SDK-Version"), ("origin", "Origin"),
+            ] {
+                XCTAssertEqual(context[field] as? String, helper.lastHeaders?[header] as? String)
+            }
         }
     }
 
-    private func assertForwardedPreparation(
-        _ helper: PreparationCapturingAPIHelperMock,
-        useSecondaryHost: Bool,
-        hookCalled: XCTestExpectation
-    ) throws {
-        let expectedHost =
-            useSecondaryHost
-            ? RadarSettings.defaultVerifiedHostSecondary
-            : RadarSettings.verifiedHost
+    func test_track_preparationFailures_neverReachHelper() throws {
+        let client = RadarAPIClient.sharedInstance()
+        let originalHelper = client.apiHelper
+        defer { client.apiHelper = originalHelper }
+        let scenarios: [(NSObject?, RadarStatus)] = [
+            (nil, .errorPlugin),
+            (MockLegacyFraudInstance(), .errorPlugin),
+            (MockEncryptedFraudInstance(result: nil), .errorUnknown),
+            (MockEncryptedFraudInstance(result: ["payload": ""]), .errorUnknown),
+            (MockEncryptedFraudInstance(result: ["error": "failed", "payload": "must-not-send"]), .errorUnknown),
+        ]
 
-        XCTAssertEqual(helper.lastMethod, "POST")
-        XCTAssertEqual(helper.lastUrl, "\(expectedHost)/v1/track")
-        XCTAssertNotNil(helper.lastParams)
-        XCTAssertNil(helper.lastParams?["fraudPayload"])
-
-        let forwardedHook = try XCTUnwrap(helper.capturedPreparation)
-        let url = try XCTUnwrap(URL(string: "\(expectedHost)/v1/track"))
-        let prepared = expectation(description: "Preparation completes")
-        prepared.assertForOverFulfill = true
-
-        forwardedHook(URLRequest(url: url)) { status, request, error in
-            XCTAssertEqual(status, .success)
-            XCTAssertNil(error)
-            XCTAssertEqual(request?.url, url)
-            XCTAssertEqual(
-                request?.value(forHTTPHeaderField: "X-Test-Prepared"),
-                "yes"
-            )
-            prepared.fulfill()
+        for (instance, expectedStatus) in scenarios {
+            let helper = PreparationRejectingAPIHelperMock()
+            client.apiHelper = helper
+            let preparer = try makeTrackPreparer(instance: instance)
+            let finished = expectation(description: "One preparation failure callback")
+            finished.assertForOverFulfill = true
+            trackForEncryptionTest(preparer) { status, _, _, _, _, _, _ in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertEqual(status, expectedStatus)
+                finished.fulfill()
+            }
+            wait(for: [finished], timeout: 5)
+            XCTAssertNil(helper.lastMethod)
         }
-
-        wait(for: [hookCalled, prepared], timeout: 5.0)
     }
 }

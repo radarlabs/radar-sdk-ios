@@ -30,16 +30,8 @@ final class RadarAPIHelper: Sendable {
     func retryingRequest(
         for request: URLRequest
     ) async throws -> (Data, URLResponse) {
-        try await retryingRequest(makeRequest: { request })
-    }
-
-    func retryingRequest(
-        makeRequest: () async throws -> URLRequest
-    ) async throws -> (Data, URLResponse) {
-        let firstRequest = try await makeRequest()
-
         do {
-            return try await session.data(for: firstRequest)
+            return try await session.data(for: request)
         } catch {
             guard let networkError = error as? URLError,
                 networkError.code == .networkConnectionLost
@@ -48,8 +40,7 @@ final class RadarAPIHelper: Sendable {
             }
         }
 
-        let retryRequest = try await makeRequest()
-        return try await session.data(for: retryRequest)
+        return try await session.data(for: request)
     }
 
     func request(
@@ -57,8 +48,7 @@ final class RadarAPIHelper: Sendable {
         url: String,
         query: [String: String] = [:],
         headers: [String: String] = [:],
-        body: [String: Any?] = [:],
-        prepareRequest: ((URLRequest) async throws -> URLRequest)? = nil
+        body: [String: Any?] = [:]
     ) async throws -> (Data, HTTPURLResponse) {
         let queryString =
             query.isEmpty
@@ -83,18 +73,11 @@ final class RadarAPIHelper: Sendable {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         }
 
-        let baseRequest = request
         let startTime = Date()
         let data: Data
         let response: URLResponse
         do {
-            (data, response) = try await retryingRequest(makeRequest: {
-                guard let prepareRequest else {
-                    return baseRequest
-                }
-
-                return try await prepareRequest(baseRequest)
-            })
+            (data, response) = try await retryingRequest(for: request)
         } catch {
             let elapsedMs = Int(Date().timeIntervalSince(startTime) * 1000)
             RadarLogger.shared.log(
@@ -144,34 +127,6 @@ final class RadarAPIHelper: Sendable {
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
 
         return (data, response)
-    }
-
-    func radarVerifiedRequest(
-        method: String,
-        url: String,
-        query: [String: String] = [:],
-        headers: [String: String] = [:],
-        body: [String: Any?] = [:],
-        useSecondaryVerifiedHost: Bool = false,
-        prepareRequest: ((URLRequest) async throws -> URLRequest)? = nil
-    ) async throws -> (Data, HTTPURLResponse) {
-        let headers = try await addRadarHeaders(headers)
-
-        let host =
-            useSecondaryVerifiedHost
-            ? RadarSettings.DefaultVerifiedHostSecondary
-            : RadarSettings.verifiedHost
-
-        let requestURL = "\(host)/v1/\(url)"
-
-        return try await request(
-            method: method,
-            url: requestURL,
-            query: query,
-            headers: headers,
-            body: body,
-            prepareRequest: prepareRequest
-        )
     }
 
     static func networkErrorMessage(host: String?, error: Error, elapsedMs: Int) -> String {

@@ -121,8 +121,54 @@ public final class RadarAPIClient: Sendable {
 
     func revealRisk(
         useSecondaryVerifiedHost: Bool,
-        prepareRequest: @escaping (URLRequest) async throws -> URLRequest
+        fraudPayloadPreparer: RadarFraudPayloadPreparer
     ) async throws -> RadarRevealRiskToken {
+        let body = await makeRevealRiskBody()
+
+        let method = "POST"
+        let canonicalRoute = "/v1/reveal/risk"
+        let host =
+            useSecondaryVerifiedHost
+            ? RadarSettings.DefaultVerifiedHostSecondary
+            : RadarSettings.verifiedHost
+
+        let headers = try await apiHelper.addRadarHeaders([:])
+
+        let encryptedBody = try await fraudPayloadPreparer.prepareBody(
+            body,
+            method: method,
+            canonicalRoute: canonicalRoute,
+            headers: headers
+        )
+
+        let (data, response) = try await apiHelper.request(
+            method: method,
+            url: "\(host)\(canonicalRoute)",
+            headers: headers,
+            body: encryptedBody
+        )
+
+        if response.statusCode == 401 {
+            throw RadarError(status: .errorUnauthorized, message: "Unauthorized")
+        } else if response.statusCode == 402 {
+            throw RadarError(status: .errorPaymentRequired, message: "Payment required")
+        } else if response.statusCode == 403 {
+            throw RadarError(status: .errorForbidden, message: "Forbidden")
+        } else if response.statusCode == 404 {
+            throw RadarError(status: .errorNotFound, message: "Not found")
+        } else if response.statusCode == 429 {
+            throw RadarError(status: .errorRateLimit, message: "Ratelimited")
+        } else if response.statusCode >= 500 && response.statusCode <= 599 {
+            throw RadarError(status: .errorServer, message: "Server error")
+        }
+
+        guard let result = RadarRevealRiskToken.fromData(data) else {
+            throw APIError(data: data, response: response, message: "Failed to parse reveal risk response")
+        }
+        return result
+    }
+
+    private func makeRevealRiskBody() async -> [String: Any] {
         let params: [String: Any?] = [
             "installId": RadarSettings.installId,
             "userId": RadarSettings.userId,
@@ -146,32 +192,8 @@ public final class RadarAPIClient: Sendable {
             "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
         ]
 
-        let (data, response) = try await apiHelper.radarVerifiedRequest(
-            method: "POST",
-            url: "reveal/risk",
-            body: params,
-            useSecondaryVerifiedHost: useSecondaryVerifiedHost,
-            prepareRequest: prepareRequest
-        )
-
-        if response.statusCode == 401 {
-            throw RadarError(status: .errorUnauthorized, message: "Unauthorized")
-        } else if response.statusCode == 402 {
-            throw RadarError(status: .errorPaymentRequired, message: "Payment required")
-        } else if response.statusCode == 403 {
-            throw RadarError(status: .errorForbidden, message: "Forbidden")
-        } else if response.statusCode == 404 {
-            throw RadarError(status: .errorNotFound, message: "Not found")
-        } else if response.statusCode == 429 {
-            throw RadarError(status: .errorRateLimit, message: "Ratelimited")
-        } else if response.statusCode >= 500 && response.statusCode <= 599 {
-            throw RadarError(status: .errorServer, message: "Server error")
-        }
-
-        guard let result = RadarRevealRiskToken.fromData(data) else {
-            throw APIError(data: data, response: response, message: "Failed to parse reveal risk response")
-        }
-        return result
+        // Preserve the existing JSON null values for absent optional fields.
+        return params.mapValues { $0 ?? NSNull() }
     }
 
     // TODO: implement rest of RadarAPIClient

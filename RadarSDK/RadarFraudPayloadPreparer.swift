@@ -11,7 +11,7 @@ import Foundation
 struct RadarFraudPayloadPreparer {
     let fraudSDK: RadarSDKFraud
     let options: [String: Any]
-    
+
     func prepareBody(
         _ body: [String: Any],
         method: String,

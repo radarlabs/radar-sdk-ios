@@ -12,19 +12,19 @@ import XCTest
 @testable import RadarSDK
 
 extension RadarVerifiedHostOverrideTests {
-    func test_preparationFailure_doesNotBufferReplay() {
-        withIsolatedReplayState {
-            assertReplayBehavior(preparationFails: true)
+    func test_preparationFailure_doesNotBufferReplay() throws {
+        try withIsolatedReplayState {
+            try assertReplayBehavior(preparationFails: true)
         }
     }
 
-    func test_networkFailure_stillBuffersReplay() {
-        withIsolatedReplayState {
-            assertReplayBehavior(preparationFails: false)
+    func test_networkFailure_stillBuffersReplay() throws {
+        try withIsolatedReplayState {
+            try assertReplayBehavior(preparationFails: false)
         }
     }
 
-    private func withIsolatedReplayState(_ body: () -> Void) {
+    func withIsolatedReplayState(_ body: () throws -> Void) rethrows {
         let buffer = RadarReplayBuffer.sharedInstance
         let originalReplays = buffer.mutableReplayBuffer
         let originalOptions = RadarSettings.trackingOptions
@@ -75,17 +75,22 @@ extension RadarVerifiedHostOverrideTests {
         RadarOfflineEventManager.reset()
         seedReplayTestGeofence()
 
-        body()
+        try body()
     }
 
-    private func assertReplayBehavior(preparationFails: Bool) {
+    private func assertReplayBehavior(preparationFails: Bool) throws {
         let client = RadarAPIClient.sharedInstance()
         let originalHelper = client.apiHelper
         defer { client.apiHelper = originalHelper }
 
-        let helper = VerifiedFailureAPIHelperMock()
-        helper.failDuringPreparation = preparationFails
+        let helper = PreparationRejectingAPIHelperMock()
+        helper.mockStatus = .errorNetwork
+        helper.mockError = URLError(.networkConnectionLost)
         client.apiHelper = helper
+        let instance = MockEncryptedFraudInstance(
+            result: preparationFails ? ["error": "encryption failed"] : ["payload": "encrypted-envelope"]
+        )
+        let preparer = try makeTrackPreparer(instance: instance)
 
         let delegateHolder = RadarDelegateHolder.sharedInstance()
         let originalDelegate = delegateHolder.delegate
@@ -96,58 +101,31 @@ extension RadarVerifiedHostOverrideTests {
         let finished = expectation(description: "One tracking callback")
         finished.assertForOverFulfill = true
 
-        trackForReplayTest { status, configMissing, trackingOptionsPresent, movingInterval in
+        trackForEncryptionTest(preparer) { status, _, _, _, _, config, _ in
+            XCTAssertTrue(Thread.isMainThread)
             let expectedStatus: RadarStatus = preparationFails ? .errorUnknown : .errorNetwork
             XCTAssertEqual(status, expectedStatus)
             if preparationFails {
-                XCTAssertTrue(configMissing)
+                XCTAssertNil(config)
             } else {
-                XCTAssertTrue(trackingOptionsPresent)
-                XCTAssertEqual(movingInterval, 17)
+                XCTAssertNotNil(config?.meta?.trackingOptions)
+                XCTAssertEqual(config?.meta?.trackingOptions?.desiredMovingUpdateInterval, 17)
             }
             finished.fulfill()
         }
 
         wait(for: [finished], timeout: 5.0)
         XCTAssertEqual(delegate.recordedStatuses, preparationFails ? [] : [.errorNetwork])
-        XCTAssertEqual(helper.lastMethod, "POST")
-        XCTAssertEqual(helper.lastUrl, "\(RadarSettings.verifiedHost)/v1/track")
+        XCTAssertEqual(instance.recordedOptions().count, 1)
+        if preparationFails {
+            XCTAssertNil(helper.lastMethod)
+        } else {
+            XCTAssertEqual(helper.lastMethod, "POST")
+            XCTAssertEqual(helper.lastUrl, "\(RadarSettings.verifiedHost)/v1/track")
+            XCTAssertEqual(helper.lastParams?["fraudPayload"] as? String, "encrypted-envelope")
+        }
         assertReplayAndOfflineState(preparationFails: preparationFails)
     }
-
-    private func trackForReplayTest(
-        completion: @escaping @Sendable (RadarStatus, Bool, Bool, Int32?) -> Void
-    ) {
-        RadarAPIClient.sharedInstance().track(
-            with: CLLocation(latitude: 40.0, longitude: -73.0),
-            stopped: false,
-            foreground: true,
-            source: .foregroundLocation,
-            replayed: false,
-            beacons: nil,
-            indoorLocation: nil,
-            verified: true,
-            fraudPayload: nil,
-            expectedCountryCode: nil,
-            expectedStateCode: nil,
-            reason: nil,
-            transactionId: nil,
-            revealRiskId: nil,
-            useSecondaryVerifiedHost: false,
-            prepareRequest: { request, completion in
-                completion(.success, request, nil)
-            },
-            completionHandler: { status, _, _, _, _, config, _ in
-                completion(
-                    status,
-                    config == nil,
-                    config?.meta?.trackingOptions != nil,
-                    config?.meta?.trackingOptions?.desiredMovingUpdateInterval
-                )
-            }
-        )
-    }
-
     private func assertReplayAndOfflineState(preparationFails: Bool) {
         let replays = RadarReplayBuffer.sharedInstance.flushableReplays
         XCTAssertEqual(replays.count, preparationFails ? 0 : 1)

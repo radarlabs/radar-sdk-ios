@@ -27,35 +27,33 @@ final class RadarTrackVerifiedRequestPreparer: NSObject, @unchecked Sendable {
         )
     }
 
-    @objc(prepareRequest:completionHandler:)
-    func prepareRequest(
-        _ request: URLRequest,
-        completionHandler:
-            @escaping @Sendable (
-                RadarStatus,
-                URLRequest?,
-                NSError?
-            ) -> Void
-    ) {
+    @objc(prepareBody:headers:completionHandler:)
+    func prepareBody(
+        _ body: [String: Any],
+        headers: [String: String]
+    // Preserve the Objective-C completion's status, body, and error parameters.
+    // swiftlint:disable:next large_tuple
+    ) async -> (RadarStatus, [String: Any]?, NSError?) {
         guard let fraudSDK else {
-            completionHandler(.errorPlugin, nil, nil)
-            return
+            return (.errorPlugin, nil, nil)
         }
 
-        Task {
-            do {
-                let preparedRequest = try await fraudSDK.prepareEncryptedRequest(
-                    request,
-                    canonicalRoute: "/v1/track",
-                    options: self.options
-                )
+        let preparer = RadarFraudPayloadPreparer(
+            fraudSDK: fraudSDK,
+            options: options
+        )
 
-                completionHandler(.success, preparedRequest, nil)
-            } catch {
-                let status = (error as? RadarError)?.status ?? .errorUnknown
-                completionHandler(status, nil, error as NSError)
-            }
+        do {
+            let encryptedBody = try await preparer.prepareBody(
+                body,
+                method: "POST",
+                canonicalRoute: "/v1/track",
+                headers: headers
+            )
+            return (.success, encryptedBody, nil)
+        } catch {
+            let status = (error as? RadarError)?.status ?? .errorUnknown
+            return (status, nil, error as NSError)
         }
     }
-
 }

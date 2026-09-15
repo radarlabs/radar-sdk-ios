@@ -53,17 +53,14 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
             throw RadarError(status: .errorPlugin)
         }
 
-        let fraudOptions = RadarSettings.sdkConfiguration?.dictionaryValue() ?? [:]
+        let preparer = RadarFraudPayloadPreparer(
+            fraudSDK: fraudSDK,
+            options: RadarSettings.sdkConfiguration?.dictionaryValue() ?? [:]
+        )
 
         return try await apiClient.revealRisk(
             useSecondaryVerifiedHost: useSecondaryVerifiedHost,
-            prepareRequest: { request in
-                try await fraudSDK.prepareEncryptedRequest(
-                    request,
-                    canonicalRoute: "/v1/reveal/risk",
-                    options: fraudOptions
-                )
-            }
+            fraudPayloadPreparer: preparer
         )
     }
 

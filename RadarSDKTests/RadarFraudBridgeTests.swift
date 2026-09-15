@@ -35,40 +35,34 @@ extension RadarSerializedTests {
         }
 
         @Test(
-            "Fraud request preparation does not select an environment from the host",
-            arguments: [
-                "https://api.radar.io",
-                "https://api-verified.radar.io",
-                "https://api-verified.radar.com",
-                "https://api.radar-staging.com",
-                "https://api-verified.radar-staging.io",
-                "https://custom.example.com",
-            ],
-            ["/v1/track", "/v1/reveal/risk"]
+            "Body preparation supports both canonical routes without an environment",
+            arguments: ["/v1/track", "/v1/reveal/risk"]
         )
-        func preparationDoesNotSelectEnvironment(host: String, route: String) async throws {
-            let instance = MockEncryptedFraudInstance(result: ["payload": "encrypted-envelope"])
-            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
-            var request = URLRequest(url: try #require(URL(string: host + route)))
-            request.httpMethod = "POST"
-            request.httpBody = try JSONSerialization.data(
-                withJSONObject: ["installId": "test-install"]
+        func preparationDoesNotSelectEnvironment(route: String) async throws {
+            let instance = MockEncryptedFraudInstance(
+                result: ["payload": "encrypted-envelope"]
+            )
+            let fraudSDK: RadarSDKFraud = try #require(
+                RadarSDKFraud(instance: instance)
+            )
+            let preparer = RadarFraudPayloadPreparer(
+                fraudSDK: fraudSDK,
+                options: [:]
             )
 
-            let prepared = try await fraudSDK.prepareEncryptedRequest(
-                request, canonicalRoute: route, options: [:]
+            let body = try await preparer.prepareBody(
+                ["installId": "test-install"],
+                method: "POST",
+                canonicalRoute: route,
+                headers: [:]
             )
+
             let contexts = instance.recordedOptions()
             #expect(contexts.count == 1)
             let context = try #require(contexts.first)
             #expect(context["environment"] == nil)
             #expect(context["canonicalRoute"] as? String == route)
-            #expect(prepared.url == request.url)
-            #expect(prepared.httpMethod == "POST")
-            let bodyData = try #require(prepared.httpBody)
-            let body = try #require(
-                try JSONSerialization.jsonObject(with: bodyData) as? [String: Any]
-            )
+            #expect(context["method"] as? String == "POST")
             #expect(body["installId"] as? String == "test-install")
             #expect(body["fraudPayload"] as? String == "encrypted-envelope")
         }
@@ -158,8 +152,8 @@ extension RadarSerializedTests {
             #expect(context["authorization"] as? String == "test-publishable-key")
             #expect(context["sdkVersion"] as? String == "test-version")
             #expect(context["collectionOption"] as? Bool == true)
-            #expect(context["encryptionAttemptId"] as? String != nil)
-            #expect(context["issuedAt"] as? Int != nil)
+            #expect(context["encryptionAttemptId"] is String)
+            #expect(context["issuedAt"] is Int)
         }
     }
 }
