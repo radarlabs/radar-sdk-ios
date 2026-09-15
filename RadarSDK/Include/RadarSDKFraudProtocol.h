@@ -21,9 +21,6 @@ typedef void (^RadarFraudPayloadCallback)(NSDictionary<NSString *, id> *_Nullabl
 
 - (void)getFraudPayloadWithOptions:(NSDictionary<NSString *, id> *)options completionHandler:(RadarFraudPayloadCallback)completionHandler;
 
-- (void)getEncryptedFraudPayloadWithOptions:(NSDictionary<NSString *, id> *)options
-                          completionHandler:(RadarFraudPayloadCallback)completionHandler;
-
 - (void)setSharingDidChangeHandler:(nullable void (^)(BOOL sharing))handler;
 
 @end
