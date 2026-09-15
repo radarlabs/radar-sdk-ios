@@ -6,7 +6,7 @@ let version = "3.40.0"
 let package = Package(
     name: "RadarSDK",
     platforms: [
-        .iOS(.v10)
+        .iOS(.v15)
     ],
     products: [
         .library(
