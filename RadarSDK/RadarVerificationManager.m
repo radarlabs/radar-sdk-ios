@@ -412,10 +412,6 @@
     self.expectedStateCode = stateCode;
 }
 
-- (void)setExpectedAddress:(NSString *)address {
-    self.expectedAddress = address;
-}
-
 - (BOOL)isSharing {
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
