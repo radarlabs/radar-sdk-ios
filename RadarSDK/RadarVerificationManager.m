@@ -39,6 +39,7 @@
 @property (assign, nonatomic) NSTimeInterval lastIPChangeDeliveredAt;
 @property (copy, nonatomic) NSString *expectedCountryCode;
 @property (copy, nonatomic) NSString *expectedStateCode;
+@property (copy, nonatomic) NSString *expectedAddress;
 
 @end
 
@@ -183,6 +184,7 @@
                  fraudPayload:fraudPayload
                  expectedCountryCode:self.expectedCountryCode
                  expectedStateCode:self.expectedStateCode
+                 expectedAddress:self.expectedAddress
                  reason:reason
                  transactionId:transactionId
                  revealRiskId:revealRiskId
