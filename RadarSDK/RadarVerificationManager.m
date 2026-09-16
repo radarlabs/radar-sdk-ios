@@ -26,12 +26,12 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 
-@interface RadarVerificationManager ()
+
+@protocol RadarVerificationManagerSwiftHost
 
 @property (assign, nonatomic) NSTimeInterval startedInterval;
 @property (assign, nonatomic) BOOL startedBeacons;
 @property (strong, nonatomic) NSTimer *intervalTimer;
-@property (nonatomic, retain) nw_path_monitor_t monitor;
 @property (strong, nonatomic) RadarVerifiedLocationToken *lastToken;
 @property (assign, nonatomic) NSTimeInterval lastTokenSystemUptime;
 @property (assign, nonatomic) BOOL lastTokenBeacons;
@@ -39,10 +39,32 @@
 @property (assign, nonatomic) NSTimeInterval lastIPChangeDeliveredAt;
 @property (copy, nonatomic) NSString *expectedCountryCode;
 @property (copy, nonatomic) NSString *expectedStateCode;
+@property (weak, nonatomic) RadarVerificationManagerSwift *swiftInstance;
+
+@end
+
+
+@interface RadarVerificationManager () <RadarVerificationManagerSwiftHost>
+
+@property (nonatomic, retain) nw_path_monitor_t monitor;
 
 @end
 
 @implementation RadarVerificationManager
+
+// because the properties now comes from RadarVerificationManagerSwiftHost protocol, the properties needs to be manually synthesized
+@synthesize expectedStateCode;
+@synthesize intervalTimer;
+@synthesize lastIPChangeDeliveredAt;
+@synthesize lastIPs;
+@synthesize lastToken;
+@synthesize lastTokenBeacons;
+@synthesize lastTokenSystemUptime;
+@synthesize startedBeacons;
+@synthesize startedInterval;
+@synthesize swiftInstance;
+@synthesize expectedCountryCode;
+
 
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
@@ -50,11 +72,23 @@
     if ([NSThread isMainThread]) {
         dispatch_once(&once, ^{
             sharedInstance = [self new];
+            
+            // this must run after sharedInstance has been initialized
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // touch swift shared instance to initialize it
+                [RadarVerificationManagerSwift sharedInstance];
+            });
         });
     } else {
         dispatch_sync(dispatch_get_main_queue(), ^{
             dispatch_once(&once, ^{
                 sharedInstance = [self new];
+                
+                // this must run after sharedInstance has been initialized
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    // touch swift shared instance to initialize it
+                    [RadarVerificationManagerSwift sharedInstance];
+                });
             });
         });
     }
@@ -406,11 +440,20 @@
 }
 
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode {
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && swiftInstance) {
+        [swiftInstance setExpectedJurisdictionWithCountryCode:countryCode stateCode:stateCode];
+        return;
+    }
+
     self.expectedCountryCode = countryCode;
     self.expectedStateCode = stateCode;
 }
 
 - (BOOL)isSharing {
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && swiftInstance) {
+        return [swiftInstance isSharing];
+    }
+
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
         return NO;
@@ -434,6 +477,11 @@
 }
 
 - (void)clearSharing {
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && swiftInstance) {
+        [swiftInstance clearSharing];
+        return;
+    }
+
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
         return;
@@ -466,9 +514,9 @@
     if (!_monitor) {
         _monitor = nw_path_monitor_create();
 
-        nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
+        nw_path_monitor_set_queue(self.monitor, dispatch_get_main_queue());
 
-        nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
+        nw_path_monitor_set_update_handler(self.monitor, ^(nw_path_t path) {
             if (nw_path_get_status(path) != nw_path_status_satisfied) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
                 return;
@@ -512,9 +560,9 @@
 }
 
 - (void)stopMonitoringIPChanges {
-    if (_monitor) {
-        nw_path_monitor_cancel(_monitor);
-        _monitor = nil;
+    if (self.monitor) {
+        nw_path_monitor_cancel(self.monitor);
+        self.monitor = nil;
     }
 }
 
