@@ -53,6 +53,13 @@ struct VerifiedPanel: View {
             ActionButton("setExpectedJurisdiction") {
                 Radar.setExpectedJurisdiction(countryCode: "US", stateCode: "CA")
             }
+            ActionButton("isSharing") {
+                let x = Radar.isSharing()
+                logStream.write(.success, summary: "isSharing: \(x)")
+            }
+            ActionButton("clearSharing") {
+                Radar.clearSharing()
+            }
         }
     }
 }

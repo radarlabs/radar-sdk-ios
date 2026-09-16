@@ -64,7 +64,13 @@ final class RadarSDKFraud: @unchecked Sendable {
 
     static let isSharingSelector = NSSelectorFromString("isSharing")
     public func isSharing() -> Bool {
-        instance.perform(RadarSDKFraud.isSharingSelector).takeUnretainedValue() as? Bool ?? false
+        let imp = instance.method(for: RadarSDKFraud.isSharingSelector)
+
+        typealias Function = @convention(c) (AnyObject, Selector) -> Bool
+        let function = unsafeBitCast(imp, to: Function.self)
+
+        let result = function(instance, RadarSDKFraud.isSharingSelector)
+        return result
     }
 
     static let clearSharingSelector = NSSelectorFromString("clearSharing")
