@@ -35,7 +35,10 @@
 #import "RadarSDK-Swift.h"
 #endif
 
-@interface RadarLocationManager ()
+// Temporary migration seam for the Swift lifecycle twins. The manager keeps ownership of its
+// private state while Swift runs the lifecycle logic. Remove this conformance when the manager
+// is fully ported.
+@interface RadarLocationManager () <RadarLocationManagerSwiftHost>
 
 /**
  `YES` if `startUpdates()` has started the `timer` for location updates.
@@ -162,10 +165,27 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)getLocationWithCompletionHandler:(RadarLocationCompletionHandler)completionHandler {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift getLocationWithHost:self
+                                      authorizationStatus:[self.permissionsHelper locationAuthorizationStatus]
+                                        locationManager:self.locationManager
+                                       completionHandler:completionHandler];
+        return;
+    }
+
     [self getLocationWithDesiredAccuracy:RadarTrackingOptionsDesiredAccuracyMedium completionHandler:completionHandler];
 }
 
 - (void)getLocationWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarLocationCompletionHandler)completionHandler {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift getLocationWithDesiredAccuracyOnHost:self
+                                                       authorizationStatus:[self.permissionsHelper locationAuthorizationStatus]
+                                                         locationManager:self.locationManager
+                                                        desiredAccuracy:desiredAccuracy
+                                                       completionHandler:completionHandler];
+        return;
+    }
+
     CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
     if (!(authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)) {
         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPermissions];
@@ -260,6 +280,15 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)startUpdates:(int)interval blueBar:(BOOL)blueBar {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift startUpdatesWithHost:self
+                                       locationManager:self.locationManager
+                                lowPowerLocationManager:self.lowPowerLocationManager
+                                               interval:interval
+                                                blueBar:blueBar];
+        return;
+    }
+
     if (!self.started || interval != self.startedInterval) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d", interval]];
 
@@ -292,6 +321,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)stopUpdates {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift stopUpdatesWithHost:self locationManager:self.locationManager];
+        return;
+    }
+
     if (!self.timer) {
         return;
     }
@@ -312,6 +346,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         [self performSelector:@selector(shutDown) withObject:nil afterDelay:delay];
     }
+}
+
+// Temporary callbacks used by the Swift timer twin. They keep shutdown scheduling in the
+// existing Objective-C manager until the manager is fully ported.
+- (void)cancelPendingShutdown {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(shutDown) object:nil];
+}
+
+- (void)scheduleShutdownAfter:(NSTimeInterval)delay {
+    [self performSelector:@selector(shutDown) withObject:nil afterDelay:delay];
 }
 
 - (void)shutDown {
@@ -1350,28 +1394,25 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        if (![RadarLocationManagerSwift shouldHandleRegionWithIdentifier:region.identifier action:@"entry"]) {
-            return;
-        }
-    } else {
-        if (![region.identifier hasPrefix:kIdentifierPrefix]) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: wrong prefix"];
+        [RadarLocationManagerSwift didEnterRegionOnLocationManager:manager region:region];
+        return;
+    }
 
-            return;
-        }
+    if (![region.identifier hasPrefix:kIdentifierPrefix]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: wrong prefix"];
 
-        BOOL tracking = [RadarSettings tracking];
-        if (!tracking) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: not tracking"];
+        return;
+    }
 
-            return;
-        }
+    BOOL tracking = [RadarSettings tracking];
+    if (!tracking) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region entry: not tracking"];
+
+        return;
     }
 
     CLLocation *location;
-    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        location = [RadarLocationManagerSwift effectiveLocationForLocationManager:manager];
-    } else if (manager.location.isValid) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
@@ -1398,28 +1439,25 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        if (![RadarLocationManagerSwift shouldHandleRegionWithIdentifier:region.identifier action:@"exit"]) {
-            return;
-        }
-    } else {
-        if (![region.identifier hasPrefix:kIdentifierPrefix]) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: wrong prefix"];
+        [RadarLocationManagerSwift didExitRegionOnLocationManager:manager region:region];
+        return;
+    }
 
-            return;
-        }
+    if (![region.identifier hasPrefix:kIdentifierPrefix]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: wrong prefix"];
 
-        BOOL tracking = [RadarSettings tracking];
-        if (!tracking) {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: not tracking"];
+        return;
+    }
 
-            return;
-        }
+    BOOL tracking = [RadarSettings tracking];
+    if (!tracking) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Ignoring region exit: not tracking"];
+
+        return;
     }
 
     CLLocation *location;
-    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        location = [RadarLocationManagerSwift effectiveLocationForLocationManager:manager];
-    } else if (manager.location.isValid) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];
@@ -1445,14 +1483,30 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        CLLocation *location = [RadarLocationManagerSwift effectiveLocationForLocationManager:manager];
+        if (!location) {
+            return;
+        }
+
+        RadarLocationSource source = state == CLRegionStateInside ? RadarLocationSourceBeaconEnter : RadarLocationSourceBeaconExit;
+        RadarBeaconCompletionHandler completionHandler = ^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable nearbyBeacons) {
+            [self handleLocation:location source:source beacons:nearbyBeacons];
+        };
+
+        // Swift owns beacon state on the main actor, so Objective-C must move there before calling it.
+        [RadarUtilsDeprecated runOnMainThread:^{
+            [RadarLocationManagerSwift didDetermineState:state region:region completionHandler:completionHandler];
+        }];
+        return;
+    }
+
     if (!([region.identifier hasPrefix:kSyncBeaconIdentifierPrefix] || [region.identifier hasPrefix:kSyncBeaconUUIDIdentifierPrefix])) {
         return;
     }
 
     CLLocation *location;
-    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        location = [RadarLocationManagerSwift effectiveLocationForLocationManager:manager];
-    } else if (manager.location.isValid) {
+    if (manager.location.isValid) {
         location = manager.location;
     } else {
         location = [RadarState lastLocation];

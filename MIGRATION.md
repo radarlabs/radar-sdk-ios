@@ -1,5 +1,9 @@
 # Migration guides
 
+## 3.40.x to 3.41.x
+
+- The minimum supported iOS version is now 15.0. Raise your app's deployment target to iOS 15 or later before upgrading. Apps that must support iOS 13 or 14 should remain on an earlier SDK release.
+
 ## 3.20.x to 3.21.x
 - The `Radar.searchPlaces()` method now expects an additional parameter `countryCodes` to filter results by country. See [documentation](https://radar.com/documentation/sdk/ios#search).
 

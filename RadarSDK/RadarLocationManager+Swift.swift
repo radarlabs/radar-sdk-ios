@@ -8,6 +8,9 @@
 import CoreLocation
 import Foundation
 
+// Keep the ObjC-facing twins together while the location manager migration is in progress.
+// swiftlint:disable file_length
+
 // Swift port of `RadarLocationManager` methods, added one at a time as the class
 // migrates from Objective-C. Each method here has a twin in `RadarLocationManager.m`
 // that dispatches to it when `useSwiftLocationManager` is enabled. When a method's
@@ -18,18 +21,48 @@ import Foundation
 // auto-synthesized Swift module, so we cannot extend `RadarLocationManager` from Swift.
 // Static methods on this class are called from `RadarLocationManager.m` via
 // `RadarSDK-Swift.h`. Methods that need access to the manager's CLLocationManager
-// receive it as an explicit argument — once the porting cluster grows enough to share
-// more instance state (timer, completion handlers), we can introduce a host protocol.
+// receive it as an explicit argument. Lifecycle methods use the host protocol below
+// because they also need private timer state, completion storage, and shutdown scheduling.
+// This protocol is a temporary migration seam. Remove it when RadarLocationManager is
+// fully ported to Swift and the manager no longer needs an Objective-C host for that state.
+// `@objc public` keeps the seam visible to the generated Objective-C header; it is not a new SDK API.
+@objc public protocol RadarLocationManagerSwiftHost: AnyObject {
+    func started() -> Bool
+    func setStarted(_ started: Bool)
+    func startedInterval() -> Int32
+    func setStartedInterval(_ interval: Int32)
+    func sending() -> Bool
+    func timer() -> Timer?
+    func setTimer(_ timer: Timer?)
+
+    func cancelPendingShutdown()
+    func requestLocation()
+    func scheduleShutdown(after delay: TimeInterval)
+
+    // Keep completion storage in Objective-C until the location callback and timeout paths move together.
+    func addCompletionHandler(_ completionHandler: RadarLocationCompletionHandler?)
+}
+
+private final class RadarLocationManagerSwiftHostBox: @unchecked Sendable {
+    let host: RadarLocationManagerSwiftHost
+
+    init(host: RadarLocationManagerSwiftHost) {
+        self.host = host
+    }
+}
+
 @objc(RadarLocationManagerSwift)
-final class RadarLocationManagerSwift: NSObject {
+final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this type_body_length
 
     // Mirror of the identifier prefix constants in RadarLocationManager.m. Kept in sync by
     // hand until that file is fully ported.
     static let identifierPrefix = "radar_"
     private static let bubbleGeofenceIdentifierPrefix = "radar_bubble_"
     private static let syncGeofenceIdentifierPrefix = "radar_geofence_"
-    private static let syncBeaconIdentifierPrefix = "radar_beacon_"
-    private static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
+    static let syncBeaconIdentifierPrefix = "radar_beacon_"
+    static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
+    private static let trackingShutdownDelay: TimeInterval = 10
+    private static let immediateShutdownDelay: TimeInterval = 0
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
 
     @objc(startTrackingWithOptions:)
@@ -95,6 +128,101 @@ final class RadarLocationManagerSwift: NSObject {
         RadarSettings.trackingOptions = trackingOptions
 
         RadarSwift.bridge?.updateTracking()
+    }
+
+    @objc(startUpdatesWithHost:locationManager:lowPowerLocationManager:interval:blueBar:)
+    static func startUpdates(
+        host: RadarLocationManagerSwiftHost,
+        locationManager: CLLocationManager,
+        lowPowerLocationManager: CLLocationManager,
+        interval: Int32,
+        blueBar: Bool
+    ) {
+        if !host.started() || interval != host.startedInterval() {
+            RadarLogger.shared.debug("🦅 Starting timer | interval = \(interval)")
+
+            host.cancelPendingShutdown()
+            host.timer()?.invalidate()
+
+            let hostBox = RadarLocationManagerSwiftHostBox(host: host)
+            host.setTimer(
+                Timer.scheduledTimer(withTimeInterval: TimeInterval(interval), repeats: true) { [hostBox] _ in
+                    RadarLogger.shared.debug("🦅 Timer fired")
+                    hostBox.host.requestLocation()
+                })
+
+            lowPowerLocationManager.startUpdatingLocation()
+            if blueBar && interval <= 5 {
+                locationManager.startUpdatingLocation()
+            } else {
+                locationManager.stopUpdatingLocation()
+            }
+
+            host.setStarted(true)
+            host.setStartedInterval(interval)
+        } else {
+            RadarLogger.shared.debug("🦅 Already started timer")
+        }
+    }
+
+    @objc(stopUpdatesWithHost:locationManager:)
+    static func stopUpdates(host: RadarLocationManagerSwiftHost, locationManager: CLLocationManager) {
+        guard let timer = host.timer() else {
+            return
+        }
+
+        RadarLogger.shared.debug("🦅 Stopping timer")
+
+        timer.invalidate()
+        locationManager.stopUpdatingLocation()
+
+        host.setStarted(false)
+        host.setStartedInterval(0)
+
+        if !host.sending() {
+            let delay = RadarSettings.tracking ? Self.trackingShutdownDelay : Self.immediateShutdownDelay
+
+            RadarLogger.shared.debug("🦅 Scheduling shutdown")
+            host.scheduleShutdown(after: delay)
+        }
+    }
+
+    @objc(getLocationWithHost:authorizationStatus:locationManager:completionHandler:)
+    static func getLocation(
+        host: RadarLocationManagerSwiftHost,
+        authorizationStatus: CLAuthorizationStatus,
+        locationManager: CLLocationManager,
+        completionHandler: RadarLocationCompletionHandler?
+    ) {
+        getLocation(
+            host: host,
+            authorizationStatus: authorizationStatus,
+            locationManager: locationManager,
+            desiredAccuracy: .medium,
+            completionHandler: completionHandler
+        )
+    }
+
+    @objc(getLocationWithDesiredAccuracyOnHost:authorizationStatus:locationManager:desiredAccuracy:completionHandler:)
+    static func getLocation(
+        host: RadarLocationManagerSwiftHost,
+        authorizationStatus: CLAuthorizationStatus,
+        locationManager: CLLocationManager,
+        desiredAccuracy: RadarTrackingOptionsDesiredAccuracy,
+        completionHandler: RadarLocationCompletionHandler?
+    ) {
+        guard authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways else {
+            RadarSwift.bridge?.didFail(status: .errorPermissions)
+            completionHandler?(.errorPermissions, nil, false)
+            return
+        }
+
+        if let completionHandler {
+            host.addCompletionHandler(completionHandler)
+        }
+
+        locationManager.desiredAccuracy = clLocationAccuracy(for: desiredAccuracy)
+        requestLocation(locationManager: locationManager)
     }
 
     @objc(matchBeaconIdsWithRanged:synced:)
