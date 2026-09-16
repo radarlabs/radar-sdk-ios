@@ -16,6 +16,9 @@ final class RadarSDKFraud: @unchecked Sendable {
         guard instance.responds(to: Self.initializeSelector),
             instance.responds(to: Self.getEncryptedFraudPayloadSelector)
         else {
+            RadarLogger.shared.warning(
+                "RadarSDKFraud is incompatible: missing required initialization or encrypted-payload methods."
+            )
             return nil
         }
 
