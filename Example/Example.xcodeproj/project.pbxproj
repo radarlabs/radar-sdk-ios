@@ -289,7 +289,7 @@
 		F61886B92EA7DB180072E87C /* TestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsView.swift; sourceTree = "<group>"; };
 		F61886C22EA7DB5C0072E87C /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
 		F625D7F82C3337650024D1E7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		F64C7FB22F645A9F00943B7A /* RadarSDKFraud.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKFraud.xcodeproj; path = "../../radar-sdk-ios-fraud/RadarSDKFraud.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		F64C7FB22F645A9F00943B7A /* RadarSDKFraud.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RadarSDKFraud.xcodeproj; path = ../RadarSDKFraud/RadarSDKFraud.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F64C7FB52F645ABD00943B7A /* RadarSDKFraud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKFraud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513E722E60A5F600523472 /* LocationPushExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LocationPushExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6513F5F2E6B736200523472 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
