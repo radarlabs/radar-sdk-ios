@@ -14,7 +14,6 @@ final class RadarSDKFraud: @unchecked Sendable {
 
     init?(instance: NSObject) {
         guard instance.responds(to: Self.initializeSelector),
-            instance.responds(to: Self.getFraudPayloadSelector),
             instance.responds(to: Self.getEncryptedFraudPayloadSelector)
         else {
             return nil
@@ -42,7 +41,6 @@ final class RadarSDKFraud: @unchecked Sendable {
         instance.perform(RadarSDKFraud.initializeSelector, with: options)
     }
 
-    static let getFraudPayloadSelector = NSSelectorFromString("getFraudPayloadWithOptions:completionHandler:")
     static let getEncryptedFraudPayloadSelector = NSSelectorFromString(
         "getEncryptedFraudPayloadWithOptions:completionHandler:"
     )
