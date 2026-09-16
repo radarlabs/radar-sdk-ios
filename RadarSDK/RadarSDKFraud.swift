@@ -13,9 +13,13 @@ final class RadarSDKFraud: @unchecked Sendable {
     let instance: NSObject
 
     init?(instance: NSObject) {
-        if !instance.responds(to: RadarSDKFraud.initializeSelector) || !instance.responds(to: RadarSDKFraud.getFraudPayloadSelector) {
+        guard instance.responds(to: Self.initializeSelector),
+            instance.responds(to: Self.getFraudPayloadSelector),
+            instance.responds(to: Self.getEncryptedFraudPayloadSelector)
+        else {
             return nil
         }
+
         self.instance = instance
     }
 
@@ -46,10 +50,6 @@ final class RadarSDKFraud: @unchecked Sendable {
     public func getEncryptedFraudPayload(
         options: [String: Any]
     ) async -> (RadarStatus, String?) {
-        guard instance.responds(to: RadarSDKFraud.getEncryptedFraudPayloadSelector) else {
-            return (.errorPlugin, nil)
-        }
-
         let result = await withCheckedContinuation { continuation in
             let completionHandler: @convention(block) ([String: Sendable]?) -> Void = { payload in
                 continuation.resume(returning: payload)

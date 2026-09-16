@@ -85,7 +85,21 @@ extension RadarVerifiedHostOverrideTests {
         for (instance, expectedStatus) in scenarios {
             let helper = PreparationRejectingAPIHelperMock()
             client.apiHelper = helper
-            let preparer = try makeTrackPreparer(instance: instance)
+
+            let fraudSDK = instance.flatMap {
+                RadarSDKFraud(instance: $0)
+            }
+            if expectedStatus == .errorPlugin {
+                XCTAssertNil(fraudSDK)
+            } else {
+                XCTAssertNotNil(fraudSDK)
+            }
+
+            let preparer = RadarTrackVerifiedRequestPreparer(
+                fraudSDK: fraudSDK,
+                options: [:]
+            )
+
             let finished = expectation(description: "One preparation failure callback")
             finished.assertForOverFulfill = true
             trackForEncryptionTest(preparer) { status, _, _, _, _, _, _ in

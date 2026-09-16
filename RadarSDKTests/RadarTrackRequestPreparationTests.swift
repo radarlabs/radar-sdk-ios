@@ -52,7 +52,7 @@ extension RadarSerializedTests {
                 #expect(encryptedBody["latitude"] as? Double == 47.0)
             } else {
                 #expect(body == nil)
-                if scenario == "missing-module" {
+                if scenario == "missing-module" || scenario == "legacy-module" {
                     #expect(error == nil)
                 } else {
                     #expect(error != nil)
@@ -70,13 +70,11 @@ extension RadarSerializedTests {
                 expectedStatus = .errorPlugin
 
             case "legacy-module":
-                let candidate: RadarSDKFraud? = RadarSDKFraud(
+                fraudSDK = RadarSDKFraud(
                     instance: MockLegacyFraudInstance()
                 )
-                let validatedSDK: RadarSDKFraud = try #require(candidate)
-                fraudSDK = validatedSDK
+                #expect(fraudSDK == nil)
                 expectedStatus = .errorPlugin
-
             default:
                 let result = fraudResult(scenario: scenario)
                 let candidate: RadarSDKFraud? = RadarSDKFraud(

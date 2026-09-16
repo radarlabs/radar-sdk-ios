@@ -14,28 +14,6 @@ import Testing
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarFraudPayloadPreparerTests {
-        @Test("Body preparation preserves the missing-plugin status")
-        func preservesPluginError() async throws {
-            let instance = MockLegacyFraudInstance()
-            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
-            let preparer = RadarFraudPayloadPreparer(
-                fraudSDK: fraudSDK,
-                options: [:]
-            )
-
-            do {
-                _ = try await preparer.prepareBody(
-                    ["installId": "test-install"],
-                    method: "POST",
-                    canonicalRoute: "/v1/track",
-                    headers: [:]
-                )
-                Issue.record("Expected preparation to reject the legacy plugin")
-            } catch let error as RadarError {
-                #expect(error.status == .errorPlugin)
-            }
-        }
-
         @Test(
             "Body preparation rejects unsuccessful or unusable payloads",
             arguments: [

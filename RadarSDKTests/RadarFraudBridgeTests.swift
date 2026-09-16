@@ -21,17 +21,13 @@ extension RadarSerializedTests {
             #expect(payload == "encrypted-payload")
         }
 
-        @Test("Core tolerates an older fraud SDK without encryption support")
-        func encryptedFraudPayloadHandlesMissingSelector() async throws {
-            let instance = MockLegacyFraudInstance()
-            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
-
-            let (status, payload) = await fraudSDK.getEncryptedFraudPayload(
-                options: [:]
+        @Test("Core rejects an older fraud SDK without encryption support")
+        func initializerRejectsLegacyFraudSDK() {
+            let fraudSDK = RadarSDKFraud(
+                instance: MockLegacyFraudInstance()
             )
 
-            #expect(status == .errorPlugin)
-            #expect(payload == nil)
+            #expect(fraudSDK == nil)
         }
 
         @Test(
