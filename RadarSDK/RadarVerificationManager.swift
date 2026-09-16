@@ -159,7 +159,7 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
         return tokenValid
     }
 
-    func setExpectedJurisdiction(countryCode: String, stateCode: String) {
+    func setExpectedJurisdiction(countryCode: String?, stateCode: String?) {
         sharingLock.lock()
         self.expectedStateCode = stateCode
         self.expectedCountryCode = countryCode

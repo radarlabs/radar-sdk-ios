@@ -31,6 +31,7 @@ struct VerifiedPanel: View {
                 }
             }
             ActionButton("trackVerified") {
+                Radar.setExpectedJurisdiction(countryCode: "CA", stateCode: nil)
                 Radar.trackVerified { (status, token) in
                     let tokenDesc = token?.dictionaryValue().description ?? "no token"
                     logStream.write(

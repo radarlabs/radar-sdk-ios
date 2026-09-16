@@ -120,11 +120,11 @@ final class RadarAPIHelper: Sendable {
         let hostUrl =
             switch host {
             case .defaultHost:
-                RadarSettings.DefaultHost
+                RadarSettings.host
             case .verifiedHost:
-                RadarSettings.DefaultVerifiedHost
+                RadarSettings.verifiedHost
             case .verifiedSecondaryHost:
-                RadarSettings.DefaultVerifiedHostSecondary
+                RadarSettings.defaultVerifiedHostSecondary
             }
 
         let headers = try await addRadarHeaders(headers)
