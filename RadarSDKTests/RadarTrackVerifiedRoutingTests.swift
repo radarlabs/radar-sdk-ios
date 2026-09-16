@@ -89,7 +89,7 @@ extension RadarVerifiedHostOverrideTests {
             let fraudSDK = instance.flatMap {
                 RadarSDKFraud(instance: $0)
             }
-            if expectedStatus == .errorPlugin {
+            if instance == nil {
                 XCTAssertNil(fraudSDK)
             } else {
                 XCTAssertNotNil(fraudSDK)

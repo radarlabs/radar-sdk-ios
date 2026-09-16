@@ -19,15 +19,48 @@ extension RadarSerializedTests {
 
             #expect(status == .success)
             #expect(payload == "encrypted-payload")
+            // This implementation has encryption but neither sharing selector.
+            #expect(fraudSDK.isSharing() == false)
+            fraudSDK.clearSharing()
         }
 
-        @Test("Core rejects an older fraud SDK without encryption support")
-        func initializerRejectsLegacyFraudSDK() {
-            let fraudSDK = RadarSDKFraud(
-                instance: MockLegacyFraudInstance()
+        @Test("Core rejects encryption through an older fraud SDK without using plaintext")
+        func encryptionRejectsLegacyFraudSDK() async throws {
+            let instance = MockLegacyFraudInstance()
+            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
+
+            let (status, payload) = await fraudSDK.getEncryptedFraudPayload(options: [:])
+            #expect(status == .errorPlugin)
+            #expect(payload == nil)
+            #expect(instance.recordedPlaintextCalls() == 0)
+            #expect(fraudSDK.isSharing())
+            fraudSDK.clearSharing()
+            #expect(fraudSDK.isSharing() == false)
+        }
+
+        @Test("Swift verification preserves sharing with an older fraud SDK")
+        func verificationPreservesLegacySharing() throws {
+            let fraudSDK = try #require(RadarSDKFraud(instance: MockLegacyFraudInstance()))
+            let manager = RadarSDK.RadarVerificationManager(
+                apiClient: RadarAPIClient.shared,
+                fraudSDK: fraudSDK,
+                locationManagerHost: nil,
+                verificationmanagerHost: nil
             )
 
-            #expect(fraudSDK == nil)
+            #expect(manager.isSharing())
+            manager.clearSharing()
+            #expect(manager.isSharing() == false)
+        }
+
+        @Test("Sharing selectors are checked independently", arguments: ["isSharing", "clearSharing"])
+        func sharingSelectorsAreIndependent(missingSelector: String) throws {
+            let instance = MockLegacyFraudInstance(missingSelectors: [missingSelector])
+            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
+
+            #expect(fraudSDK.isSharing() == (missingSelector != "isSharing"))
+            fraudSDK.clearSharing()
+            #expect(instance.isSharing() == (missingSelector == "clearSharing"))
         }
 
         @Test(

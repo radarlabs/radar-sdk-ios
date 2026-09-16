@@ -31,6 +31,7 @@ struct VerifiedPanel: View {
                 }
             }
             ActionButton("trackVerified") {
+                Radar.setExpectedJurisdiction(countryCode: "CA", stateCode: nil)
                 Radar.trackVerified { (status, token) in
                     let tokenDesc = token?.dictionaryValue().description ?? "no token"
                     logStream.write(
@@ -49,6 +50,16 @@ struct VerifiedPanel: View {
                         detail: tokenDesc
                     )
                 }
+            }
+            ActionButton("setExpectedJurisdiction") {
+                Radar.setExpectedJurisdiction(countryCode: "US", stateCode: "CA")
+            }
+            ActionButton("isSharing") {
+                let x = Radar.isSharing()
+                logStream.write(.success, summary: "isSharing: \(x)")
+            }
+            ActionButton("clearSharing") {
+                Radar.clearSharing()
             }
         }
     }

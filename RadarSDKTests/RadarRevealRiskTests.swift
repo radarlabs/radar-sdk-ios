@@ -77,7 +77,7 @@ extension RadarSerializedTests {
         private func makeManager(fraudResult: [String: Any]?, session: MockURLSession) -> RadarRevealRiskManager {
             Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
             let apiClient = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
-            let fraudSDK = RadarSDKFraud(instance: MockFraudInstance(result: fraudResult))
+            let fraudSDK = RadarSDKFraud(instance: MockFraudSDK(result: fraudResult, sharing: false))
             return RadarRevealRiskManager(apiClient: apiClient, fraudSDK: fraudSDK)
         }
 
@@ -199,19 +199,21 @@ extension RadarSerializedTests {
             }
         }
 
-        @Test("revealRisk throws .errorPlugin when the fraud SDK is not available")
-        func revealRiskThrowsPluginErrorWhenFraudSDKIsNil() async throws {
+        @Test("revealRisk rejects missing or legacy fraud SDKs", arguments: [false, true])
+        func revealRiskThrowsPluginErrorWhenFraudSDKIsUnavailable(legacy: Bool) async throws {
             let session = MockURLSession()
-            // Without a fraud SDK the manager should short-circuit before ever reaching the API.
+            // Missing encryption support must short-circuit before reaching the API.
             session.on(
                 { _ in
-                    Issue.record("reveal/risk API should not be called when the fraud SDK is nil")
+                    Issue.record("reveal/risk API should not be called without encryption support")
                     return false
                 }, Data())
 
             Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
             let apiClient = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
-            let manager = RadarRevealRiskManager(apiClient: apiClient, fraudSDK: nil)
+            let fraudSDK = legacy ? RadarSDKFraud(instance: MockLegacyFraudInstance()) : nil
+            #expect((fraudSDK != nil) == legacy)
+            let manager = RadarRevealRiskManager(apiClient: apiClient, fraudSDK: fraudSDK)
 
             await #expect {
                 _ = try await manager.revealRisk(useSecondaryVerifiedHost: false)

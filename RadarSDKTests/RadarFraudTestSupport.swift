@@ -34,6 +34,39 @@ final class MockFraudInstance: NSObject, @unchecked Sendable {
 }
 
 final class MockLegacyFraudInstance: NSObject, @unchecked Sendable {
+    private let lock = NSLock()
+    private var sharing = true
+    private var plaintextCalls = 0
+    let missingSelectors: Set<String>
+
+    init(missingSelectors: Set<String> = []) {
+        self.missingSelectors = missingSelectors
+    }
+
+    override func responds(to selector: Selector!) -> Bool {
+        !missingSelectors.contains(NSStringFromSelector(selector)) && super.responds(to: selector)
+    }
+
+    @objc(isSharing)
+    func isSharing() -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return sharing
+    }
+
+    @objc(clearSharing)
+    func clearSharing() {
+        lock.lock()
+        defer { lock.unlock() }
+        sharing = false
+    }
+
+    func recordedPlaintextCalls() -> Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return plaintextCalls
+    }
+
     @objc(initializeWithOptions:)
     func initialize(options: [String: Any]) {}
 
@@ -42,6 +75,9 @@ final class MockLegacyFraudInstance: NSObject, @unchecked Sendable {
         options: [String: Any],
         completionHandler: @escaping ([String: Any]?) -> Void
     ) {
+        lock.lock()
+        plaintextCalls += 1
+        lock.unlock()
         completionHandler(nil)
     }
 }
