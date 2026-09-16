@@ -8,9 +8,9 @@
 
 import CoreTelephony
 import Foundation
+import Security
 import SystemConfiguration
 import UIKit
-import Security
 
 enum RadarConnectionType: String {
     case unknown = "unknown"
