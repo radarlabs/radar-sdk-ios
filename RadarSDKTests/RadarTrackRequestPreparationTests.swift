@@ -7,7 +7,7 @@ extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarTrackRequestPreparationTests {
         @Test(
-            "Tracking body preparation preserves success and failure statuses",
+            "Tracking payload collection preserves success and failure statuses",
             arguments: [
                 "success",
                 "missing-module",
@@ -21,7 +21,7 @@ extension RadarSerializedTests {
                 "payload-and-error",
             ]
         )
-        func trackingBodyPreparationBridge(scenario: String) async throws {
+        func trackingPayloadBridge(scenario: String) async throws {
             let (fraudSDK, expectedStatus) = try makeFraudSDK(scenario: scenario)
             let preparer = RadarTrackVerifiedRequestPreparer(
                 fraudSDK: fraudSDK,
@@ -30,28 +30,27 @@ extension RadarSerializedTests {
 
             #expect(
                 preparer.responds(
-                    to: NSSelectorFromString("prepareBody:headers:completionHandler:")
+                    to: NSSelectorFromString(
+                        "getEncryptedPayloadWithInstallId:origin:product:sdkVersion:authorization:completionHandler:"
+                    )
                 )
             )
 
-            let (status, body, error) = await preparer.prepareBody(
-                [
-                    "installId": "test-install",
-                    "latitude": 47.0,
-                ],
-                headers: ["Authorization": "test-key"]
+            let (status, payload, error) = await preparer.getEncryptedPayload(
+                installId: "test-install",
+                origin: nil,
+                product: nil,
+                sdkVersion: "test-version",
+                authorization: "test-key"
             )
 
             #expect(status == expectedStatus)
 
             if scenario == "success" {
                 #expect(error == nil)
-                let encryptedBody = try #require(body)
-                #expect(encryptedBody["fraudPayload"] as? String == "encrypted-envelope")
-                #expect(encryptedBody["installId"] as? String == "test-install")
-                #expect(encryptedBody["latitude"] as? Double == 47.0)
+                #expect(payload == "encrypted-envelope")
             } else {
-                #expect(body == nil)
+                #expect(payload == nil)
                 if scenario == "missing-module" || scenario == "legacy-module" {
                     #expect(error == nil)
                 } else {

@@ -788,16 +788,30 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
             };
 
             if (verified && fraudPayloadPreparer) {
-                [fraudPayloadPreparer prepareBody:requestParams
-                                         headers:headers
-                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable encryptedBody, NSError *_Nullable error) {
-                    if (status != RadarStatusSuccess || !encryptedBody || error) {
+                NSString *installId = requestParams[@"installId"];
+                if (![installId isKindOfClass:[NSString class]]) {
+                    [RadarUtilsDeprecated runOnMainThread:^{
+                        completionHandler(RadarStatusErrorUnknown, nil, nil, nil, nil, nil, nil);
+                    }];
+                    return;
+                }
+
+                [fraudPayloadPreparer getEncryptedPayloadWithInstallId:installId
+                                                              origin:headers[@"Origin"]
+                                                             product:headers[@"X-Radar-Product"]
+                                                          sdkVersion:headers[@"X-Radar-SDK-Version"]
+                                                       authorization:headers[@"Authorization"]
+                                                   completionHandler:^(RadarStatus status, NSString *_Nullable payload, NSError *_Nullable error) {
+                    if (status != RadarStatusSuccess || !payload.length || error) {
                         RadarStatus failureStatus = status == RadarStatusSuccess ? RadarStatusErrorUnknown : status;
                         [RadarUtilsDeprecated runOnMainThread:^{
                             completionHandler(failureStatus, nil, nil, nil, nil, nil, nil);
                         }];
                         return;
                     }
+
+                    NSMutableDictionary *encryptedBody = [requestParams mutableCopy];
+                    encryptedBody[@"fraudPayload"] = payload;
 
                     [self.apiHelper requestWithMethod:@"POST"
                                                  url:url

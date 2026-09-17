@@ -15,7 +15,7 @@ extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarFraudPayloadPreparerTests {
         @Test(
-            "Body preparation rejects unsuccessful or unusable payloads",
+            "Encrypted payload collection rejects unsuccessful or unusable payloads",
             arguments: [
                 "nil-result",
                 "missing-payload",
@@ -54,11 +54,11 @@ extension RadarSerializedTests {
             )
 
             do {
-                _ = try await preparer.prepareBody(
-                    ["installId": "test-install"],
-                    method: "POST",
+                _ = try await preparer.getEncryptedPayload(
+                    installId: "test-install",
                     canonicalRoute: route,
-                    headers: [:]
+                    sdkVersion: "test-version",
+                    authorization: "test-key"
                 )
                 Issue.record("Expected preparation to reject \(scenario)")
             } catch let error as RadarError {
@@ -66,48 +66,6 @@ extension RadarSerializedTests {
             }
 
             #expect(instance.recordedOptions().count == 1)
-        }
-
-        @Test(
-            "Invalid context is rejected before invoking the fraud library",
-            arguments: [
-                "wrong-method",
-                "missing-install-id",
-                "wrong-install-id-type",
-            ]
-        )
-        func rejectsInvalidContext(scenario: String) async throws {
-            let instance = MockEncryptedFraudInstance(
-                result: ["payload": "must-not-be-used"]
-            )
-            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
-            let preparer = RadarFraudPayloadPreparer(
-                fraudSDK: fraudSDK,
-                options: [:]
-            )
-
-            let method = scenario == "wrong-method" ? "GET" : "POST"
-            var body: [String: Any] = ["installId": "test-install"]
-            if scenario == "missing-install-id" {
-                body.removeValue(forKey: "installId")
-            } else if scenario == "wrong-install-id-type" {
-                body["installId"] = 123
-            }
-
-            do {
-                _ = try await preparer.prepareBody(
-                    body,
-                    method: method,
-                    canonicalRoute: "/v1/track",
-                    headers: [:]
-                )
-                Issue.record("Expected preparation to reject \(scenario)")
-            } catch let error as RadarError {
-                #expect(error.status == .errorUnknown)
-                #expect(error.message == "Invalid fraud encryption request")
-            }
-
-            #expect(instance.recordedOptions().isEmpty)
         }
     }
 }

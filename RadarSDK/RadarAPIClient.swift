@@ -139,29 +139,36 @@ public final class RadarAPIClient: Sendable {
         useSecondaryVerifiedHost: Bool,
         fraudPayloadPreparer: RadarFraudPayloadPreparer
     ) async throws -> RadarRevealRiskToken {
-        let body = await makeRevealRiskBody()
+        var body = await makeRevealRiskBody()
 
         let method = "POST"
         let canonicalRoute = "/v1/reveal/risk"
-        let host =
-            useSecondaryVerifiedHost
-            ? RadarSettings.defaultVerifiedHostSecondary
-            : RadarSettings.verifiedHost
 
         let headers = try await apiHelper.addRadarHeaders([:])
 
-        let encryptedBody = try await fraudPayloadPreparer.prepareBody(
-            body,
-            method: method,
+        guard let installId = body["installId"] as? String else {
+            throw RadarError(
+                status: .errorUnknown,
+                message: "Missing install ID for fraud encryption"
+            )
+        }
+
+        body["fraudPayload"] = try await fraudPayloadPreparer.getEncryptedPayload(
+            installId: installId,
             canonicalRoute: canonicalRoute,
-            headers: headers
+            origin: headers["Origin"],
+            product: headers["X-Radar-Product"],
+            sdkVersion: headers["X-Radar-SDK-Version"],
+            authorization: headers["Authorization"]
         )
 
-        let (data, response) = try await apiHelper.request(
+        let (data, response) = try await apiHelper.radarRequest(
+            host: useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost,
             method: method,
-            url: "\(host)\(canonicalRoute)",
+            url: "reveal/risk",
             headers: headers,
-            body: encryptedBody
+            body: body,
+            headersArePrepared: true
         )
 
         try assertResponseCode(response.statusCode)
