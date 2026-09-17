@@ -145,7 +145,7 @@ public final class RadarAPIClient: Sendable {
         let canonicalRoute = "/v1/reveal/risk"
         let host =
             useSecondaryVerifiedHost
-            ? RadarSettings.DefaultVerifiedHostSecondary
+            ? RadarSettings.defaultVerifiedHostSecondary
             : RadarSettings.verifiedHost
 
         let headers = try await apiHelper.addRadarHeaders([:])
