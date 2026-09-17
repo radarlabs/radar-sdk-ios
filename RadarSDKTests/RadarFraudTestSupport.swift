@@ -31,21 +31,20 @@ final class MockFraudInstance: NSObject, @unchecked Sendable {
     ) {
         completionHandler(result)
     }
+
+    @objc(isSharing)
+    func isSharing() -> Bool {
+        return false
+    }
+
+    @objc(clearSharing)
+    func clearSharing() {}
 }
 
 final class MockLegacyFraudInstance: NSObject, @unchecked Sendable {
     private let lock = NSLock()
     private var sharing = true
     private var plaintextCalls = 0
-    let missingSelectors: Set<String>
-
-    init(missingSelectors: Set<String> = []) {
-        self.missingSelectors = missingSelectors
-    }
-
-    override func responds(to selector: Selector!) -> Bool {
-        !missingSelectors.contains(NSStringFromSelector(selector)) && super.responds(to: selector)
-    }
 
     @objc(isSharing)
     func isSharing() -> Bool {
@@ -87,9 +86,19 @@ final class MockEncryptedFraudInstance: NSObject, @unchecked Sendable {
     private var capturedOptions: [[String: Any]] = []
 
     let result: [String: Any]?
+    private let missingSelectors: Set<String>
 
-    init(result: [String: Any]?) {
+    init(
+        result: [String: Any]?,
+        missingSelectors: Set<String> = []
+    ) {
         self.result = result
+        self.missingSelectors = missingSelectors
+    }
+
+    override func responds(to selector: Selector!) -> Bool {
+        !missingSelectors.contains(NSStringFromSelector(selector))
+            && super.responds(to: selector)
     }
 
     @objc(initializeWithOptions:)
@@ -120,4 +129,12 @@ final class MockEncryptedFraudInstance: NSObject, @unchecked Sendable {
         defer { optionsLock.unlock() }
         return capturedOptions
     }
+
+    @objc(isSharing)
+    func isSharing() -> Bool {
+        return false
+    }
+
+    @objc(clearSharing)
+    func clearSharing() {}
 }

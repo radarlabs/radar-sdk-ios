@@ -19,28 +19,24 @@ extension RadarSerializedTests {
 
             #expect(status == .success)
             #expect(payload == "encrypted-payload")
-            // This implementation has encryption but neither sharing selector.
             #expect(fraudSDK.isSharing() == false)
             fraudSDK.clearSharing()
         }
 
-        @Test("Core rejects encryption through an older fraud SDK without using plaintext")
-        func encryptionRejectsLegacyFraudSDK() async throws {
+        @Test("Core rejects an older fraud SDK during initialization")
+        func initializationRejectsLegacyFraudSDK() {
             let instance = MockLegacyFraudInstance()
-            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
 
-            let (status, payload) = await fraudSDK.getEncryptedFraudPayload(options: [:])
-            #expect(status == .errorPlugin)
-            #expect(payload == nil)
+            #expect(RadarSDKFraud(instance: instance) == nil)
             #expect(instance.recordedPlaintextCalls() == 0)
-            #expect(fraudSDK.isSharing())
-            fraudSDK.clearSharing()
-            #expect(fraudSDK.isSharing() == false)
         }
 
-        @Test("Swift verification preserves sharing with an older fraud SDK")
-        func verificationPreservesLegacySharing() throws {
-            let fraudSDK = try #require(RadarSDKFraud(instance: MockLegacyFraudInstance()))
+        @Test("Swift verification safely handles a rejected fraud SDK")
+        func verificationHandlesRejectedFraudSDK() {
+            let instance = MockLegacyFraudInstance()
+            let fraudSDK = RadarSDKFraud(instance: instance)
+            #expect(fraudSDK == nil)
+
             let manager = RadarSDK.RadarVerificationManager(
                 apiClient: RadarAPIClient.shared,
                 fraudSDK: fraudSDK,
@@ -48,19 +44,30 @@ extension RadarSerializedTests {
                 verificationmanagerHost: nil
             )
 
-            #expect(manager.isSharing())
-            manager.clearSharing()
             #expect(manager.isSharing() == false)
+            manager.clearSharing()
+
+            // The rejected library wasn't called to clear its sharing state.
+            #expect(instance.isSharing())
         }
 
-        @Test("Sharing selectors are checked independently", arguments: ["isSharing", "clearSharing"])
-        func sharingSelectorsAreIndependent(missingSelector: String) throws {
-            let instance = MockLegacyFraudInstance(missingSelectors: [missingSelector])
-            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
+        @Test(
+            "Core rejects a fraud SDK missing any required selector",
+            arguments: [
+                "initializeWithOptions:",
+                "getEncryptedFraudPayloadWithOptions:completionHandler:",
+                "isSharing",
+                "clearSharing",
+            ]
+        )
+        func initializationRejectsMissingSelector(missingSelector: String) {
+            let instance = MockEncryptedFraudInstance(
+                result: ["payload": "encrypted-payload"],
+                missingSelectors: [missingSelector]
+            )
 
-            #expect(fraudSDK.isSharing() == (missingSelector != "isSharing"))
-            fraudSDK.clearSharing()
-            #expect(instance.isSharing() == (missingSelector == "clearSharing"))
+            #expect(RadarSDKFraud(instance: instance) == nil)
+            #expect(instance.recordedOptions().isEmpty)
         }
 
         @Test(

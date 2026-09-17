@@ -212,7 +212,7 @@ extension RadarSerializedTests {
             Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
             let apiClient = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
             let fraudSDK = legacy ? RadarSDKFraud(instance: MockLegacyFraudInstance()) : nil
-            #expect((fraudSDK != nil) == legacy)
+            #expect(fraudSDK == nil)
             let manager = RadarRevealRiskManager(apiClient: apiClient, fraudSDK: fraudSDK)
 
             await #expect {
