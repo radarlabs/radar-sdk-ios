@@ -227,38 +227,19 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                 }
             };
 
-            NSURLRequest *baseRequest = [req copy];
-
-            void (^sendAttempt)(
-                void (^)(NSData *, NSURLResponse *, NSError *)
-            ) = ^(void (^attemptCompletion)(
-                NSData *, NSURLResponse *, NSError *
-            )) {
-                NSURLSessionDataTask *task =
-                    [session dataTaskWithRequest:baseRequest
-                              completionHandler:attemptCompletion];
-                [task resume];
-            };
-
-            void (^dataTaskRetryHandler)(
-                NSData *, NSURLResponse *, NSError *
-            ) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-                if (error &&
-                    [error.domain isEqualToString:NSURLErrorDomain] &&
-                    error.code == NSURLErrorNetworkConnectionLost) {
-                    [[RadarLogger sharedInstance]
-                        logWithLevel:RadarLogLevelDebug
-                             message:[NSString stringWithFormat:
-                                 @"📍 Radar API retrying after lost connection | url = %@",
-                                 url]];
-
-                    sendAttempt(dataTaskCompletionHandler);
+            void (^dataTaskRetryHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+                if (error && [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNetworkConnectionLost) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                       message:[NSString stringWithFormat:@"📍 Radar API retrying after lost connection | url = %@", url]];
+                    NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
+                    [retryTask resume];
                 } else {
                     dataTaskCompletionHandler(data, response, error);
                 }
             };
 
-            sendAttempt(dataTaskRetryHandler);
+            NSURLSessionDataTask *task = [session dataTaskWithRequest:req completionHandler:dataTaskRetryHandler];
+            [task resume];
         } @catch (NSException *exception) {
             if (sleep) {
                 dispatch_semaphore_signal(self.semaphore);

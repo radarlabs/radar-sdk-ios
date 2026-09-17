@@ -14,7 +14,7 @@ private final class TrackResultCallback: @unchecked Sendable {
     init(_ invoke: @escaping RadarTrackAPICompletionHandler) { self.invoke = invoke }
 }
 
-final class PreparationRejectingAPIHelperMock: RadarAPIHelperMock {
+final class MainQueueAPIHelperMock: RadarAPIHelperMock {
     override func request(
         withMethod method: String,
         url: String,

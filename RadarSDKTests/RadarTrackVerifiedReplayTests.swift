@@ -83,7 +83,7 @@ extension RadarVerifiedHostOverrideTests {
         let originalHelper = client.apiHelper
         defer { client.apiHelper = originalHelper }
 
-        let helper = PreparationRejectingAPIHelperMock()
+        let helper = MainQueueAPIHelperMock()
         helper.mockStatus = .errorNetwork
         helper.mockError = URLError(.networkConnectionLost)
         client.apiHelper = helper

@@ -46,6 +46,12 @@
 
 @interface RadarVerificationManager () <RadarVerificationManagerSwiftHost>
 
+// Allows tests to inject a location manager per instance; nil uses the shared manager.
+@property (nullable, nonatomic, strong) RadarLocationManager *trackVerifiedLocationManager;
+
+// Allows tests to inject a fraud helper per instance; nil uses the installed fraud SDK.
+@property (nonatomic, copy, nullable) RadarTrackVerifiedRequestPreparer * _Nonnull (^trackVerifiedPayloadFactory)(NSDictionary<NSString *, id> *options);
+
 @property (nonatomic, retain) nw_path_monitor_t monitor;
 
 @end
@@ -134,7 +140,10 @@
             return;
         }
 
-        [[RadarLocationManager sharedInstance]
+        RadarLocationManager *locationManager =
+            self.trackVerifiedLocationManager ?: [RadarLocationManager sharedInstance];
+
+        [locationManager
          getLocationWithDesiredAccuracy:desiredAccuracy
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
@@ -150,7 +159,7 @@
             }
             
             Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
-            if (!RadarSDKFraud) {
+            if (!RadarSDKFraud && !self.trackVerifiedPayloadFactory) {
                 [RadarUtilsDeprecated runOnMainThread:^{
                     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
                     
@@ -171,7 +180,10 @@
                 options[@"nonce"] = config.nonce;
             }
 
-            RadarTrackVerifiedRequestPreparer *requestPreparer = [[RadarTrackVerifiedRequestPreparer alloc] initWithOptions:options];
+            RadarTrackVerifiedRequestPreparer *requestPreparer =
+                self.trackVerifiedPayloadFactory
+                    ? self.trackVerifiedPayloadFactory(options)
+                    : [[RadarTrackVerifiedRequestPreparer alloc] initWithOptions:options];
 
             NSString *revealRiskId = [RadarRevealRiskManager shared].revealRiskId;
 

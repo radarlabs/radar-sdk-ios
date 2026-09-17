@@ -13,13 +13,18 @@ import XCTest
 final class RadarVerifiedHostOverrideTests: XCTestCase {
 
     private var apiHelperMock: RadarAPIHelperMock!
-    private var restoreAPIHelper: (() -> Void)?
+    private var restoreState: (() -> Void)?
 
     override func setUp() {
         super.setUp()
         let originalAPIHelper = RadarAPIClient.sharedInstance().apiHelper
-        restoreAPIHelper = { RadarAPIClient.sharedInstance().apiHelper = originalAPIHelper }
-        Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
+        let originalKey = RadarSettings.publishableKey
+        restoreState = {
+            RadarAPIClient.sharedInstance().apiHelper = originalAPIHelper
+            RadarSettings.publishableKey = originalKey
+        }
+        // Configure authentication without starting asynchronous SDK initialization.
+        RadarSettings.publishableKey = "prj_test_pk_radar_sdk_ios"
 
         apiHelperMock = RadarAPIHelperMock()
         apiHelperMock.mockStatus = .success
@@ -28,9 +33,9 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
     }
 
     override func tearDown() {
-        restoreAPIHelper?()
+        restoreState?()
         apiHelperMock = nil
-        restoreAPIHelper = nil
+        restoreState = nil
         super.tearDown()
     }
 

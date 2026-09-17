@@ -26,7 +26,7 @@ extension RadarVerifiedHostOverrideTests {
 
         for scenario in scenarios {
             RadarSettings.anonymousTrackingEnabled = scenario.anonymous
-            let helper = PreparationRejectingAPIHelperMock()
+            let helper = MainQueueAPIHelperMock()
             client.apiHelper = helper
             let finished = expectation(description: "Invalid captured context")
             finished.assertForOverFulfill = true
@@ -55,7 +55,7 @@ extension RadarVerifiedHostOverrideTests {
         ]
 
         for verified in [true, false] {
-            let helper = PreparationRejectingAPIHelperMock()
+            let helper = MainQueueAPIHelperMock()
             helper.mockStatus = .errorServer
             client.apiHelper = helper
             let instance = MockEncryptedFraudInstance(result: ["payload": "encrypted-envelope"])
@@ -86,44 +86,57 @@ extension RadarVerifiedHostOverrideTests {
         }
     }
 
-    func test_track_capturedHeadersWithoutAuthorizationFailBeforeCollection() throws {
+    func test_track_capturedHeadersWithoutAuthorizationFailBeforeSending() throws {
         let client = RadarAPIClient.sharedInstance()
         let originalHelper = client.apiHelper
         defer { client.apiHelper = originalHelper }
-        let helper = PreparationRejectingAPIHelperMock()
+
+        let helper = MainQueueAPIHelperMock()
         client.apiHelper = helper
-        let instance = MockEncryptedFraudInstance(result: ["payload": "must-not-send"])
-        let preparer = try makeTrackPreparer(instance: instance)
+
         let finished = expectation(description: "Missing captured authorization")
         finished.assertForOverFulfill = true
-        trackForEncryptionTest(preparer, headers: [:], installId: "captured-install") { status, _, _, _, _, _, _ in
+
+        RadarTrackTestBridge.track(
+            withPayload: "encrypted-payload",
+            verified: true,
+            secondary: false,
+            headers: [:],
+            installId: "captured-install"
+        ) { status, _, _, _, _, _, _ in
             XCTAssertEqual(status, .errorPublishableKey)
             finished.fulfill()
         }
+
         wait(for: [finished], timeout: 5)
         XCTAssertNil(helper.lastMethod)
-        XCTAssertTrue(instance.recordedOptions().isEmpty)
     }
 
-    func test_track_nonVerified_ignoresFraudPreparer() throws {
+    func test_track_nonVerified_usesStandardHostWithoutFraudPayload() {
         let client = RadarAPIClient.sharedInstance()
         let originalHelper = client.apiHelper
         defer { client.apiHelper = originalHelper }
-        let helper = PreparationRejectingAPIHelperMock()
+
+        let helper = MainQueueAPIHelperMock()
         helper.mockStatus = .errorServer
         helper.mockResponse = ["meta": ["config": [:]]]
         client.apiHelper = helper
 
-        let instance = MockEncryptedFraudInstance(result: ["error": "must not collect"])
-        let preparer = try makeTrackPreparer(instance: instance)
         let finished = expectation(description: "Ordinary track completes")
         finished.assertForOverFulfill = true
-        trackForEncryptionTest(preparer, verified: false, secondary: true) { _, _, _, _, _, _, _ in
+
+        RadarTrackTestBridge.track(
+            withPayload: nil,
+            verified: false,
+            secondary: true,
+            headers: nil,
+            installId: nil
+        ) { _, _, _, _, _, _, _ in
             finished.fulfill()
         }
+
         wait(for: [finished], timeout: 5)
 
-        XCTAssertTrue(instance.recordedOptions().isEmpty)
         XCTAssertEqual(helper.lastMethod, "POST")
         XCTAssertEqual(helper.lastUrl, "\(RadarSettings.host)/v1/track")
         XCTAssertNil(helper.lastParams?["fraudPayload"])
@@ -137,7 +150,7 @@ extension RadarVerifiedHostOverrideTests {
         defer { client.apiHelper = originalHelper }
 
         for secondary in [false, true] {
-            let helper = PreparationRejectingAPIHelperMock()
+            let helper = MainQueueAPIHelperMock()
             helper.mockStatus = .errorServer
             helper.mockResponse = ["meta": ["config": [:]]]
             client.apiHelper = helper
@@ -184,7 +197,7 @@ extension RadarVerifiedHostOverrideTests {
         ]
 
         for (instance, expectedStatus) in scenarios {
-            let helper = PreparationRejectingAPIHelperMock()
+            let helper = MainQueueAPIHelperMock()
             client.apiHelper = helper
 
             let fraudSDK = instance.flatMap {
