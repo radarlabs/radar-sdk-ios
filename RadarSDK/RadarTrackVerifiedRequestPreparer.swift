@@ -34,8 +34,8 @@ final class RadarTrackVerifiedRequestPreparer: NSObject, @unchecked Sendable {
         product: String?,
         sdkVersion: String?,
         authorization: String?
-        // Preserve status, payload, and error in the Objective-C completion.
-        // swiftlint:disable:next large_tuple
+            // Preserve status, payload, and error in the Objective-C completion.
+            // swiftlint:disable:next large_tuple
     ) async -> (RadarStatus, String?, NSError?) {
         guard let fraudSDK else {
             return (.errorPlugin, nil, nil)
