@@ -136,35 +136,17 @@ public final class RadarAPIClient: Sendable {
     }
 
     func revealRisk(
-        useSecondaryVerifiedHost: Bool,
-        fraudPayloadPreparer: RadarFraudPayloadPreparer
+        fraudPayload: String,
+        installId: String,
+        headers: [String: String],
+        useSecondaryVerifiedHost: Bool
     ) async throws -> RadarRevealRiskToken {
-        var body = await makeRevealRiskBody()
-
-        let method = "POST"
-        let canonicalRoute = "/v1/reveal/risk"
-
-        let headers = try await apiHelper.addRadarHeaders([:])
-
-        guard let installId = body["installId"] as? String else {
-            throw RadarError(
-                status: .errorUnknown,
-                message: "Missing install ID for fraud encryption"
-            )
-        }
-
-        body["fraudPayload"] = try await fraudPayloadPreparer.getEncryptedPayload(
-            installId: installId,
-            canonicalRoute: canonicalRoute,
-            origin: headers["Origin"],
-            product: headers["X-Radar-Product"],
-            sdkVersion: headers["X-Radar-SDK-Version"],
-            authorization: headers["Authorization"]
-        )
+        var body = await makeRevealRiskBody(installId: installId)
+        body["fraudPayload"] = fraudPayload
 
         let (data, response) = try await apiHelper.radarRequest(
             host: useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost,
-            method: method,
+            method: "POST",
             url: "reveal/risk",
             headers: headers,
             body: body,
@@ -174,14 +156,18 @@ public final class RadarAPIClient: Sendable {
         try assertResponseCode(response.statusCode)
 
         guard let result = RadarRevealRiskToken.fromData(data) else {
-            throw APIError(data: data, response: response, message: "Failed to parse reveal risk response")
+            throw APIError(
+                data: data,
+                response: response,
+                message: "Failed to parse reveal risk response"
+            )
         }
         return result
     }
 
-    private func makeRevealRiskBody() async -> [String: Any] {
+    private func makeRevealRiskBody(installId: String) async -> [String: Any] {
         let params: [String: Any?] = [
-            "installId": RadarSettings.installId,
+            "installId": installId,
             "userId": RadarSettings.userId,
             "deviceId": await RadarUtils.deviceId,
             "description": RadarSettings.description,

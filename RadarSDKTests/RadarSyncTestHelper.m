@@ -8,7 +8,6 @@
 
 #import "RadarSyncTestHelper.h"
 #import "RadarState.h"
-#import "RadarTrackVerifiedRequestPreparer.h"
 
 @implementation RadarSyncTestHelper
 + (void)setStopped:(BOOL)stopped { [RadarState setStopped:stopped]; }
@@ -16,9 +15,11 @@
 @end
 
 @implementation RadarTrackTestBridge
-+ (void)trackWithPreparer:(NSObject *)preparer
++ (void)trackWithPayload:(NSString *_Nullable)payload
                 verified:(BOOL)verified
                secondary:(BOOL)secondary
+                 headers:(NSDictionary<NSString *, NSString *> *_Nullable)headers
+               installId:(NSString *_Nullable)installId
               completion:(RadarTrackAPICompletionHandler)completion {
     [[RadarAPIClient sharedInstance] trackWithLocation:[[CLLocation alloc] initWithLatitude:40.0 longitude:-73.0]
                                              stopped:NO
@@ -28,14 +29,15 @@
                                              beacons:nil
                                       indoorLocation:nil
                                             verified:verified
-                                        fraudPayload:nil
+                                        fraudPayload:payload
                                  expectedCountryCode:nil
                                    expectedStateCode:nil
                                               reason:nil
                                        transactionId:nil
                                         revealRiskId:nil
                             useSecondaryVerifiedHost:secondary
-                                fraudPayloadPreparer:(RadarTrackVerifiedRequestPreparer *)preparer
+                                 fraudRequestHeaders:headers
+                                      fraudInstallId:installId
                                    completionHandler:completion];
 }
 @end

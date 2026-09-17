@@ -39,7 +39,6 @@
 #import <os/log.h>
 #import "RadarSDKFraudProtocol.h"
 #import "RadarOfflineEventManager.h"
-#import "RadarTrackVerifiedRequestPreparer.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -288,7 +287,8 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
              transactionId:transactionId
               revealRiskId:revealRiskId
   useSecondaryVerifiedHost:useSecondaryVerifiedHost
-     fraudPayloadPreparer:nil
+      fraudRequestHeaders:nil
+           fraudInstallId:nil
          completionHandler:completionHandler];
 }
 
@@ -307,15 +307,27 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
             transactionId:(NSString * _Nullable)transactionId
              revealRiskId:(NSString * _Nullable)revealRiskId
  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
-    fraudPayloadPreparer:(RadarTrackVerifiedRequestPreparer *_Nullable)fraudPayloadPreparer
+     fraudRequestHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)fraudRequestHeaders
+          fraudInstallId:(NSString *_Nullable)fraudInstallId
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
-    NSString *publishableKey = [RadarSettings publishableKey];
+    NSString *publishableKey = verified && fraudRequestHeaders
+        ? fraudRequestHeaders[@"Authorization"]
+        : [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
     }
     NSMutableDictionary *params = [NSMutableDictionary new];
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
+    // Encrypted verified requests must retain the installation used during collection.
+    // Do not add an install ID to anonymous requests to make encryption succeed.
+    if (verified && fraudRequestHeaders &&
+        (anonymous || ![fraudInstallId isKindOfClass:[NSString class]] || !fraudPayload.length)) {
+        [RadarUtilsDeprecated runOnMainThread:^{
+            completionHandler(RadarStatusErrorUnknown, nil, nil, nil, nil, nil, nil);
+        }];
+        return;
+    }
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
         params[@"deviceId"] = @"anonymous";
@@ -325,7 +337,7 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         params[@"beaconIds"] = [RadarState beaconIds];
     } else {
         params[@"id"] = [RadarSettings _id];
-        params[@"installId"] = [RadarSettings installId];
+        params[@"installId"] = verified && fraudInstallId ? fraudInstallId : [RadarSettings installId];
         params[@"userId"] = [RadarSettings userId];
         params[@"deviceId"] = [RadarUtilsDeprecated deviceId];
         params[@"description"] = [RadarSettings __description];
@@ -537,9 +549,9 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                                                         verified:verified
                                           useSecondaryVerifiedHost:useSecondaryVerifiedHost
                                                     publishableKey:publishableKey
+                                                   preparedHeaders:(verified ? fraudRequestHeaders : nil)
                                             notificationsRemaining:notificationsRemaining
                                             locationMetadata:locationMetadata
-                                             fraudPayloadPreparer:(verified ? fraudPayloadPreparer : nil)
                                                 completionHandler:completionHandler];
     }];
 }
@@ -552,9 +564,9 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                         verified:(BOOL)verified
         useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                 publishableKey:(NSString *)publishableKey
+                preparedHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)preparedHeaders
                 notificationsRemaining:(NSArray *)notificationsRemaining
                 locationMetadata:(NSDictionary *)locationMetadata
-         fraudPayloadPreparer:(RadarTrackVerifiedRequestPreparer *_Nullable)fraudPayloadPreparer
             completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
     
     BOOL batchingEnabled = (options.batchSize > 0 || options.batchInterval > 0);
@@ -580,7 +592,7 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+    NSDictionary *headers = preparedHeaders ?: [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     NSArray<RadarReplay *> *replays = [[RadarReplayBuffer sharedInstance] flushableReplays];
     NSUInteger replayCount = replays.count;
@@ -621,6 +633,10 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
+                                    if (verified && preparedHeaders) {
+                                        // Replays must not persist an envelope tied to this request.
+                                        [bufferParams removeObjectForKey:@"fraudPayload"];
+                                    }
                                     bufferParams[@"replayed"] = @(YES);
 
                                     // Skip notification removal under XCTest. RadarNotificationHelper_Swift.shared resolves its
@@ -787,43 +803,7 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
             };
 
-            if (verified && fraudPayloadPreparer) {
-                NSString *installId = requestParams[@"installId"];
-                if (![installId isKindOfClass:[NSString class]]) {
-                    [RadarUtilsDeprecated runOnMainThread:^{
-                        completionHandler(RadarStatusErrorUnknown, nil, nil, nil, nil, nil, nil);
-                    }];
-                    return;
-                }
-
-                [fraudPayloadPreparer getEncryptedPayloadWithInstallId:installId
-                                                              origin:headers[@"Origin"]
-                                                             product:headers[@"X-Radar-Product"]
-                                                          sdkVersion:headers[@"X-Radar-SDK-Version"]
-                                                       authorization:headers[@"Authorization"]
-                                                   completionHandler:^(RadarStatus status, NSString *_Nullable payload, NSError *_Nullable error) {
-                    if (status != RadarStatusSuccess || !payload.length || error) {
-                        RadarStatus failureStatus = status == RadarStatusSuccess ? RadarStatusErrorUnknown : status;
-                        [RadarUtilsDeprecated runOnMainThread:^{
-                            completionHandler(failureStatus, nil, nil, nil, nil, nil, nil);
-                        }];
-                        return;
-                    }
-
-                    NSMutableDictionary *encryptedBody = [requestParams mutableCopy];
-                    encryptedBody[@"fraudPayload"] = payload;
-
-                    [self.apiHelper requestWithMethod:@"POST"
-                                                 url:url
-                                             headers:headers
-                                              params:encryptedBody
-                                               sleep:YES
-                                          logPayload:YES
-                                     extendedTimeout:NO
-                                   completionHandler:trackCompletion];
-                }];
-            } else {
-                [self.apiHelper requestWithMethod:@"POST"
+            [self.apiHelper requestWithMethod:@"POST"
                                              url:url
                                          headers:headers
                                           params:requestParams
@@ -831,7 +811,6 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                                       logPayload:YES
                                  extendedTimeout:NO
                                completionHandler:trackCompletion];
-            }
     }
 }
 

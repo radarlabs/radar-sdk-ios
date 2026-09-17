@@ -171,55 +171,84 @@
                 options[@"nonce"] = config.nonce;
             }
 
-            RadarTrackVerifiedRequestPreparer *requestPreparer =
-                [[RadarTrackVerifiedRequestPreparer alloc] initWithOptions:options];
+            RadarTrackVerifiedRequestPreparer *requestPreparer = [[RadarTrackVerifiedRequestPreparer alloc] initWithOptions:options];
 
-                NSString *revealRiskId = [RadarRevealRiskManager shared].revealRiskId;
-                
-                void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-                [[RadarAPIClient sharedInstance]
-                 trackWithLocation:location
-                 stopped:RadarState.stopped
-                 foreground:foreground
-                 source:RadarLocationSourceForegroundLocation
-                 replayed:NO
-                 beacons:beacons
-                 indoorLocation:nil
-                 verified:YES
-                 fraudPayload:nil
-                 expectedCountryCode:self.expectedCountryCode
-                 expectedStateCode:self.expectedStateCode
-                 reason:reason
-                 transactionId:transactionId
-                 revealRiskId:revealRiskId
-                 useSecondaryVerifiedHost:useSecondaryVerifiedHost
-                 fraudPayloadPreparer:requestPreparer
-                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
-                                     RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
-                                     RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                    if (status == RadarStatusSuccess && config != nil) {
-                        [RadarRevealRiskManager shared].revealRiskId = nil;
-                        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                    }
-                    
-                    if (token) {
-                        self.lastToken = token;
-                        self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
-                        self.lastTokenBeacons = lastTokenBeacons;
-                    }
-                    
+            NSString *revealRiskId = [RadarRevealRiskManager shared].revealRiskId;
+
+            void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+                void (^failCollection)(RadarStatus) = ^(RadarStatus failureStatus) {
                     [RadarUtilsDeprecated runOnMainThread:^{
-                        if (status != RadarStatusSuccess) {
-                            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-                        }
-                        
+                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:failureStatus];
                         if (completionHandler) {
-                            completionHandler(status, token);
+                            completionHandler(failureStatus, nil);
                         }
-                        }];
                     }];
                 };
-            
+
+                NSString *publishableKey = [RadarSettings publishableKey];
+                if (!publishableKey) {
+                    failCollection(RadarStatusErrorPublishableKey);
+                    return;
+                }
+                NSString *installId = [RadarSettings installId];
+                NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+
+                [requestPreparer getEncryptedPayloadWithInstallId:installId
+                                                           origin:headers[@"Origin"]
+                                                          product:headers[@"X-Radar-Product"]
+                                                       sdkVersion:headers[@"X-Radar-SDK-Version"]
+                                                    authorization:headers[@"Authorization"]
+                                                completionHandler:^(RadarStatus status, NSString *_Nullable payload, NSError *_Nullable error) {
+                                                    if (status != RadarStatusSuccess || !payload.length || error) {
+                                                        failCollection(status == RadarStatusSuccess ? RadarStatusErrorUnknown : status);
+                                                        return;
+                                                    }
+
+                                                    [[RadarAPIClient sharedInstance]
+                                                               trackWithLocation:location
+                                                                         stopped:RadarState.stopped
+                                                                      foreground:foreground
+                                                                          source:RadarLocationSourceForegroundLocation
+                                                                        replayed:NO
+                                                                         beacons:beacons
+                                                                  indoorLocation:nil
+                                                                        verified:YES
+                                                                    fraudPayload:payload
+                                                             expectedCountryCode:self.expectedCountryCode
+                                                               expectedStateCode:self.expectedStateCode
+                                                                          reason:reason
+                                                                   transactionId:transactionId
+                                                                    revealRiskId:revealRiskId
+                                                        useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                                                             fraudRequestHeaders:headers
+                                                                  fraudInstallId:installId
+                                                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
+                                                                                   RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
+                                                                                   RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                                                                   if (status == RadarStatusSuccess && config != nil) {
+                                                                       [RadarRevealRiskManager shared].revealRiskId = nil;
+                                                                       [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                                                   }
+
+                                                                   if (token) {
+                                                                       self.lastToken = token;
+                                                                       self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
+                                                                       self.lastTokenBeacons = lastTokenBeacons;
+                                                                   }
+
+                                                                   [RadarUtilsDeprecated runOnMainThread:^{
+                                                                       if (status != RadarStatusSuccess) {
+                                                                           [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                                                                       }
+
+                                                                       if (completionHandler) {
+                                                                           completionHandler(status, token);
+                                                                       }
+                                                                   }];
+                                                               }];
+                                                }];
+            };
+
             if (beacons) {
                 [[RadarAPIClient sharedInstance]
                      searchBeaconsNear:location

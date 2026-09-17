@@ -9,6 +9,11 @@ private final class TrackTestCallback: @unchecked Sendable {
     init(_ invoke: @escaping () -> Void) { self.invoke = invoke }
 }
 
+private final class TrackResultCallback: @unchecked Sendable {
+    let invoke: RadarTrackAPICompletionHandler
+    init(_ invoke: @escaping RadarTrackAPICompletionHandler) { self.invoke = invoke }
+}
+
 final class PreparationRejectingAPIHelperMock: RadarAPIHelperMock {
     override func request(
         withMethod method: String,
@@ -48,14 +53,45 @@ extension RadarVerifiedHostOverrideTests {
         _ preparer: RadarTrackVerifiedRequestPreparer,
         verified: Bool = true,
         secondary: Bool = false,
+        headers: [String: String]? = nil,
+        installId: String? = nil,
         completion: @escaping RadarTrackAPICompletionHandler
     ) {
-        RadarTrackTestBridge.track(
-            withPreparer: preparer,
-            verified: verified,
-            secondary: secondary,
-            completion: completion
-        )
+        // Collect before the API call, as the verification manager now does.
+        // This helper exercises the collector/API boundary, not location acquisition.
+        let callback = TrackResultCallback(completion)
+        Task { @MainActor in
+            guard verified else {
+                RadarTrackTestBridge.track(
+                    withPayload: nil, verified: false, secondary: secondary,
+                    headers: headers, installId: installId, completion: callback.invoke
+                )
+                return
+            }
+
+            guard let key = headers != nil ? headers?["Authorization"] : RadarSettings.publishableKey else {
+                callback.invoke(.errorPublishableKey, nil, nil, nil, nil, nil, nil)
+                return
+            }
+            let capturedHeaders = headers ?? (RadarAPIClient.headers(withPublishableKey: key) as? [String: String] ?? [:])
+            let capturedInstallId = installId ?? RadarSettings.installId
+            let (status, payload, error) = await preparer.getEncryptedPayload(
+                installId: capturedInstallId,
+                origin: capturedHeaders["Origin"],
+                product: capturedHeaders["X-Radar-Product"],
+                sdkVersion: capturedHeaders["X-Radar-SDK-Version"],
+                authorization: capturedHeaders["Authorization"]
+            )
+            guard status == .success, let payload, !payload.isEmpty, error == nil else {
+                callback.invoke(status == .success ? .errorUnknown : status, nil, nil, nil, nil, nil, nil)
+                return
+            }
+
+            RadarTrackTestBridge.track(
+                withPayload: payload, verified: true, secondary: secondary,
+                headers: capturedHeaders, installId: capturedInstallId, completion: callback.invoke
+            )
+        }
     }
 }
 
