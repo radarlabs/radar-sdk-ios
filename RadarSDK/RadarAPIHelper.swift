@@ -27,20 +27,20 @@ final class RadarAPIHelper: Sendable {
         }
     }
 
-    func retryingRequest(
-        for request: URLRequest
-    ) async throws -> (Data, URLResponse) {
+    func retryingRequest(for request: URLRequest) async throws -> (Data, URLResponse) {
         do {
-            return try await session.data(for: request)
+            let (data, response) = try await session.data(for: request)
+            return (data, response)
         } catch {
-            guard let networkError = error as? URLError,
-                networkError.code == .networkConnectionLost
-            else {
-                throw error
+            if let error = error as? URLError,
+                error.code == .networkConnectionLost
+            {
+                let (data, response) = try await session.data(for: request)
+                return (data, response)
             }
-        }
 
-        return try await session.data(for: request)
+            throw error
+        }
     }
 
     func request(method: String, url: String, query: [URLQueryItem] = [], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
@@ -116,15 +116,7 @@ final class RadarAPIHelper: Sendable {
         case verifiedHost
         case verifiedSecondaryHost
     }
-
-    func radarRequest(
-        host: RadarHost,
-        method: String,
-        url: String,
-        query: [URLQueryItem] = [],
-        headers: [String: String] = [:],
-        body: [String: Any?] = [:],
-    ) async throws -> (Data, HTTPURLResponse) {
+    func radarRequest(host: RadarHost, method: String, url: String, query: [URLQueryItem] = [], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
         let hostUrl =
             switch host {
             case .defaultHost:
@@ -135,20 +127,27 @@ final class RadarAPIHelper: Sendable {
                 RadarSettings.defaultVerifiedHostSecondary
             }
 
-        let requestHeaders = try await addRadarHeaders(headers)
+        let headers = try await addRadarHeaders(headers)
+        let url = "\(hostUrl)/v1/\(url)"
 
-        return try await request(
-            method: method,
-            url: "\(hostUrl)/v1/\(url)",
-            query: query,
-            headers: requestHeaders,
-            body: body
-        )
+        let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
+
+        return (data, response)
     }
 
     func radarRequest(method: String, url: String, query: [URLQueryItem] = [], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
         return try await radarRequest(host: .defaultHost, method: method, url: url, query: query, headers: headers, body: body)
     }
+
+    func radarVerifiedRequest(method: String, url: String, query: [URLQueryItem] = [], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
+        let headers = try await addRadarHeaders(headers)
+        let url = "\(RadarSettings.verifiedHost)/v1/\(url)"
+
+        let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
+
+        return (data, response)
+    }
+
     static func networkErrorMessage(host: String?, error: Error, elapsedMs: Int) -> String {
         let nsError = error as NSError
         return "Network error | host = \(host ?? "unknown"); errorDomain = \(nsError.domain); errorCode = \(nsError.code); errorDescription = \(nsError.localizedDescription); elapsedMs = \(elapsedMs)"

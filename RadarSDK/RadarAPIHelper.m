@@ -69,13 +69,13 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
 }
 
 - (void)requestWithMethod:(NSString *)method
-                     url:(NSString *)url
-                 headers:(NSDictionary *)headers
-                  params:(NSDictionary *)params
-                   sleep:(BOOL)sleep
-              logPayload:(BOOL)logPayload
-         extendedTimeout:(BOOL)extendedTimeout
-       completionHandler:(RadarAPICompletionHandler)completionHandler {
+                      url:(NSString *)url
+                  headers:(NSDictionary *)headers
+                   params:(NSDictionary *)params
+                    sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+        completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
         if (sleep) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
