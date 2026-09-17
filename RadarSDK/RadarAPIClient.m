@@ -576,8 +576,14 @@
             }
         }];
     } else {
-        RadarAPICompletionHandler trackCompletion =
-            ^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
+        [self.apiHelper requestWithMethod:@"POST"
+                                    url:url
+                                headers:headers
+                                params:requestParams
+                                    sleep:YES
+                            logPayload:YES
+                        extendedTimeout:NO
+                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
@@ -750,16 +756,7 @@
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
             
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
-            };
-
-            [self.apiHelper requestWithMethod:@"POST"
-                                             url:url
-                                         headers:headers
-                                          params:requestParams
-                                           sleep:YES
-                                      logPayload:YES
-                                 extendedTimeout:NO
-                               completionHandler:trackCompletion];
+                        }];
     }
 }
 

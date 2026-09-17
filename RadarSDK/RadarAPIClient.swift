@@ -137,34 +137,10 @@ public final class RadarAPIClient: Sendable {
 
     func revealRisk(
         fraudPayload: String,
-        installId: String,
         useSecondaryVerifiedHost: Bool
     ) async throws -> RadarRevealRiskToken {
-        var body = await makeRevealRiskBody(installId: installId)
-        body["fraudPayload"] = fraudPayload
-
-        let (data, response) = try await apiHelper.radarRequest(
-            host: useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost,
-            method: "POST",
-            url: "reveal/risk",
-            body: body
-        )
-
-        try assertResponseCode(response.statusCode)
-
-        guard let result = RadarRevealRiskToken.fromData(data) else {
-            throw APIError(
-                data: data,
-                response: response,
-                message: "Failed to parse reveal risk response"
-            )
-        }
-        return result
-    }
-
-    private func makeRevealRiskBody(installId: String) async -> [String: Any] {
         let params: [String: Any?] = [
-            "installId": installId,
+            "installId": RadarSettings.installId,
             "userId": RadarSettings.userId,
             "deviceId": await RadarUtils.deviceId,
             "description": RadarSettings.description,
@@ -178,6 +154,7 @@ public final class RadarAPIClient: Sendable {
             "country": RadarUtils.country,
             "timeZoneOffset": RadarUtils.timeZoneOffset,
             "lang": RadarSettings.userLanguage,
+            "fraudPayload": fraudPayload,
             "appId": Bundle.main.bundleIdentifier,
             "appName": Bundle.main.object(forInfoDictionaryKey: "CFBundleName"),
             "appVersion": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString"),
@@ -186,8 +163,19 @@ public final class RadarAPIClient: Sendable {
             "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
         ]
 
-        // Preserve the existing JSON null values for absent optional fields.
-        return params.mapValues { $0 ?? NSNull() }
+        let (data, response) = try await apiHelper.radarRequest(
+            host: useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost,
+            method: "POST",
+            url: "reveal/risk",
+            body: params
+        )
+
+        try assertResponseCode(response.statusCode)
+
+        guard let result = RadarRevealRiskToken.fromData(data) else {
+            throw APIError(data: data, response: response, message: "Failed to parse reveal risk response")
+        }
+        return result
     }
 
     func getConfig(usage: String?, host: RadarAPIHelper.RadarHost) async throws -> RadarConfig? {

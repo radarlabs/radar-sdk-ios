@@ -74,7 +74,6 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
 
         return try await apiClient.revealRisk(
             fraudPayload: payload,
-            installId: installId,
             useSecondaryVerifiedHost: useSecondaryVerifiedHost
         )
     }
