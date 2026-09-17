@@ -124,7 +124,6 @@ final class RadarAPIHelper: Sendable {
         query: [URLQueryItem] = [],
         headers: [String: String] = [:],
         body: [String: Any?] = [:],
-        headersArePrepared: Bool = false
     ) async throws -> (Data, HTTPURLResponse) {
         let hostUrl =
             switch host {
@@ -136,12 +135,7 @@ final class RadarAPIHelper: Sendable {
                 RadarSettings.defaultVerifiedHostSecondary
             }
 
-        let requestHeaders: [String: String]
-        if headersArePrepared {
-            requestHeaders = headers
-        } else {
-            requestHeaders = try await addRadarHeaders(headers)
-        }
+        let requestHeaders = try await addRadarHeaders(headers)
 
         return try await request(
             method: method,

@@ -51,36 +51,23 @@ extension RadarVerifiedHostOverrideTests {
 
     func trackForEncryptionTest(
         _ preparer: RadarTrackVerifiedRequestPreparer,
-        verified: Bool = true,
         secondary: Bool = false,
-        headers: [String: String]? = nil,
-        installId: String? = nil,
         completion: @escaping RadarTrackAPICompletionHandler
     ) {
         // Collect before the API call, as the verification manager now does.
         // This helper exercises the collector/API boundary, not location acquisition.
         let callback = TrackResultCallback(completion)
         Task { @MainActor in
-            guard verified else {
-                RadarTrackTestBridge.track(
-                    withPayload: nil, verified: false, secondary: secondary,
-                    headers: headers, installId: installId, completion: callback.invoke
-                )
-                return
-            }
-
-            guard let key = headers != nil ? headers?["Authorization"] : RadarSettings.publishableKey else {
+            guard let key = RadarSettings.publishableKey else {
                 callback.invoke(.errorPublishableKey, nil, nil, nil, nil, nil, nil)
                 return
             }
-            let capturedHeaders = headers ?? (RadarAPIClient.headers(withPublishableKey: key) as? [String: String] ?? [:])
-            let capturedInstallId = installId ?? RadarSettings.installId
             let (status, payload, error) = await preparer.getEncryptedPayload(
-                installId: capturedInstallId,
-                origin: capturedHeaders["Origin"],
-                product: capturedHeaders["X-Radar-Product"],
-                sdkVersion: capturedHeaders["X-Radar-SDK-Version"],
-                authorization: capturedHeaders["Authorization"]
+                installId: RadarSettings.installId,
+                origin: nil,
+                product: RadarSettings.product,
+                sdkVersion: RadarUtils.sdkVersion,
+                authorization: key
             )
             guard status == .success, let payload, !payload.isEmpty, error == nil else {
                 callback.invoke(status == .success ? .errorUnknown : status, nil, nil, nil, nil, nil, nil)
@@ -89,7 +76,7 @@ extension RadarVerifiedHostOverrideTests {
 
             RadarTrackTestBridge.track(
                 withPayload: payload, verified: true, secondary: secondary,
-                headers: capturedHeaders, installId: capturedInstallId, completion: callback.invoke
+                completion: callback.invoke
             )
         }
     }

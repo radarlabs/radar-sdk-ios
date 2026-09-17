@@ -138,7 +138,6 @@ public final class RadarAPIClient: Sendable {
     func revealRisk(
         fraudPayload: String,
         installId: String,
-        headers: [String: String],
         useSecondaryVerifiedHost: Bool
     ) async throws -> RadarRevealRiskToken {
         var body = await makeRevealRiskBody(installId: installId)
@@ -148,9 +147,7 @@ public final class RadarAPIClient: Sendable {
             host: useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost,
             method: "POST",
             url: "reveal/risk",
-            headers: headers,
-            body: body,
-            headersArePrepared: true
+            body: body
         )
 
         try assertResponseCode(response.statusCode)

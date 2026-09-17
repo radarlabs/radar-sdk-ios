@@ -18,8 +18,6 @@
 + (void)trackWithPayload:(NSString *_Nullable)payload
                 verified:(BOOL)verified
                secondary:(BOOL)secondary
-                 headers:(NSDictionary<NSString *, NSString *> *_Nullable)headers
-               installId:(NSString *_Nullable)installId
               completion:(RadarTrackAPICompletionHandler)completion {
     [[RadarAPIClient sharedInstance] trackWithLocation:[[CLLocation alloc] initWithLatitude:40.0 longitude:-73.0]
                                              stopped:NO
@@ -36,8 +34,6 @@
                                        transactionId:nil
                                         revealRiskId:nil
                             useSecondaryVerifiedHost:secondary
-                                 fraudRequestHeaders:headers
-                                      fraudInstallId:installId
                                    completionHandler:completion];
 }
 @end

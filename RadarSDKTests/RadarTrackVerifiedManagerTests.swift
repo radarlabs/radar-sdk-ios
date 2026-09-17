@@ -27,9 +27,30 @@ private final class TrackVerifiedLocationManagerMock: RadarLocationManager {
 
 extension RadarVerifiedHostOverrideTests {
     func test_trackVerifiedManager_collectionFailureReportsErrorWithoutSendingTrack() throws {
+        try assertManagerRejectsPayload(result: ["error": "encryption failed"])
+    }
+
+    func test_trackVerifiedManager_missingOrEmptyPayloadDoesNotSendTrack() throws {
+        let results: [[String: Any]?] = [nil, [:], ["payload": ""], ["error": "failed", "payload": "must-not-send"]]
+        for result in results {
+            try assertManagerRejectsPayload(result: result)
+        }
+    }
+
+    func test_trackVerifiedManager_anonymousRequestDoesNotSendTrack() throws {
+        try assertManagerRejectsPayload(result: ["payload": "encrypted-envelope"], anonymous: true)
+    }
+
+    private func assertManagerRejectsPayload(result: [String: Any]?, anonymous: Bool = false) throws {
         let client = RadarAPIClient.sharedInstance()
         let originalHelper = client.apiHelper
-        defer { client.apiHelper = originalHelper }
+        let originalAnonymous = RadarSettings.anonymousTrackingEnabled
+        let originalReplayCount = RadarReplayBuffer.sharedInstance.mutableReplayBuffer.count
+        defer {
+            client.apiHelper = originalHelper
+            RadarSettings.anonymousTrackingEnabled = originalAnonymous
+        }
+        RadarSettings.anonymousTrackingEnabled = anonymous
 
         let helper = MainQueueAPIHelperMock()
         helper.mockStatus = .success
@@ -39,9 +60,7 @@ extension RadarVerifiedHostOverrideTests {
         ]
         client.apiHelper = helper
 
-        let instance = MockEncryptedFraudInstance(
-            result: ["error": "encryption failed"]
-        )
+        let instance = MockEncryptedFraudInstance(result: result)
         let manager = try makeVerificationManager(instance: instance)
 
         let delegateHolder = RadarDelegateHolder.sharedInstance()
@@ -60,20 +79,24 @@ extension RadarVerifiedHostOverrideTests {
         XCTAssertEqual(delegate.recordedStatuses, [.errorUnknown])
         XCTAssertEqual(helper.lastMethod, "GET")
         XCTAssertTrue(helper.lastUrl?.contains("/v1/config?") == true)
+        XCTAssertEqual(RadarReplayBuffer.sharedInstance.mutableReplayBuffer.count, originalReplayCount)
     }
 
     func test_trackVerifiedManager_collectionSuccessForwardsPayloadAndContext() throws {
         let client = RadarAPIClient.sharedInstance()
         let originalHelper = client.apiHelper
         let originalAnonymous = RadarSettings.anonymousTrackingEnabled
+        let originalProduct = RadarSettings.product
         let buffer = RadarReplayBuffer.sharedInstance
         let originalReplays = buffer.mutableReplayBuffer
         defer {
             client.apiHelper = originalHelper
             RadarSettings.anonymousTrackingEnabled = originalAnonymous
+            RadarSettings.product = originalProduct
             buffer.mutableReplayBuffer = originalReplays
         }
         RadarSettings.anonymousTrackingEnabled = false
+        RadarSettings.product = "manager-test-product"
         buffer.mutableReplayBuffer = []
 
         let helper = MainQueueAPIHelperMock()
@@ -146,6 +169,8 @@ extension RadarVerifiedHostOverrideTests {
         XCTAssertEqual(context["method"] as? String, "POST")
         XCTAssertEqual(context["canonicalRoute"] as? String, "/v1/track")
         XCTAssertEqual(context["nonce"] as? String, "manager-test-nonce")
+        XCTAssertEqual(context["product"] as? String, "manager-test-product")
+        XCTAssertNil(context["origin"])
 
         let sentInstallId = try XCTUnwrap(
             helper.lastParams?["installId"] as? String
@@ -155,6 +180,8 @@ extension RadarVerifiedHostOverrideTests {
         let headers = try XCTUnwrap(helper.lastHeaders)
         XCTAssertNotNil(headers["Authorization"])
         XCTAssertNotNil(headers["X-Radar-SDK-Version"])
+        XCTAssertNil(headers["Origin"])
+        XCTAssertEqual(headers["X-Radar-Mobile-Origin"] as? String, Bundle.main.bundleIdentifier)
 
         for (field, header) in [
             ("authorization", "Authorization"),

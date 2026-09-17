@@ -203,16 +203,20 @@
                     return;
                 }
                 NSString *installId = [RadarSettings installId];
-                NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
                 [requestPreparer getEncryptedPayloadWithInstallId:installId
-                                                           origin:headers[@"Origin"]
-                                                          product:headers[@"X-Radar-Product"]
-                                                       sdkVersion:headers[@"X-Radar-SDK-Version"]
-                                                    authorization:headers[@"Authorization"]
+                                                           origin:nil // Server AAD uses HTTP Origin, not X-Radar-Mobile-Origin.
+                                                          product:[RadarSettings product]
+                                                       sdkVersion:[RadarUtils sdkVersion]
+                                                    authorization:publishableKey
                                                 completionHandler:^(RadarStatus status, NSString *_Nullable payload, NSError *_Nullable error) {
                                                     if (status != RadarStatusSuccess || !payload.length || error) {
                                                         failCollection(status == RadarStatusSuccess ? RadarStatusErrorUnknown : status);
+                                                        return;
+                                                    }
+                                                    // Anonymous requests omit the install ID required by encrypted payloads.
+                                                    if ([RadarSettings anonymousTrackingEnabled]) {
+                                                        failCollection(RadarStatusErrorUnknown);
                                                         return;
                                                     }
 
@@ -232,8 +236,6 @@
                                                                    transactionId:transactionId
                                                                     revealRiskId:revealRiskId
                                                         useSecondaryVerifiedHost:useSecondaryVerifiedHost
-                                                             fraudRequestHeaders:headers
-                                                                  fraudInstallId:installId
                                                                completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                                                                    RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                                                                    RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {

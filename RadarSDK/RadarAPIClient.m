@@ -257,42 +257,6 @@
 }
 
 - (void)trackWithLocation:(CLLocation *_Nonnull)location
-                 stopped:(BOOL)stopped
-              foreground:(BOOL)foreground
-                  source:(RadarLocationSource)source
-                replayed:(BOOL)replayed
-                 beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-          indoorLocation:(CLLocation *_Nullable)indoorLocation
-                verified:(BOOL)verified
-            fraudPayload:(NSString *_Nullable)fraudPayload
-     expectedCountryCode:(NSString *_Nullable)expectedCountryCode
-       expectedStateCode:(NSString *_Nullable)expectedStateCode
-                  reason:(NSString *_Nullable)reason
-           transactionId:(NSString *_Nullable)transactionId
-            revealRiskId:(NSString *_Nullable)revealRiskId
-useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
-       completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
-    [self trackWithLocation:location
-                   stopped:stopped
-                foreground:foreground
-                    source:source
-                  replayed:replayed
-                   beacons:beacons
-            indoorLocation:indoorLocation
-                  verified:verified
-              fraudPayload:fraudPayload
-       expectedCountryCode:expectedCountryCode
-         expectedStateCode:expectedStateCode
-                    reason:reason
-             transactionId:transactionId
-              revealRiskId:revealRiskId
-  useSecondaryVerifiedHost:useSecondaryVerifiedHost
-      fraudRequestHeaders:nil
-           fraudInstallId:nil
-         completionHandler:completionHandler];
-}
-
-- (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
@@ -307,27 +271,14 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
             transactionId:(NSString * _Nullable)transactionId
              revealRiskId:(NSString * _Nullable)revealRiskId
  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
-     fraudRequestHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)fraudRequestHeaders
-          fraudInstallId:(NSString *_Nullable)fraudInstallId
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
-    NSString *publishableKey = verified && fraudRequestHeaders
-        ? fraudRequestHeaders[@"Authorization"]
-        : [RadarSettings publishableKey];
+    NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
     }
     NSMutableDictionary *params = [NSMutableDictionary new];
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
-    // Encrypted verified requests must retain the installation used during collection.
-    // Do not add an install ID to anonymous requests to make encryption succeed.
-    if (verified && fraudRequestHeaders &&
-        (anonymous || ![fraudInstallId isKindOfClass:[NSString class]] || !fraudPayload.length)) {
-        [RadarUtilsDeprecated runOnMainThread:^{
-            completionHandler(RadarStatusErrorUnknown, nil, nil, nil, nil, nil, nil);
-        }];
-        return;
-    }
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
         params[@"deviceId"] = @"anonymous";
@@ -337,7 +288,7 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         params[@"beaconIds"] = [RadarState beaconIds];
     } else {
         params[@"id"] = [RadarSettings _id];
-        params[@"installId"] = verified && fraudInstallId ? fraudInstallId : [RadarSettings installId];
+        params[@"installId"] = [RadarSettings installId];
         params[@"userId"] = [RadarSettings userId];
         params[@"deviceId"] = [RadarUtilsDeprecated deviceId];
         params[@"description"] = [RadarSettings __description];
@@ -549,7 +500,6 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                                                         verified:verified
                                           useSecondaryVerifiedHost:useSecondaryVerifiedHost
                                                     publishableKey:publishableKey
-                                                   preparedHeaders:(verified ? fraudRequestHeaders : nil)
                                             notificationsRemaining:notificationsRemaining
                                             locationMetadata:locationMetadata
                                                 completionHandler:completionHandler];
@@ -564,7 +514,6 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                         verified:(BOOL)verified
         useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                 publishableKey:(NSString *)publishableKey
-                preparedHeaders:(NSDictionary<NSString *, NSString *> *_Nullable)preparedHeaders
                 notificationsRemaining:(NSArray *)notificationsRemaining
                 locationMetadata:(NSDictionary *)locationMetadata
             completionHandler:(RadarTrackAPICompletionHandler)completionHandler {
@@ -592,7 +541,7 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
     NSString *url = [NSString stringWithFormat:@"%@/v1/track", host];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
-    NSDictionary *headers = preparedHeaders ?: [RadarAPIClient headersWithPublishableKey:publishableKey];
+    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
     NSArray<RadarReplay *> *replays = [[RadarReplayBuffer sharedInstance] flushableReplays];
     NSUInteger replayCount = replays.count;
@@ -633,7 +582,7 @@ useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
-                                    if (verified && preparedHeaders) {
+                                    if (verified) {
                                         // Replays must not persist an envelope tied to this request.
                                         [bufferParams removeObjectForKey:@"fraudPayload"];
                                     }
