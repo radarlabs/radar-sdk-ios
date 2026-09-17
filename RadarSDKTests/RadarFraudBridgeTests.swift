@@ -105,8 +105,8 @@ extension RadarSerializedTests {
 
         @Test("Encryption attempt IDs are random 128-bit Base64URL values")
         func encryptionAttemptIdHasExpectedFormat() throws {
-            let first = try RadarUtils.makeFraudEncryptionAttemptId()
-            let second = try RadarUtils.makeFraudEncryptionAttemptId()
+            let first = try RadarFraudPayloadPreparer.makeFraudEncryptionAttemptId()
+            let second = try RadarFraudPayloadPreparer.makeFraudEncryptionAttemptId()
 
             #expect(first != second)
             #expect(!first.isEmpty)

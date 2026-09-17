@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Security
 
 struct RadarFraudPayloadPreparer {
     let fraudSDK: RadarSDKFraud
@@ -24,7 +25,7 @@ struct RadarFraudPayloadPreparer {
         encryptionOptions["method"] = "POST"
         encryptionOptions["canonicalRoute"] = canonicalRoute
         encryptionOptions["encryptionAttemptId"] =
-            try RadarUtils.makeFraudEncryptionAttemptId()
+            try Self.makeFraudEncryptionAttemptId()
         encryptionOptions["issuedAt"] = Int(Date().timeIntervalSince1970)
         encryptionOptions["installId"] = installId
         encryptionOptions["origin"] = origin
@@ -48,5 +49,28 @@ struct RadarFraudPayloadPreparer {
         }
 
         return payload
+    }
+
+    static func makeFraudEncryptionAttemptId() throws -> String {
+        var bytes = [UInt8](repeating: 0, count: 16)
+
+        let status = SecRandomCopyBytes(
+            kSecRandomDefault,
+            bytes.count,
+            &bytes
+        )
+
+        guard status == errSecSuccess else {
+            throw RadarError(
+                status: .errorUnknown,
+                message: "Failed to generate encryption attempt ID"
+            )
+        }
+
+        return Data(bytes)
+            .base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 }
