@@ -26,14 +26,14 @@ final class StubRadarVerificationManagerHost: NSObject, RadarVerificationManager
     var lastIPChangeDeliveredAt: TimeInterval = 0
     var expectedCountryCode: String?
     var expectedStateCode: String?
-    var swiftInstance: RadarVerificationManager?
+    var swiftInstance: RadarSDK.RadarVerificationManager?
 }
 
 /// The Objective-C `RadarVerificationManager`, reached through the runtime.
 ///
-/// `RadarVerificationManager.h` is a project header; importing it into the test
-/// bridging header would make the unqualified name ambiguous with the Swift twin
-/// (which is `RadarVerificationManagerSwift` only to Objective-C). The properties
+/// The test bridging header imports the Objective-C manager, so references to its
+/// Swift twin are qualified as `RadarSDK.RadarVerificationManager` (the twin is
+/// `RadarVerificationManagerSwift` only to Objective-C). The properties
 /// this wrapper reads live in the `.m`'s class extension, so they are reached with
 /// KVC rather than a declared interface. KVC is also the safe way to call the
 /// `BOOL`-returning selectors — `perform(_:)` would misinterpret the return value.
@@ -167,8 +167,8 @@ enum RadarVerificationManagerSwiftTestHelpers {
         return token
     }
 
-    static func makeSwiftManager(host: RadarVerificationManagerSwiftHost?) -> RadarVerificationManager {
-        RadarVerificationManager(
+    static func makeSwiftManager(host: RadarVerificationManagerSwiftHost?) -> RadarSDK.RadarVerificationManager {
+        RadarSDK.RadarVerificationManager(
             apiClient: RadarAPIClient.shared,
             fraudSDK: RadarSDKFraud.shared,
             locationManagerHost: nil as RadarLocationManagerSwiftHost?,

@@ -13,6 +13,7 @@ import Foundation
 /// `perform(...)`, so a mock only needs to be an `NSObject` that responds to the
 /// `initializeWithOptions:`
 /// `getFraudPayloadWithOptions:completionHandler:`
+/// `getEncryptedFraudPayloadWithOptions:completionHandler:`
 /// `isSharing`
 /// `clearSharing`
 /// It replays a canned result dictionary so tests control what payload the manager forwards to the API.
@@ -30,6 +31,11 @@ final class MockFraudSDK: NSObject, @unchecked Sendable {
 
     @objc(getFraudPayloadWithOptions:completionHandler:)
     func getFraudPayload(options: [String: Any], completionHandler: @escaping ([String: Any]?) -> Void) {
+        completionHandler(result)
+    }
+
+    @objc(getEncryptedFraudPayloadWithOptions:completionHandler:)
+    func getEncryptedFraudPayload(options: [String: Any], completionHandler: @escaping ([String: Any]?) -> Void) {
         completionHandler(result)
     }
 

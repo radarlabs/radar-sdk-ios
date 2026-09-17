@@ -7,10 +7,19 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RadarAPIClient.h"
 
 @class RadarUser;
 
 @interface RadarSyncTestHelper : NSObject
 + (void)setStopped:(BOOL)stopped;
 + (void)setRadarUser:(RadarUser *)user;
+@end
+
+// Exercise the Objective-C track API with a fixed test location.
+@interface RadarTrackTestBridge : NSObject
++ (void)trackWithPayload:(NSString *_Nullable)payload
+                verified:(BOOL)verified
+               secondary:(BOOL)secondary
+              completion:(RadarTrackAPICompletionHandler)completion;
 @end

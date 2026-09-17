@@ -137,7 +137,7 @@ public final class RadarAPIClient: Sendable {
 
     func revealRisk(
         fraudPayload: String,
-        useSecondaryVerifiedHost: Bool,
+        useSecondaryVerifiedHost: Bool
     ) async throws -> RadarRevealRiskToken {
         let params: [String: Any?] = [
             "installId": RadarSettings.installId,
@@ -163,7 +163,12 @@ public final class RadarAPIClient: Sendable {
             "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
         ]
 
-        let (data, response) = try await apiHelper.radarRequest(host: .verifiedHost, method: "POST", url: "reveal/risk", body: params)
+        let (data, response) = try await apiHelper.radarRequest(
+            host: useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost,
+            method: "POST",
+            url: "reveal/risk",
+            body: params
+        )
 
         try assertResponseCode(response.statusCode)
 

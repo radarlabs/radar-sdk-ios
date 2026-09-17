@@ -588,6 +588,10 @@
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
+                                    if (verified) {
+                                        // Replays must not persist an envelope tied to this request.
+                                        [bufferParams removeObjectForKey:@"fraudPayload"];
+                                    }
                                     bufferParams[@"replayed"] = @(YES);
 
                                     // Skip notification removal under XCTest. RadarNotificationHelper_Swift.shared resolves its

@@ -13,15 +13,30 @@ import XCTest
 final class RadarVerifiedHostOverrideTests: XCTestCase {
 
     private var apiHelperMock: RadarAPIHelperMock!
+    private var restoreState: (() -> Void)?
 
     override func setUp() {
         super.setUp()
-        Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
+        let originalAPIHelper = RadarAPIClient.sharedInstance().apiHelper
+        let originalKey = RadarSettings.publishableKey
+        restoreState = {
+            RadarAPIClient.sharedInstance().apiHelper = originalAPIHelper
+            RadarSettings.publishableKey = originalKey
+        }
+        // Configure authentication without starting asynchronous SDK initialization.
+        RadarSettings.publishableKey = "prj_test_pk_radar_sdk_ios"
 
         apiHelperMock = RadarAPIHelperMock()
         apiHelperMock.mockStatus = .success
         apiHelperMock.mockResponse = ["meta": ["config": [:]]]
         RadarAPIClient.sharedInstance().apiHelper = apiHelperMock
+    }
+
+    override func tearDown() {
+        restoreState?()
+        apiHelperMock = nil
+        restoreState = nil
+        super.tearDown()
     }
 
     // MARK: - getConfigForUsage
@@ -196,4 +211,5 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
     func test_defaultVerifiedHostSecondary_isExpected() {
         XCTAssertEqual(RadarSettings.defaultVerifiedHostSecondary, "https://api-verified.radar.com")
     }
+
 }

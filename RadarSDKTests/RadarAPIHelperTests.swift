@@ -10,6 +10,39 @@ import Testing
 
 @testable import RadarSDK
 
+actor RetryTestSession: RadarURLSessionProtocol {
+    private let failures: [URLError.Code]
+    private let responseData: Data
+    private var requests: [URLRequest] = []
+
+    init(failures: [URLError.Code], responseData: Data = Data()) {
+        self.failures = failures
+        self.responseData = responseData
+    }
+
+    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+        let attempt = requests.count
+        requests.append(request)
+
+        if attempt < failures.count {
+            throw URLError(failures[attempt])
+        }
+
+        let response = HTTPURLResponse(
+            url: request.url!,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: nil
+        )!
+
+        return (responseData, response)
+    }
+
+    func recordedRequests() -> [URLRequest] {
+        requests
+    }
+}
+
 @Suite
 struct RadarAPIHelperTests {
 
@@ -61,5 +94,76 @@ struct RadarAPIHelperTests {
         let message = RadarAPIHelper.networkErrorMessage(host: "api.radar.io", error: error, elapsedMs: 0)
         #expect(message.contains("errorDescription ="))
         #expect(!message.contains("errorDescription = ;"))
+    }
+
+    @Test("A lost connection retries the same request")
+    func lostConnectionReusesRequest() async throws {
+        let session = RetryTestSession(failures: [.networkConnectionLost])
+        let helper = RadarAPIHelper(session: session)
+        let url = try #require(
+            URL(string: "https://api-verified.radar.io/v1/reveal/risk")
+        )
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = Data("encrypted-envelope".utf8)
+        request.setValue("test-key", forHTTPHeaderField: "Authorization")
+
+        _ = try await helper.retryingRequest(for: request)
+
+        let requests = await session.recordedRequests()
+        #expect(requests.count == 2)
+
+        for sentRequest in requests {
+            #expect(sentRequest.url == request.url)
+            #expect(sentRequest.httpMethod == request.httpMethod)
+            #expect(sentRequest.httpBody == request.httpBody)
+            #expect(sentRequest.allHTTPHeaderFields == request.allHTTPHeaderFields)
+        }
+    }
+
+    @Test("A second lost connection is propagated without another retry")
+    func lostConnectionRetriesOnlyOnce() async throws {
+        let session = RetryTestSession(
+            failures: [.networkConnectionLost, .networkConnectionLost]
+        )
+        let helper = RadarAPIHelper(session: session)
+        let url = try #require(URL(string: "https://api-verified.radar.io"))
+
+        do {
+            _ = try await helper.retryingRequest(for: URLRequest(url: url))
+            Issue.record("Expected the second connection failure")
+        } catch {
+            #expect((error as? URLError)?.code == .networkConnectionLost)
+        }
+
+        let requests = await session.recordedRequests()
+        #expect(requests.count == 2)
+    }
+
+    @Test(
+        "Other network errors are propagated without retrying",
+        arguments: [
+            URLError.Code.timedOut,
+            .cannotFindHost,
+            .cannotConnectToHost,
+            .secureConnectionFailed,
+            .cancelled,
+        ]
+    )
+    func otherNetworkErrorsDoNotRetry(code: URLError.Code) async throws {
+        let session = RetryTestSession(failures: [code])
+        let helper = RadarAPIHelper(session: session)
+        let url = try #require(URL(string: "https://api-verified.radar.io"))
+
+        do {
+            _ = try await helper.retryingRequest(for: URLRequest(url: url))
+            Issue.record("Expected the network error")
+        } catch {
+            #expect((error as? URLError)?.code == code)
+        }
+
+        let requests = await session.recordedRequests()
+        #expect(requests.count == 1)
     }
 }

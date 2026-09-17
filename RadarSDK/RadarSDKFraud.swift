@@ -13,13 +13,17 @@ final class RadarSDKFraud: @unchecked Sendable {
     let instance: NSObject
 
     init?(instance: NSObject) {
-        guard instance.responds(to: RadarSDKFraud.initializeSelector),
-            instance.responds(to: RadarSDKFraud.getFraudPayloadSelector),
-            instance.responds(to: RadarSDKFraud.isSharingSelector),
-            instance.responds(to: RadarSDKFraud.clearSharingSelector)
+        guard instance.responds(to: Self.initializeSelector),
+            instance.responds(to: Self.getEncryptedFraudPayloadSelector),
+            instance.responds(to: Self.isSharingSelector),
+            instance.responds(to: Self.clearSharingSelector)
         else {
+            RadarLogger.shared.warning(
+                "RadarSDKFraud is incompatible with this Core SDK; update the fraud SDK to a compatible version."
+            )
             return nil
         }
+
         self.instance = instance
     }
 
@@ -42,15 +46,23 @@ final class RadarSDKFraud: @unchecked Sendable {
         instance.perform(RadarSDKFraud.initializeSelector, with: options)
     }
 
-    static let getFraudPayloadSelector = NSSelectorFromString("getFraudPayloadWithOptions:completionHandler:")
-    public func getFraudPayload(sdkConfiguration: RadarSdkConfiguration?) async -> (RadarStatus, String?) {
-        let options = sdkConfiguration?.dictionaryValue() ?? [:]
+    static let getEncryptedFraudPayloadSelector = NSSelectorFromString(
+        "getEncryptedFraudPayloadWithOptions:completionHandler:"
+    )
 
+    public func getEncryptedFraudPayload(
+        options: [String: Any]
+    ) async -> (RadarStatus, String?) {
         let result = await withCheckedContinuation { continuation in
             let completionHandler: @convention(block) ([String: Sendable]?) -> Void = { payload in
                 continuation.resume(returning: payload)
             }
-            instance.perform(RadarSDKFraud.getFraudPayloadSelector, with: options, with: completionHandler)
+
+            instance.perform(
+                RadarSDKFraud.getEncryptedFraudPayloadSelector,
+                with: options,
+                with: completionHandler
+            )
         }
 
         let error = result?["error"] as? String
@@ -59,6 +71,7 @@ final class RadarSDKFraud: @unchecked Sendable {
         if result == nil || error != nil || payload == nil {
             return (.errorUnknown, nil)
         }
+
         return (.success, payload)
     }
 
