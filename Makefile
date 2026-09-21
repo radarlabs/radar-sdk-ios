@@ -27,6 +27,17 @@ clean:
 build:
 	xcodebuild $(XC_ARGS)
 
+check-objc-linkage:
+	@set -e; \
+	  python3 Scripts/check_objc_class_linkage.py --source-only; \
+	  build_dir=$$(mktemp -d /tmp/radar-sdk-ios-objc-linkage.XXXXXX); \
+	  trap 'rm -rf "$$build_dir"' EXIT; \
+	  xcodebuild -project $(PROJECT).xcodeproj -scheme RadarSDK -configuration Release \
+	    -sdk iphonesimulator -derivedDataPath "$$build_dir" CODE_SIGNING_ALLOWED=NO \
+	    ONLY_ACTIVE_ARCH=YES ARCHS=arm64 build; \
+	  python3 Scripts/check_objc_class_linkage.py \
+	    --framework "$$build_dir/Build/Products/Release-iphonesimulator/RadarSDK.framework"
+
 test:
 	xcodebuild $(XC_TEST_ARGS) test
 
@@ -159,4 +170,4 @@ docs:
 
 dist: clean-pretty test-pretty build-pretty lint docs
 
-.PHONY: bootstrap clean test build lint lint-swift format format-check ci-build-analyze ci-build-example ci-test-pretty ci-test-swift docs dist
+.PHONY: bootstrap clean test build check-objc-linkage lint lint-swift format format-check ci-build-analyze ci-build-example ci-test-pretty ci-test-swift docs dist
