@@ -21,7 +21,10 @@ import Foundation
     @objc(_id) var _id: String! = nil
     var name: String! = nil
     var code: String! = nil
-    var currentTime: Date! = nil
+    private var currentTimeStorage: Any?
+    var currentTime: Date! {
+        currentTimeStorage as? Date
+    }
     var utcOffset: Int32 = 0
     var dstOffset: Int32 = 0
 
@@ -64,9 +67,9 @@ extension RadarTimeZone {
         name = dictionary["name"] as? String
         code = dictionary["code"] as? String
         if let currentTimeString = dictionary["currentTime"] as? String {
-            currentTime = Self.dateFormatter.date(from: currentTimeString)
+            currentTimeStorage = Self.dateFormatter.date(from: currentTimeString)
         } else {
-            currentTime = nil
+            currentTimeStorage = nil
         }
         utcOffset = (dictionary["utcOffset"] as? NSNumber)?.int32Value ?? 0
         dstOffset = (dictionary["dstOffset"] as? NSNumber)?.int32Value ?? 0
