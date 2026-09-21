@@ -11,28 +11,6 @@ import Testing
 
 @testable import RadarSDK
 
-/// A stand-in for the `RadarSDKFraud` submodule's shared instance.
-///
-/// `RadarSDKFraud` (the Swift wrapper) reaches into its wrapped `NSObject` via
-/// `perform(...)`, so a mock only needs to be an `NSObject` that responds to the
-/// `initializeWithOptions:` and `getFraudPayloadWithOptions:completionHandler:` selectors. It
-/// replays a canned result dictionary so tests control what payload the manager forwards to the API.
-final class MockFraudInstance: NSObject, @unchecked Sendable {
-    let result: [String: Any]?
-
-    init(result: [String: Any]?) {
-        self.result = result
-    }
-
-    @objc(initializeWithOptions:)
-    func initialize(options: [String: Any]) {}
-
-    @objc(getFraudPayloadWithOptions:completionHandler:)
-    func getFraudPayload(options: [String: Any], completionHandler: @escaping ([String: Any]?) -> Void) {
-        completionHandler(result)
-    }
-}
-
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarRevealRiskTests {
@@ -99,7 +77,7 @@ extension RadarSerializedTests {
         private func makeManager(fraudResult: [String: Any]?, session: MockURLSession) -> RadarRevealRiskManager {
             Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
             let apiClient = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
-            let fraudSDK = RadarSDKFraud(instance: MockFraudInstance(result: fraudResult))
+            let fraudSDK = RadarSDKFraud(instance: MockFraudSDK(result: fraudResult, sharing: false))
             return RadarRevealRiskManager(apiClient: apiClient, fraudSDK: fraudSDK)
         }
 

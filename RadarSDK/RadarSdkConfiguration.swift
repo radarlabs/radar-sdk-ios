@@ -32,6 +32,7 @@ class RadarSdkConfiguration: NSObject {
     let useSwiftLocationManager: Bool
     let startUpdatesWhileInUse: Bool
     let remoteTrackingOptions: [RadarRemoteTrackingOptions]?
+    let useSwiftVerificationManager: Bool
 
     public init(dict: [String: Any]?) {
         originalDict = dict
@@ -56,13 +57,15 @@ class RadarSdkConfiguration: NSObject {
         useSwiftLocationManager = dict?["useSwiftLocationManager"] as? Bool ?? false
         startUpdatesWhileInUse = dict?["startUpdatesWhileInUse"] as? Bool ?? false
         remoteTrackingOptions = RadarRemoteTrackingOptions.from(array: dict?["remoteTrackingOptions"] as? [[String: Any]])
+        useSwiftVerificationManager = dict?["useSwiftVerificationManager"] as? Bool ?? false
     }
 
     public func dictionaryValue() -> [String: Any] {
         if let originalDict {
             return originalDict
         }
-        return [
+
+        var dictionary: [String: Any] = [
             "logLevel": logLevel.toString(),
             "startTrackingOnInitialize": startTrackingOnInitialize,
             "trackOnceOnAppOpen": trackOnceOnAppOpen,
@@ -83,8 +86,12 @@ class RadarSdkConfiguration: NSObject {
             "offlineEventGenerationEnabled": offlineEventGenerationEnabled,
             "useSwiftLocationManager": useSwiftLocationManager,
             "startUpdatesWhileInUse": startUpdatesWhileInUse,
-            "remoteTrackingOptions": RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) as Any,
+            "useSwiftVerificationManager": useSwiftVerificationManager,
         ]
+        if let remoteTrackingOptions = RadarRemoteTrackingOptions.toDictionaries(remoteTrackingOptions) {
+            dictionary["remoteTrackingOptions"] = remoteTrackingOptions
+        }
+        return dictionary
     }
 }
 

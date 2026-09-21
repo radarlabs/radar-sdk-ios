@@ -7,9 +7,7 @@
 
 import Foundation
 
-@objc(RadarInitializeOptions)
-@objcMembers
-class RadarInitializeOptions: NSObject {
+@objc @implementation extension RadarInitializeOptions {
     private static let defaultNetworkTimeoutInterval: TimeInterval = 10
     private static let defaultIPChangeDebounceInterval: TimeInterval = 10
 
@@ -32,7 +30,7 @@ class RadarInitializeOptions: NSObject {
     }
 
     @objc(initWithDict:)
-    init(dict: [String: Any]?) {
+    init(dict: [AnyHashable: Any]?) {
         autoLogNotificationConversions = RadarInitializeOptions.parseBool(dict?["autoLogNotificationConversions"])
         autoHandleNotificationDeepLinks = RadarInitializeOptions.parseBool(dict?["autoHandleNotificationDeepLinks"])
         silentPush = RadarInitializeOptions.parseBool(dict?["silentPush"])
@@ -48,7 +46,7 @@ class RadarInitializeOptions: NSObject {
         super.init()
     }
 
-    func dictionaryValue() -> [String: Any] {
+    func dictionaryValue() -> [AnyHashable: Any] {
         [
             "autoLogNotificationConversions": autoLogNotificationConversions,
             "autoHandleNotificationDeepLinks": autoHandleNotificationDeepLinks,
