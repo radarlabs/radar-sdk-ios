@@ -14,6 +14,22 @@ struct RadarExpectedAddressData: Codable, Sendable, Equatable {
         case high
         case medium
         case low
+        
+        static func from(_ value: RadarExpectedAddressConfidence) -> Self? {
+            return switch value {
+            case .high: .high
+            case .medium: .medium
+            case .low: .low
+            default: nil
+            }
+        }
+        func toObjC() -> RadarExpectedAddressConfidence {
+            return switch self {
+            case .high: .high
+            case .medium: .medium
+            case .low: .low
+            }
+        }
     }
 
     let expectedAddress: String
@@ -28,73 +44,25 @@ struct RadarExpectedAddressData: Codable, Sendable, Equatable {
 @objc(RadarExpectedAddress)
 @objcMembers
 final class RadarExpectedAddress: NSObject {
-    let expectedAddress: String
-    let formattedAddress: String?
-    let latitude: NSNumber?
-    let longitude: NSNumber?
-    let atAddress: Bool
-    let confidence: RadarExpectedAddressConfidence
-    let distance: NSNumber?
-
-    @objc(initWithExpectedAddress:formattedAddress:latitude:longitude:atAddress:confidence:distance:)
-    init(
-        expectedAddress: String,
-        formattedAddress: String?,
-        latitude: NSNumber?,
-        longitude: NSNumber?,
-        atAddress: Bool,
-        confidence: RadarExpectedAddressConfidence,
-        distance: NSNumber?
-    ) {
-        self.expectedAddress = expectedAddress
-        self.formattedAddress = formattedAddress
-        self.latitude = latitude
-        self.longitude = longitude
-        self.atAddress = atAddress
-        self.confidence = confidence
-        self.distance = distance
-
-        super.init()
-    }
-
-    /// Copies the decoded fields onto the Objective-C compatibility surface.
-    convenience init(data: RadarExpectedAddressData) {
-        self.init(
-            expectedAddress: data.expectedAddress,
-            formattedAddress: data.formattedAddress,
-            latitude: data.latitude.map(NSNumber.init(value:)),
-            longitude: data.longitude.map(NSNumber.init(value:)),
-            atAddress: data.atAddress ?? false,
-            confidence: RadarExpectedAddressConfidence(data.confidence),
-            distance: data.distance.map(NSNumber.init(value:))
-        )
-    }
-
-    /// The `Codable` representation these fields were copied from.
-    var data: RadarExpectedAddressData {
-        RadarExpectedAddressData(
-            expectedAddress: expectedAddress,
-            formattedAddress: formattedAddress,
-            latitude: latitude?.doubleValue,
-            longitude: longitude?.doubleValue,
-            atAddress: atAddress,
-            confidence: confidence.dataConfidence,
-            distance: distance?.doubleValue
-        )
-    }
-
+    let data: RadarExpectedAddressData
+    
+    var expectedAddress: String { data.expectedAddress }
+    var formattedAddress: String? { data.formattedAddress }
+    var latitude: NSNumber? { data.latitude.map(NSNumber.init(value:)) }
+    var longitude: NSNumber? { data.longitude.map(NSNumber.init(value:)) }
+    var atAddress: Bool { data.atAddress ?? false }
+    var confidence: RadarExpectedAddressConfidence { data.confidence?.toObjC() ?? .unknown }
+    var distance: NSNumber? { data.distance.map(NSNumber.init(value:)) }
+    
     @objc(initWithObject:)
-    convenience init?(object: Any) {
+    init?(object: Any) {
         guard let dictionary = object as? [AnyHashable: Any],
             let json = try? JSONSerialization.data(withJSONObject: dictionary),
-            let data = try? JSONDecoder().decode(RadarExpectedAddressData.self, from: json),
-            // An address Radar never echoed back is not a result worth surfacing.
-            !data.expectedAddress.isEmpty
+            let data = try? JSONDecoder().decode(RadarExpectedAddressData.self, from: json)
         else {
             return nil
         }
-
-        self.init(data: data)
+        self.data = data
     }
 
     func dictionaryValue() -> [AnyHashable: Any] {
@@ -103,35 +71,6 @@ final class RadarExpectedAddress: NSObject {
         else {
             return [:]
         }
-
         return dictionary
-    }
-}
-
-extension RadarExpectedAddressConfidence {
-    fileprivate init(_ confidence: RadarExpectedAddressData.Confidence?) {
-        switch confidence {
-        case .high:
-            self = .high
-        case .medium:
-            self = .medium
-        case .low:
-            self = .low
-        case nil:
-            self = .unknown
-        }
-    }
-
-    fileprivate var dataConfidence: RadarExpectedAddressData.Confidence? {
-        switch self {
-        case .high:
-            return .high
-        case .medium:
-            return .medium
-        case .low:
-            return .low
-        default:
-            return nil
-        }
     }
 }
