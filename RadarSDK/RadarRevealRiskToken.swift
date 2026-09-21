@@ -304,7 +304,10 @@ extension RadarRevealRiskTokenDevice {
 @objc @implementation extension RadarRevealRiskToken {
     @objc(_id) var _id: String! = nil
     var token: String?
-    var expiresAt: Date?
+    private var expiresAtStorage: Any?
+    var expiresAt: Date? {
+        expiresAtStorage as? Date
+    }
     var expiresIn: NSNumber?
     var risk = RadarRevealRiskTokenRisk()
     var network = RadarRevealRiskTokenNetwork()
@@ -327,7 +330,7 @@ extension RadarRevealRiskToken {
         self.init()
         _id = payload.id
         token = payload.token
-        expiresAt = payload.expiresAt
+        expiresAtStorage = payload.expiresAt
         expiresIn = payload.expiresIn.map(NSNumber.init(value:))
         risk = RadarRevealRiskTokenRisk(payload: payload.risk)
         network = RadarRevealRiskTokenNetwork(payload: payload.network)
