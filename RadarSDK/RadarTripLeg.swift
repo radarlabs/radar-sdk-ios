@@ -11,18 +11,27 @@
 import CoreLocation
 import Foundation
 
-@objc(RadarTripLeg)
-@objcMembers
-class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
+@objc @implementation extension RadarTripLeg {
 
+    private var idStorage: String?
+    private var statusStorage: RadarTripLegStatus = .unknown
+    private var destinationTypeStorage: RadarTripLegDestinationType = .unknown
+    private var createdAtStorage: Date?
+    private var updatedAtStorage: Date?
+    private var etaDurationStorage: Float = 0
+    private var etaDistanceStorage: Float = 0
+
+    // These computed properties keep the Objective-C header readonly while allowing the
+    // response parser to populate the values after the object is allocated.
+    // The underscore is part of the public Objective-C property name.
     // swiftlint:disable:next identifier_name
-    public private(set) var _id: String?
-    public private(set) var status: RadarTripLegStatus = .unknown
-    public private(set) var destinationType: RadarTripLegDestinationType = .unknown
-    public private(set) var createdAt: Date?
-    public private(set) var updatedAt: Date?
-    public private(set) var etaDuration: Float = 0
-    public private(set) var etaDistance: Float = 0
+    public var _id: String? { idStorage }
+    public var status: RadarTripLegStatus { statusStorage }
+    public var destinationType: RadarTripLegDestinationType { destinationTypeStorage }
+    public var createdAt: Date? { createdAtStorage }
+    public var updatedAt: Date? { updatedAtStorage }
+    public var etaDuration: Float { etaDurationStorage }
+    public var etaDistance: Float { etaDistanceStorage }
 
     public var destinationGeofenceTag: String?
     public var destinationGeofenceExternalId: String?
@@ -31,11 +40,12 @@ class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
 
     public var coordinates: CLLocationCoordinate2D {
         didSet {
-            hasCoordinates = CLLocationCoordinate2DIsValid(coordinates)
+            hasCoordinatesStorage = CLLocationCoordinate2DIsValid(coordinates)
         }
     }
 
-    public private(set) var hasCoordinates: Bool = false
+    private var hasCoordinatesStorage = false
+    public var hasCoordinates: Bool { hasCoordinatesStorage }
     public var arrivalRadius: Int = 0
     public var stopDuration: Int = 0
     public var metadata: [AnyHashable: Any]?
@@ -54,33 +64,33 @@ class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
         self.destinationGeofenceTag = destinationGeofenceTag
         self.destinationGeofenceExternalId =
             destinationGeofenceExternalId
-        destinationType = .geofence
+        destinationTypeStorage = .geofence
     }
 
     @objc(initWithDestinationGeofenceId:)
     public convenience init(destinationGeofenceId: String) {
         self.init()
         self.destinationGeofenceId = destinationGeofenceId
-        destinationType = .geofence
+        destinationTypeStorage = .geofence
     }
 
     @objc(initWithAddress:)
     public convenience init(address: String) {
         self.init()
         self.address = address
-        destinationType = .address
+        destinationTypeStorage = .address
     }
 
     @objc(initWithCoordinates:)
     public convenience init(coordinates: CLLocationCoordinate2D) {
         self.init()
         self.coordinates = coordinates
-        hasCoordinates = CLLocationCoordinate2DIsValid(coordinates)
-        destinationType = .coordinates
+        hasCoordinatesStorage = CLLocationCoordinate2DIsValid(coordinates)
+        destinationTypeStorage = .coordinates
     }
 
     @objc(stringForStatus:)
-    public static func string(
+    public class func string(
         for status: RadarTripLegStatus
     ) -> String {
         switch status {
@@ -104,7 +114,7 @@ class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
     }
 
     @objc(statusForString:)
-    public static func status(
+    public class func status(
         for string: String
     ) -> RadarTripLegStatus {
         switch string {
@@ -128,7 +138,7 @@ class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
     }
 
     @objc(stringForDestinationType:)
-    public static func string(
+    public class func string(
         for destinationType: RadarTripLegDestinationType
     ) -> String {
         switch destinationType {
@@ -144,7 +154,7 @@ class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
     }
 
     @objc(destinationTypeForString:)
-    public static func destinationType(
+    public class func destinationType(
         for string: String
     ) -> RadarTripLegDestinationType {
         switch string {
@@ -159,55 +169,80 @@ class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
         }
     }
 
-    @nonobjc
-    public convenience init?(
+    private class func parsed(
         from dictionary: [AnyHashable: Any]?
-    ) {
+    ) -> RadarTripLeg? {
         guard let dictionary else {
             return nil
         }
 
-        self.init()
+        let leg = RadarTripLeg()
 
-        _id = dictionary["_id"] as? String
+        leg.idStorage = dictionary["_id"] as? String
 
         if let status = dictionary["status"] as? String {
-            self.status = Self.status(for: status)
+            leg.statusStorage = Self.status(for: status)
         }
 
         if let createdAt = dictionary["createdAt"] as? String {
-            self.createdAt = RadarUtils.isoDateFormatter.date(
+            leg.createdAtStorage = RadarUtils.isoDateFormatter.date(
                 from: createdAt
             )
         }
 
         if let updatedAt = dictionary["updatedAt"] as? String {
-            self.updatedAt = RadarUtils.isoDateFormatter.date(
+            leg.updatedAtStorage = RadarUtils.isoDateFormatter.date(
                 from: updatedAt
             )
         }
 
         if let eta = dictionary["eta"] as? [AnyHashable: Any] {
-            etaDuration =
+            leg.etaDurationStorage =
                 (eta["duration"] as? NSNumber)?.floatValue ?? 0
-            etaDistance =
+            leg.etaDistanceStorage =
                 (eta["distance"] as? NSNumber)?.floatValue ?? 0
         }
 
         if let destination =
             dictionary["destination"] as? [AnyHashable: Any]
         {
-            parseDestination(destination)
+            leg.parseDestination(destination)
         }
 
         if let stopDuration = dictionary["stopDuration"] as? NSNumber {
-            self.stopDuration = stopDuration.intValue
+            leg.stopDuration = stopDuration.intValue
         }
 
-        metadata = dictionary["metadata"] as? [AnyHashable: Any]
+        leg.metadata = dictionary["metadata"] as? [AnyHashable: Any]
+        return leg
     }
 
     @objc(legFromDictionary:)
+    public convenience init?(
+        from dictionary: [AnyHashable: Any]?
+    ) {
+        guard let parsed = Self.parsed(from: dictionary) else {
+            return nil
+        }
+
+        self.init()
+        idStorage = parsed.idStorage
+        statusStorage = parsed.statusStorage
+        destinationTypeStorage = parsed.destinationTypeStorage
+        createdAtStorage = parsed.createdAtStorage
+        updatedAtStorage = parsed.updatedAtStorage
+        etaDurationStorage = parsed.etaDurationStorage
+        etaDistanceStorage = parsed.etaDistanceStorage
+        destinationGeofenceTag = parsed.destinationGeofenceTag
+        destinationGeofenceExternalId = parsed.destinationGeofenceExternalId
+        destinationGeofenceId = parsed.destinationGeofenceId
+        address = parsed.address
+        coordinates = parsed.coordinates
+        arrivalRadius = parsed.arrivalRadius
+        stopDuration = parsed.stopDuration
+        metadata = parsed.metadata
+    }
+
     public static func leg(
         fromDictionary object: Any?
     ) -> RadarTripLeg? {
@@ -222,7 +257,7 @@ class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
         _ destination: [AnyHashable: Any]
     ) {
         if let type = destination["type"] as? String {
-            destinationType = Self.destinationType(for: type)
+            destinationTypeStorage = Self.destinationType(for: type)
         }
 
         if let source =
@@ -299,11 +334,11 @@ class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
         }
 
         if destinationGeofenceId != nil || (destinationGeofenceTag != nil && destinationGeofenceExternalId != nil) {
-            destinationType = .geofence
+            destinationTypeStorage = .geofence
         } else if address != nil {
-            destinationType = .address
+            destinationTypeStorage = .address
         } else if hasCoordinates {
-            destinationType = .coordinates
+            destinationTypeStorage = .coordinates
         }
     }
 
@@ -339,7 +374,7 @@ class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
     }
 
     @objc(legsFromArray:)
-    public static func legs(
+    public class func legs(
         from array: [Any]?
     ) -> [RadarTripLeg]? {
         guard let array else {
@@ -448,7 +483,7 @@ class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
     }
 
     @objc(arrayForLegs:)
-    public static func array(
+    public class func array(
         for legs: [RadarTripLeg]?
     ) -> [[AnyHashable: Any]]? {
         guard let legs, !legs.isEmpty else {

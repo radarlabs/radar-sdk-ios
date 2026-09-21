@@ -5,7 +5,7 @@
 //  Copyright © 2021 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarFraud+Internal.h"
+#import "RadarFraud.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

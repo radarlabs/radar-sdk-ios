@@ -7,9 +7,7 @@
 
 import Foundation
 
-@objc(RadarTimeZone)
-@objcMembers
-final class RadarTimeZone: NSObject {
+@objc @implementation extension RadarTimeZone {
     /// Keep one formatter to preserve the legacy wire format and POSIX locale.
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -18,31 +16,51 @@ final class RadarTimeZone: NSObject {
         return formatter
     }()
 
-    @objc(_id) let id: String?
-    let name: String?
-    let code: String?
-    let currentTime: Date?
-    let utcOffset: Int32
-    let dstOffset: Int32
+    // The underscore is part of the public Objective-C property name.
+    // swiftlint:disable:next identifier_name
+    @objc(_id) var _id: String! = nil
+    var name: String! = nil
+    var code: String! = nil
+    var currentTime: Date! = nil
+    var utcOffset: Int32 = 0
+    var dstOffset: Int32 = 0
 
     override init() {
-        id = nil
-        name = nil
-        code = nil
-        currentTime = nil
-        utcOffset = 0
-        dstOffset = 0
         super.init()
     }
 
+    func dictionaryValue() -> [AnyHashable: Any] {
+        var dictionary: [AnyHashable: Any] = [:]
+        if let id = _id {
+            dictionary["id"] = id
+        }
+        if let name = name as String? {
+            dictionary["name"] = name
+        }
+        if let code = code as String? {
+            dictionary["code"] = code
+        }
+        if let currentTime = currentTime as Date? {
+            dictionary["currentTime"] = Self.dateFormatter.string(from: currentTime)
+        }
+        dictionary["utcOffset"] = NSNumber(value: utcOffset)
+        dictionary["dstOffset"] = NSNumber(value: dstOffset)
+        return dictionary
+    }
+}
+
+extension RadarTimeZone {
+    var id: String? { _id }
+
     /// Keeps the hand-written Objective-C header's `initWithObject:` selector working.
     @objc(initWithObject:)
-    init?(object: Any) {
+    convenience init?(object: Any) {
         guard let dictionary = object as? NSDictionary else {
             return nil
         }
 
-        id = dictionary["id"] as? String
+        self.init()
+        _id = dictionary["id"] as? String
         name = dictionary["name"] as? String
         code = dictionary["code"] as? String
         if let currentTimeString = dictionary["currentTime"] as? String {
@@ -52,25 +70,6 @@ final class RadarTimeZone: NSObject {
         }
         utcOffset = (dictionary["utcOffset"] as? NSNumber)?.int32Value ?? 0
         dstOffset = (dictionary["dstOffset"] as? NSNumber)?.int32Value ?? 0
-        super.init()
     }
 
-    func dictionaryValue() -> [String: Any] {
-        var dictionary: [String: Any] = [:]
-        if let id {
-            dictionary["id"] = id
-        }
-        if let name {
-            dictionary["name"] = name
-        }
-        if let code {
-            dictionary["code"] = code
-        }
-        if let currentTime {
-            dictionary["currentTime"] = Self.dateFormatter.string(from: currentTime)
-        }
-        dictionary["utcOffset"] = NSNumber(value: utcOffset)
-        dictionary["dstOffset"] = NSNumber(value: dstOffset)
-        return dictionary
-    }
 }

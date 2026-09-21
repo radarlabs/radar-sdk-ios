@@ -168,15 +168,13 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
 
     // MARK: - Objective-C surface
 
-    @Test("the Swift class is exported to the Objective-C runtime as RadarCoordinate")
+    @Test("the Objective-C facade is exported as RadarCoordinate")
     func exportedUnderObjectiveCName() throws {
-        #expect(NSStringFromClass(RadarCoordinateSwift.self) == "RadarCoordinate")
+        #expect(NSStringFromClass(RadarCoordinate.self) == "RadarCoordinate")
 
         let objc = RadarCoordinate(
             coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude))!
-        let swift = try #require(objc as Any as? RadarCoordinateSwift)
 
-        #expect(swift.valueEquals(RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)))
         #expect(objc.coordinate.latitude == Self.latitude)
         #expect(objc.coordinate.longitude == Self.longitude)
     }
@@ -197,7 +195,8 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
 
         #expect(coordinate.coordinate.latitude == 0)
         #expect(coordinate.coordinate.longitude == 0)
-        #expect(try #require(coordinate as Any as? RadarCoordinateSwift).valueEquals(RadarCoordinateSwift()))
+        #expect(coordinate.coordinate.latitude == 0)
+        #expect(coordinate.coordinate.longitude == 0)
     }
 
     @Test("[RadarCoordinate new] returns a zeroed coordinate")
@@ -210,7 +209,8 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
 
         #expect(coordinate.coordinate.latitude == 0)
         #expect(coordinate.coordinate.longitude == 0)
-        #expect(try #require(coordinate as Any as? RadarCoordinateSwift).valueEquals(RadarCoordinateSwift()))
+        #expect(coordinate.coordinate.latitude == 0)
+        #expect(coordinate.coordinate.longitude == 0)
     }
 
     @Test("the coordinate property mirrors the stored latitude and longitude")
@@ -345,9 +345,8 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
 
     // MARK: - Equality
     //
-    // RadarCoordinateSwift declares `static func ==` but does not override `isEqual:`, so equality
-    // means different things on each side of the bridge: Swift compares latitude/longitude, while
-    // Objective-C gets NSObject's default, which is pointer identity.
+    // RadarCoordinate is an Objective-C facade, while RadarCoordinateSwift is the Codable value
+    // model used by internal Swift code.
 
     private func makeCoordinate() -> RadarCoordinateSwift {
         RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)
@@ -355,8 +354,8 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
 
     @Test("Objective-C isEqual: is pointer identity, not value equality")
     func objcEqualityIsIdentity() throws {
-        let coordinate = try #require(makeCoordinate() as Any as? RadarCoordinate)
-        let sameValue = try #require(makeCoordinate() as Any as? RadarCoordinate)
+        let coordinate = try #require(RadarCoordinate(coordinate: makeCoordinate().clLocationCoordinate2D))
+        let sameValue = try #require(RadarCoordinate(coordinate: makeCoordinate().clLocationCoordinate2D))
 
         #expect(coordinate == coordinate)
         #expect(coordinate.isEqual(coordinate))
@@ -366,12 +365,9 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
 
     @Test("NSObject-typed operands and collection APIs route through isEqual:")
     func nsObjectAndCollectionsUseIdentity() {
-        let coordinate = makeCoordinate()
-        let sameValue = makeCoordinate()
+        let coordinate = RadarCoordinate(coordinate: makeCoordinate().clLocationCoordinate2D)!
+        let sameValue = RadarCoordinate(coordinate: makeCoordinate().clLocationCoordinate2D)!
 
-        // The `==` overload is only picked when both operands are statically typed as
-        // RadarCoordinateSwift. NSObject-typed operands, `Array.==`, `contains` and `Set` all go
-        // through the Equatable/Hashable conformance NSObject supplies, i.e. `isEqual:`/`hash`.
         #expect((coordinate as NSObject) != (sameValue as NSObject))
         #expect([coordinate] != [sameValue])
         #expect(![coordinate].contains(sameValue))

@@ -7,17 +7,21 @@
 
 import Foundation
 
-@objc(RadarCircleGeometry)
-@objcMembers
-final class RadarCircleGeometry: RadarGeofenceGeometry {
-    let center: RadarCoordinate
-    let radius: Double
+@objc @implementation extension RadarCircleGeometry {
+    var center: RadarCoordinate = RadarCoordinate()
+    var radius: Double = 0
 
-    /// Keeps the hand-written Objective-C initializer working after the implementation moved to Swift.
+    override init() {
+        super.init()
+    }
+}
+
+extension RadarCircleGeometry {
+    /// Keeps the SDK-only constructor available without adding it to the public header.
     @objc(initWithCenter:radius:)
-    init(center: RadarCoordinate, radius: Double) {
+    convenience init(center: RadarCoordinate, radius: Double) {
+        self.init()
         self.center = center
         self.radius = radius
-        super.init()
     }
 }

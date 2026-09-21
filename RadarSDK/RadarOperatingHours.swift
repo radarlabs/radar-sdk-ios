@@ -75,14 +75,19 @@ struct RadarOperatingHoursSwift: Codable, Sendable, Equatable {
     }
 }
 
-@objc(RadarOperatingHours)
-final class RadarOperatingHours: NSObject {
-    @objc let hours: NSDictionary
+@objc @implementation extension RadarOperatingHours {
+    var hours: [String: [[String]]]?
 
-    /// This keeps old Objective-C calls working.
-    @objc(initWithDictionary:)
-    init(dictionary: NSDictionary) {
-        hours = RadarOperatingHoursSwift.parse(dictionary) as NSDictionary
+    override init() {
         super.init()
+    }
+}
+
+extension RadarOperatingHours {
+    /// This keeps old Objective-C calls working without adding the initializer to the public header.
+    @objc(initWithDictionary:)
+    convenience init(dictionary: NSDictionary) {
+        self.init()
+        hours = RadarOperatingHoursSwift.parse(dictionary)
     }
 }

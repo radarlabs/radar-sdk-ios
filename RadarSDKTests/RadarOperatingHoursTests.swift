@@ -24,7 +24,7 @@ struct RadarOperatingHoursTests {
 
     private func compatibilityHours(_ dictionary: [String: Any]) throws -> [String: [[String]]] {
         let parsed = RadarOperatingHours(dictionary: dictionary as NSDictionary)
-        return try #require(parsed.hours as? [String: [[String]]])
+        return try #require(parsed.hours)
     }
 
     // MARK: - Decoding
