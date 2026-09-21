@@ -39,7 +39,6 @@
 @property (assign, nonatomic) NSTimeInterval lastIPChangeDeliveredAt;
 @property (copy, nonatomic) NSString *expectedCountryCode;
 @property (copy, nonatomic) NSString *expectedStateCode;
-@property (copy, nonatomic) NSString *expectedAddress;
 @property (weak, nonatomic) RadarVerificationManagerSwift *swiftInstance;
 
 @end

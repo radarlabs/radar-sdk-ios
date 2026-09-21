@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarVerificationManager : NSObject
 
 @property (assign, nonatomic) BOOL started;
+@property (copy, nonatomic, nullable) NSString *expectedAddress;
 
 + (instancetype)sharedInstance;
 - (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;
@@ -24,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)getVerifiedLocationTokenWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;
 - (void)clearVerifiedLocationToken;
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode;
-- (void)setExpectedAddress:(NSString *)address;
 - (BOOL)isSharing;
 - (void)clearSharing;
 
