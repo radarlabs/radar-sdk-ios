@@ -18,9 +18,18 @@ import Foundation
 
     // The underscore is part of the public Objective-C property name.
     // swiftlint:disable:next identifier_name
-    @objc(_id) var _id: String! = nil
-    var name: String! = nil
-    var code: String! = nil
+    @objc(_id) var _id: String! {
+        idStorage as? String
+    }
+    var name: String! {
+        nameStorage as? String
+    }
+    var code: String! {
+        codeStorage as? String
+    }
+    private var idStorage: Any?
+    private var nameStorage: Any?
+    private var codeStorage: Any?
     private var currentTimeStorage: Any?
     var currentTime: Date! {
         currentTimeStorage as? Date
@@ -34,16 +43,16 @@ import Foundation
 
     func dictionaryValue() -> [AnyHashable: Any] {
         var dictionary: [AnyHashable: Any] = [:]
-        if let id = _id as String? {
+        if let id = idStorage as? String {
             dictionary["id"] = id
         }
-        if let name = name as String? {
+        if let name = nameStorage as? String {
             dictionary["name"] = name
         }
-        if let code = code as String? {
+        if let code = codeStorage as? String {
             dictionary["code"] = code
         }
-        if let currentTime = currentTime as Date? {
+        if let currentTime = currentTimeStorage as? Date {
             dictionary["currentTime"] = Self.dateFormatter.string(from: currentTime)
         }
         dictionary["utcOffset"] = NSNumber(value: utcOffset)
@@ -53,7 +62,7 @@ import Foundation
 }
 
 extension RadarTimeZone {
-    var id: String? { _id }
+    var id: String? { idStorage as? String }
 
     /// Keeps the hand-written Objective-C header's `initWithObject:` selector working.
     @objc(initWithObject:)
@@ -63,9 +72,9 @@ extension RadarTimeZone {
         }
 
         self.init()
-        _id = dictionary["id"] as? String
-        name = dictionary["name"] as? String
-        code = dictionary["code"] as? String
+        idStorage = dictionary["id"] as? String
+        nameStorage = dictionary["name"] as? String
+        codeStorage = dictionary["code"] as? String
         if let currentTimeString = dictionary["currentTime"] as? String {
             currentTimeStorage = Self.dateFormatter.date(from: currentTimeString)
         } else {

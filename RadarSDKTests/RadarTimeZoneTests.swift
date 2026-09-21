@@ -32,6 +32,16 @@ struct RadarTimeZoneTests {
         return try #require(RadarTimeZone(object: object))
     }
 
+    /// Read the legacy nullable Objective-C value without Swift forcing the nonnull header bridge.
+    private func currentTimeValue(from timeZone: RadarTimeZone) -> Date? {
+        timeZone.value(forKey: "currentTime") as? Date
+    }
+
+    /// Read nullable legacy Objective-C strings without Swift forcing the nonnull header bridge.
+    private func stringValue(_ key: String, from timeZone: RadarTimeZone) -> String? {
+        timeZone.value(forKey: key) as? String
+    }
+
     // MARK: - Decoding
 
     @Test("decodes every field")
@@ -68,9 +78,9 @@ struct RadarTimeZoneTests {
         let timeZone = try timeZone(from: "{}")
 
         #expect(timeZone.id == nil)
-        #expect(timeZone.name == nil)
-        #expect(timeZone.code == nil)
-        #expect(timeZone.currentTime == nil)
+        #expect(stringValue("name", from: timeZone) == nil)
+        #expect(stringValue("code", from: timeZone) == nil)
+        #expect(currentTimeValue(from: timeZone) == nil)
         #expect(timeZone.utcOffset == 0)
         #expect(timeZone.dstOffset == 0)
     }
@@ -87,16 +97,17 @@ struct RadarTimeZoneTests {
         let timeZone = try timeZone(from: json)
 
         #expect(timeZone.id == nil)
-        #expect(timeZone.name == nil)
-        #expect(timeZone.code == nil)
-        #expect(timeZone.currentTime == nil)
+        #expect(stringValue("name", from: timeZone) == nil)
+        #expect(stringValue("code", from: timeZone) == nil)
+        #expect(currentTimeValue(from: timeZone) == nil)
         #expect(timeZone.utcOffset == 0)
         #expect(timeZone.dstOffset == 0)
     }
 
     @Test("an unparseable currentTime decodes to nil")
     func unparseableDateIsNil() throws {
-        #expect(try timeZone(from: #"{"currentTime": "not a date"}"#).currentTime == nil)
+        let timeZone = try timeZone(from: #"{"currentTime": "not a date"}"#)
+        #expect(currentTimeValue(from: timeZone) == nil)
     }
 
     @Test("a fractional offset truncates toward zero")
