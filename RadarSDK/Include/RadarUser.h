@@ -7,6 +7,7 @@
 
 #import "RadarBeacon.h"
 #import "RadarChain.h"
+#import "RadarExpectedAddress.h"
 #import "RadarFraud.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
@@ -192,6 +193,11 @@ typedef NS_ENUM(NSInteger, RadarActivityType);
  The user's learned home, work, and travel state. May be `nil` if location insights are not enabled.
  */
 @property (nullable, strong, nonatomic, readonly) RadarUserLocationInsights *locationInsights;
+
+/**
+ The user's expected address state. May be `nil` if an expected address has not been set with `setExpectedAddress:`.
+ */
+@property (nullable, strong, nonatomic, readonly) RadarExpectedAddress *expectedAddress;
 
 @property (assign, nonatomic, readonly) double altitude;
 
