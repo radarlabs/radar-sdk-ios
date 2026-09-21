@@ -9,8 +9,9 @@
 import CoreLocation
 import Foundation
 
+// Keep sync state transitions together so their shared state is easy to audit.
 @objc(RadarSyncManager)
-public final class RadarSyncManager: NSObject {
+public final class RadarSyncManager: NSObject {  // swiftlint:disable:this type_body_length
 
     static let syncStore = RadarFileStorageObject<RadarSyncState>(fileName: "radar_sync_state.json")
 
@@ -254,7 +255,11 @@ public final class RadarSyncManager: NSObject {
         return point.distance(from: closestLocation)
     }
 
-    private static func greatCircleInterpolate(from a: CLLocationCoordinate2D, to b: CLLocationCoordinate2D, fraction t: Double) -> CLLocationCoordinate2D {
+    private static func greatCircleInterpolate(
+        from a: CLLocationCoordinate2D,
+        to b: CLLocationCoordinate2D,
+        fraction fractionValue: Double
+    ) -> CLLocationCoordinate2D {
         let lat1 = a.latitude * .pi / 180.0
         let lon1 = a.longitude * .pi / 180.0
         let lat2 = b.latitude * .pi / 180.0
@@ -264,14 +269,14 @@ public final class RadarSyncManager: NSObject {
         let deltaLon = lon2 - lon1
         let sinHalfDLat = sin(deltaLat / 2)
         let sinHalfDLon = sin(deltaLon / 2)
-        let h = sinHalfDLat * sinHalfDLat + cos(lat1) * cos(lat2) * sinHalfDLon * sinHalfDLon
-        let angularDistance = 2.0 * atan2(sqrt(h), sqrt(1 - h))
+        let haversineValue = sinHalfDLat * sinHalfDLat + cos(lat1) * cos(lat2) * sinHalfDLon * sinHalfDLon
+        let angularDistance = 2.0 * atan2(sqrt(haversineValue), sqrt(1 - haversineValue))
 
         guard angularDistance > 1e-12 else { return a }
 
         let sinD = sin(angularDistance)
-        let aCoeff = sin((1 - t) * angularDistance) / sinD
-        let bCoeff = sin(t * angularDistance) / sinD
+        let aCoeff = sin((1 - fractionValue) * angularDistance) / sinD
+        let bCoeff = sin(fractionValue * angularDistance) / sinD
 
         let x = aCoeff * cos(lat1) * cos(lon1) + bCoeff * cos(lat2) * cos(lon2)
         let y = aCoeff * cos(lat1) * sin(lon1) + bCoeff * cos(lat2) * sin(lon2)
@@ -617,6 +622,44 @@ public final class RadarSyncManager: NSObject {
         updateLastKnownSyncState(location: location)
     }
 
+    private static func logSyncStateDifference(name: String, serverIds: [String], clientIds: [String]) {
+        let serverOnly = Set(serverIds).subtracting(Set(clientIds))
+        let clientOnly = Set(clientIds).subtracting(Set(serverIds))
+        if !serverOnly.isEmpty {
+            RadarLogger.shared.info("SyncManager: Server added \(name): \(serverOnly)")
+        }
+        if !clientOnly.isEmpty {
+            RadarLogger.shared.info("SyncManager: Server removed \(name): \(clientOnly)")
+        }
+    }
+
+    private static func reconcilePlaceDifference(serverIds: [String], clientIds: [String]) {
+        logSyncStateDifference(name: "places", serverIds: serverIds, clientIds: clientIds)
+        let clientOnly = Set(clientIds).subtracting(Set(serverIds))
+        if !clientOnly.isEmpty {
+            rejectedPlaceIds = rejectedPlaceIds.union(clientOnly)
+            rejectedAtLocation = lastPlaceCheckLocation
+        }
+    }
+
+    private static func saveReconciledSyncState(
+        geofenceIds: [String],
+        placeIds: [String],
+        beaconIds: [String]
+    ) {
+        syncStore.modify { state in
+            if state == nil { state = RadarSyncState() }
+            state?.lastSyncedGeofenceIds = geofenceIds
+            state?.lastSyncedPlaceIds = placeIds
+            state?.lastSyncedBeaconIds = beaconIds
+
+            // Clean up timestamps for geofences the server doesn't recognize.
+            let serverSet = Set(geofenceIds)
+            state?.geofenceEntryTimestamps = state?.geofenceEntryTimestamps.filter { serverSet.contains($0.key) } ?? [:]
+            state?.dwellEventsFired = state?.dwellEventsFired.filter { serverSet.contains($0) } ?? []
+        }
+    }
+
     @objc public static func reconcileSyncState(user: RadarUser) {
         let serverGeofenceIds = user.geofences?.compactMap { $0._id } ?? []
         let serverPlaceIds: [String] = user.place?._id != nil ? [user.place!._id] : []
@@ -634,53 +677,22 @@ public final class RadarSyncManager: NSObject {
         if geofenceMismatch || placeMismatch || beaconMismatch {
 
             if geofenceMismatch {
-                let serverOnly = Set(serverGeofenceIds).subtracting(Set(clientGeofenceIds))
-                let clientOnly = Set(clientGeofenceIds).subtracting(Set(serverGeofenceIds))
-                if !serverOnly.isEmpty {
-                    RadarLogger.shared.info("SyncManager: Server added geofences: \(serverOnly)")
-                }
-                if !clientOnly.isEmpty {
-                    RadarLogger.shared.info("SyncManager: Server removed geofences: \(clientOnly)")
-                }
+                logSyncStateDifference(name: "geofences", serverIds: serverGeofenceIds, clientIds: clientGeofenceIds)
             }
 
             if beaconMismatch {
-                let serverOnly = Set(serverBeaconIds).subtracting(Set(clientBeaconIds))
-                let clientOnly = Set(clientBeaconIds).subtracting(Set(serverBeaconIds))
-                if !serverOnly.isEmpty {
-                    RadarLogger.shared.info("SyncManager: Server added beacons: \(serverOnly)")
-                }
-                if !clientOnly.isEmpty {
-                    RadarLogger.shared.info("SyncManager: Server removed beacons: \(clientOnly)")
-                }
+                logSyncStateDifference(name: "beacons", serverIds: serverBeaconIds, clientIds: clientBeaconIds)
             }
 
             if placeMismatch {
-                let serverOnly = Set(serverPlaceIds).subtracting(Set(clientPlaceIds))
-                let clientOnly = Set(clientPlaceIds).subtracting(Set(serverPlaceIds))
-                if !serverOnly.isEmpty {
-                    RadarLogger.shared.info("SyncManager: Server added places: \(serverOnly)")
-                }
-                if !clientOnly.isEmpty {
-                    RadarLogger.shared.info("SyncManager: Server removed places: \(clientOnly)")
-                    rejectedPlaceIds = rejectedPlaceIds.union(clientOnly)
-                    rejectedAtLocation = lastPlaceCheckLocation
-                }
+                reconcilePlaceDifference(serverIds: serverPlaceIds, clientIds: clientPlaceIds)
             }
 
-            syncStore.modify { state in
-                if state == nil { state = RadarSyncState() }
-                state?.lastSyncedGeofenceIds = serverGeofenceIds
-                state?.lastSyncedPlaceIds = serverPlaceIds
-                state?.lastSyncedBeaconIds = serverBeaconIds
-
-                // Clean up timestamps for geofences the server doesn't recognize
-                let serverSet = Set(serverGeofenceIds)
-                let cleanedTimestamps = state?.geofenceEntryTimestamps.filter { serverSet.contains($0.key) } ?? [:]
-                let cleanedDwell = state?.dwellEventsFired.filter { serverSet.contains($0) } ?? []
-                state?.geofenceEntryTimestamps = cleanedTimestamps
-                state?.dwellEventsFired = cleanedDwell
-            }
+            saveReconciledSyncState(
+                geofenceIds: serverGeofenceIds,
+                placeIds: serverPlaceIds,
+                beaconIds: serverBeaconIds
+            )
         } else {
             RadarLogger.shared.info("SyncManager: Client state matches server")
         }
@@ -868,4 +880,5 @@ public struct RadarSyncedBeaconSnapshot {
             self.location = nil
         }
     }
+    // swiftlint:disable:next file_length
 }

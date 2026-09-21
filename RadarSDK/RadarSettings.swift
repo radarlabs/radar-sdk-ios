@@ -334,10 +334,8 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
     public static func addTags(_ tags: [String]) {
         var existingTags: [String] = self.tags
         let existingTagsSet: Set<String> = Set(self.tags)
-        for tag in tags {
-            if !existingTagsSet.contains(tag) {
-                existingTags.append(tag)
-            }
+        for tag in tags where !existingTagsSet.contains(tag) {
+            existingTags.append(tag)
         }
         self.tags = existingTags
     }
