@@ -6,7 +6,7 @@ extension RadarTripOptions {
             return nil
         }
 
-        let externalId = dictionary["externalId"] as? String ?? ""
+        let externalId = dictionary["externalId"] as? String
         let destinationGeofenceTag = dictionary["destinationGeofenceTag"] as? String
         let destinationGeofenceExternalId = dictionary["destinationGeofenceExternalId"] as? String
         let scheduledArrivalAt = Self.scheduledArrival(from: dictionary["scheduledArrivalAt"])
@@ -16,7 +16,9 @@ extension RadarTripOptions {
         let legs = (dictionary["legs"] as? [Any]).flatMap(RadarTripLeg.legs(from:))
 
         let options = RadarTripOptions()
-        options.externalId = externalId
+        if let externalId {
+            options.externalId = externalId
+        }
         options.destinationGeofenceTag = destinationGeofenceTag
         options.destinationGeofenceExternalId = destinationGeofenceExternalId
         options.scheduledArrivalAt = scheduledArrivalAt
