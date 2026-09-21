@@ -68,6 +68,7 @@ def check_source(root: Path) -> None:
     for class_name, header in classes.items():
         pattern = re.compile(
             rf"@objc\s*\(\s*{re.escape(class_name)}\s*\)"
+            rf"\s*(?:@[A-Za-z_]\w*(?:\s*\([^)]*\))?\s*)*"
             rf"\s*(?:(?:public|internal|private|fileprivate|open|final)\s+)*class\b"
         )
         if pattern.search(swift_text):
@@ -89,6 +90,11 @@ def framework_classes(framework: Path) -> dict[str, Path]:
 
     classes: dict[str, Path] = {}
     for header in sorted(headers_dir.glob("*.h")):
+        # Swift's generated Objective-C header also lists public Swift classes.
+        # Their exported class symbols use Swift-mangled names, so this check
+        # is limited to the hand-written Objective-C compatibility headers.
+        if header.name == "RadarSDK-Swift.h":
+            continue
         for class_name in INTERFACE_RE.findall(header.read_text()):
             classes.setdefault(class_name, header)
     return classes

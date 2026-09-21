@@ -85,7 +85,7 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
         var sessionIdSeconds: Double = RadarUserDefaults.double(forKey: .sessionId)
 
         let sdkConfiguration = RadarSettings.sdkConfiguration
-        if sdkConfiguration?.extendFlushReplays ?? false {
+        if sdkConfiguration?.extendFlushReplays() ?? false {
             RadarLogger.shared.info("Flushing replays from updateSessionId()", type: .sdkCall)
             // TODO: call swift RadarReplayBuffer when implemented
             RadarSwift.bridge?.flushReplays()
@@ -218,7 +218,7 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
             RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .sdkConfiguration)
 
             if let newValue {
-                logLevel = newValue.logLevel
+                logLevel = newValue.logLevel()
             }
         }
     }
@@ -274,7 +274,7 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
     }
 
     public static var useRadarModifiedBeacon: Bool {
-        sdkConfiguration?.useRadarModifiedBeacon ?? false
+        sdkConfiguration?.useRadarModifiedBeacon() ?? false
     }
 
     public static var xPlatform: Bool {
@@ -290,7 +290,7 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
     }
 
     public static var useOpenedAppConversion: Bool {
-        sdkConfiguration?.useOpenedAppConversion ?? true
+        sdkConfiguration?.useOpenedAppConversion() ?? true
     }
 
     public static var initializeOptions: RadarInitializeOptions? {

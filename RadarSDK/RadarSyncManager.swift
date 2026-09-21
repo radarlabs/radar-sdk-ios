@@ -294,8 +294,8 @@ public final class RadarSyncManager: NSObject {
     ) -> Bool {
         let shouldBuffer =
             checkingForExit
-            ? (sdkConfig?.bufferGeofenceExits ?? true)
-            : (sdkConfig?.bufferGeofenceEntries ?? true)
+            ? (sdkConfig?.bufferGeofenceExits() ?? true)
+            : (sdkConfig?.bufferGeofenceEntries() ?? true)
 
         switch geofence.geometry {
         case .circle(let center, let radius):
@@ -501,7 +501,7 @@ public final class RadarSyncManager: NSObject {
         let enteredIds = currentGeofenceIds.subtracting(lastKnownIds)
         guard !enteredIds.isEmpty else { return [] }
 
-        let projectStopDetection = RadarSettings.sdkConfiguration?.stopDetection ?? false
+        let projectStopDetection = RadarSettings.sdkConfiguration?.stopDetection() ?? false
         let isStopped = RadarSwift.bridge?.isStopped() ?? false
 
         return currentGeofences.filter { geofence in
@@ -526,7 +526,7 @@ public final class RadarSyncManager: NSObject {
     }
 
     static func getGeofenceDwells(for location: CLLocation, against lastKnownIds: Set<String>) -> [RadarGeofenceSwift] {
-        let projectDwellThreshold = RadarSettings.sdkConfiguration?.defaultGeofenceDwellThreshold ?? 0
+        let projectDwellThreshold = RadarSettings.sdkConfiguration?.defaultGeofenceDwellThreshold() ?? 0
         let currentGeofences = getGeofences(for: location)
         let currentGeofenceIds = Set(currentGeofences.map { $0.id })
         let anyGeofenceHasDwell = currentGeofences.contains { $0.dwellThreshold != nil }

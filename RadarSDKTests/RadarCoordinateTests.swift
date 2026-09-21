@@ -217,8 +217,8 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
     func coordinateProperty() {
         let coordinate = RadarCoordinateSwift(latitude: Self.latitude, longitude: Self.longitude)
 
-        #expect(coordinate.coordinate.latitude == Self.latitude)
-        #expect(coordinate.coordinate.longitude == Self.longitude)
+        #expect(coordinate.latitude == Self.latitude)
+        #expect(coordinate.longitude == Self.longitude)
         #expect(coordinate.clLocationCoordinate2D.latitude == Self.latitude)
         #expect(coordinate.clLocation.coordinate.longitude == Self.longitude)
     }

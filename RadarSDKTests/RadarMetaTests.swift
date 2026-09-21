@@ -49,7 +49,7 @@ struct RadarMetaTests {
     func validSdkConfiguration() {
         let meta = RadarMeta.from(dictionary: ["sdkConfiguration": ["logLevel": "info"]])
 
-        #expect(meta?.sdkConfiguration?.logLevel == .info)
+        #expect(meta?.sdkConfiguration?.logLevel() == .info)
     }
 
     @Test("sdkConfiguration value of wrong type leaves property nil")

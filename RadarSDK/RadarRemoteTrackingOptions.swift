@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(RadarRemoteTrackingOptions) @objcMembers
-class RadarRemoteTrackingOptions: NSObject {
+public class RadarRemoteTrackingOptions: NSObject {
 
     let type: String
     let trackingOptions: RadarTrackingOptions

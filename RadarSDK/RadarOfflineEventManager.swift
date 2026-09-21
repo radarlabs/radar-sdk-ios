@@ -98,7 +98,7 @@ class RadarOfflineEventManager: NSObject {
     static func handleTrackFailure(_ location: CLLocation) {
         let sdkConfig = RadarSettings.sdkConfiguration
 
-        if sdkConfig?.offlineEventGenerationEnabled == true {
+        if sdkConfig?.offlineEventGenerationEnabled() == true {
             generateEvents(location: location) { events, user, _ in
                 if !events.isEmpty, let user {
                     RadarSwift.bridge?.didReceiveEvents(events, user: user)
@@ -170,7 +170,7 @@ class RadarOfflineEventManager: NSObject {
 
     static func updateTrackingOptions(geofenceTags: [String]) -> RadarTrackingOptions? {
         let sdkConfig = RadarSettings.sdkConfiguration
-        let remoteOptions = sdkConfig?.remoteTrackingOptions
+        let remoteOptions = sdkConfig?.remoteTrackingOptions()
 
         let rampUpTags = RadarRemoteTrackingOptions.geofenceTags(forKey: "inGeofence", in: remoteOptions)
         let inRampedUpGeofences: Bool
