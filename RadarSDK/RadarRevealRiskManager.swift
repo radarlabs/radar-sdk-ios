@@ -71,8 +71,9 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
         Task {
             do {
                 let token = try await self.revealRisk(useSecondaryVerifiedHost: useSecondaryVerifiedHost)
-                let stringKeyedDictionary = token.dictionaryValue().reduce(into: [String: Any]()) {
-                    result, entry in
+                let stringKeyedDictionary = token.dictionaryValue().reduce(
+                    into: [String: Any]()
+                ) { result, entry in
                     guard let key = entry.key as? String else { return }
                     result[key] = entry.value
                 }
