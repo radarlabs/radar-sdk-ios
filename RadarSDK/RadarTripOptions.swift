@@ -10,7 +10,11 @@ import Foundation
 
 @objc @implementation extension RadarTripOptions {
 
-    var externalId: String! = nil
+    private var externalIdStorage: Any?
+    var externalId: String! {
+        get { externalIdStorage as? String }
+        set { externalIdStorage = newValue }
+    }
     var metadata: [AnyHashable: Any]?
     var destinationGeofenceTag: String?
     var destinationGeofenceExternalId: String?
@@ -271,6 +275,17 @@ private extension RadarTripOptions {
     // The header requires a nonnull NSString, but the legacy Swift initializer uses nil until
     // callers provide an external ID. Keep that compatibility while avoiding IUO comparisons.
     var optionalExternalId: String? {
-        externalId as String?
+        externalIdStorage as? String
+    }
+}
+
+extension RadarTripOptions {
+    @objc(tripOptionsFromDictionary:)
+    public class func radarTripOptions(fromDictionary object: Any?) -> RadarTripOptions? {
+        guard let dictionary = object as? [AnyHashable: Any] else {
+            return nil
+        }
+
+        return Self.parsed(from: dictionary)
     }
 }

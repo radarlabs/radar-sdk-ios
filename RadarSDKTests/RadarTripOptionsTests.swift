@@ -500,7 +500,12 @@ struct RadarTripOptionsTests {  // swiftlint:disable:this type_body_length
             RadarTripOptions(from: [:])
         )
 
-        #expect(options.externalId == nil)
+        #expect(externalIdValue(from: options) == nil)
+    }
+
+    /// Read the legacy nullable value without applying the nonnull header bridge.
+    private func externalIdValue(from options: RadarTripOptions) -> String? {
+        options.value(forKey: "externalId") as? String
     }
 
     private func makeCompleteOptions() -> RadarTripOptions {
