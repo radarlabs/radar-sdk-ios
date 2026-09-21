@@ -102,9 +102,8 @@ import Foundation
             dictionary["externalId"] = externalId
         }
 
-        if let id = _id {
-            dictionary["_id"] = id
-        }
+        dictionary["_id"] = _id
+        
         if let metadata {
             dictionary["metadata"] = metadata
         }

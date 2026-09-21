@@ -31,7 +31,7 @@ import Foundation
 
     func dictionaryValue() -> [AnyHashable: Any] {
         var dictionary: [AnyHashable: Any] = [:]
-        if let id = _id {
+        if let id = _id as String? {
             dictionary["id"] = id
         }
         if let name = name as String? {

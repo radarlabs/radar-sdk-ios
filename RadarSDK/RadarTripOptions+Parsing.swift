@@ -6,7 +6,7 @@ extension RadarTripOptions {
             return nil
         }
 
-        let externalId = dictionary["externalId"] as? String
+        let externalId = dictionary["externalId"] as? String ?? ""
         let destinationGeofenceTag = dictionary["destinationGeofenceTag"] as? String
         let destinationGeofenceExternalId = dictionary["destinationGeofenceExternalId"] as? String
         let scheduledArrivalAt = Self.scheduledArrival(from: dictionary["scheduledArrivalAt"])
