@@ -655,8 +655,10 @@ public final class RadarSyncManager: NSObject {  // swiftlint:disable:this type_
 
             // Clean up timestamps for geofences the server doesn't recognize.
             let serverSet = Set(geofenceIds)
-            state?.geofenceEntryTimestamps = state?.geofenceEntryTimestamps.filter { serverSet.contains($0.key) } ?? [:]
-            state?.dwellEventsFired = state?.dwellEventsFired.filter { serverSet.contains($0) } ?? []
+            let geofenceEntryTimestamps = state?.geofenceEntryTimestamps ?? [:]
+            state?.geofenceEntryTimestamps = geofenceEntryTimestamps.filter { serverSet.contains($0.key) }
+            let dwellEventsFired = state?.dwellEventsFired ?? []
+            state?.dwellEventsFired = dwellEventsFired.filter { serverSet.contains($0) }
         }
     }
 
