@@ -149,7 +149,7 @@ build-example-pretty:
 
 ci-build-example:
 	@set -o pipefail; \
-	  xcodebuild -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination "$(CI_DESTINATION)" -skipMacroValidation ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode" 2>&1 \
+	  xcodebuild -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -configuration Release -destination "$(CI_DESTINATION)" -skipMacroValidation ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode" 2>&1 \
 	    | tee /tmp/radar-sdk-ios-ci-build-example.log \
 	    | xcpretty; \
 	  exit $$?

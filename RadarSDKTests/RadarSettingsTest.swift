@@ -19,7 +19,7 @@ actor RadarSettingsTest {
         guard let userDefaults = UserDefaults(suiteName: suite) else {
             return
         }
-        userDefaults.dictionaryRepresentation().forEach { key, value in
+        userDefaults.dictionaryRepresentation().forEach { key, _ in
             if key.starts(with: "radar-") {
                 userDefaults.removeObject(forKey: key)
             }
@@ -129,8 +129,8 @@ actor RadarSettingsTest {
             "useSwiftLocationManager": true
         ])
 
-        #expect(defaultConfiguration.useSwiftLocationManager == false)
-        #expect(enabledConfiguration.useSwiftLocationManager == true)
+        #expect(defaultConfiguration.useSwiftLocationManager() == false)
+        #expect(enabledConfiguration.useSwiftLocationManager() == true)
         #expect(enabledConfiguration.dictionaryValue()["useSwiftLocationManager"] as? Bool == true)
     }
 
@@ -145,6 +145,6 @@ actor RadarSettingsTest {
             "useSwiftLocationManager": true
         ])
 
-        #expect(RadarSettings.sdkConfiguration?.useSwiftLocationManager == true)
+        #expect(RadarSettings.sdkConfiguration?.useSwiftLocationManager() == true)
     }
 }

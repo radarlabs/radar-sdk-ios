@@ -104,7 +104,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
         RadarSwift.bridge?.stopIndoorTracking()
 
-        if RadarSettings.sdkConfiguration?.extendFlushReplays == true {
+        if RadarSettings.sdkConfiguration?.extendFlushReplays() == true {
             RadarLogger.shared.info("Flushing replays from stopTracking()", type: .sdkCall)
             RadarSwift.bridge?.flushReplays()
         }

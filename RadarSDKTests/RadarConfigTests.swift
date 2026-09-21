@@ -68,7 +68,7 @@ struct RadarConfigTests {
                 "nonce": "test-nonce",
             ])
 
-        #expect(config?.meta?.sdkConfiguration?.logLevel == .info)
+        #expect(config?.meta?.sdkConfiguration?.logLevel() == .info)
         #expect(config?.nonce == "test-nonce")
     }
 }

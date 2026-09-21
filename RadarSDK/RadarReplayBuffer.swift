@@ -39,7 +39,7 @@ final class RadarReplayBuffer: NSObject, @unchecked Sendable {
         let radarReplay = RadarReplay(params: replayParams)
         mutableReplayBuffer.append(radarReplay)
 
-        guard let sdkConfiguration = RadarSettings.sdkConfiguration, sdkConfiguration.usePersistence else {
+        guard let sdkConfiguration = RadarSettings.sdkConfiguration, sdkConfiguration.usePersistence() else {
             return
         }
 

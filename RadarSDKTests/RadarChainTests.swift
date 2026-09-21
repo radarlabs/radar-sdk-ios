@@ -87,7 +87,7 @@ struct RadarChainTests {
 
     @Test("Encodes every populated field")
     func encodesFullChain() throws {
-        let metadata: NSDictionary = ["customFlag": true]
+        let metadata: [AnyHashable: Any] = ["customFlag": true]
         let dict = try Self.encodeToDictionary(
             RadarChain(
                 slug: "starbucks",
@@ -112,7 +112,7 @@ struct RadarChainTests {
 
     @Test("Round-trips through JSON without losing fields")
     func roundTripsThroughJSON() throws {
-        let originalMetadata: NSDictionary = ["aString": "x", "anInt": 7]
+        let originalMetadata: [AnyHashable: Any] = ["aString": "x", "anInt": 7]
         let original = RadarChain(
             slug: "starbucks",
             name: "Starbucks",
@@ -149,12 +149,12 @@ struct RadarChainTests {
     @Test("Serializes chain arrays")
     func serializesArrays() throws {
         let chain = RadarChain(slug: "starbucks", name: "Starbucks", externalId: nil, metadata: nil)
-        let dictionaries = try #require(RadarChain.arrayForChains([chain]))
+        let dictionaries = try #require(RadarChain.array(for: [chain]))
 
         #expect(dictionaries.count == 1)
         #expect(dictionaries[0]["slug"] as? String == "starbucks")
         #expect(dictionaries[0]["name"] as? String == "Starbucks")
-        #expect(RadarChain.arrayForChains(nil) == nil)
+        #expect(RadarChain.array(for: nil) == nil)
     }
 
     @Test("Rejects non-dictionary payloads")

@@ -29,7 +29,7 @@ extension RadarLocationManagerSwift {
     private static func locationSource(completionHandlerCount: UInt) -> RadarLocationSource {
         let configuration = RadarSettings.sdkConfiguration
         if completionHandlerCount > 0,
-            configuration?.skipForegroundCheck == true || RadarSwift.bridge?.isForeground() == true
+            configuration?.skipForegroundCheck() == true || RadarSwift.bridge?.isForeground() == true
         {
             return .foregroundLocation
         }
@@ -236,14 +236,14 @@ extension RadarLocationManagerSwift {
             return
         }
         guard status == .authorizedAlways || status == .authorizedWhenInUse,
-            config.trackOnceOnAppOpen || config.startTrackingOnInitialize
+            config.trackOnceOnAppOpen() || config.startTrackingOnInitialize()
         else {
             return
         }
 
         RadarLogger.shared.log(level: .info, message: "🦅 Location services authorized")
         Radar.trackOnce(completionHandler: nil)
-        if config.startTrackingOnInitialize, !RadarSettings.tracking {
+        if config.startTrackingOnInitialize(), !RadarSettings.tracking {
             Radar.startTracking(trackingOptions: RadarSettings.trackingOptions)
         }
     }
