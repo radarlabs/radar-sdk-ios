@@ -14,7 +14,11 @@ import Foundation
     var metadata: [AnyHashable: Any]?
     var destinationGeofenceTag: String?
     var destinationGeofenceExternalId: String?
-    var scheduledArrivalAt: Date?
+    private var scheduledArrivalAtStorage: Any?
+    var scheduledArrivalAt: Date? {
+        get { scheduledArrivalAtStorage as? Date }
+        set { scheduledArrivalAtStorage = newValue }
+    }
     var mode: RadarRouteMode = RadarRouteMode(rawValue: 0)
     var approachingThreshold: UInt16 = 0
     var startTracking = false

@@ -16,8 +16,8 @@ import Foundation
     private var idStorage: String?
     private var statusStorage: RadarTripLegStatus = .unknown
     private var destinationTypeStorage: RadarTripLegDestinationType = .unknown
-    private var createdAtStorage: Date?
-    private var updatedAtStorage: Date?
+    private var createdAtStorage: Any?
+    private var updatedAtStorage: Any?
     private var etaDurationStorage: Float = 0
     private var etaDistanceStorage: Float = 0
 
@@ -28,8 +28,8 @@ import Foundation
     public var _id: String? { idStorage }
     public var status: RadarTripLegStatus { statusStorage }
     public var destinationType: RadarTripLegDestinationType { destinationTypeStorage }
-    public var createdAt: Date? { createdAtStorage }
-    public var updatedAt: Date? { updatedAtStorage }
+    public var createdAt: Date? { createdAtStorage as? Date }
+    public var updatedAt: Date? { updatedAtStorage as? Date }
     public var etaDuration: Float { etaDurationStorage }
     public var etaDistance: Float { etaDistanceStorage }
 
