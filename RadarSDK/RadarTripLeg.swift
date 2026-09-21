@@ -243,16 +243,6 @@ import Foundation
         metadata = parsed.metadata
     }
 
-    public static func leg(
-        fromDictionary object: Any?
-    ) -> RadarTripLeg? {
-        guard let dictionary = object as? [AnyHashable: Any] else {
-            return nil
-        }
-
-        return RadarTripLeg(from: dictionary)
-    }
-
     private func parseDestination(
         _ destination: [AnyHashable: Any]
     ) {
@@ -381,8 +371,12 @@ import Foundation
             return nil
         }
 
-        let legs = array.compactMap {
-            leg(fromDictionary: $0)
+        let legs: [RadarTripLeg] = array.compactMap { object in
+            guard let dictionary = object as? [AnyHashable: Any] else {
+                return nil
+            }
+
+            return Self.parsed(from: dictionary)
         }
 
         return legs.isEmpty ? nil : legs
@@ -544,5 +538,16 @@ import Foundation
         default:
             return false
         }
+    }
+}
+
+extension RadarTripLeg {
+    @objc(legFromDictionary:)
+    public class func radarLeg(fromDictionary object: Any?) -> RadarTripLeg? {
+        guard let dictionary = object as? [AnyHashable: Any] else {
+            return nil
+        }
+
+        return Self.parsed(from: dictionary)
     }
 }
