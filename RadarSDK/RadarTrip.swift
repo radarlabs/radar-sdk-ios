@@ -103,7 +103,7 @@ import Foundation
         }
 
         dictionary["_id"] = _id
-        
+
         if let metadata {
             dictionary["metadata"] = metadata
         }
