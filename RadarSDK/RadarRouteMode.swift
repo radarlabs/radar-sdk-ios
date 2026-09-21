@@ -7,10 +7,11 @@
 
 import Foundation
 
-@objc(RadarRouteModeUtils)
-final class RadarRouteModeUtils: NSObject {
-    @objc(stringForMode:)
-    static func stringForMode(_ mode: RadarRouteMode) -> String {
+@objc @implementation extension RadarRouteModeUtils {
+    override init() {
+        super.init()
+    }
+    class func stringForMode(_ mode: RadarRouteMode) -> String {
         switch mode {
         case .foot:
             return "foot"

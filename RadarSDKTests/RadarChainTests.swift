@@ -14,11 +14,11 @@ import Testing
 struct RadarChainTests {
 
     private static func decode(_ json: String) throws -> RadarChain {
-        try JSONDecoder().decode(RadarChain.self, from: Data(json.utf8))
+        try JSONDecoder().decode(RadarChainPayload.self, from: Data(json.utf8)).makeChain()
     }
 
     private static func encodeToDictionary(_ chain: RadarChain) throws -> [String: Any] {
-        let data = try JSONEncoder().encode(chain)
+        let data = try JSONSerialization.data(withJSONObject: chain.dictionaryValue())
         return try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
     }
 
@@ -120,8 +120,15 @@ struct RadarChainTests {
             metadata: originalMetadata
         )
 
+        let payload = RadarChainPayload(
+            slug: original.slug,
+            name: original.name,
+            externalId: original.externalId,
+            metadata: ["aString": .string("x"), "anInt": .int(7)])
         let decoded = try JSONDecoder().decode(
-            RadarChain.self, from: JSONEncoder().encode(original))
+            RadarChainPayload.self,
+            from: JSONEncoder().encode(payload)
+        ).makeChain()
 
         #expect(decoded.slug == original.slug)
         #expect(decoded.name == original.name)

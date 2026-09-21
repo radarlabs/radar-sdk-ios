@@ -8,21 +8,26 @@
 
 import Foundation
 
-@objc(RadarTripOrder)
-@objcMembers
-class RadarTripOrder: NSObject {
+@objc @implementation extension RadarTripOrder {
 
     // swiftlint:disable:next identifier_name
     public let _id: String
     public let guid: String?
     public let handoffMode: String?
-    public let status: RadarTripOrderStatus
-    public let firedAt: Date?
+    private let statusStorage: Int
+    public var status: RadarTripOrderStatus {
+        RadarTripOrderStatus(rawValue: statusStorage) ?? .unknown
+    }
+    private let firedAtStorage: Any?
+    public var firedAt: Date? { firedAtStorage as? Date }
     public let firedAttempts: NSNumber?
     public let firedReason: String?
-    public let updatedAt: Date
+    private let updatedAtStorage: Any
+    public var updatedAt: Date {
+        updatedAtStorage as? Date ?? Date(timeIntervalSince1970: 0)
+    }
 
-    public init(
+    public init?(
         id: String,
         guid: String?,
         handoffMode: String?,
@@ -35,11 +40,11 @@ class RadarTripOrder: NSObject {
         self._id = id
         self.guid = guid
         self.handoffMode = handoffMode
-        self.status = status
-        self.firedAt = firedAt
+        self.statusStorage = status.rawValue
+        self.firedAtStorage = firedAt
         self.firedAttempts = firedAttempts
         self.firedReason = firedReason
-        self.updatedAt = updatedAt
+        self.updatedAtStorage = updatedAt
 
         super.init()
     }
@@ -82,7 +87,7 @@ class RadarTripOrder: NSObject {
     }
 
     @objc(ordersFromObject:)
-    public static func orders(
+    public class func orders(
         from object: Any
     ) -> [RadarTripOrder]? {
         guard let objects = object as? [Any] else {
@@ -104,8 +109,8 @@ class RadarTripOrder: NSObject {
     }
 
     @objc(arrayForOrders:)
-    public static func array(
-        forOrders orders: [RadarTripOrder]?
+    public class func array(
+        for orders: [RadarTripOrder]?
     ) -> [[AnyHashable: Any]]? {
         orders?.map { $0.dictionaryValue() }
     }

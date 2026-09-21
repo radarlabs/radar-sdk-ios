@@ -8,55 +8,20 @@
 
 import Foundation
 
-@objc(RadarTripOptions)
-@objcMembers
-class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
+@objc @implementation extension RadarTripOptions {
 
-    public var externalId: String?
-    public var metadata: [AnyHashable: Any]?
-    public var destinationGeofenceTag: String?
-    public var destinationGeofenceExternalId: String?
-    public var scheduledArrivalAt: Date?
-    public var mode: RadarRouteMode
-    public var approachingThreshold: UInt16
-    public var startTracking: Bool
-    public var legs: [RadarTripLeg]?
+    var externalId: String! = nil
+    var metadata: [AnyHashable: Any]?
+    var destinationGeofenceTag: String?
+    var destinationGeofenceExternalId: String?
+    var scheduledArrivalAt: Date?
+    var mode: RadarRouteMode = RadarRouteMode(rawValue: 0)
+    var approachingThreshold: UInt16 = 0
+    var startTracking = false
+    var legs: [RadarTripLeg]?
 
-    private init(
-        externalIdValue: String?,
-        destinationGeofenceTag: String?,
-        destinationGeofenceExternalId: String?,
-        scheduledArrivalAt: Date?,
-        mode: RadarRouteMode,
-        approachingThreshold: UInt16,
-        startTracking: Bool,
-        legs: [RadarTripLeg]?
-    ) {
-        externalId = externalIdValue
-        metadata = nil
-        self.destinationGeofenceTag = destinationGeofenceTag
-        self.destinationGeofenceExternalId =
-            destinationGeofenceExternalId
-        self.scheduledArrivalAt = scheduledArrivalAt
-        self.mode = mode
-        self.approachingThreshold = approachingThreshold
-        self.startTracking = startTracking
-        self.legs = legs
-
+    override init() {
         super.init()
-    }
-
-    public override convenience init() {
-        self.init(
-            externalIdValue: nil,
-            destinationGeofenceTag: nil,
-            destinationGeofenceExternalId: nil,
-            scheduledArrivalAt: nil,
-            mode: RadarRouteMode(rawValue: 0),
-            approachingThreshold: 0,
-            startTracking: false,
-            legs: nil
-        )
     }
 
     @objc(
@@ -69,17 +34,12 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
         destinationGeofenceTag: String?,
         destinationGeofenceExternalId: String?
     ) {
-        self.init(
-            externalIdValue: externalId,
-            destinationGeofenceTag: destinationGeofenceTag,
-            destinationGeofenceExternalId:
-                destinationGeofenceExternalId,
-            scheduledArrivalAt: nil,
-            mode: .car,
-            approachingThreshold: 0,
-            startTracking: true,
-            legs: nil
-        )
+        self.init()
+        self.externalId = externalId
+        self.destinationGeofenceTag = destinationGeofenceTag
+        self.destinationGeofenceExternalId = destinationGeofenceExternalId
+        self.mode = .car
+        self.startTracking = true
     }
 
     @objc(
@@ -94,17 +54,13 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
         destinationGeofenceExternalId: String?,
         scheduledArrivalAt: Date?
     ) {
-        self.init(
-            externalIdValue: externalId,
-            destinationGeofenceTag: destinationGeofenceTag,
-            destinationGeofenceExternalId:
-                destinationGeofenceExternalId,
-            scheduledArrivalAt: scheduledArrivalAt,
-            mode: .car,
-            approachingThreshold: 0,
-            startTracking: true,
-            legs: nil
-        )
+        self.init()
+        self.externalId = externalId
+        self.destinationGeofenceTag = destinationGeofenceTag
+        self.destinationGeofenceExternalId = destinationGeofenceExternalId
+        self.scheduledArrivalAt = scheduledArrivalAt
+        self.mode = .car
+        self.startTracking = true
     }
 
     @objc(
@@ -121,75 +77,36 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
         scheduledArrivalAt: Date?,
         startTracking: Bool
     ) {
-        self.init(
-            externalIdValue: externalId,
-            destinationGeofenceTag: destinationGeofenceTag,
-            destinationGeofenceExternalId:
-                destinationGeofenceExternalId,
-            scheduledArrivalAt: scheduledArrivalAt,
-            mode: .car,
-            approachingThreshold: 0,
-            startTracking: startTracking,
-            legs: nil
-        )
-    }
-
-    @nonobjc
-    public convenience init?(
-        from dictionary: [AnyHashable: Any]?
-    ) {
-        guard let dictionary else {
-            return nil
-        }
-
-        let externalId = dictionary["externalId"] as? String
-        let destinationGeofenceTag =
-            dictionary["destinationGeofenceTag"] as? String
-        let destinationGeofenceExternalId =
-            dictionary["destinationGeofenceExternalId"] as? String
-        let scheduledArrivalAt = Self.scheduledArrival(
-            from: dictionary["scheduledArrivalAt"]
-        )
-        let mode = Self.mode(
-            from: dictionary["mode"] as? String
-        )
-        let approachingThreshold =
-            (dictionary["approachingThreshold"] as? NSNumber)?
-            .uint16Value ?? 0
-        let startTracking = Self.startTracking(
-            from: dictionary["startTracking"]
-        )
-
-        let legs: [RadarTripLeg]?
-        if let objects = dictionary["legs"] as? [Any] {
-            legs = RadarTripLeg.legs(from: objects)
-        } else {
-            legs = nil
-        }
-
-        self.init(
-            externalIdValue: externalId,
-            destinationGeofenceTag: destinationGeofenceTag,
-            destinationGeofenceExternalId:
-                destinationGeofenceExternalId,
-            scheduledArrivalAt: scheduledArrivalAt,
-            mode: mode,
-            approachingThreshold: approachingThreshold,
-            startTracking: startTracking,
-            legs: legs
-        )
-
-        metadata = dictionary["metadata"] as? [AnyHashable: Any]
+        self.init()
+        self.externalId = externalId
+        self.destinationGeofenceTag = destinationGeofenceTag
+        self.destinationGeofenceExternalId = destinationGeofenceExternalId
+        self.scheduledArrivalAt = scheduledArrivalAt
+        self.mode = .car
+        self.startTracking = startTracking
     }
 
     @objc(tripOptionsFromDictionary:)
-    public static func tripOptions(
-        from dictionary: [AnyHashable: Any]?
-    ) -> RadarTripOptions? {
-        RadarTripOptions(from: dictionary)
+    public convenience init?(
+        from dictionary: [AnyHashable: Any]
+    ) {
+        guard let parsed = Self.parsed(from: dictionary) else {
+            return nil
+        }
+
+        self.init()
+        externalId = parsed.externalId
+        metadata = parsed.metadata
+        destinationGeofenceTag = parsed.destinationGeofenceTag
+        destinationGeofenceExternalId = parsed.destinationGeofenceExternalId
+        scheduledArrivalAt = parsed.scheduledArrivalAt
+        mode = parsed.mode
+        approachingThreshold = parsed.approachingThreshold
+        startTracking = parsed.startTracking
+        legs = parsed.legs
     }
 
-    private static func scheduledArrival(
+    static func scheduledArrival(
         from object: Any?
     ) -> Date? {
         if let string = object as? String {
@@ -210,7 +127,7 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
         return nil
     }
 
-    private static func mode(
+    static func mode(
         from string: String?
     ) -> RadarRouteMode {
         switch string {
@@ -227,7 +144,7 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
         }
     }
 
-    private static func startTracking(
+    static func startTracking(
         from object: Any?
     ) -> Bool {
         if let number = object as? NSNumber {
@@ -241,10 +158,10 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
         return true
     }
 
-    public func dictionaryValue() -> [AnyHashable: Any] {
+    func dictionaryValue() -> [AnyHashable: Any] {
         var dictionary: [AnyHashable: Any] = [:]
 
-        if let externalId {
+        if let externalId = optionalExternalId {
             dictionary["externalId"] = externalId
         }
 
@@ -304,9 +221,8 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
     private func hasMatchingValues(
         _ other: RadarTripOptions
     ) -> Bool {
-        guard
-            let externalId,
-            let otherExternalId = other.externalId,
+        guard let externalId = optionalExternalId,
+            let otherExternalId = other.optionalExternalId,
             externalId == otherExternalId
         else {
             return false
@@ -344,5 +260,13 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
         default:
             return false
         }
+    }
+}
+
+private extension RadarTripOptions {
+    // The header requires a nonnull NSString, but the legacy Swift initializer uses nil until
+    // callers provide an external ID. Keep that compatibility while avoiding IUO comparisons.
+    var optionalExternalId: String? {
+        externalId as String?
     }
 }

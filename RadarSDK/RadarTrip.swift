@@ -9,59 +9,29 @@
 import CoreLocation
 import Foundation
 
-@objc(RadarTrip)
-@objcMembers
-class RadarTrip: NSObject {
+@objc @implementation extension RadarTrip {
 
     // swiftlint:disable:next identifier_name
-    public let _id: String?
-    public let externalId: String?
-    public let metadata: [AnyHashable: Any]?
-    public let destinationGeofenceTag: String?
-    public let destinationGeofenceExternalId: String?
-    public let destinationLocation: RadarCoordinate?
-    public let mode: RadarRouteMode
-    public let etaDistance: Float
-    public let etaDuration: Float
-    public let status: RadarTripStatus
-    public let orders: [RadarTripOrder]?
-    public let legs: [RadarTripLeg]?
-    public let currentLegId: String?
+    var _id: String! = nil
+    var externalId: String?
+    var metadata: [AnyHashable: Any]?
+    var destinationGeofenceTag: String?
+    var destinationGeofenceExternalId: String?
+    var destinationLocation: RadarCoordinate?
+    var mode: RadarRouteMode = RadarRouteMode(rawValue: 0)
+    var etaDistance: Float = 0
+    var etaDuration: Float = 0
+    var status: RadarTripStatus = .unknown
+    var orders: [RadarTripOrder]?
+    var legs: [RadarTripLeg]?
+    var currentLegId: String?
 
-    public init(
-        id: String?,
-        externalId: String,
-        metadata: [AnyHashable: Any]?,
-        destinationGeofenceTag: String?,
-        destinationGeofenceExternalId: String?,
-        destinationLocation: RadarCoordinate?,
-        mode: RadarRouteMode,
-        etaDistance: Float,
-        etaDuration: Float,
-        status: RadarTripStatus,
-        orders: [RadarTripOrder]?,
-        legs: [RadarTripLeg]?,
-        currentLegId: String?
-    ) {
-        self._id = id
-        self.externalId = externalId
-        self.metadata = metadata
-        self.destinationGeofenceTag = destinationGeofenceTag
-        self.destinationGeofenceExternalId = destinationGeofenceExternalId
-        self.destinationLocation = destinationLocation
-        self.mode = mode
-        self.etaDistance = etaDistance
-        self.etaDuration = etaDuration
-        self.status = status
-        self.orders = orders
-        self.legs = legs
-        self.currentLegId = currentLegId
-
+    override init() {
         super.init()
     }
 
     @objc(initWithObject:)
-    public convenience init?(object: Any) {
+    convenience init?(object: Any) {
         guard let dictionary = object as? [AnyHashable: Any],
             let externalId = dictionary["externalId"] as? String
         else {
@@ -256,5 +226,38 @@ class RadarTrip: NSObject {
         default:
             return "unknown"
         }
+    }
+}
+
+extension RadarTrip {
+    convenience init(
+        id: String?,
+        externalId: String,
+        metadata: [AnyHashable: Any]?,
+        destinationGeofenceTag: String?,
+        destinationGeofenceExternalId: String?,
+        destinationLocation: RadarCoordinate?,
+        mode: RadarRouteMode,
+        etaDistance: Float,
+        etaDuration: Float,
+        status: RadarTripStatus,
+        orders: [RadarTripOrder]?,
+        legs: [RadarTripLeg]?,
+        currentLegId: String?
+    ) {
+        self.init()
+        self._id = id
+        self.externalId = externalId
+        self.metadata = metadata
+        self.destinationGeofenceTag = destinationGeofenceTag
+        self.destinationGeofenceExternalId = destinationGeofenceExternalId
+        self.destinationLocation = destinationLocation
+        self.mode = mode
+        self.etaDistance = etaDistance
+        self.etaDuration = etaDuration
+        self.status = status
+        self.orders = orders
+        self.legs = legs
+        self.currentLegId = currentLegId
     }
 }
