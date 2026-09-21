@@ -8,23 +8,66 @@
 
 import Foundation
 
+/// Keep one initialized value so failed Objective-C initializers can deallocate safely.
+private final class RadarTripOrderStorage {
+    let id: String
+    let guid: String?
+    let handoffMode: String?
+    let status: RadarTripOrderStatus
+    let firedAt: Date?
+    let firedAttempts: NSNumber?
+    let firedReason: String?
+    let updatedAt: Date
+
+    init(
+        id: String,
+        guid: String?,
+        handoffMode: String?,
+        status: RadarTripOrderStatus,
+        firedAt: Date?,
+        firedAttempts: NSNumber?,
+        firedReason: String?,
+        updatedAt: Date
+    ) {
+        self.id = id
+        self.guid = guid
+        self.handoffMode = handoffMode
+        self.status = status
+        self.firedAt = firedAt
+        self.firedAttempts = firedAttempts
+        self.firedReason = firedReason
+        self.updatedAt = updatedAt
+    }
+}
+
 @objc @implementation extension RadarTripOrder {
 
+    @nonobjc private var storage: RadarTripOrderStorage?
+
     // swiftlint:disable:next identifier_name
-    public let _id: String
-    public let guid: String?
-    public let handoffMode: String?
-    private let statusStorage: Int
-    public var status: RadarTripOrderStatus {
-        RadarTripOrderStatus(rawValue: statusStorage) ?? .unknown
+    public var _id: String! {
+        storage?.id
     }
-    private let firedAtStorage: Any?
-    public var firedAt: Date? { firedAtStorage as? Date }
-    public let firedAttempts: NSNumber?
-    public let firedReason: String?
-    private let updatedAtStorage: Any
+    public var guid: String? {
+        storage?.guid
+    }
+    public var handoffMode: String? {
+        storage?.handoffMode
+    }
+    public var status: RadarTripOrderStatus {
+        storage?.status ?? .unknown
+    }
+    public var firedAt: Date? {
+        storage?.firedAt
+    }
+    public var firedAttempts: NSNumber? {
+        storage?.firedAttempts
+    }
+    public var firedReason: String? {
+        storage?.firedReason
+    }
     public var updatedAt: Date {
-        updatedAtStorage as? Date ?? Date(timeIntervalSince1970: 0)
+        storage?.updatedAt ?? Date(timeIntervalSince1970: 0)
     }
 
     public init?(
@@ -37,14 +80,16 @@ import Foundation
         firedReason: String?,
         updatedAt: Date
     ) {
-        self._id = id
-        self.guid = guid
-        self.handoffMode = handoffMode
-        self.statusStorage = status.rawValue
-        self.firedAtStorage = firedAt
-        self.firedAttempts = firedAttempts
-        self.firedReason = firedReason
-        self.updatedAtStorage = updatedAt
+        self.storage = RadarTripOrderStorage(
+            id: id,
+            guid: guid,
+            handoffMode: handoffMode,
+            status: status,
+            firedAt: firedAt,
+            firedAttempts: firedAttempts,
+            firedReason: firedReason,
+            updatedAt: updatedAt
+        )
 
         super.init()
     }
