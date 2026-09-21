@@ -14,12 +14,14 @@ struct RadarExpectedAddress: Codable, Sendable, Equatable {
         case high
         case medium
         case low
+        case unknown
 
         func toObjC() -> RadarExpectedAddressConfidence {
             return switch self {
             case .high: .high
             case .medium: .medium
             case .low: .low
+            case .unknown: .unknown
             }
         }
     }
@@ -28,8 +30,8 @@ struct RadarExpectedAddress: Codable, Sendable, Equatable {
     let formattedAddress: String?
     let latitude: Double?
     let longitude: Double?
-    let atAddress: Bool?
-    let confidence: Confidence?
+    let atAddress: Bool
+    let confidence: Confidence
     let distance: Double?
 }
 
@@ -42,8 +44,8 @@ final class RadarExpectedAddressObjc: NSObject {
     @objc public var formattedAddress: String? { data.formattedAddress }
     @objc public var latitude: NSNumber? { data.latitude.map(NSNumber.init(value:)) }
     @objc public var longitude: NSNumber? { data.longitude.map(NSNumber.init(value:)) }
-    @objc public var atAddress: Bool { data.atAddress ?? false }
-    @objc public var confidence: RadarExpectedAddressConfidence { data.confidence?.toObjC() ?? .unknown }
+    @objc public var atAddress: Bool { data.atAddress }
+    @objc public var confidence: RadarExpectedAddressConfidence { data.confidence.toObjC() }
     @objc public var distance: NSNumber? { data.distance.map(NSNumber.init(value:)) }
 
     /// Keeps `[[RadarExpectedAddress alloc] init]` from trapping on Swift's unimplemented-initializer
@@ -54,8 +56,8 @@ final class RadarExpectedAddressObjc: NSObject {
             formattedAddress: nil,
             latitude: nil,
             longitude: nil,
-            atAddress: nil,
-            confidence: nil,
+            atAddress: false,
+            confidence: .unknown,
             distance: nil
         )
         super.init()
