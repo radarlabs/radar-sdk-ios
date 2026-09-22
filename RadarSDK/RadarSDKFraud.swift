@@ -115,10 +115,11 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
     }
 
     func seal(options: [String: Any]) throws -> String {
-        let result = instance.perform(
-            Self.sealSelector,
-            with: options
-        )?.takeUnretainedValue() as? [String: Any]
+        let result =
+            instance.perform(
+                Self.sealSelector,
+                with: options
+            )?.takeUnretainedValue() as? [String: Any]
 
         guard
             result?["error"] == nil,
@@ -145,7 +146,7 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
             "encryptionAttemptId":
                 try Self.makeFraudEncryptionAttemptId(),
             "issuedAt": Int(Date().timeIntervalSince1970),
-            "installId": installId
+            "installId": installId,
         ]
         options["origin"] = origin
         options["product"] = product

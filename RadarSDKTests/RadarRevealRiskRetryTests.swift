@@ -173,7 +173,12 @@ extension RadarSerializedTests.RadarRevealRiskTests {
         #expect(requests.count == 1)
 
         let request = try #require(requests.first)
-        let host = secondary
+        try assertFirstAttemptRequest(request, secondary: secondary)
+    }
+
+    private func assertFirstAttemptRequest(_ request: URLRequest, secondary: Bool) throws {
+        let host =
+            secondary
             ? RadarSettings.defaultVerifiedHostSecondary
             : RadarSettings.verifiedHost
         #expect(request.url?.absoluteString == "\(host)/v1/reveal/risk")

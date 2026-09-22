@@ -102,7 +102,7 @@ final class MockPreparedFraudPayloadInstance: NSObject {
     init(
         result: [String: Any]?,
         resultForOptions: (([String: Any]) -> [String: Any]?)? = nil
-        ) {
+    ) {
         self.result = result
         self.resultForOptions = resultForOptions
         super.init()
