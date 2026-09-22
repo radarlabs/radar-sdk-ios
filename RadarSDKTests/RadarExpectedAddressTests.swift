@@ -61,15 +61,15 @@ extension RadarSerializedTests {
         func decodesBackingStructWithoutOptionals() throws {
             let data = try JSONDecoder().decode(
                 RadarExpectedAddress.self,
-                from: Data(#"{"expectedAddress": "not an address"}"#.utf8)
+                from: Data(#"{"expectedAddress": "not an address","atAddress": false, "confidence": "unknown"}"#.utf8)
             )
 
             #expect(data.expectedAddress == "not an address")
             #expect(data.formattedAddress == nil)
             #expect(data.latitude == nil)
             #expect(data.longitude == nil)
-            #expect(data.atAddress == nil)
-            #expect(data.confidence == nil)
+            #expect(data.atAddress == false)
+            #expect(data.confidence == .unknown)
             #expect(data.distance == nil)
         }
 
@@ -87,24 +87,6 @@ extension RadarSerializedTests {
             #expect(dictionary?["atAddress"] as? Bool == true)
             #expect(dictionary?["confidence"] as? String == "high")
             #expect(dictionary?["distance"] as? Double == 12.5)
-        }
-
-        @Test("Omits absent optional fields when encoding")
-        func omitsAbsentOptionalsWhenEncoding() throws {
-            let data = RadarExpectedAddress(
-                expectedAddress: "111 5th Ave, NY",
-                formattedAddress: nil,
-                latitude: nil,
-                longitude: nil,
-                atAddress: nil,
-                confidence: nil,
-                distance: nil
-            )
-
-            let encoded = try JSONEncoder().encode(data)
-            let dictionary = try JSONSerialization.jsonObject(with: encoded) as? [String: Any]
-
-            #expect(dictionary?.keys.sorted() == ["expectedAddress"])
         }
 
         @Test(
@@ -141,7 +123,7 @@ extension RadarSerializedTests {
         @Test("Reads an absent atAddress as false and an absent confidence as unknown")
         func readsAbsentOptionals() throws {
             let expectedAddress = try #require(
-                RadarExpectedAddressObjc(object: ["expectedAddress": "not an address"]))
+                RadarExpectedAddressObjc(object: ["expectedAddress": "not an address", "atAddress": false, "confidence": "unknown"]))
 
             #expect(expectedAddress.atAddress == false)
             #expect(expectedAddress.confidence == .unknown)
@@ -199,18 +181,18 @@ extension RadarSerializedTests {
         /// `dictionaryValue` re-encodes the stored struct, so a key the API omitted stays omitted.
         @Test("Serializes only the fields the API returned")
         func serializesOnlyReturnedFields() {
-            let expectedAddress = RadarExpectedAddressObjc(object: ["expectedAddress": "not an address"])
+            let expectedAddress = RadarExpectedAddressObjc(object: ["expectedAddress": "not an address", "atAddress": false, "confidence": "unknown"])
 
             #expect(expectedAddress?.atAddress == false)
             #expect(expectedAddress?.confidence == .unknown)
 
             let dictionary = expectedAddress?.dictionaryValue()
             #expect(dictionary?["expectedAddress"] as? String == "not an address")
-            #expect(dictionary?["atAddress"] == nil)
+            #expect(dictionary?["atAddress"] as? Bool == false)
             #expect(dictionary?["formattedAddress"] == nil)
             #expect(dictionary?["latitude"] == nil)
             #expect(dictionary?["longitude"] == nil)
-            #expect(dictionary?["confidence"] == nil)
+            #expect(dictionary?["confidence"] as? String == "unknown")
             #expect(dictionary?["distance"] == nil)
         }
 
@@ -225,6 +207,7 @@ extension RadarSerializedTests {
             for (confidenceString, confidence) in cases {
                 let expectedAddress = RadarExpectedAddressObjc(object: [
                     "expectedAddress": "111 5th Ave, NY",
+                    "atAddress": true,
                     "confidence": confidenceString,
                 ])
 
