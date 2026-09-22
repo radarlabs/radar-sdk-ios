@@ -6,9 +6,7 @@
 //
 
 #import "RadarState.h"
-#import "RadarGeofence+Internal.h"
-#import "RadarBeacon+Internal.h"
-#import "RadarPlace+Internal.h"
+#import "RadarUser+Internal.h"
 #import "CLLocation+Radar.h"
 #import "RadarUtils.h"
 #import "RadarLogger.h"
