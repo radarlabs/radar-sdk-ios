@@ -195,8 +195,6 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
 
         #expect(coordinate.coordinate.latitude == 0)
         #expect(coordinate.coordinate.longitude == 0)
-        #expect(coordinate.coordinate.latitude == 0)
-        #expect(coordinate.coordinate.longitude == 0)
     }
 
     @Test("[RadarCoordinate new] returns a zeroed coordinate")
@@ -207,8 +205,6 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
             (RadarCoordinate.self as AnyObject).perform(NSSelectorFromString("new"))?
                 .takeRetainedValue() as? RadarCoordinate)
 
-        #expect(coordinate.coordinate.latitude == 0)
-        #expect(coordinate.coordinate.longitude == 0)
         #expect(coordinate.coordinate.latitude == 0)
         #expect(coordinate.coordinate.longitude == 0)
     }
