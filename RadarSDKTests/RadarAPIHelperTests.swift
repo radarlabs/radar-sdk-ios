@@ -166,4 +166,74 @@ struct RadarAPIHelperTests {
         let requests = await session.recordedRequests()
         #expect(requests.count == 1)
     }
+
+    @Test("Request preparation runs before each transport attempt")
+    func preparesEachAttempt() async throws {
+        let session = RetryTestSession(failures: [.networkConnectionLost])
+        let helper = RadarAPIHelper(session: session)
+        let url = try #require(URL(string: "https://api-verified.radar.io"))
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("test-key", forHTTPHeaderField: "Authorization")
+
+        var preparations = 0
+        _ = try await helper.retryingRequest(for: request) { original in
+            #expect(original.httpBody == nil)
+            preparations += 1
+
+            var prepared = original
+            prepared.httpBody = Data("envelope-\(preparations)".utf8)
+            return prepared
+        }
+
+        let requests = await session.recordedRequests()
+        #expect(preparations == 2)
+        #expect(requests.count == 2)
+        guard requests.count == 2 else { return }
+
+        #expect(requests[0].httpBody == Data("envelope-1".utf8))
+        #expect(requests[1].httpBody == Data("envelope-2".utf8))
+
+        for sent in requests {
+            #expect(sent.url == request.url)
+            #expect(sent.httpMethod == request.httpMethod)
+            #expect(sent.allHTTPHeaderFields == request.allHTTPHeaderFields)
+        }
+    }
+
+    @Test(
+        "Preparation failure stops dispatch without another preparation",
+        arguments: [1, 2]
+    )
+    func preparationFailureStopsDispatch(failingAttempt: Int) async throws {
+        let session = RetryTestSession(failures: [.networkConnectionLost])
+        let helper = RadarAPIHelper(session: session)
+        let url = try #require(URL(string: "https://api-verified.radar.io"))
+        var preparations = 0
+
+        do {
+            _ = try await helper.retryingRequest(
+                for: URLRequest(url: url)
+            ) { original in
+                preparations += 1
+
+                if preparations == failingAttempt {
+                    // Even this error must not trigger a retry when preparation throws it.
+                    throw URLError(.networkConnectionLost)
+                }
+
+                var prepared = original
+                prepared.httpBody = Data("encrypted-envelope".utf8)
+                return prepared
+            }
+            Issue.record("Expected preparation to fail")
+        } catch {
+            #expect((error as? URLError)?.code == .networkConnectionLost)
+        }
+
+        let requests = await session.recordedRequests()
+        #expect(preparations == failingAttempt)
+        #expect(requests.count == failingAttempt - 1)
+    }
 }

@@ -52,28 +52,16 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
         guard let fraudSDK else {
             throw RadarError(status: .errorPlugin)
         }
-        guard let authorization = RadarSettings.publishableKey else {
+        guard RadarSettings.publishableKey != nil else {
             throw RadarError(status: .errorPublishableKey)
         }
 
-        let installId = RadarSettings.installId
-        let preparer = RadarFraudPayloadPreparer(
-            fraudSDK: fraudSDK,
+        let preparedPayload = try await fraudSDK.prepareFraudPayload(
             options: RadarSettings.sdkConfiguration?.dictionaryValue() ?? [:]
         )
 
-        let payload = try await preparer.getEncryptedPayload(
-            installId: installId,
-            canonicalRoute: "/v1/reveal/risk",
-            // Server AAD uses HTTP Origin, not X-Radar-Mobile-Origin.
-            origin: nil,
-            product: RadarSettings.product,
-            sdkVersion: RadarUtils.sdkVersion,
-            authorization: authorization
-        )
-
         return try await apiClient.revealRisk(
-            fraudPayload: payload,
+            preparedPayload: preparedPayload,
             useSecondaryVerifiedHost: useSecondaryVerifiedHost
         )
     }

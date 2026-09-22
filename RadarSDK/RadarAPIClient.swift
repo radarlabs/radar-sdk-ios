@@ -136,11 +136,13 @@ public final class RadarAPIClient: Sendable {
     }
 
     func revealRisk(
-        fraudPayload: String,
+        preparedPayload: RadarPreparedFraudPayload,
         useSecondaryVerifiedHost: Bool
     ) async throws -> RadarRevealRiskToken {
+        let installId = RadarSettings.installId
+
         let params: [String: Any?] = [
-            "installId": RadarSettings.installId,
+            "installId": installId,
             "userId": RadarSettings.userId,
             "deviceId": await RadarUtils.deviceId,
             "description": RadarSettings.description,
@@ -154,7 +156,6 @@ public final class RadarAPIClient: Sendable {
             "country": RadarUtils.country,
             "timeZoneOffset": RadarUtils.timeZoneOffset,
             "lang": RadarSettings.userLanguage,
-            "fraudPayload": fraudPayload,
             "appId": Bundle.main.bundleIdentifier,
             "appName": Bundle.main.object(forInfoDictionaryKey: "CFBundleName"),
             "appVersion": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString"),
@@ -167,7 +168,26 @@ public final class RadarAPIClient: Sendable {
             host: useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost,
             method: "POST",
             url: "reveal/risk",
-            body: params
+            body: params,
+            prepareRequest: { request in
+                let payload = try preparedPayload.getEncryptedPayload(
+                    installId: installId,
+                    canonicalRoute: "/v1/reveal/risk",
+                    origin: request.value(forHTTPHeaderField: "X-Radar-Mobile-Origin"),
+                    product: request.value(forHTTPHeaderField: "X-Radar-Product"),
+                    sdkVersion: request.value(forHTTPHeaderField: "X-Radar-SDK-Version"),
+                    authorization: request.value(forHTTPHeaderField: "Authorization")
+                )
+
+                var body = params
+                body["fraudPayload"] = payload
+
+                var preparedRequest = request
+                preparedRequest.httpBody = try JSONSerialization.data(
+                    withJSONObject: body
+                )
+                return preparedRequest
+            }
         )
 
         try assertResponseCode(response.statusCode)

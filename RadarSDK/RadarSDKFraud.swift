@@ -90,4 +90,99 @@ final class RadarSDKFraud: @unchecked Sendable {
     public func clearSharing() {
         instance.perform(RadarSDKFraud.clearSharingSelector)
     }
+
+    static let prepareFraudPayloadSelector = NSSelectorFromString(
+        "prepareFraudPayloadWithOptions:completionHandler:"
+    )
+
+    func prepareFraudPayload(
+        options: [String: Any]
+    ) async throws -> RadarPreparedFraudPayload {
+        guard instance.responds(to: Self.prepareFraudPayloadSelector) else {
+            throw RadarError(status: .errorPlugin)
+        }
+
+        return try await withCheckedThrowingContinuation {
+            (continuation: CheckedContinuation<RadarPreparedFraudPayload, Error>) in
+
+            let completionHandler: @convention(block) ([String: Any]?) -> Void = { result in
+                guard
+                    result?["error"] == nil,
+                    let instance = result?["preparedPayload"] as? NSObject,
+                    let prepared = RadarPreparedFraudPayload(instance: instance)
+                else {
+                    continuation.resume(
+                        throwing: RadarError(status: .errorUnknown)
+                    )
+                    return
+                }
+
+                continuation.resume(returning: prepared)
+            }
+
+            instance.perform(
+                Self.prepareFraudPayloadSelector,
+                with: options,
+                with: completionHandler
+            )
+        }
+    }
+}
+
+// The fraud SDK object holds immutable collected signals.
+// Each seal creates its own encryption state.
+final class RadarPreparedFraudPayload: @unchecked Sendable {
+    private let instance: NSObject
+
+    private static let sealSelector = NSSelectorFromString(
+        "sealWithOptions:"
+    )
+
+    init?(instance:NSObject) {
+        guard instance.responds(to: Self.sealSelector) else {
+            return nil
+        }
+        self.instance = instance
+    }
+
+    func seal(options: [String: Any]) throws -> String {
+        let result = instance.perform(
+            Self.sealSelector,
+            with: options
+        )?.takeUnretainedValue() as? [String: Any]
+
+        guard
+            result?["error"] == nil,
+            let payload = result?["payload"] as? String,
+            !payload.isEmpty
+        else {
+            throw RadarError(status: .errorUnknown)
+        }
+
+        return payload
+    }
+
+    func getEncryptedPayload(
+        installId: String,
+        canonicalRoute: String,
+        origin: String? = nil,
+        product: String? = nil,
+        sdkVersion: String?,
+        authorization: String?
+    ) throws -> String {
+        var options: [String: Any] = [
+            "method": "POST",
+            "canonicalRoute": canonicalRoute,
+            "encryptionAttemptId":
+                try RadarFraudPayloadPreparer.makeFraudEncryptionAttemptId(),
+            "issuedAt": Int(Date().timeIntervalSince1970),
+            "installId": installId
+        ]
+        options["origin"] = origin
+        options["product"] = product
+        options["sdkVersion"] = sdkVersion
+        options["authorization"] = authorization
+
+        return try seal(options: options)
+    }
 }

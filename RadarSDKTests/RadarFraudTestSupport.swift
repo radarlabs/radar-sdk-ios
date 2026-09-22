@@ -124,6 +124,18 @@ final class MockEncryptedFraudInstance: NSObject, @unchecked Sendable {
         completionHandler(result)
     }
 
+    @objc(prepareFraudPayloadWithOptions:completionHandler:)
+    func prepareFraudPayload(
+        options: [String: Any],
+        completionHandler: @escaping ([String: Any]?) -> Void
+    ) {
+        optionsLock.lock()
+        capturedOptions.append(options)
+        optionsLock.unlock()
+
+        completionHandler(result)
+    }
+
     func recordedOptions() -> [[String: Any]] {
         optionsLock.lock()
         defer { optionsLock.unlock() }
@@ -137,4 +149,29 @@ final class MockEncryptedFraudInstance: NSObject, @unchecked Sendable {
 
     @objc(clearSharing)
     func clearSharing() {}
+}
+
+final class MockPreparedFraudPayloadInstance: NSObject {
+    let result: [String: Any]?
+    private let resultForOptions: (([String: Any]) -> [String: Any]?)?
+
+    private(set) var capturedOptions: [[String: Any]] = []
+
+    init(
+        result: [String: Any]?,
+        resultForOptions: (([String: Any]) -> [String: Any]?)? = nil
+        ) {
+        self.result = result
+        self.resultForOptions = resultForOptions
+        super.init()
+    }
+
+    @objc(sealWithOptions:)
+    func seal(options: [String: Any]) -> [String: Any]? {
+        capturedOptions.append(options)
+        if let resultForOptions {
+            return resultForOptions(options)
+        }
+        return result
+    }
 }
