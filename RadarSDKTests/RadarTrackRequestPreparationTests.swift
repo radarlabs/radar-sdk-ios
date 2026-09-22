@@ -31,24 +31,18 @@ extension RadarSerializedTests {
             #expect(
                 preparer.responds(
                     to: NSSelectorFromString(
-                        "getEncryptedPayloadWithInstallId:origin:product:sdkVersion:authorization:completionHandler:"
+                        "preparePayloadWithCompletionHandler:"
                     )
                 )
             )
 
-            let (status, payload, error) = await preparer.getEncryptedPayload(
-                installId: "test-install",
-                origin: nil,
-                product: nil,
-                sdkVersion: "test-version",
-                authorization: "test-key"
-            )
+            let (status, payload, error) = await preparer.preparePayload()
 
             #expect(status == expectedStatus)
 
             if scenario == "success" {
                 #expect(error == nil)
-                #expect(payload == "encrypted-envelope")
+                #expect(payload != nil)
             } else {
                 #expect(payload == nil)
                 if scenario == "missing-module" || scenario == "legacy-module" {
@@ -77,7 +71,7 @@ extension RadarSerializedTests {
             default:
                 let result = fraudResult(scenario: scenario)
                 let candidate: RadarSDKFraud? = RadarSDKFraud(
-                    instance: MockEncryptedFraudInstance(result: result)
+                    instance: MockCollectingFraudInstance(result: result)
                 )
                 let validatedSDK: RadarSDKFraud = try #require(candidate)
                 fraudSDK = validatedSDK
@@ -89,15 +83,16 @@ extension RadarSerializedTests {
 
         private func fraudResult(scenario: String) -> [String: Any]? {
             switch scenario {
-            case "success": return ["payload": "encrypted-envelope"]
-            case "payload-error": return ["error": "encryption failed"]
-            case "empty-payload": return ["payload": ""]
+            case "success":
+                return ["preparedPayload": MockPreparedFraudPayloadInstance(result: ["payload": "encrypted-envelope"])]
+            case "payload-error": return ["error": "collection failed"]
+            case "empty-payload": return ["preparedPayload": ""]
             case "missing-result": return nil
             case "empty-result": return [:]
-            case "numeric-payload": return ["payload": 123]
-            case "null-payload": return ["payload": NSNull()]
+            case "numeric-payload": return ["preparedPayload": 123]
+            case "null-payload": return ["preparedPayload": NSNull()]
             case "payload-and-error":
-                return ["error": "encryption failed", "payload": "must-not-send"]
+                return ["error": "collection failed", "preparedPayload": "must-not-send"]
             default:
                 Issue.record("Unknown preparation scenario: \(scenario)")
                 return nil

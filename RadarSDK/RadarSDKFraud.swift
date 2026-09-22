@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Security
 
 final class RadarSDKFraud: @unchecked Sendable {
 
@@ -14,7 +15,7 @@ final class RadarSDKFraud: @unchecked Sendable {
 
     init?(instance: NSObject) {
         guard instance.responds(to: Self.initializeSelector),
-            instance.responds(to: Self.getEncryptedFraudPayloadSelector),
+            instance.responds(to: Self.prepareFraudPayloadSelector),
             instance.responds(to: Self.isSharingSelector),
             instance.responds(to: Self.clearSharingSelector)
         else {
@@ -46,35 +47,6 @@ final class RadarSDKFraud: @unchecked Sendable {
         instance.perform(RadarSDKFraud.initializeSelector, with: options)
     }
 
-    static let getEncryptedFraudPayloadSelector = NSSelectorFromString(
-        "getEncryptedFraudPayloadWithOptions:completionHandler:"
-    )
-
-    public func getEncryptedFraudPayload(
-        options: [String: Any]
-    ) async -> (RadarStatus, String?) {
-        let result = await withCheckedContinuation { continuation in
-            let completionHandler: @convention(block) ([String: Sendable]?) -> Void = { payload in
-                continuation.resume(returning: payload)
-            }
-
-            instance.perform(
-                RadarSDKFraud.getEncryptedFraudPayloadSelector,
-                with: options,
-                with: completionHandler
-            )
-        }
-
-        let error = result?["error"] as? String
-        let payload = result?["payload"] as? String
-
-        if result == nil || error != nil || payload == nil {
-            return (.errorUnknown, nil)
-        }
-
-        return (.success, payload)
-    }
-
     static let isSharingSelector = NSSelectorFromString("isSharing")
     public func isSharing() -> Bool {
         let imp = instance.method(for: RadarSDKFraud.isSharingSelector)
@@ -98,12 +70,7 @@ final class RadarSDKFraud: @unchecked Sendable {
     func prepareFraudPayload(
         options: [String: Any]
     ) async throws -> RadarPreparedFraudPayload {
-        guard instance.responds(to: Self.prepareFraudPayloadSelector) else {
-            throw RadarError(status: .errorPlugin)
-        }
-
-        return try await withCheckedThrowingContinuation {
-            (continuation: CheckedContinuation<RadarPreparedFraudPayload, Error>) in
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<RadarPreparedFraudPayload, Error>) in
 
             let completionHandler: @convention(block) ([String: Any]?) -> Void = { result in
                 guard
@@ -139,7 +106,7 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
         "sealWithOptions:"
     )
 
-    init?(instance:NSObject) {
+    init?(instance: NSObject) {
         guard instance.responds(to: Self.sealSelector) else {
             return nil
         }
@@ -176,7 +143,7 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
             "method": "POST",
             "canonicalRoute": canonicalRoute,
             "encryptionAttemptId":
-                try RadarFraudPayloadPreparer.makeFraudEncryptionAttemptId(),
+                try Self.makeFraudEncryptionAttemptId(),
             "issuedAt": Int(Date().timeIntervalSince1970),
             "installId": installId
         ]
@@ -215,5 +182,28 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
             withJSONObject: body
         )
         return preparedRequest
+    }
+
+    static func makeFraudEncryptionAttemptId() throws -> String {
+        var bytes = [UInt8](repeating: 0, count: 16)
+
+        let status = SecRandomCopyBytes(
+            kSecRandomDefault,
+            bytes.count,
+            &bytes
+        )
+
+        guard status == errSecSuccess else {
+            throw RadarError(
+                status: .errorUnknown,
+                message: "Failed to generate encryption attempt ID"
+            )
+        }
+
+        return Data(bytes)
+            .base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 }

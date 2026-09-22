@@ -3,44 +3,6 @@ import Testing
 
 @testable import RadarSDK
 
-/// A stand-in for the `RadarSDKFraud` submodule's shared instance.
-///
-/// `RadarSDKFraud` (the Swift wrapper) reaches into its wrapped `NSObject` via
-/// `perform(...)`, so a mock only needs to be an `NSObject` that responds to the
-/// `initializeWithOptions:` and `getFraudPayloadWithOptions:completionHandler:` selectors. It
-/// replays a canned result dictionary so tests control what payload the manager forwards to the API.
-final class MockFraudInstance: NSObject, @unchecked Sendable {
-    let result: [String: Any]?
-
-    init(result: [String: Any]?) {
-        self.result = result
-    }
-
-    @objc(initializeWithOptions:)
-    func initialize(options: [String: Any]) {}
-
-    @objc(getFraudPayloadWithOptions:completionHandler:)
-    func getFraudPayload(options: [String: Any], completionHandler: @escaping ([String: Any]?) -> Void) {
-        completionHandler(result)
-    }
-
-    @objc(getEncryptedFraudPayloadWithOptions:completionHandler:)
-    func getEncryptedFraudPayload(
-        options: [String: Any],
-        completionHandler: @escaping ([String: Any]?) -> Void
-    ) {
-        completionHandler(result)
-    }
-
-    @objc(isSharing)
-    func isSharing() -> Bool {
-        return false
-    }
-
-    @objc(clearSharing)
-    func clearSharing() {}
-}
-
 final class MockLegacyFraudInstance: NSObject, @unchecked Sendable {
     private let lock = NSLock()
     private var sharing = true
@@ -81,7 +43,7 @@ final class MockLegacyFraudInstance: NSObject, @unchecked Sendable {
     }
 }
 
-final class MockEncryptedFraudInstance: NSObject, @unchecked Sendable {
+final class MockCollectingFraudInstance: NSObject, @unchecked Sendable {
     private let optionsLock = NSLock()
     private var capturedOptions: [[String: Any]] = []
 
@@ -103,26 +65,6 @@ final class MockEncryptedFraudInstance: NSObject, @unchecked Sendable {
 
     @objc(initializeWithOptions:)
     func initialize(options: [String: Any]) {}
-
-    @objc(getFraudPayloadWithOptions:completionHandler:)
-    func getFraudPayload(
-        options: [String: Any],
-        completionHandler: @escaping ([String: Any]?) -> Void
-    ) {
-        completionHandler(nil)
-    }
-
-    @objc(getEncryptedFraudPayloadWithOptions:completionHandler:)
-    func getEncryptedFraudPayload(
-        options: [String: Any],
-        completionHandler: @escaping ([String: Any]?) -> Void
-    ) {
-        optionsLock.lock()
-        capturedOptions.append(options)
-        optionsLock.unlock()
-
-        completionHandler(result)
-    }
 
     @objc(prepareFraudPayloadWithOptions:completionHandler:)
     func prepareFraudPayload(

@@ -60,7 +60,7 @@ extension RadarVerifiedHostOverrideTests {
         ]
         client.apiHelper = helper
 
-        let instance = MockEncryptedFraudInstance(result: result)
+        let instance = MockCollectingFraudInstance(result: result)
         let manager = try makeVerificationManager(instance: instance)
 
         let delegateHolder = RadarDelegateHolder.sharedInstance()
@@ -126,7 +126,7 @@ extension RadarVerifiedHostOverrideTests {
         try assertMatchingEncryptionContext(instance: instance, helper: helper)
     }
 
-    private func makeVerificationManager(instance: MockEncryptedFraudInstance) throws -> ObjCVerificationManager {
+    private func makeVerificationManager(instance: MockCollectingFraudInstance) throws -> ObjCVerificationManager {
         let fraudSDK = try XCTUnwrap(RadarSDKFraud(instance: instance))
         let manager = try XCTUnwrap(ObjCVerificationManager.makeFresh())
         manager.instance.setValue(
@@ -158,7 +158,7 @@ extension RadarVerifiedHostOverrideTests {
     }
 
     private func assertMatchingEncryptionContext(
-        instance: MockEncryptedFraudInstance,
+        instance: MockCollectingFraudInstance,
         helper: MainQueueAPIHelperMock
     ) throws {
         let recordedOptions = instance.recordedOptions()

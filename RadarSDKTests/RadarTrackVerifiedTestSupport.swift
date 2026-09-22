@@ -204,8 +204,8 @@ final class VerifiedFailureDelegate: NSObject, RadarDelegate, @unchecked Sendabl
     }
 }
 
-func makeCollectedFraudInstance(result: [String: Any]?) -> MockEncryptedFraudInstance {
-    MockEncryptedFraudInstance(result: [
+func makeCollectedFraudInstance(result: [String: Any]?) -> MockCollectingFraudInstance {
+    MockCollectingFraudInstance(result: [
         "preparedPayload": MockPreparedFraudPayloadInstance(result: result)
     ])
 }

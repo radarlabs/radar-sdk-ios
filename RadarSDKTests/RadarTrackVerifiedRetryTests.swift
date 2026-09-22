@@ -81,7 +81,7 @@ extension RadarVerifiedHostOverrideTests {
                 }
                 return ["payload": "encrypted-\(attemptId)"]
             }
-            let instance = MockEncryptedFraudInstance(result: ["preparedPayload": prepared])
+            let instance = MockCollectingFraudInstance(result: ["preparedPayload": prepared])
             let preparer = try makeTrackPreparer(instance: instance, options: ["nonce": "test-nonce"])
             let finished = expectation(description: "One final track callback")
             finished.assertForOverFulfill = true
