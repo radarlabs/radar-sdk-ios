@@ -20,7 +20,6 @@
 #import "RadarTrackingOptions.h"
 #import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
-#import "RadarInitializeOptions.h"
 #import "RadarTripLeg.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -34,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RadarTripOptions;
 @class RadarInAppMessage;
 @class RadarRevealRiskToken;
+@class RadarInitializeOptions;
 
 #pragma mark - Enums
 
