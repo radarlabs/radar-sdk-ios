@@ -28,6 +28,7 @@ All commands run from the repo root:
 | --- | --- |
 | `make build` | Build the SDK |
 | `make test` | Run the unit test suite (XCTest + Swift Testing) |
+| `make ci-build-example` | Build the Example app in Release and link every handwritten public Objective-C class |
 | `make lint-swift` | SwiftLint style check on changed Swift files (baseline-gated) |
 | `make format-check` | Verify changed Swift files match `swift-format` output |
 | `make format` | Auto-format Swift (`swift-format`) and Objective-C (`clang-format`) |
@@ -39,6 +40,7 @@ CI runs SwiftLint, the swift-format check, a build + analyze, and the test suite
 ## Code style
 
 - **New code must be Swift.** The SDK has an Objective-C foundation that is actively being migrated to Swift — new classes, structs, enums, extensions, and tests should be Swift only. Don't migrate an existing Objective-C file without checking with the Radar team first (the one exception is the nightly `objc-to-swift-nightly` workflow, whose migration PRs are checked with the team at review time).
+- When a migrated implementation keeps its handwritten public Objective-C header, use `@objc @implementation extension` for the imported class. Do not replace it with a standalone `@objc(ClassName)` Swift class. Public headers must not import `+Internal.h` categories; keep those imports in implementation files. Run `make ci-build-example` and `make lint` before opening the PR.
 - Swift is linted with SwiftLint and formatted with `swift-format`; Objective-C is formatted with `clang-format`. Config lives in `.swiftlint.yml`, `.swift-format`, and `.clang-format`.
 - When you add a Swift file, add it to `RadarSDK.xcodeproj` (`project.pbxproj`) so it gets compiled. When migrating a class, remove the old `.m`/`.h` from the project.
 

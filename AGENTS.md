@@ -27,6 +27,13 @@ Large stateful managers may use a temporary Swift seam only when a user explicit
 that staged migration. The nightly workflow does not select managers or leave parallel
 implementations for ordinary files.
 
+When a migration keeps a handwritten public Objective-C header, implement the imported class
+with `@objc @implementation extension`, not a standalone `@objc(ClassName)` Swift class. Before
+handing off the change, run `make ci-build-example`; its Release build generates and links an
+Objective-C consumer for every handwritten public class interface. Public headers must import
+only public headers; import `+Internal.h` categories from implementation files, and run `make lint`
+to verify the CocoaPods header boundary.
+
 ## Concurrency
 
 When Swift starts work that can run later on the main actor, prefer `Task { @MainActor in ... }`

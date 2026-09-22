@@ -127,6 +127,13 @@ jobs:
             represented elsewhere. State the selected file and rationale before editing.
             Replace it with a same-basename Swift implementation, preserve Objective-C
             compatibility, delete the old .m and project references, and do not select
-            another file or leave the old implementation beside Swift. The workflow
-            provides GH_TOKEN and MIGRATION_DESTINATION.
+            another file or leave the old implementation beside Swift. If the old
+            implementation has a handwritten public Objective-C header that remains in
+            the project, use `@objc @implementation extension` for the imported class
+            rather than a standalone `@objc(ClassName)` Swift class. Public headers must
+            not import `+Internal.h` categories; keep those imports in implementation
+            files. Run `make ci-build-example CI_DESTINATION="$MIGRATION_DESTINATION"`
+            and `make lint`, then resolve any Release linkage or CocoaPods header failures
+            before opening the PR. The workflow provides GH_TOKEN and
+            MIGRATION_DESTINATION.
           claude_args: '--allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 80'
