@@ -27,6 +27,17 @@ final class RadarTrackVerifiedRequestPreparer: NSObject, @unchecked Sendable {
         )
     }
 
+    @objc(preparePayloadWithCompletionHandler:)
+    // swiftlint:disable:next large_tuple
+    func preparePayload() async -> (RadarStatus, RadarPreparedFraudPayload?, NSError?) {
+        guard let fraudSDK else { return (.errorPlugin, nil, nil) }
+        do {
+            return (.success, try await fraudSDK.prepareFraudPayload(options: options), nil)
+        } catch {
+            return ((error as? RadarError)?.status ?? .errorUnknown, nil, error as NSError)
+        }
+    }
+
     @objc(getEncryptedPayloadWithInstallId:origin:product:sdkVersion:authorization:completionHandler:)
     func getEncryptedPayload(
         installId: String,

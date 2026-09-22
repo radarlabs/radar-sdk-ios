@@ -202,15 +202,8 @@
                     failCollection(RadarStatusErrorPublishableKey);
                     return;
                 }
-                NSString *installId = [RadarSettings installId];
-
-                [requestPreparer getEncryptedPayloadWithInstallId:installId
-                                                           origin:nil // Server AAD uses HTTP Origin, not X-Radar-Mobile-Origin.
-                                                          product:[RadarSettings product]
-                                                       sdkVersion:[RadarUtils sdkVersion]
-                                                    authorization:publishableKey
-                                                completionHandler:^(RadarStatus status, NSString *_Nullable payload, NSError *_Nullable error) {
-                                                    if (status != RadarStatusSuccess || !payload.length || error) {
+                [requestPreparer preparePayloadWithCompletionHandler:^(RadarStatus status, RadarPreparedFraudPayloadWrapper *_Nullable payload, NSError *_Nullable error) {
+                                                    if (status != RadarStatusSuccess || !payload || error) {
                                                         failCollection(status == RadarStatusSuccess ? RadarStatusErrorUnknown : status);
                                                         return;
                                                     }
@@ -229,7 +222,7 @@
                                                                          beacons:beacons
                                                                   indoorLocation:nil
                                                                         verified:YES
-                                                                    fraudPayload:payload
+                                                                    preparedFraudPayload:payload
                                                              expectedCountryCode:self.expectedCountryCode
                                                                expectedStateCode:self.expectedStateCode
                                                                           reason:reason

@@ -87,7 +87,7 @@ extension RadarVerifiedHostOverrideTests {
         helper.mockStatus = .errorNetwork
         helper.mockError = URLError(.networkConnectionLost)
         client.apiHelper = helper
-        let instance = MockEncryptedFraudInstance(
+        let instance = makeCollectedFraudInstance(
             result: preparationFails ? ["error": "encryption failed"] : ["payload": "encrypted-envelope"]
         )
         let preparer = try makeTrackPreparer(instance: instance)

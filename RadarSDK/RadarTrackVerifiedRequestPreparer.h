@@ -11,7 +11,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class RadarPreparedFraudPayloadWrapper;
+
 @interface RadarTrackVerifiedRequestPreparer : NSObject
+
+- (void)preparePayloadWithCompletionHandler:(void (^)(RadarStatus status,
+                                                    RadarPreparedFraudPayloadWrapper *_Nullable payload,
+                                                    NSError *_Nullable error))completionHandler;
 
 - (instancetype)initWithOptions:(NSDictionary<NSString *, id> *)options;
 

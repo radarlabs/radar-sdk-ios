@@ -18,7 +18,7 @@
 
 // Exercise the Objective-C track API with a fixed test location.
 @interface RadarTrackTestBridge : NSObject
-+ (void)trackWithPayload:(NSString *_Nullable)payload
++ (void)trackWithPreparedPayload:(NSObject *_Nullable)payload
                 verified:(BOOL)verified
                secondary:(BOOL)secondary
               completion:(RadarTrackAPICompletionHandler)completion;

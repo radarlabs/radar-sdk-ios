@@ -131,7 +131,8 @@ final class RadarSDKFraud: @unchecked Sendable {
 
 // The fraud SDK object holds immutable collected signals.
 // Each seal creates its own encryption state.
-final class RadarPreparedFraudPayload: @unchecked Sendable {
+@objc(RadarPreparedFraudPayloadWrapper)
+final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
     private let instance: NSObject
 
     private static let sealSelector = NSSelectorFromString(
@@ -143,6 +144,7 @@ final class RadarPreparedFraudPayload: @unchecked Sendable {
             return nil
         }
         self.instance = instance
+        super.init()
     }
 
     func seal(options: [String: Any]) throws -> String {
@@ -184,5 +186,34 @@ final class RadarPreparedFraudPayload: @unchecked Sendable {
         options["authorization"] = authorization
 
         return try seal(options: options)
+    }
+
+    @objc(prepareRequest:error:)
+    func prepareRequest(_ request: URLRequest) throws -> URLRequest {
+        guard
+            request.httpMethod == "POST",
+            let route = request.url?.path,
+            let data = request.httpBody,
+            var body = try JSONSerialization.jsonObject(with: data)
+                as? [String: Any],
+            let installId = body["installId"] as? String
+        else {
+            throw RadarError(status: .errorUnknown)
+        }
+
+        body["fraudPayload"] = try getEncryptedPayload(
+            installId: installId,
+            canonicalRoute: route,
+            origin: request.value(forHTTPHeaderField: "X-Radar-Mobile-Origin"),
+            product: request.value(forHTTPHeaderField: "X-Radar-Product"),
+            sdkVersion: request.value(forHTTPHeaderField: "X-Radar-SDK-Version"),
+            authorization: request.value(forHTTPHeaderField: "Authorization")
+        )
+
+        var preparedRequest = request
+        preparedRequest.httpBody = try JSONSerialization.data(
+            withJSONObject: body
+        )
+        return preparedRequest
     }
 }

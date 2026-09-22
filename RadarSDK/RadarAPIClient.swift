@@ -170,23 +170,7 @@ public final class RadarAPIClient: Sendable {
             url: "reveal/risk",
             body: params,
             prepareRequest: { request in
-                let payload = try preparedPayload.getEncryptedPayload(
-                    installId: installId,
-                    canonicalRoute: "/v1/reveal/risk",
-                    origin: request.value(forHTTPHeaderField: "X-Radar-Mobile-Origin"),
-                    product: request.value(forHTTPHeaderField: "X-Radar-Product"),
-                    sdkVersion: request.value(forHTTPHeaderField: "X-Radar-SDK-Version"),
-                    authorization: request.value(forHTTPHeaderField: "Authorization")
-                )
-
-                var body = params
-                body["fraudPayload"] = payload
-
-                var preparedRequest = request
-                preparedRequest.httpBody = try JSONSerialization.data(
-                    withJSONObject: body
-                )
-                return preparedRequest
+                try preparedPayload.prepareRequest(request)
             }
         )
 

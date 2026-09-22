@@ -23,6 +23,47 @@ final class MainQueueAPIHelperMock: RadarAPIHelperMock {
         sleep: Bool,
         logPayload: Bool,
         extendedTimeout: Bool,
+        prepareRequest: RadarAPIRequestPreparation?,
+        preparationFailureHandler: ((Error) -> Void)?,
+        completionHandler: RadarAPICompletionHandler?
+    ) {
+        do {
+            var request = URLRequest(url: try XCTUnwrap(URL(string: url)))
+            request.httpMethod = method
+            request.allHTTPHeaderFields = headers as? [String: String]
+            if let params {
+                request.httpBody = try JSONSerialization.data(withJSONObject: params)
+            }
+            var preparedParams = params
+            if let prepareRequest {
+                var error: NSError?
+                let prepared = prepareRequest(request, &error)
+                if let error { throw error }
+                let preparedRequest = try XCTUnwrap(prepared)
+                let body = try XCTUnwrap(preparedRequest.httpBody)
+                preparedParams = try JSONSerialization.jsonObject(with: body) as? [AnyHashable: Any]
+            }
+            self.request(
+                withMethod: method, url: url, headers: headers, params: preparedParams,
+                sleep: sleep, logPayload: logPayload, extendedTimeout: extendedTimeout,
+                completionHandler: completionHandler
+            )
+        } catch {
+            let callback = TrackTestCallback {
+                preparationFailureHandler?(error)
+            }
+            DispatchQueue.main.async { callback.invoke() }
+        }
+    }
+
+    override func request(
+        withMethod method: String,
+        url: String,
+        headers: [AnyHashable: Any]?,
+        params: [AnyHashable: Any]?,
+        sleep: Bool,
+        logPayload: Bool,
+        extendedTimeout: Bool,
         completionHandler: RadarAPICompletionHandler?
     ) {
         // Match the real helper's main-thread callback contract after async encryption.
@@ -58,24 +99,18 @@ extension RadarVerifiedHostOverrideTests {
         // This helper exercises the collector/API boundary, not location acquisition.
         let callback = TrackResultCallback(completion)
         Task { @MainActor in
-            guard let key = RadarSettings.publishableKey else {
+            guard RadarSettings.publishableKey != nil else {
                 callback.invoke(.errorPublishableKey, nil, nil, nil, nil, nil, nil)
                 return
             }
-            let (status, payload, error) = await preparer.getEncryptedPayload(
-                installId: RadarSettings.installId,
-                origin: nil,
-                product: RadarSettings.product,
-                sdkVersion: RadarUtils.sdkVersion,
-                authorization: key
-            )
-            guard status == .success, let payload, !payload.isEmpty, error == nil else {
+            let (status, payload, error) = await preparer.preparePayload()
+            guard status == .success, let payload, error == nil else {
                 callback.invoke(status == .success ? .errorUnknown : status, nil, nil, nil, nil, nil, nil)
                 return
             }
 
             RadarTrackTestBridge.track(
-                withPayload: payload, verified: true, secondary: secondary,
+                withPreparedPayload: payload, verified: true, secondary: secondary,
                 completion: callback.invoke
             )
         }
@@ -167,4 +202,10 @@ final class VerifiedFailureDelegate: NSObject, RadarDelegate, @unchecked Sendabl
         defer { lock.unlock() }
         return failures
     }
+}
+
+func makeCollectedFraudInstance(result: [String: Any]?) -> MockEncryptedFraudInstance {
+    MockEncryptedFraudInstance(result: [
+        "preparedPayload": MockPreparedFraudPayloadInstance(result: result)
+    ])
 }

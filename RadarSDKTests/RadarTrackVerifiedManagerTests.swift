@@ -38,7 +38,7 @@ extension RadarVerifiedHostOverrideTests {
     }
 
     func test_trackVerifiedManager_anonymousRequestDoesNotSendTrack() throws {
-        try assertManagerRejectsPayload(result: ["payload": "encrypted-envelope"], anonymous: true)
+        try assertManagerRejectsPayload(result: ["preparedPayload": MockPreparedFraudPayloadInstance(result: ["payload": "encrypted-envelope"])], anonymous: true)
     }
 
     private func assertManagerRejectsPayload(result: [String: Any]?, anonymous: Bool = false) throws {
@@ -74,7 +74,7 @@ extension RadarVerifiedHostOverrideTests {
         let options = instance.recordedOptions()
         XCTAssertEqual(options.count, 1)
         XCTAssertEqual(options.first?["nonce"] as? String, "manager-test-nonce")
-        XCTAssertEqual(options.first?["canonicalRoute"] as? String, "/v1/track")
+        XCTAssertNil(options.first?["canonicalRoute"])
 
         XCTAssertEqual(delegate.recordedStatuses, [.errorUnknown])
         XCTAssertEqual(helper.lastMethod, "GET")
@@ -109,9 +109,7 @@ extension RadarVerifiedHostOverrideTests {
         helper.setMockStatus(.errorServer, forMethod: trackURL)
         client.apiHelper = helper
 
-        let instance = MockEncryptedFraudInstance(
-            result: ["payload": "encrypted-envelope"]
-        )
+        let instance = makeCollectedFraudInstance(result: ["payload": "encrypted-envelope"])
         let manager = try makeVerificationManager(instance: instance)
         // Collection succeeds; the mocked track endpoint returns an error.
         runVerificationManager(manager, expectedStatus: .errorServer)
@@ -165,12 +163,13 @@ extension RadarVerifiedHostOverrideTests {
     ) throws {
         let recordedOptions = instance.recordedOptions()
         XCTAssertEqual(recordedOptions.count, 1)
-        let context = try XCTUnwrap(recordedOptions.first)
+        let prepared = try XCTUnwrap(instance.result?["preparedPayload"] as? MockPreparedFraudPayloadInstance)
+        let context = try XCTUnwrap(prepared.capturedOptions.first)
         XCTAssertEqual(context["method"] as? String, "POST")
         XCTAssertEqual(context["canonicalRoute"] as? String, "/v1/track")
-        XCTAssertEqual(context["nonce"] as? String, "manager-test-nonce")
+        XCTAssertEqual(recordedOptions.first?["nonce"] as? String, "manager-test-nonce")
         XCTAssertEqual(context["product"] as? String, "manager-test-product")
-        XCTAssertNil(context["origin"])
+        XCTAssertEqual(context["origin"] as? String, Bundle.main.bundleIdentifier)
 
         let sentInstallId = try XCTUnwrap(
             helper.lastParams?["installId"] as? String
@@ -187,7 +186,7 @@ extension RadarVerifiedHostOverrideTests {
             ("authorization", "Authorization"),
             ("product", "X-Radar-Product"),
             ("sdkVersion", "X-Radar-SDK-Version"),
-            ("origin", "Origin"),
+            ("origin", "X-Radar-Mobile-Origin"),
         ] {
             XCTAssertEqual(context[field] as? String, headers[header] as? String)
         }

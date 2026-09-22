@@ -15,7 +15,7 @@
 @end
 
 @implementation RadarTrackTestBridge
-+ (void)trackWithPayload:(NSString *_Nullable)payload
++ (void)trackWithPreparedPayload:(NSObject *_Nullable)payload
                 verified:(BOOL)verified
                secondary:(BOOL)secondary
               completion:(RadarTrackAPICompletionHandler)completion {
@@ -27,7 +27,7 @@
                                              beacons:nil
                                       indoorLocation:nil
                                             verified:verified
-                                        fraudPayload:payload
+                                        preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *)payload
                                  expectedCountryCode:nil
                                    expectedStateCode:nil
                                               reason:nil

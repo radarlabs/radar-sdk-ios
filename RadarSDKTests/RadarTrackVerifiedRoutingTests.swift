@@ -21,7 +21,7 @@ extension RadarVerifiedHostOverrideTests {
         finished.assertForOverFulfill = true
 
         RadarTrackTestBridge.track(
-            withPayload: "encrypted-payload",
+            withPreparedPayload: nil,
             verified: true,
             secondary: false
         ) { status, _, _, _, _, _, _ in
@@ -47,7 +47,7 @@ extension RadarVerifiedHostOverrideTests {
         finished.assertForOverFulfill = true
 
         RadarTrackTestBridge.track(
-            withPayload: nil,
+            withPreparedPayload: nil,
             verified: false,
             secondary: true
         ) { _, _, _, _, _, _, _ in
@@ -63,7 +63,7 @@ extension RadarVerifiedHostOverrideTests {
         XCTAssertEqual(helper.lastParams?["longitude"] as? Double, -73.0)
     }
 
-    func test_track_verified_encryptsBeforeHelperOnBothHosts() throws {
+    func test_track_verified_preparesRequestOnBothHosts() throws {
         let client = RadarAPIClient.sharedInstance()
         let originalHelper = client.apiHelper
         defer { client.apiHelper = originalHelper }
@@ -73,7 +73,7 @@ extension RadarVerifiedHostOverrideTests {
             helper.mockStatus = .errorServer
             helper.mockResponse = ["meta": ["config": [:]]]
             client.apiHelper = helper
-            let instance = MockEncryptedFraudInstance(result: ["payload": "encrypted-envelope"])
+            let instance = makeCollectedFraudInstance(result: ["payload": "encrypted-envelope"])
             let preparer = try makeTrackPreparer(instance: instance, options: ["nonce": "test-nonce"])
             let finished = expectation(description: "Verified track completes")
             finished.assertForOverFulfill = true
@@ -89,14 +89,15 @@ extension RadarVerifiedHostOverrideTests {
             XCTAssertEqual(helper.lastParams?["latitude"] as? Double, 40.0)
             XCTAssertEqual(helper.lastParams?["longitude"] as? Double, -73.0)
             XCTAssertEqual(instance.recordedOptions().count, 1)
-            let context = try XCTUnwrap(instance.recordedOptions().first)
+            let prepared = try XCTUnwrap(instance.result?["preparedPayload"] as? MockPreparedFraudPayloadInstance)
+            let context = try XCTUnwrap(prepared.capturedOptions.first)
             XCTAssertEqual(context["method"] as? String, "POST")
             XCTAssertEqual(context["canonicalRoute"] as? String, "/v1/track")
-            XCTAssertEqual(context["nonce"] as? String, "test-nonce")
+            XCTAssertEqual(instance.recordedOptions().first?["nonce"] as? String, "test-nonce")
             XCTAssertEqual(context["installId"] as? String, helper.lastParams?["installId"] as? String)
             for (field, header) in [
                 ("authorization", "Authorization"), ("product", "X-Radar-Product"),
-                ("sdkVersion", "X-Radar-SDK-Version"), ("origin", "Origin"),
+                ("sdkVersion", "X-Radar-SDK-Version"), ("origin", "X-Radar-Mobile-Origin"),
             ] {
                 XCTAssertEqual(context[field] as? String, helper.lastHeaders?[header] as? String)
             }
