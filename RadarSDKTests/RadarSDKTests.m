@@ -886,6 +886,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     CLLocation *origin = [[CLLocation alloc] initWithLatitude:40.78382 longitude:-73.97536];
     CLLocation *destination = [[CLLocation alloc] initWithLatitude:40.70390 longitude:-73.98670];
     int steps = 20;
+    NSUInteger expectedCallbacks = [self.apiHelperMock.mockResponse[@"routes"][@"car"][@"geometry"][@"coordinates"] count];
+    XCTAssertGreaterThan(expectedCallbacks, 0u);
     __block int i = 0;
     __block int expired_count = 0;
 
@@ -904,7 +906,8 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
                     i++;
                     // make a log here so that it doesn't look like the test is failing, this test takes a total of at least 20 seconds, could be more based on intermediate step times
                     NSLog(@"test_Radar_mockTracking completed step %i", i);
-                    if (i == steps - 1) { // last step, complete test
+                    // Wait for the whole fixture so the final track cannot leak into the next test.
+                    if (i == expectedCallbacks) {
                         [expectation fulfill];
                     } else {
                         // set a timer for when the next completion hander must be completed, which will increment i and allow this callback to pass

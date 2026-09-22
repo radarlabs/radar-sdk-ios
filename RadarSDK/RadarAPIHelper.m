@@ -76,6 +76,20 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
         completionHandler:(RadarAPICompletionHandler)completionHandler {
+    [self requestWithMethod:method url:url headers:headers params:params sleep:sleep logPayload:logPayload
+           extendedTimeout:extendedTimeout prepareRequest:nil preparationFailureHandler:nil completionHandler:completionHandler];
+}
+
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *)headers
+                   params:(NSDictionary *)params
+                    sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+           prepareRequest:(RadarAPIRequestPreparation)prepareRequest
+preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
+        completionHandler:(RadarAPICompletionHandler)completionHandler {
     dispatch_async(self.queue, ^{
         if (sleep) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
@@ -227,18 +241,45 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
                 }
             };
 
+            NSURLRequest *(^requestForAttempt)(void) = ^NSURLRequest *{
+                if (!prepareRequest) {
+                    return req;
+                }
+                NSError *error = nil;
+                NSURLRequest *prepared = prepareRequest(req, &error);
+                if (!prepared || error) {
+                    NSError *preparationError = error ?: [NSError errorWithDomain:@"RadarRequestPreparation" code:0 userInfo:nil];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (preparationFailureHandler) {
+                            preparationFailureHandler(preparationError);
+                        } else {
+                            completionHandler(RadarStatusErrorUnknown, nil, preparationError);
+                        }
+                    });
+                    if (sleep) {
+                        dispatch_semaphore_signal(self.semaphore);
+                    }
+                    return nil;
+                }
+                return prepared;
+            };
+
             void (^dataTaskRetryHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
                 if (error && [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNetworkConnectionLost) {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                        message:[NSString stringWithFormat:@"📍 Radar API retrying after lost connection | url = %@", url]];
-                    NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:req completionHandler:dataTaskCompletionHandler];
+                    NSURLRequest *retryRequest = requestForAttempt();
+                    if (!retryRequest) { return; }
+                    NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:retryRequest completionHandler:dataTaskCompletionHandler];
                     [retryTask resume];
                 } else {
                     dataTaskCompletionHandler(data, response, error);
                 }
             };
 
-            NSURLSessionDataTask *task = [session dataTaskWithRequest:req completionHandler:dataTaskRetryHandler];
+            NSURLRequest *firstRequest = requestForAttempt();
+            if (!firstRequest) { return; }
+            NSURLSessionDataTask *task = [session dataTaskWithRequest:firstRequest completionHandler:dataTaskRetryHandler];
             [task resume];
         } @catch (NSException *exception) {
             if (sleep) {
