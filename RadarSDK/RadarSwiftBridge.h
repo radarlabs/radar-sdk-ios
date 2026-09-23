@@ -12,7 +12,6 @@
 #import "RadarState.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarPlace+Internal.h"
-#import "RadarTripOptions.h"
 #import <CoreLocation/CoreLocation.h>
 #import "Radar.h"
 

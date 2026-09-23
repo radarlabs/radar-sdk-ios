@@ -266,6 +266,8 @@ struct SearchPanel: View {
                         summary: "getMatrix: \(Radar.stringForStatus(status))",
                         detail: detail
                     )
+                    let x = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+                    print(x)
                 }
             }
         }

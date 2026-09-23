@@ -31,8 +31,8 @@ private func makeRoute(withGeometry: Bool = true) -> RadarRoute {
         duration: RadarRoute.Duration(value: 6.5, text: "6.5 min"),
         geometry: withGeometry
             ? RadarRoute.Geometry(coordinates: [
-                RadarCoordinateSwift(latitude: 41.947746, longitude: -87.656036),
-                RadarCoordinateSwift(latitude: 41.948, longitude: -87.657),
+                RadarCoordinate(latitude: 41.947746, longitude: -87.656036),
+                RadarCoordinate(latitude: 41.948, longitude: -87.657),
             ])
             : nil
     )
@@ -40,7 +40,7 @@ private func makeRoute(withGeometry: Bool = true) -> RadarRoute {
 
 private func lngLatDecoder() -> JSONDecoder {
     let decoder = JSONDecoder()
-    decoder.userInfo[RadarCoordinateSwift.codingStrategy] = RadarCoordinateSwift.CodingStrategy.lngLatArray
+    decoder.userInfo[RadarCoordinate.codingStrategy] = RadarCoordinate.CodingStrategy.lngLatArray
     return decoder
 }
 
@@ -269,8 +269,8 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         #expect(reparsed.distance.text == original.distance.text)
         #expect(reparsed.duration.value == original.duration.value)
         #expect(reparsed.duration.text == original.duration.text)
-        let reparsedCoords = try #require(reparsed.geometry?.coordinates as? [RadarCoordinateSwift])
-        let originalCoords = try #require(original.geometry?.coordinates as? [RadarCoordinateSwift])
+        let reparsedCoords = try #require(reparsed.geometry?.coordinates as? [RadarCoordinate])
+        let originalCoords = try #require(original.geometry?.coordinates as? [RadarCoordinate])
         #expect(reparsedCoords.count == originalCoords.count)
         for (a, b) in zip(reparsedCoords, originalCoords) {
             #expect(a.valueEquals(b))
@@ -443,7 +443,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
     @Test
     func roundTripsWhenBothSidesUseTheSameStrategy() throws {
         let encoder = JSONEncoder()
-        encoder.userInfo[RadarCoordinateSwift.codingStrategy] = RadarCoordinateSwift.CodingStrategy.lngLatArray
+        encoder.userInfo[RadarCoordinate.codingStrategy] = RadarCoordinate.CodingStrategy.lngLatArray
 
         let original = makeRoute()
         let decoded = try lngLatDecoder().decode(RadarRoute.self, from: encoder.encode(original))
@@ -451,8 +451,8 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         #expect(decoded.distance.value == original.distance.value)
         #expect(decoded.duration.text == original.duration.text)
 
-        let decodedCoords = try #require(decoded.geometry?.coordinates as? [RadarCoordinateSwift])
-        let originalCoords = try #require(original.geometry?.coordinates as? [RadarCoordinateSwift])
+        let decodedCoords = try #require(decoded.geometry?.coordinates as? [RadarCoordinate])
+        let originalCoords = try #require(original.geometry?.coordinates as? [RadarCoordinate])
         #expect(decodedCoords.count == originalCoords.count)
         for (a, b) in zip(decodedCoords, originalCoords) {
             #expect(a.valueEquals(b))

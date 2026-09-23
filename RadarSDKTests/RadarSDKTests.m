@@ -17,7 +17,6 @@
 #import "../RadarSDK/RadarLogger.h"
 #import "../RadarSDK/RadarState.h"
 #import "../RadarSDK/RadarGeofence+Internal.h"
-#import "../RadarSDK/RadarCircleGeometry+Internal.h"
 #import "../RadarSDK/RadarPolygonGeometry+Internal.h"
 #import "../RadarSDK/RadarCoordinate+Internal.h"
 #import "../RadarSDK/RadarBeacon+Internal.h"
@@ -26,10 +25,8 @@
 #import "RadarAPIHelperMock.h"
 #import "RadarPermissionsHelperMock.h"
 #import "RadarTestUtils.h"
-#import "RadarTripOptions.h"
 #import "RadarReplayBuffer.h"
 #import "../RadarSDK/RadarTrip+Internal.h"
-#import "../RadarSDK/Include/RadarTripLeg.h"
 #import <os/log.h>
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)

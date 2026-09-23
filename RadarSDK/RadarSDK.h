@@ -16,14 +16,11 @@ FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 #import "Radar.h"
 #import "RadarAddress.h"
 #import "RadarChain.h"
-#import "RadarCircleGeometry.h"
-#import "RadarCoordinate.h"
 #import "RadarDelegate.h"
 #import "RadarEvent.h"
 #import "RadarGeofence.h"
 #import "RadarGeofenceGeometry.h"
 #import "RadarPlace.h"
-#import "RadarPolygonGeometry.h"
 #import "RadarRegion.h"
 #import "RadarRoute.h"
 #import "RadarRouteDistance.h"
@@ -34,14 +31,18 @@ FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 #import "RadarTrackingOptions.h"
 #import "RadarTrip.h"
 #import "RadarTripLeg.h"
-#import "RadarTripOptions.h"
 #import "RadarTripOrder.h"
 #import "RadarUser.h"
 #import "RadarVerifiedDelegate.h"
 #import "RadarMotionProtocol.h"
-#import "RadarSdkConfiguration.h"
 #import "RadarInAppMessage.h"
 #import "RadarInAppMessageDelegate.h"
 #import "RadarIndoorsProtocol.h"
 #import "RadarRevealRiskToken.h"
 #import "RadarSwizzleHelper.h"
+
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif

@@ -2,7 +2,7 @@ import CoreLocation
 import Foundation
 
 @objc(RadarCoordinate)
-final class RadarCoordinateSwift: NSObject, Codable, Sendable {
+public final class RadarCoordinate: NSObject, Codable, Sendable {
 
     static let codingStrategy = CodingUserInfoKey(rawValue: "coordinateDecodingStrategy")!
     enum CodingStrategy: Sendable {
@@ -59,11 +59,11 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
     }
 
     @objc
-    internal static func coordinatesFrom(object: Any) -> [RadarCoordinateSwift]? {
+    internal static func coordinatesFrom(object: Any) -> [RadarCoordinate]? {
         guard let array = object as? [Any] else {
             return nil
         }
-        guard let result = array.map(RadarCoordinateSwift.init) as? [RadarCoordinateSwift] else {
+        guard let result = array.map(RadarCoordinate.init) as? [RadarCoordinate] else {
             return nil
         }
         return result
@@ -84,8 +84,8 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         case longitude
     }
 
-    init(from decoder: Decoder) throws {
-        let strategy = decoder.userInfo[RadarCoordinateSwift.codingStrategy] as? CodingStrategy
+    public init(from decoder: Decoder) throws {
+        let strategy = decoder.userInfo[RadarCoordinate.codingStrategy] as? CodingStrategy
         if strategy == CodingStrategy.lngLatArray {
             var container = try decoder.unkeyedContainer()
             self.longitude = try container.decode(Double.self)
@@ -97,8 +97,8 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         }
     }
 
-    func encode(to encoder: Encoder) throws {
-        let strategy = encoder.userInfo[RadarCoordinateSwift.codingStrategy] as? CodingStrategy
+    public func encode(to encoder: Encoder) throws {
+        let strategy = encoder.userInfo[RadarCoordinate.codingStrategy] as? CodingStrategy
         if strategy == CodingStrategy.lngLatArray {
             var container = encoder.unkeyedContainer()
             try container.encode(longitude)
@@ -110,7 +110,7 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         }
     }
 
-    func valueEquals(_ other: RadarCoordinateSwift) -> Bool {
+    func valueEquals(_ other: RadarCoordinate) -> Bool {
         return latitude == other.latitude && longitude == other.longitude
     }
 }

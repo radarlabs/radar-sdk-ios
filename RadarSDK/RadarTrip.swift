@@ -76,8 +76,8 @@ class RadarTrip: NSObject {
             dictionary["destinationGeofenceExternalId"] as? String
 
         guard
-            let destinationLocation = Self.destinationLocation(
-                from: dictionary["destinationLocation"]
+            let destinationLocation = RadarCoordinate(
+                object: dictionary["destinationLocation"]
             )
         else {
             return nil

@@ -10,7 +10,7 @@ import Foundation
 
 @objc(RadarTripOrder)
 @objcMembers
-class RadarTripOrder: NSObject {
+public class RadarTripOrder: NSObject {
 
     // swiftlint:disable:next identifier_name
     public let _id: String

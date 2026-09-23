@@ -5,18 +5,12 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarCoordinate.h"
 #import "RadarRouteMode.h"
-#import "RadarTripLeg.h"
-#import "RadarTripOrder.h"
 #import <Foundation/Foundation.h>
 
-/**
- Represents a trip.
-
- @see https://radar.com/documentation/trip-tracking
- */
-@interface RadarTrip : NSObject
+@class RadarCoordinate;
+@class RadarTripLeg;
+@class RadarTripOrder;
 
 /**
  The statuses for trips.
@@ -37,6 +31,13 @@ typedef NS_ENUM(NSInteger, RadarTripStatus) {
     /// `canceled`
     RadarTripStatusCanceled NS_SWIFT_NAME(canceled)
 };
+
+/**
+ Represents a trip.
+
+ @see https://radar.com/documentation/trip-tracking
+ */
+@interface RadarTrip : NSObject
 
 /**
  The Radar ID of the trip.

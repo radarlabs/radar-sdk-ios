@@ -6,8 +6,9 @@
 //
 
 #import "RadarTrip.h"
-#import "RadarTripLeg.h"
 #import <Foundation/Foundation.h>
+
+@class RadarTripLeg;
 
 @interface RadarTrip ()
 

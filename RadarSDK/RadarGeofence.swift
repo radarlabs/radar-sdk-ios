@@ -11,10 +11,10 @@ import Foundation
 // MARK: - Sync Region Types
 
 enum RadarGeofenceGeometrySwift: Codable, Sendable, Equatable {
-    case circle(center: RadarCoordinateSwift, radius: Double)
-    case polygon(coordinates: [RadarCoordinateSwift], center: RadarCoordinateSwift, radius: Double)
+    case circle(center: RadarCoordinate, radius: Double)
+    case polygon(coordinates: [RadarCoordinate], center: RadarCoordinate, radius: Double)
 
-    var center: RadarCoordinateSwift {
+    var center: RadarCoordinate {
         switch self {
         case .circle(let center, _): return center
         case .polygon(_, let center, _): return center
@@ -86,15 +86,15 @@ struct RadarGeofenceSwift: Codable, Sendable, Equatable {
         let radius = try container.decodeIfPresent(Double.self, forKey: .geometryRadius) ?? 0
         let center =
             try container.decodeIfPresent(GeoJSONPoint.self, forKey: .geometryCenter)
-            .map { RadarCoordinateSwift(latitude: $0.coordinates[1], longitude: $0.coordinates[0]) }
-            ?? RadarCoordinateSwift(latitude: 0, longitude: 0)
+            .map { RadarCoordinate(latitude: $0.coordinates[1], longitude: $0.coordinates[0]) }
+            ?? RadarCoordinate(latitude: 0, longitude: 0)
 
         switch type.lowercased() {
         case "polygon", "isochrone":
             let geoJSON = try container.decodeIfPresent(GeoJSONPolygon.self, forKey: .geometry)
             let coords =
                 geoJSON?.coordinates.first?.map {
-                    RadarCoordinateSwift(latitude: $0[1], longitude: $0[0])
+                    RadarCoordinate(latitude: $0[1], longitude: $0[0])
                 } ?? []
             geometry = .polygon(coordinates: coords, center: center, radius: radius)
         default:

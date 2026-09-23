@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RadarInAppMessage;
 @class RadarRevealRiskToken;
 @class RadarInitializeOptions;
+@class RadarTripLeg;
 
 #pragma mark - Enums
 

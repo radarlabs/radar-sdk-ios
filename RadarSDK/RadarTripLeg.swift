@@ -13,7 +13,7 @@ import Foundation
 
 @objc(RadarTripLeg)
 @objcMembers
-class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
+public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
 
     // swiftlint:disable:next identifier_name
     public private(set) var _id: String?

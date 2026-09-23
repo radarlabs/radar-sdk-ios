@@ -6,10 +6,11 @@
 //
 
 #import "RadarChain.h"
-#import "RadarCoordinate.h"
 #import "RadarAddress.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+
+@class RadarCoordinate;
 
 /**
  Represents a place.

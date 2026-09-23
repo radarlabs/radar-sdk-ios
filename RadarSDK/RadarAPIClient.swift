@@ -96,7 +96,7 @@ public final class RadarAPIClient: Sendable {
             beacons = try? decoder.decode([RadarBeaconSwift].self, from: jsonData)
         }
 
-        var regionCenter: RadarCoordinateSwift?
+        var regionCenter: RadarCoordinate?
         var regionRadius: Double?
         if let regionDict = res["region"] as? [String: Any],
             let lat = regionDict["latitude"] as? Double,
@@ -104,7 +104,7 @@ public final class RadarAPIClient: Sendable {
             let radius = regionDict["radius"] as? Double,
             radius > 0
         {
-            regionCenter = RadarCoordinateSwift(latitude: lat, longitude: lng)
+            regionCenter = RadarCoordinate(latitude: lat, longitude: lng)
             regionRadius = radius
         }
 

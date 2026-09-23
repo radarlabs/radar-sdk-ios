@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RadarCoordinate.h"
+@class RadarCoordinate;
 
 NS_ASSUME_NONNULL_BEGIN
 

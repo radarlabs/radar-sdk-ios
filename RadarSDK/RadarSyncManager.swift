@@ -174,7 +174,7 @@ public final class RadarSyncManager: NSObject {
         return distance <= radius
     }
 
-    private static func isPoint(_ point: CLLocationCoordinate2D, insidePolygon polygon: [RadarCoordinateSwift]) -> Bool {
+    private static func isPoint(_ point: CLLocationCoordinate2D, insidePolygon polygon: [RadarCoordinate]) -> Bool {
         guard polygon.count >= 3 else { return false }
 
         var inside = false
@@ -207,7 +207,7 @@ public final class RadarSyncManager: NSObject {
         return inside
     }
 
-    private static func distanceToPolygonEdge(from point: CLLocationCoordinate2D, polygon: [RadarCoordinateSwift]) -> Double {
+    private static func distanceToPolygonEdge(from point: CLLocationCoordinate2D, polygon: [RadarCoordinate]) -> Double {
         guard polygon.count >= 3 else { return Double.greatestFiniteMagnitude }
 
         let pointLocation = CLLocation(latitude: point.latitude, longitude: point.longitude)
@@ -735,7 +735,7 @@ public final class RadarSyncManager: NSObject {
                 coordinate: CLLocationCoordinate2D(
                     latitude: swiftBeacon.geometry?.latitude ?? 0,
                     longitude: swiftBeacon.geometry?.longitude ?? 0
-                ))!
+                ))
             return RadarBeacon(
                 id: swiftBeacon.id,
                 description: swiftBeacon.description,

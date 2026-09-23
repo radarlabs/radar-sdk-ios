@@ -10,7 +10,7 @@ import Foundation
 
 @objc(RadarTripOptions)
 @objcMembers
-class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
+public class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
 
     public var externalId: String?
     public var metadata: [AnyHashable: Any]?

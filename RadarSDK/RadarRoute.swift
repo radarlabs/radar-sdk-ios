@@ -21,7 +21,7 @@ public struct RadarRoute: Codable, Sendable {
     }
 
     struct Geometry: Codable {
-        let coordinates: [RadarCoordinateSwift]
+        let coordinates: [RadarCoordinate]
     }
 
     let distance: Distance
@@ -138,7 +138,7 @@ class RadarRouteObjc: NSObject {
         let jsonString = RadarUtils.dictionaryToJson(dict)
 
         let decoder = JSONDecoder()
-        decoder.userInfo[RadarCoordinateSwift.codingStrategy] = RadarCoordinateSwift.CodingStrategy.lngLatArray
+        decoder.userInfo[RadarCoordinate.codingStrategy] = RadarCoordinate.CodingStrategy.lngLatArray
 
         guard let data = jsonString.data(using: .utf8),
             let route = try? decoder.decode(RadarRoute.self, from: data)

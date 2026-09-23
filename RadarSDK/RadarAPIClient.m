@@ -29,8 +29,6 @@
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarTrip+Internal.h"
-#import "RadarTripOptions.h"
-#import "RadarTripLeg.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"

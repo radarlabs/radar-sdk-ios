@@ -20,7 +20,6 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
-#import "RadarTripOptions.h"
 #import "RadarIndoorsProtocol.h"
 #import "RadarIndoors.h"
 #import "RadarInAppMessageDelegate.h"
