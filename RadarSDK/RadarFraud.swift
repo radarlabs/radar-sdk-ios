@@ -7,22 +7,20 @@
 
 import Foundation
 
-@objc @implementation
-extension RadarFraud {
-    let passed: Bool
-    let bypassed: Bool
-    let verified: Bool
-    let proxy: Bool
-    let mocked: Bool
-    let compromised: Bool
-    let jumped: Bool
-    let inaccurate: Bool
-    let sharing: Bool
-    let blocked: Bool
-    
-    private let x: Bool
-    
-    override init() {
+@objc(RadarFraud)
+public class RadarFraud: NSObject {
+    @objc public let passed: Bool
+    @objc public let bypassed: Bool
+    @objc public let verified: Bool
+    @objc public let proxy: Bool
+    @objc public let mocked: Bool
+    @objc public let compromised: Bool
+    @objc public let jumped: Bool
+    @objc public let inaccurate: Bool
+    @objc public let sharing: Bool
+    @objc public let blocked: Bool
+
+    @objc public override init() {
         passed = false
         bypassed = false
         verified = false
@@ -33,11 +31,10 @@ extension RadarFraud {
         inaccurate = false
         sharing = false
         blocked = false
-        x = false
         super.init()
     }
-    
-    func dictionaryValue() -> [AnyHashable: Any] {
+
+    @objc public func dictionaryValue() -> [AnyHashable: Any] {
         [
             "passed": NSNumber(value: passed),
             "bypassed": NSNumber(value: bypassed),
@@ -51,17 +48,15 @@ extension RadarFraud {
             "blocked": NSNumber(value: blocked),
         ]
     }
-    
+
     /// Mirrors the legacy `asBool:` helper: anything that is not a number reads as `false`.
     internal static func boolValue(_ value: Any?) -> Bool {
         (value as? NSNumber)?.boolValue ?? false
     }
-}
 
-extension RadarFraud {
     /// Keeps the hand-written Objective-C header's designated initializer selector working.
     @objc(initWithPassed:bypassed:verified:proxy:mocked:compromised:jumped:inaccurate:sharing:blocked:)
-    convenience init(
+    init(
         passed: Bool,
         bypassed: Bool,
         verified: Bool,
@@ -73,39 +68,34 @@ extension RadarFraud {
         sharing: Bool,
         blocked: Bool
     ) {
-//        self.passed = passed
-//        self.bypassed = bypassed
-//        self.verified = verified
-//        self.proxy = proxy
-//        self.mocked = mocked
-//        self.compromised = compromised
-//        self.jumped = jumped
-//        self.inaccurate = inaccurate
-//        self.sharing = sharing
-//        self.blocked = blocked
-//        self.init(
-//            
-//        )
-        self.init()
+        self.passed = passed
+        self.bypassed = bypassed
+        self.verified = verified
+        self.proxy = proxy
+        self.mocked = mocked
+        self.compromised = compromised
+        self.jumped = jumped
+        self.inaccurate = inaccurate
+        self.sharing = sharing
+        self.blocked = blocked
     }
 
     /// Keeps the hand-written Objective-C header's `initWithObject:` selector working.
     @objc(initWithObject:)
-    convenience init?(object: Any) {
+    init?(object: Any) {
         guard let dictionary = object as? NSDictionary else {
             return nil
         }
 
-//        passed = Self.boolValue(dictionary["passed"])
-//        bypassed = Self.boolValue(dictionary["bypassed"])
-//        verified = Self.boolValue(dictionary["verified"])
-//        proxy = Self.boolValue(dictionary["proxy"])
-//        mocked = Self.boolValue(dictionary["mocked"])
-//        compromised = Self.boolValue(dictionary["compromised"])
-//        jumped = Self.boolValue(dictionary["jumped"])
-//        inaccurate = Self.boolValue(dictionary["inaccurate"])
-//        sharing = Self.boolValue(dictionary["sharing"])
-//        blocked = Self.boolValue(dictionary["blocked"])
-        self.init()
+        passed = Self.boolValue(dictionary["passed"])
+        bypassed = Self.boolValue(dictionary["bypassed"])
+        verified = Self.boolValue(dictionary["verified"])
+        proxy = Self.boolValue(dictionary["proxy"])
+        mocked = Self.boolValue(dictionary["mocked"])
+        compromised = Self.boolValue(dictionary["compromised"])
+        jumped = Self.boolValue(dictionary["jumped"])
+        inaccurate = Self.boolValue(dictionary["inaccurate"])
+        sharing = Self.boolValue(dictionary["sharing"])
+        blocked = Self.boolValue(dictionary["blocked"])
     }
 }

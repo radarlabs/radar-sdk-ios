@@ -15,6 +15,13 @@
 #import "RadarTrip+Internal.h"
 #import "RadarUtils.h"
 
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
+
+
 @implementation RadarEvent
 
 + (NSArray<RadarEvent *> *_Nullable)eventsFromObject:(id _Nonnull)object {

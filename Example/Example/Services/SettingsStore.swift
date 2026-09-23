@@ -301,56 +301,48 @@ extension SettingsStore {
     /// settings). Returns a single placeholder row if no config has been fetched
     /// yet. Re-evaluated on each access; refresh via `settingsStore.refresh()`.
     var currentSdkConfigFields: [TrackingField] {
-        return []
-//        guard let c = RadarSdkConfiguration.current() else {
-//            return [.text("status", "No SDK config fetched yet")]
-//        }
-//        return Self.fields(from: c)
+        // `RadarSdkConfiguration` isn't public, so read the dictionary the SDK
+        // persists under `radar-sdkConfiguration` directly.
+        guard let config = Utils.radarUserDefaults?.dictionary(forKey: "radar-sdkConfiguration") else {
+            return [.text("status", "No SDK config fetched yet")]
+        }
+        return Self.fields(from: config)
     }
 
-//    private static func fields(from c: RadarSdkConfiguration) -> [TrackingField] {
-//        var fields: [TrackingField] = [
-//            // Logging
-//            .text("logLevel", logLevelString(c.logLevel())),
-//            // Lifecycle
-//            .bool("startTrackingOnInitialize", c.startTrackingOnInitialize()),
-//            .bool("trackOnceOnAppOpen", c.trackOnceOnAppOpen()),
-//            // Sync mode
-//            .bool("useSyncRegion", c.useSyncRegion()),
-//            .bool("syncAfterSetUser", c.syncAfterSetUser()),
-//            // Geofence behavior
-//            .bool("bufferGeofenceEntries", c.bufferGeofenceEntries()),
-//            .bool("bufferGeofenceExits", c.bufferGeofenceExits()),
-//            .text("defaultGeofenceDwellThreshold", "\(c.defaultGeofenceDwellThreshold())"),
-//            .bool("stopDetection", c.stopDetection()),
-//            // Persistence / logging
-//            .bool("usePersistence", c.usePersistence()),
-//            .bool("useLogPersistence", c.useLogPersistence()),
-//            .bool("extendFlushReplays", c.extendFlushReplays()),
-//            // Misc / less-common
-//            .bool("useRadarModifiedBeacon", c.useRadarModifiedBeacon()),
-//            .bool("useOpenedAppConversion", c.useOpenedAppConversion()),
-//            .bool("useForegroundLocationUpdatedAtMsDiff", c.useForegroundLocationUpdatedAtMsDiff()),
-//            .bool("useOfflineRTOUpdates", c.useOfflineRTOUpdates()),
-//            .bool("offlineEventGenerationEnabled", c.offlineEventGenerationEnabled()),
-//            .bool("skipForegroundCheck", c.skipForegroundCheck()),
-//        ]
-//        let rtoCount = c.remoteTrackingOptions()?.count ?? 0
-//        fields.append(.text("remoteTrackingOptions", "\(rtoCount) preset(s)"))
-//        return fields
-//    }
-
-    /// `RadarLogLevel.toString()` is internal in the SDK module, so duplicate
-    /// the mapping here. If the SDK ever exposes it publicly (or adds
-    /// `+stringForLogLevel:` like the other tracking-options enums), drop this.
-    private static func logLevelString(_ level: RadarLogLevel) -> String {
-        switch level {
-        case .none: return "none"
-        case .error: return "error"
-        case .warning: return "warning"
-        case .info: return "info"
-        case .debug: return "debug"
-        @unknown default: return "unknown"
+    /// Missing keys fall back to the same defaults `RadarSdkConfiguration` uses
+    /// when parsing the dictionary.
+    private static func fields(from config: [String: Any]) -> [TrackingField] {
+        func bool(_ key: String, default value: Bool = false) -> TrackingField {
+            .bool(key, config[key] as? Bool ?? value)
         }
+        var fields: [TrackingField] = [
+            // Logging
+            .text("logLevel", config["logLevel"] as? String ?? "none"),
+            // Lifecycle
+            bool("startTrackingOnInitialize"),
+            bool("trackOnceOnAppOpen"),
+            // Sync mode
+            bool("useSyncRegion"),
+            bool("syncAfterSetUser"),
+            // Geofence behavior
+            bool("bufferGeofenceEntries", default: true),
+            bool("bufferGeofenceExits", default: true),
+            .text("defaultGeofenceDwellThreshold", "\(config["defaultGeofenceDwellThreshold"] as? Int ?? 0)"),
+            bool("stopDetection"),
+            // Persistence / logging
+            bool("usePersistence"),
+            bool("useLogPersistence"),
+            bool("extendFlushReplays"),
+            // Misc / less-common
+            bool("useRadarModifiedBeacon"),
+            bool("useOpenedAppConversion"),
+            bool("useForegroundLocationUpdatedAtMsDiff"),
+            bool("useOfflineRTOUpdates"),
+            bool("offlineEventGenerationEnabled"),
+            bool("skipForegroundCheck", default: true),
+        ]
+        let rtoCount = (config["remoteTrackingOptions"] as? [Any])?.count ?? 0
+        fields.append(.text("remoteTrackingOptions", "\(rtoCount) preset(s)"))
+        return fields
     }
 }

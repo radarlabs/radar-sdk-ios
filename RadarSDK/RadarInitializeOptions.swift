@@ -7,11 +7,11 @@
 
 import Foundation
 
-@objc(RadarInitializeOptions) @objcMembers
+@objc(RadarInitializeOptions)
 public class RadarInitializeOptions: NSObject {
     private static let defaultNetworkTimeoutInterval: TimeInterval = 10
     private static let defaultIPChangeDebounceInterval: TimeInterval = 10
-    
+
     @objc public var autoLogNotificationConversions: Bool
     @objc public var autoHandleNotificationDeepLinks: Bool
     @objc public var silentPush: Bool
