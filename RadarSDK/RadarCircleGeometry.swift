@@ -13,8 +13,8 @@ public final class RadarCircleGeometry: RadarGeofenceGeometry {
     @objc public let radius: Double
 
     /// Keeps the hand-written Objective-C initializer working after the implementation moved to Swift.
-    @objc(initWithCenter:radius:) public
-    init(center: RadarCoordinate, radius: Double) {
+    @objc(initWithCenter:radius:)
+    public init(center: RadarCoordinate, radius: Double) {
         self.center = center
         self.radius = radius
         super.init()
