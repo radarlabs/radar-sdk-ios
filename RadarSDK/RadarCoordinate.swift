@@ -2,6 +2,7 @@ import CoreLocation
 import Foundation
 
 @objc(RadarCoordinate)
+@objcMembers
 public final class RadarCoordinate: NSObject, Codable, Sendable {
 
     static let codingStrategy = CodingUserInfoKey(rawValue: "coordinateDecodingStrategy")!
@@ -13,7 +14,6 @@ public final class RadarCoordinate: NSObject, Codable, Sendable {
     let latitude: Double
     let longitude: Double
 
-    @objc
     public var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
@@ -31,13 +31,11 @@ public final class RadarCoordinate: NSObject, Codable, Sendable {
         self.longitude = longitude
     }
 
-    @objc
     public init?(coordinate: CLLocationCoordinate2D) {
         self.latitude = coordinate.latitude
         self.longitude = coordinate.longitude
     }
 
-    @objc
     internal init?(object: Any?) {
         guard let dict = object as? [String: Any] else {
             return nil
@@ -52,13 +50,11 @@ public final class RadarCoordinate: NSObject, Codable, Sendable {
         self.latitude = coords[1]
     }
 
-    @objc
     public override init() {
         self.latitude = 0
         self.longitude = 0
     }
 
-    @objc
     internal static func coordinatesFrom(object: Any) -> [RadarCoordinate]? {
         guard let array = object as? [Any] else {
             return nil
@@ -69,7 +65,6 @@ public final class RadarCoordinate: NSObject, Codable, Sendable {
         return result
     }
 
-    @objc
     public func dictionaryValue() -> [String: Any] {
         return [
             "type": "Point",

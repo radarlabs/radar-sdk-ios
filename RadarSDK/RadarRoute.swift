@@ -39,11 +39,12 @@ private let emptyRoute = RadarRouteValue(
 // MARK: - ObjC classes, backed by RadarRoute struct
 
 @objc(RadarRouteDistance)
+@objcMembers
 public class RadarRouteDistance: NSObject {
-    @objc public var value: Double { route.distance.value }
-    @objc public var text: String { route.distance.text }
+    public var value: Double { route.distance.value }
+    public var text: String { route.distance.text }
 
-    @objc public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [String: Any] {
         return RadarUtils.dictionary(from: route.distance) ?? [:]
     }
 
@@ -52,7 +53,6 @@ public class RadarRouteDistance: NSObject {
         self.route = route
     }
 
-    @objc
     internal convenience init?(object: Any) {
         guard let dict = object as? [String: Any] else {
             return nil
@@ -70,17 +70,18 @@ public class RadarRouteDistance: NSObject {
         )
     }
 
-    @objc public override init() {
+    public override init() {
         self.route = emptyRoute
     }
 }
 
 @objc(RadarRouteDuration)
+@objcMembers
 public class RadarRouteDuration: NSObject {
-    @objc public var value: Double { route.duration.value }
-    @objc public var text: String { route.duration.text }
+    public var value: Double { route.duration.value }
+    public var text: String { route.duration.text }
 
-    @objc public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [String: Any] {
         return RadarUtils.dictionary(from: route.duration) ?? [:]
     }
 
@@ -89,16 +90,17 @@ public class RadarRouteDuration: NSObject {
         self.route = route
     }
 
-    @objc public override init() {
+    public override init() {
         self.route = emptyRoute
     }
 }
 
 @objc(RadarRouteGeometry)
+@objcMembers
 public class RadarRouteGeometry: NSObject {
-    @objc public var coordinates: [RadarCoordinate]? { route.geometry?.coordinates }
+    public var coordinates: [RadarCoordinate]? { route.geometry?.coordinates }
 
-    @objc public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [String: Any] {
         return [
             "type": "LineString",
             "coordinates": (coordinates ?? []).map { [$0.coordinate.longitude, $0.coordinate.latitude] },
@@ -113,7 +115,7 @@ public class RadarRouteGeometry: NSObject {
         self.route = route
     }
 
-    @objc public override init() {
+    public override init() {
         self.route = emptyRoute
     }
 }

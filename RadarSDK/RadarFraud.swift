@@ -8,19 +8,20 @@
 import Foundation
 
 @objc(RadarFraud)
+@objcMembers
 public class RadarFraud: NSObject {
-    @objc public let passed: Bool
-    @objc public let bypassed: Bool
-    @objc public let verified: Bool
-    @objc public let proxy: Bool
-    @objc public let mocked: Bool
-    @objc public let compromised: Bool
-    @objc public let jumped: Bool
-    @objc public let inaccurate: Bool
-    @objc public let sharing: Bool
-    @objc public let blocked: Bool
+    public let passed: Bool
+    public let bypassed: Bool
+    public let verified: Bool
+    public let proxy: Bool
+    public let mocked: Bool
+    public let compromised: Bool
+    public let jumped: Bool
+    public let inaccurate: Bool
+    public let sharing: Bool
+    public let blocked: Bool
 
-    @objc public override init() {
+    public override init() {
         passed = false
         bypassed = false
         verified = false
@@ -34,7 +35,7 @@ public class RadarFraud: NSObject {
         super.init()
     }
 
-    @objc public func dictionaryValue() -> [AnyHashable: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         [
             "passed": NSNumber(value: passed),
             "bypassed": NSNumber(value: bypassed),

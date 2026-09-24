@@ -8,13 +8,14 @@
 import Foundation
 
 @objc(RadarPolygonGeometry)
+@objcMembers
 public final class RadarPolygonGeometry: RadarGeofenceGeometry {
     // The closed ring of coordinates. Keeps the historical `_coordinates` name declared in the
     // public header so Objective-C and Swift consumers are unaffected.
     // swiftlint:disable:next identifier_name
-    @objc public let _coordinates: [RadarCoordinate]?
-    @objc public let center: RadarCoordinate
-    @objc public let radius: Double
+    public let _coordinates: [RadarCoordinate]?
+    public let center: RadarCoordinate
+    public let radius: Double
 
     /// Keeps the hand-written Objective-C initializer working after the implementation moved to Swift.
     @objc(initWithCoordinates:center:radius:)

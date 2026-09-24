@@ -8,6 +8,7 @@
 import Foundation
 
 @objc(RadarRouteModeUtils)
+@objcMembers
 public final class RadarRouteModeUtils: NSObject {
     @objc(stringForMode:)
     public static func stringForMode(_ mode: RadarRouteMode) -> String {

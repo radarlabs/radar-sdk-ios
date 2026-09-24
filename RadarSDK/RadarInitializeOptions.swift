@@ -8,25 +8,26 @@
 import Foundation
 
 @objc(RadarInitializeOptions)
+@objcMembers
 public class RadarInitializeOptions: NSObject {
     private static let defaultNetworkTimeoutInterval: TimeInterval = 10
     private static let defaultIPChangeDebounceInterval: TimeInterval = 10
 
-    @objc public var autoLogNotificationConversions: Bool
-    @objc public var autoHandleNotificationDeepLinks: Bool
-    @objc public var silentPush: Bool
-    @objc public var trackVerifiedAutoFailover: Bool
+    public var autoLogNotificationConversions: Bool
+    public var autoHandleNotificationDeepLinks: Bool
+    public var silentPush: Bool
+    public var trackVerifiedAutoFailover: Bool
 
     /// Request and resource timeout in seconds for standard API calls. Default 10 seconds.
     /// Invalid values (non-finite or ≤ 0) fall back to the default.
-    @objc public var networkTimeoutInterval: TimeInterval
+    public var networkTimeoutInterval: TimeInterval
 
     /// Minimum interval in seconds between deliveries of `RadarVerifiedDelegate.didChangeIP()`.
     /// Default 10 seconds. Set to 0 to disable throttling (deliver every detected change).
     /// Negative or non-finite values fall back to the default.
-    @objc public var ipChangeDebounceInterval: TimeInterval
+    public var ipChangeDebounceInterval: TimeInterval
 
-    @objc public override init() {
+    public override init() {
         autoLogNotificationConversions = false
         autoHandleNotificationDeepLinks = false
         silentPush = false
@@ -36,7 +37,7 @@ public class RadarInitializeOptions: NSObject {
         super.init()
     }
 
-    @objc public init(dict: [AnyHashable: Any]?) {
+    public init(dict: [AnyHashable: Any]?) {
         autoLogNotificationConversions = RadarInitializeOptions.parseBool(dict?["autoLogNotificationConversions"])
         autoHandleNotificationDeepLinks = RadarInitializeOptions.parseBool(dict?["autoHandleNotificationDeepLinks"])
         silentPush = RadarInitializeOptions.parseBool(dict?["silentPush"])
@@ -51,7 +52,7 @@ public class RadarInitializeOptions: NSObject {
             defaultValue: RadarInitializeOptions.defaultIPChangeDebounceInterval)
     }
 
-    @objc public func dictionaryValue() -> [AnyHashable: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         [
             "autoLogNotificationConversions": autoLogNotificationConversions,
             "autoHandleNotificationDeepLinks": autoHandleNotificationDeepLinks,

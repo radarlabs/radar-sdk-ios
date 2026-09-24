@@ -10,12 +10,12 @@ import SwiftUI
 
 @MainActor
 @objc
+@objcMembers
 public class RadarInAppMessageManager: NSObject {
-    @objc
     public static let shared = RadarInAppMessageManager()
 
-    public var delegate: RadarInAppMessageProtocol = RadarInAppMessageDelegate()
-    public var view: UIView?
+    @nonobjc public var delegate: RadarInAppMessageProtocol = RadarInAppMessageDelegate()
+    @nonobjc public var view: UIView?
 
     var messageShownTime: Date?
     var currentMessage: RadarInAppMessage_Swift?
@@ -50,7 +50,7 @@ public class RadarInAppMessageManager: NSObject {
         currentMessage = nil
     }
 
-    @objc public func showInAppMessage(_ message: RadarInAppMessage) async {
+    public func showInAppMessage(_ message: RadarInAppMessage) async {
         guard let message = message as? RadarInAppMessage_Swift else {
             return
         }
@@ -98,13 +98,13 @@ public class RadarInAppMessageManager: NSObject {
         self.logConversion(name: "user.displayed_in_app_message", withDuration: false)
     }
 
-    @objc public func onInAppMessageReceived(messages: [RadarInAppMessage]) {
+    public func onInAppMessageReceived(messages: [RadarInAppMessage]) {
         for message in messages {
             delegate.onNewInAppMessage(message)
         }
     }
 
-    @objc public func setDelegate(_ delegate: RadarInAppMessageProtocol) {
+    public func setDelegate(_ delegate: RadarInAppMessageProtocol) {
         self.delegate = delegate
     }
 }

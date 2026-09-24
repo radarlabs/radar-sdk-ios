@@ -8,9 +8,10 @@
 import Foundation
 
 @objc(RadarCircleGeometry)
+@objcMembers
 public final class RadarCircleGeometry: RadarGeofenceGeometry {
-    @objc public let center: RadarCoordinate
-    @objc public let radius: Double
+    public let center: RadarCoordinate
+    public let radius: Double
 
     /// Keeps the hand-written Objective-C initializer working after the implementation moved to Swift.
     @objc(initWithCenter:radius:)
