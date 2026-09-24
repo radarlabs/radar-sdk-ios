@@ -7,6 +7,7 @@
 
 #import "RadarBeacon.h"
 #import "RadarChain.h"
+#import "RadarExpectedAddress.h"
 #import "RadarFraud.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
