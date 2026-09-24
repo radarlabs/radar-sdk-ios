@@ -129,9 +129,12 @@ jobs:
             compatibility, delete the old .m and project references, and do not select
             another file or leave the old implementation beside Swift. For a public
             class, use `@objc(ClassName) @objcMembers public class ClassName` with the
-            same Swift and Objective-C name, mark its public API `public`, remove its
-            `@interface` from the handwritten public header (keep only enums or
-            constants), and forward-declare it with `@class` in other public headers.
+            same Swift and Objective-C name, mark its public API `public`, and keep the
+            old header's names, types, nullability, and selectors, covered by
+            `RadarPublicAPICompatibilityTests`. Reduce the handwritten public header to a
+            forwarder that imports `<RadarSDK/RadarSDK.h>` (plus any enums or
+            constants), list it in `RadarSDK.h`, and forward-declare the class with
+            `@class` in other public headers.
             Declare internal Objective-C initializers in `ClassName+Internal.h`. Public
             headers must not import `+Internal.h` headers; keep those imports in
             implementation files. Run `make ci-build-example CI_DESTINATION="$MIGRATION_DESTINATION"`
