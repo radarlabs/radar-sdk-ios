@@ -51,6 +51,9 @@ struct VerifiedPanel: View {
                     )
                 }
             }
+            ActionButton("setExpectedAddress") {
+                Radar.setExpectedAddress("111 5th Ave, NY")
+            }
             ActionButton("setExpectedJurisdiction") {
                 Radar.setExpectedJurisdiction(countryCode: "US", stateCode: "CA")
             }

@@ -513,6 +513,11 @@ BOOL _initialized = NO;
      setExpectedJurisdictionWithCountryCode:countryCode stateCode:stateCode];
 }
 
++ (void)setExpectedAddress:(NSString *)address {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"setExpectedAddress()"];
+    [[RadarVerificationManager sharedInstance] setExpectedAddress:address];
+}
+
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startTracking()"];
 
