@@ -320,7 +320,9 @@
     if (tripOptions) {
         NSMutableDictionary *tripParams = [NSMutableDictionary new];
         tripParams[@"version"] = @("2");
-        [tripParams setValue:tripOptions.externalId forKey:@"externalId"];
+        if (tripOptions.externalId.length) {
+            tripParams[@"externalId"] = tripOptions.externalId;
+        }
         [tripParams setValue:tripOptions.metadata forKey:@"metadata"];
         [tripParams setValue:tripOptions.destinationGeofenceTag forKey:@"destinationGeofenceTag"];
         [tripParams setValue:tripOptions.destinationGeofenceExternalId forKey:@"destinationGeofenceExternalId"];
@@ -766,7 +768,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    if (!options || !options.externalId) {
+    if (!options || !options.externalId.length) {
         return completionHandler(RadarStatusErrorBadRequest, nil, nil);
     }
 
@@ -837,7 +839,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    if (!options || !options.externalId) {
+    if (!options || !options.externalId.length) {
         return completionHandler(RadarStatusErrorBadRequest, nil, nil);
     }
 

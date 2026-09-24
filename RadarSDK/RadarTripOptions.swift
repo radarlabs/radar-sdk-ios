@@ -15,8 +15,15 @@ import Foundation
 @objcMembers
 public class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
 
+    // Optional so serialization and equality can tell "never set" apart from a real ID, while
+    // `externalId` stays a non-optional `String` as the Objective-C header declared it.
+    private var externalIdStorage: String?
+
     /// A stable unique ID for the trip.
-    public var externalId: String!
+    public var externalId: String {
+        get { externalIdStorage ?? "" }
+        set { externalIdStorage = newValue }
+    }
 
     /// An optional set of custom key-value pairs for the trip.
     public var metadata: [AnyHashable: Any]?
@@ -48,7 +55,7 @@ public class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_l
         startTracking: Bool,
         legs: [RadarTripLeg]?
     ) {
-        externalId = externalIdValue
+        externalIdStorage = externalIdValue
         metadata = nil
         self.destinationGeofenceTag = destinationGeofenceTag
         self.destinationGeofenceExternalId =
@@ -260,7 +267,7 @@ public class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_l
     public func dictionaryValue() -> [AnyHashable: Any] {
         var dictionary: [AnyHashable: Any] = [:]
 
-        if let externalId {
+        if let externalId = externalIdStorage {
             dictionary["externalId"] = externalId
         }
 
@@ -321,8 +328,8 @@ public class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_l
         _ other: RadarTripOptions
     ) -> Bool {
         guard
-            let externalId,
-            let otherExternalId = other.externalId,
+            let externalId = externalIdStorage,
+            let otherExternalId = other.externalIdStorage,
             externalId == otherExternalId
         else {
             return false

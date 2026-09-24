@@ -254,7 +254,10 @@ private func tripOrder(_ order: RadarTripOrder) {
             destinationGeofenceTag: nil,
             destinationGeofenceExternalId: nil
         )
-        let externalId: String = options.externalId
+        // Inference, not an annotation: `String!` would satisfy `let x: String = ...` but infers
+        // `String?` here, so `.isEmpty` would not compile.
+        let externalId = options.externalId
+        #expect(!externalId.isEmpty)
         #expect(externalId.count == 7)
     }
 }
