@@ -131,8 +131,7 @@ jobs:
             class, follow "Public classes implemented in Swift" in AGENTS.md: declare it once
             as `@objc(ClassName) @objcMembers public final class ClassName` (option types
             customers create keep public initializers and are not final), keep exactly the
-            old header's public API as Swift imported it and cover it in
-            `RadarPublicAPICompatibilityTests`, move the header's docs onto the Swift members
+            old header's public API as Swift imported it, move the header's docs onto the Swift members
             as `///`, reduce the header to a forwarder that nothing else imports (keep enums
             other headers use, without the umbrella import), and use `@class` in other public
             headers. Declare internal Objective-C initializers in `ClassName+Internal.h`;

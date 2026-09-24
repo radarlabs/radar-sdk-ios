@@ -40,9 +40,7 @@ compiler generates their Objective-C interface in `RadarSDK-Swift.h`. See `Radar
    and aren't `final`. Use `@objc(selector:)` on a member only when it needs a custom selector.
 2. **Public surface:** exactly what the class's old header declared, spelled the way Swift imported
    it: the same names, types, nullability, selectors, and failable initializers. For example,
-   `dictionaryValue()` returns `[AnyHashable: Any]`. Everything else is `internal`. Cover the
-   public members in `RadarSDKTests/RadarPublicAPICompatibilityTests.swift`, which uses a plain
-   (non-`@testable`) import, so drift fails to compile.
+   `dictionaryValue()` returns `[AnyHashable: Any]`. Everything else is `internal`.
 3. **Docs:** move the header's `/** */` comments onto the Swift members as `///` comments. They
    become the customer docs in Quick Help and `RadarSDK-Swift.h`. Keep maintainer notes as `//`.
    Put a `swiftlint:disable:this` comment at the end of the declaration line, so it doesn't
