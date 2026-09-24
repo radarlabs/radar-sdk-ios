@@ -56,18 +56,18 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         #expect(objc.distance.text == "1234.5 m")
         #expect(objc.duration.value == 6.5)
         #expect(objc.duration.text == "6.5 min")
-        // `RadarCoordinateSwift` is `@objc(RadarCoordinate)`: same runtime class, so the cast
+        // `RadarCoordinate` is `@objc(RadarCoordinate)`: same runtime class, so the cast
         // in `coordinates` succeeds and the array is not silently empty.
-        #expect(objc.geometry?.coordinates.count == 2)
-        #expect(objc.geometry?.coordinates.first?.coordinate.latitude == 41.947746)
-        #expect(objc.geometry?.coordinates.first?.coordinate.longitude == -87.656036)
-        #expect(objc.geometry?.coordinates.last?.coordinate.longitude == -87.657)
+        #expect(objc.geometry.coordinates?.count == 2)
+        #expect(objc.geometry.coordinates?.first?.coordinate.latitude == 41.947746)
+        #expect(objc.geometry.coordinates?.first?.coordinate.longitude == -87.656036)
+        #expect(objc.geometry.coordinates?.last?.coordinate.longitude == -87.657)
     }
 
     @Test
-    func geometryIsNilWhenRouteHasNoGeometry() {
+    func geometryCoordinatesAreNilWhenRouteHasNoGeometry() {
         let objc = RadarRoute(route: makeRoute(withGeometry: false))
-        #expect(objc.geometry == nil)
+        #expect(objc.geometry.coordinates == nil)
         #expect(objc.distance.value == 1234.5)
         #expect(objc.duration.value == 6.5)
     }
@@ -87,10 +87,10 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         #expect(route.distance.text == "1234.5 m")
         #expect(route.duration.value == 6.5)
         #expect(route.duration.text == "6.5 min")
-        #expect(route.geometry?.coordinates.count == 2)
+        #expect(route.geometry.coordinates?.count == 2)
         // GeoJSON is [longitude, latitude] and keeps full Double precision
-        #expect(route.geometry?.coordinates.first?.coordinate.longitude == -87.656036)
-        #expect(route.geometry?.coordinates.first?.coordinate.latitude == 41.947746)
+        #expect(route.geometry.coordinates?.first?.coordinate.longitude == -87.656036)
+        #expect(route.geometry.coordinates?.first?.coordinate.latitude == 41.947746)
     }
 
     @Test
@@ -117,7 +117,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         object["geometry"] = nil
 
         let route = try #require(RadarRoute(object: object))
-        #expect(route.geometry == nil)
+        #expect(route.geometry.coordinates == nil)
         #expect(route.distance.value == 1234.5)
     }
 
@@ -269,8 +269,8 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         #expect(reparsed.distance.text == original.distance.text)
         #expect(reparsed.duration.value == original.duration.value)
         #expect(reparsed.duration.text == original.duration.text)
-        let reparsedCoords = try #require(reparsed.geometry?.coordinates as? [RadarCoordinate])
-        let originalCoords = try #require(original.geometry?.coordinates as? [RadarCoordinate])
+        let reparsedCoords = try #require(reparsed.geometry.coordinates)
+        let originalCoords = try #require(original.geometry.coordinates)
         #expect(reparsedCoords.count == originalCoords.count)
         for (a, b) in zip(reparsedCoords, originalCoords) {
             #expect(a.valueEquals(b))
@@ -282,7 +282,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         let original = RadarRoute(route: makeRoute(withGeometry: false))
         let reparsed = try #require(RadarRoute(object: original.dictionaryValue()))
 
-        #expect(reparsed.geometry == nil)
+        #expect(reparsed.geometry.coordinates == nil)
         #expect(reparsed.distance.value == 1234.5)
         #expect(reparsed.duration.text == "6.5 min")
     }
@@ -318,17 +318,14 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         #expect(coordinates.first?.coordinate.longitude == -87.656036)
     }
 
-    // `[[RadarRoute alloc] init].geometry.coordinates`: `init()` leaves `geometry` nil, so the
-    // chain yields nil rather than an empty array. Messaging nil is safe in ObjC, so a caller
-    // gets nil/0 instead of a crash — but `RadarRoute.h` annotates `geometry` nonnull, so that
-    // caller has no reason to nil-check.
+    // `RadarRoute.h` promises a nonnull geometry object even when the route has no coordinates.
     @Test
     func objcPropertyChainOnEmptyInit() {
         let route = RadarRoute()
 
         #expect(route.value(forKeyPath: "distance.value") as? Double == 0)
         #expect(route.value(forKeyPath: "distance.text") as? String == "")
-        #expect(route.value(forKey: "geometry") == nil)
+        #expect(route.value(forKey: "geometry") != nil)
         #expect(route.value(forKeyPath: "geometry.coordinates") == nil)
     }
 
@@ -354,7 +351,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         #expect(route.distance.text == "")
         #expect(route.duration.value == 0)
         #expect(route.duration.text == "")
-        #expect(route.geometry == nil)
+        #expect(route.geometry.coordinates == nil)
     }
 
     @Test
@@ -363,8 +360,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         #expect(RadarRouteDistance().text == "")
         #expect(RadarRouteDuration().value == 0)
         #expect(RadarRouteDuration().text == "")
-        // `init()` bypasses the failable `init?(route:)`, so this one exists with no geometry
-        #expect(RadarRouteGeometry().coordinates.isEmpty)
+        #expect(RadarRouteGeometry().coordinates == nil)
     }
 
     // `[[cls alloc] init]` and `[cls new]` as an ObjC caller of the header writes them.

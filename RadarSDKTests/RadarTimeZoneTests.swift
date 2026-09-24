@@ -68,9 +68,9 @@ struct RadarTimeZoneTests {
         let timeZone = try timeZone(from: "{}")
 
         #expect(timeZone.id == nil)
-        #expect(timeZone.name == nil)
-        #expect(timeZone.code == nil)
-        #expect(timeZone.currentTime == nil)
+        #expect(timeZone.name.isEmpty)
+        #expect(timeZone.code.isEmpty)
+        #expect(timeZone.currentTime == Date(timeIntervalSince1970: 0))
         #expect(timeZone.utcOffset == 0)
         #expect(timeZone.dstOffset == 0)
     }
@@ -87,16 +87,18 @@ struct RadarTimeZoneTests {
         let timeZone = try timeZone(from: json)
 
         #expect(timeZone.id == nil)
-        #expect(timeZone.name == nil)
-        #expect(timeZone.code == nil)
-        #expect(timeZone.currentTime == nil)
+        #expect(timeZone.name.isEmpty)
+        #expect(timeZone.code.isEmpty)
+        #expect(timeZone.currentTime == Date(timeIntervalSince1970: 0))
         #expect(timeZone.utcOffset == 0)
         #expect(timeZone.dstOffset == 0)
     }
 
-    @Test("an unparseable currentTime decodes to nil")
-    func unparseableDateIsNil() throws {
-        #expect(try timeZone(from: #"{"currentTime": "not a date"}"#).currentTime == nil)
+    @Test("an unparseable currentTime uses the public default")
+    func unparseableDateUsesDefault() throws {
+        #expect(
+            try timeZone(from: #"{"currentTime": "not a date"}"#).currentTime
+                == Date(timeIntervalSince1970: 0))
     }
 
     @Test("a fractional offset truncates toward zero")

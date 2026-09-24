@@ -67,7 +67,7 @@ enum RadarLocationManagerSwiftTestHelpers {
     /// Construct a `RadarBeacon` with all the fields `matchBeaconIds` and
     /// `replaceSyncedBeacons` read.
     static func makeBeacon(id: String, uuid: String, major: String, minor: String) -> RadarBeacon {
-        let geometry = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))!
+        let geometry = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
         return RadarBeacon(
             id: id,
             description: nil,
@@ -84,14 +84,14 @@ enum RadarLocationManagerSwiftTestHelpers {
     /// Construct a circle `RadarGeofence` with the fields `replaceSyncedGeofences` reads
     /// (`_id` and a `RadarCircleGeometry` center/radius).
     static func makeGeofence(id: String, latitude: Double = 0, longitude: Double = 0, radius: Double = 100) -> RadarGeofence {
-        let center = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))!
+        let center = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
         return geofence(id: id, geometry: RadarCircleGeometry(center: center, radius: radius))
     }
 
     /// Construct a polygon `RadarGeofence`; `replaceSyncedGeofences` reads the polygon's
     /// computed `center`/`radius`.
     static func makePolygonGeofence(id: String, latitude: Double = 0, longitude: Double = 0, radius: Double = 100) -> RadarGeofence {
-        let center = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))!
+        let center = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
         return geofence(id: id, geometry: RadarPolygonGeometry(coordinates: [center], center: center, radius: radius))
     }
 

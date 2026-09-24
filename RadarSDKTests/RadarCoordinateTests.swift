@@ -182,10 +182,9 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
     }
 
     @Test("initWithCoordinate: and the coordinate property are reachable from Objective-C")
-    func objcInitWithCoordinate() throws {
-        let coordinate = try #require(
-            RadarCoordinate(
-                coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude)))
+    func objcInitWithCoordinate() {
+        let coordinate = RadarCoordinate(
+            coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude))
 
         #expect(coordinate.coordinate.latitude == Self.latitude)
         #expect(coordinate.coordinate.longitude == Self.longitude)
@@ -234,9 +233,8 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
 
     @Test("dictionaryValue is reachable from Objective-C")
     func objcDictionaryValue() throws {
-        let coordinate = try #require(
-            RadarCoordinate(
-                coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude)))
+        let coordinate = RadarCoordinate(
+            coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude))
         let dictionary = coordinate.dictionaryValue()
 
         #expect(dictionary["type"] as? String == "Point")
@@ -319,7 +317,6 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
             ["not a coordinate", valid],
         ] as [[Any]] {
             #expect(RadarCoordinate.coordinatesFrom(object: objects) == nil)
-            #expect(RadarCoordinate.coordinates(from: objects) == nil)
         }
     }
 
@@ -331,21 +328,9 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
                 object: Self.geoJSON(longitude: Self.longitude, latitude: Self.latitude)) == nil)
     }
 
-    @Test("coordinatesFromObject is reachable from Objective-C")
-    func objcCoordinatesFromObject() throws {
-        let objects: [Any] = [Self.geoJSON(longitude: Self.longitude, latitude: Self.latitude)]
-
-        let coordinates = try #require(RadarCoordinate.coordinates(from: objects))
-
-        #expect(coordinates.count == 1)
-        #expect(coordinates[0].coordinate.latitude == Self.latitude)
-        #expect(coordinates[0].coordinate.longitude == Self.longitude)
-        #expect(RadarCoordinate.coordinates(from: "not an array") == nil)
-    }
-
     // MARK: - Equality
     //
-    // RadarCoordinateSwift declares `static func ==` but does not override `isEqual:`, so equality
+    // RadarCoordinate declares `static func ==` but does not override `isEqual:`, so equality
     // means different things on each side of the bridge: Swift compares latitude/longitude, while
     // Objective-C gets NSObject's default, which is pointer identity.
 
@@ -370,7 +355,7 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
         let sameValue = makeCoordinate()
 
         // The `==` overload is only picked when both operands are statically typed as
-        // RadarCoordinateSwift. NSObject-typed operands, `Array.==`, `contains` and `Set` all go
+        // RadarCoordinate. NSObject-typed operands, `Array.==`, `contains` and `Set` all go
         // through the Equatable/Hashable conformance NSObject supplies, i.e. `isEqual:`/`hash`.
         #expect((coordinate as NSObject) != (sameValue as NSObject))
         #expect([coordinate] != [sameValue])

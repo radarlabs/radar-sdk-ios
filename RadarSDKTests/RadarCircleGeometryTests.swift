@@ -15,7 +15,7 @@ import Testing
 struct RadarCircleGeometryTests {
 
     private static func coordinate(latitude: Double, longitude: Double) -> RadarCoordinate {
-        RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))!
+        RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
     }
 
     @Test("Stores the center and radius it was initialized with")
