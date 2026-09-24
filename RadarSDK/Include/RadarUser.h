@@ -15,6 +15,7 @@
 #import <Foundation/Foundation.h>
 
 @class RadarChain;
+@class RadarExpectedAddress;
 @class RadarFraud;
 @class RadarTrip;
 
