@@ -9,7 +9,7 @@ import Foundation
 
 @objc(RadarTimeZone)
 @objcMembers
-final class RadarTimeZone: NSObject {
+public final class RadarTimeZone: NSObject {
     /// Keep one formatter to preserve the legacy wire format and POSIX locale.
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -18,18 +18,25 @@ final class RadarTimeZone: NSObject {
         return formatter
     }()
 
-    @objc(_id) let id: String?
-    let name: String?
-    let code: String?
-    let currentTime: Date?
-    let utcOffset: Int32
-    let dstOffset: Int32
+    private let idValue: String?
+    private let nameValue: String?
+    private let codeValue: String?
+    private let currentTimeValue: Date?
 
-    override init() {
-        id = nil
-        name = nil
-        code = nil
-        currentTime = nil
+    // swiftlint:disable:next identifier_name
+    public var _id: String { idValue ?? "" }
+    @nonobjc var id: String? { idValue }
+    public var name: String { nameValue ?? "" }
+    public var code: String { codeValue ?? "" }
+    public var currentTime: Date { currentTimeValue ?? Date(timeIntervalSince1970: 0) }
+    public let utcOffset: Int32
+    public let dstOffset: Int32
+
+    public override init() {
+        idValue = nil
+        nameValue = nil
+        codeValue = nil
+        currentTimeValue = nil
         utcOffset = 0
         dstOffset = 0
         super.init()
@@ -42,31 +49,31 @@ final class RadarTimeZone: NSObject {
             return nil
         }
 
-        id = dictionary["id"] as? String
-        name = dictionary["name"] as? String
-        code = dictionary["code"] as? String
+        idValue = dictionary["id"] as? String
+        nameValue = dictionary["name"] as? String
+        codeValue = dictionary["code"] as? String
         if let currentTimeString = dictionary["currentTime"] as? String {
-            currentTime = Self.dateFormatter.date(from: currentTimeString)
+            currentTimeValue = Self.dateFormatter.date(from: currentTimeString)
         } else {
-            currentTime = nil
+            currentTimeValue = nil
         }
         utcOffset = (dictionary["utcOffset"] as? NSNumber)?.int32Value ?? 0
         dstOffset = (dictionary["dstOffset"] as? NSNumber)?.int32Value ?? 0
         super.init()
     }
 
-    func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [String: Any] {
         var dictionary: [String: Any] = [:]
-        if let id {
+        if let id = idValue {
             dictionary["id"] = id
         }
-        if let name {
+        if let name = nameValue {
             dictionary["name"] = name
         }
-        if let code {
+        if let code = codeValue {
             dictionary["code"] = code
         }
-        if let currentTime {
+        if let currentTime = currentTimeValue {
             dictionary["currentTime"] = Self.dateFormatter.string(from: currentTime)
         }
         dictionary["utcOffset"] = NSNumber(value: utcOffset)

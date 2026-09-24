@@ -25,12 +25,12 @@ private func routeObject() -> [String: Any] {
     ]
 }
 
-private func makeRoute(withGeometry: Bool = true) -> RadarRoute {
-    RadarRoute(
-        distance: RadarRoute.Distance(value: 1234.5, text: "1234.5 m"),
-        duration: RadarRoute.Duration(value: 6.5, text: "6.5 min"),
+private func makeRoute(withGeometry: Bool = true) -> RadarRouteValue {
+    RadarRouteValue(
+        distance: RadarRouteValue.Distance(value: 1234.5, text: "1234.5 m"),
+        duration: RadarRouteValue.Duration(value: 6.5, text: "6.5 min"),
         geometry: withGeometry
-            ? RadarRoute.Geometry(coordinates: [
+            ? RadarRouteValue.Geometry(coordinates: [
                 RadarCoordinate(latitude: 41.947746, longitude: -87.656036),
                 RadarCoordinate(latitude: 41.948, longitude: -87.657),
             ])
@@ -50,7 +50,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
     // MARK: - Public API declared in RadarRoute.h
     @Test
     func propertyAccessMirrorsBackingStruct() {
-        let objc = RadarRouteObjc(route: makeRoute())
+        let objc = RadarRoute(route: makeRoute())
 
         #expect(objc.distance.value == 1234.5)
         #expect(objc.distance.text == "1234.5 m")
@@ -66,7 +66,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
 
     @Test
     func geometryIsNilWhenRouteHasNoGeometry() {
-        let objc = RadarRouteObjc(route: makeRoute(withGeometry: false))
+        let objc = RadarRoute(route: makeRoute(withGeometry: false))
         #expect(objc.geometry == nil)
         #expect(objc.distance.value == 1234.5)
         #expect(objc.duration.value == 6.5)
@@ -81,7 +81,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
     // MARK: - Dictionary -> RadarRoute
     @Test
     func parsesFullPayload() throws {
-        let route = try #require(RadarRouteObjc(object: routeObject()))
+        let route = try #require(RadarRoute(object: routeObject()))
 
         #expect(route.distance.value == 1234.5)
         #expect(route.distance.text == "1234.5 m")
@@ -95,20 +95,20 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
 
     @Test
     func rejectsNonDictionary() {
-        #expect(RadarRouteObjc(object: "not a dict") == nil)
-        #expect(RadarRouteObjc(object: [1, 2]) == nil)
-        #expect(RadarRouteObjc(object: NSNull()) == nil)
+        #expect(RadarRoute(object: "not a dict") == nil)
+        #expect(RadarRoute(object: [1, 2]) == nil)
+        #expect(RadarRoute(object: NSNull()) == nil)
     }
 
     @Test
     func requiresDistanceAndDuration() {
         var missingDuration = routeObject()
         missingDuration["duration"] = nil
-        #expect(RadarRouteObjc(object: missingDuration) == nil)
+        #expect(RadarRoute(object: missingDuration) == nil)
 
         var missingDistance = routeObject()
         missingDistance["distance"] = nil
-        #expect(RadarRouteObjc(object: missingDistance) == nil)
+        #expect(RadarRoute(object: missingDistance) == nil)
     }
 
     @Test
@@ -116,7 +116,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         var object = routeObject()
         object["geometry"] = nil
 
-        let route = try #require(RadarRouteObjc(object: object))
+        let route = try #require(RadarRoute(object: object))
         #expect(route.geometry == nil)
         #expect(route.distance.value == 1234.5)
     }
@@ -127,22 +127,22 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
     func requiresBothDistanceFields() {
         var noValue = routeObject()
         noValue["distance"] = ["text": "1234.5 m"]
-        #expect(RadarRouteObjc(object: noValue) == nil)
+        #expect(RadarRoute(object: noValue) == nil)
 
         var noText = routeObject()
         noText["distance"] = ["value": 1234.5]
-        #expect(RadarRouteObjc(object: noText) == nil)
+        #expect(RadarRoute(object: noText) == nil)
     }
 
     @Test
     func rejectsMalformedCoordinates() {
         var shortPair = routeObject()
         shortPair["geometry"] = ["type": "LineString", "coordinates": [[1.0]]]
-        #expect(RadarRouteObjc(object: shortPair) == nil)
+        #expect(RadarRoute(object: shortPair) == nil)
 
         var notNumbers = routeObject()
         notNumbers["geometry"] = ["type": "LineString", "coordinates": [["a", "b"]]]
-        #expect(RadarRouteObjc(object: notNumbers) == nil)
+        #expect(RadarRoute(object: notNumbers) == nil)
     }
 
     @Test
@@ -196,7 +196,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
     // MARK: - RadarRoute -> dictionary
     @Test
     func routeDictionaryValue() throws {
-        let dict = RadarRouteObjc(route: makeRoute()).dictionaryValue()
+        let dict = RadarRoute(route: makeRoute()).dictionaryValue()
         #expect(dict.count == 3)
 
         let distance = try #require(dict["distance"] as? [String: Any])
@@ -214,7 +214,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
 
     @Test
     func routeDictionaryValueOmitsGeometryWhenNil() {
-        let dict = RadarRouteObjc(route: makeRoute(withGeometry: false)).dictionaryValue()
+        let dict = RadarRoute(route: makeRoute(withGeometry: false)).dictionaryValue()
         #expect(dict["geometry"] == nil)
         #expect(dict["distance"] != nil)
         #expect(dict["duration"] != nil)
@@ -250,7 +250,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
 
     @Test
     func emptyInitDictionaryValues() {
-        let route = RadarRouteObjc().dictionaryValue()
+        let route = RadarRoute().dictionaryValue()
         #expect((route["distance"] as? [String: Any])?["value"] as? Double == 0)
         #expect((route["distance"] as? [String: Any])?["text"] as? String == "")
         #expect(route["geometry"] == nil)
@@ -262,8 +262,8 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
 
     @Test
     func dictionaryRoundTripPreservesValues() throws {
-        let original = try #require(RadarRouteObjc(object: routeObject()))
-        let reparsed = try #require(RadarRouteObjc(object: original.dictionaryValue()))
+        let original = try #require(RadarRoute(object: routeObject()))
+        let reparsed = try #require(RadarRoute(object: original.dictionaryValue()))
 
         #expect(reparsed.distance.value == original.distance.value)
         #expect(reparsed.distance.text == original.distance.text)
@@ -279,8 +279,8 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
 
     @Test
     func dictionaryRoundTripWithoutGeometry() throws {
-        let original = RadarRouteObjc(route: makeRoute(withGeometry: false))
-        let reparsed = try #require(RadarRouteObjc(object: original.dictionaryValue()))
+        let original = RadarRoute(route: makeRoute(withGeometry: false))
+        let reparsed = try #require(RadarRoute(object: original.dictionaryValue()))
 
         #expect(reparsed.geometry == nil)
         #expect(reparsed.distance.value == 1234.5)
@@ -306,7 +306,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
     // exactly like `route.geometry.coordinates` in an ObjC caller — no Swift typing involved.
     @Test
     func objcPropertyChainOnParsedRoute() throws {
-        let route = try #require(RadarRouteObjc(object: routeObject()))
+        let route = try #require(RadarRoute(object: routeObject()))
 
         #expect(route.value(forKeyPath: "distance.value") as? Double == 1234.5)
         #expect(route.value(forKeyPath: "distance.text") as? String == "1234.5 m")
@@ -324,7 +324,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
     // caller has no reason to nil-check.
     @Test
     func objcPropertyChainOnEmptyInit() {
-        let route = RadarRouteObjc()
+        let route = RadarRoute()
 
         #expect(route.value(forKeyPath: "distance.value") as? Double == 0)
         #expect(route.value(forKeyPath: "distance.text") as? String == "")
@@ -349,7 +349,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
     // MARK: - `[[RadarRoute alloc] init]` / `[RadarRoute new]`
     @Test
     func emptyInitProducesZeroValues() {
-        let route = RadarRouteObjc()
+        let route = RadarRoute()
         #expect(route.distance.value == 0)
         #expect(route.distance.text == "")
         #expect(route.duration.value == 0)
@@ -390,7 +390,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
 
     @Test
     func objcRuntimeNamesResolveToSwiftClasses() {
-        #expect(NSClassFromString("RadarRoute") == RadarRouteObjc.self)
+        #expect(NSClassFromString("RadarRoute") == RadarRoute.self)
         #expect(NSClassFromString("RadarRouteDistance") == RadarRouteDistance.self)
         #expect(NSClassFromString("RadarRouteDuration") == RadarRouteDuration.self)
         #expect(NSClassFromString("RadarRouteGeometry") == RadarRouteGeometry.self)
@@ -421,7 +421,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
     @Test
     func decodesFromWireFormatWithLngLatStrategy() throws {
         let data = try JSONSerialization.data(withJSONObject: routeObject())
-        let route = try lngLatDecoder().decode(RadarRoute.self, from: data)
+        let route = try lngLatDecoder().decode(RadarRouteValue.self, from: data)
 
         #expect(route.distance.value == 1234.5)
         #expect(route.duration.text == "6.5 min")
@@ -436,7 +436,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
     func decodeWithDefaultStrategyRejectsLngLatArrays() throws {
         let data = try JSONSerialization.data(withJSONObject: routeObject())
         #expect(throws: DecodingError.self) {
-            _ = try JSONDecoder().decode(RadarRoute.self, from: data)
+            _ = try JSONDecoder().decode(RadarRouteValue.self, from: data)
         }
     }
 
@@ -446,7 +446,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         encoder.userInfo[RadarCoordinate.codingStrategy] = RadarCoordinate.CodingStrategy.lngLatArray
 
         let original = makeRoute()
-        let decoded = try lngLatDecoder().decode(RadarRoute.self, from: encoder.encode(original))
+        let decoded = try lngLatDecoder().decode(RadarRouteValue.self, from: encoder.encode(original))
 
         #expect(decoded.distance.value == original.distance.value)
         #expect(decoded.duration.text == original.duration.text)

@@ -5,9 +5,10 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarSdkConfiguration.h"
 #import "RadarTrackingOptions.h"
 #import <Foundation/Foundation.h>
+
+@class RadarSdkConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 

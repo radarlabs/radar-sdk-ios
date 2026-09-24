@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RadarRouteDistance.h"
-#import "RadarRouteDuration.h"
-#import "RadarRouteGeometry.h"
+@class RadarRouteDistance;
+@class RadarRouteDuration;
+@class RadarRouteGeometry;
 
 NS_ASSUME_NONNULL_BEGIN
 

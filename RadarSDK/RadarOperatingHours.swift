@@ -76,8 +76,8 @@ struct RadarOperatingHoursSwift: Codable, Sendable, Equatable {
 }
 
 @objc(RadarOperatingHours)
-final class RadarOperatingHours: NSObject {
-    @objc let hours: NSDictionary
+public final class RadarOperatingHours: NSObject {
+    @objc public let hours: NSDictionary
 
     /// This keeps old Objective-C calls working.
     @objc(initWithDictionary:)

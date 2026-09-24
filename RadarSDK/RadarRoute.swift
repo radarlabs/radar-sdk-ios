@@ -9,7 +9,7 @@
 import CoreLocation
 import Foundation
 
-public struct RadarRoute: Codable, Sendable {
+struct RadarRouteValue: Codable, Sendable {
     struct Distance: Codable {
         let value: Double
         let text: String
@@ -30,12 +30,16 @@ public struct RadarRoute: Codable, Sendable {
 }
 
 // used by empty initializers like [[RadarRoute alloc] init] or [RadarRoute new]
-let emptyRoute = RadarRoute(distance: RadarRoute.Distance(value: 0, text: ""), duration: RadarRoute.Duration(value: 0, text: ""), geometry: nil)
+private let emptyRoute = RadarRouteValue(
+    distance: RadarRouteValue.Distance(value: 0, text: ""),
+    duration: RadarRouteValue.Duration(value: 0, text: ""),
+    geometry: nil
+)
 
 // MARK: - ObjC classes, backed by RadarRoute struct
 
 @objc(RadarRouteDistance)
-class RadarRouteDistance: NSObject {
+public class RadarRouteDistance: NSObject {
     @objc public var value: Double { route.distance.value }
     @objc public var text: String { route.distance.text }
 
@@ -43,8 +47,8 @@ class RadarRouteDistance: NSObject {
         return RadarUtils.dictionary(from: route.distance) ?? [:]
     }
 
-    let route: RadarRoute
-    init(route: RadarRoute) {
+    let route: RadarRouteValue
+    init(route: RadarRouteValue) {
         self.route = route
     }
 
@@ -59,10 +63,10 @@ class RadarRouteDistance: NSObject {
             return nil
         }
         self.init(
-            route: RadarRoute(
-                distance: RadarRoute.Distance(value: value, text: text),
-                duration: RadarRoute.Duration(value: 0, text: ""),
-                geometry: RadarRoute.Geometry(coordinates: []))
+            route: RadarRouteValue(
+                distance: RadarRouteValue.Distance(value: value, text: text),
+                duration: RadarRouteValue.Duration(value: 0, text: ""),
+                geometry: RadarRouteValue.Geometry(coordinates: []))
         )
     }
 
@@ -72,7 +76,7 @@ class RadarRouteDistance: NSObject {
 }
 
 @objc(RadarRouteDuration)
-class RadarRouteDuration: NSObject {
+public class RadarRouteDuration: NSObject {
     @objc public var value: Double { route.duration.value }
     @objc public var text: String { route.duration.text }
 
@@ -80,8 +84,8 @@ class RadarRouteDuration: NSObject {
         return RadarUtils.dictionary(from: route.duration) ?? [:]
     }
 
-    let route: RadarRoute
-    init(route: RadarRoute) {
+    let route: RadarRouteValue
+    init(route: RadarRouteValue) {
         self.route = route
     }
 
@@ -91,18 +95,18 @@ class RadarRouteDuration: NSObject {
 }
 
 @objc(RadarRouteGeometry)
-class RadarRouteGeometry: NSObject {
-    @objc public var coordinates: [RadarCoordinate] { route.geometry?.coordinates as? [RadarCoordinate] ?? [] }
+public class RadarRouteGeometry: NSObject {
+    @objc public var coordinates: [RadarCoordinate]? { route.geometry?.coordinates }
 
     @objc public func dictionaryValue() -> [String: Any] {
         return [
             "type": "LineString",
-            "coordinates": coordinates.map { [$0.coordinate.longitude, $0.coordinate.latitude] },
+            "coordinates": (coordinates ?? []).map { [$0.coordinate.longitude, $0.coordinate.latitude] },
         ]
     }
 
-    let route: RadarRoute
-    init?(route: RadarRoute) {
+    let route: RadarRouteValue
+    init?(route: RadarRouteValue) {
         guard route.geometry != nil else {
             return nil
         }
@@ -114,55 +118,57 @@ class RadarRouteGeometry: NSObject {
     }
 }
 
-@objc(RadarRoute)
-class RadarRouteObjc: NSObject {
-    let route: RadarRoute
+@objc @implementation extension RadarRoute {
+    private final var route = emptyRoute
+    private final var hasGeometry = false
 
-    @objc public let distance: RadarRouteDistance
-    @objc public let duration: RadarRouteDuration
-    @objc public let geometry: RadarRouteGeometry?
+    var distance = RadarRouteDistance()
+    var duration = RadarRouteDuration()
+    var geometry = RadarRouteGeometry()
 
-    init(route: RadarRoute) {
-        self.route = route
-        self.distance = RadarRouteDistance(route: route)
-        self.duration = RadarRouteDuration(route: route)
-        self.geometry = RadarRouteGeometry(route: route)
+    override init() {
+        super.init()
+        distance = RadarRouteDistance(route: emptyRoute)
+        duration = RadarRouteDuration(route: emptyRoute)
     }
 
-    @objc
-    internal convenience init?(object: Any) {
-        guard let dict = object as? [String: Any] else {
+    func dictionaryValue() -> [AnyHashable: Any] {
+        var dictionary: [AnyHashable: Any] = [
+            "distance": distance.dictionaryValue(),
+            "duration": duration.dictionaryValue(),
+        ]
+        if hasGeometry {
+            dictionary["geometry"] = geometry.dictionaryValue()
+        }
+        return dictionary
+    }
+}
+
+extension RadarRoute {
+    convenience init(route: RadarRouteValue) {
+        self.init()
+        self.route = route
+        hasGeometry = route.geometry != nil
+        distance = RadarRouteDistance(route: route)
+        duration = RadarRouteDuration(route: route)
+        geometry = RadarRouteGeometry(route: route) ?? RadarRouteGeometry()
+    }
+
+    @objc(initWithObject:)
+    convenience init?(object: Any) {
+        guard let dictionary = object as? [String: Any] else {
             return nil
         }
 
-        let jsonString = RadarUtils.dictionaryToJson(dict)
-
+        let jsonString = RadarUtils.dictionaryToJson(dictionary)
         let decoder = JSONDecoder()
         decoder.userInfo[RadarCoordinate.codingStrategy] = RadarCoordinate.CodingStrategy.lngLatArray
 
         guard let data = jsonString.data(using: .utf8),
-            let route = try? decoder.decode(RadarRoute.self, from: data)
+            let route = try? decoder.decode(RadarRouteValue.self, from: data)
         else {
             return nil
         }
         self.init(route: route)
-    }
-
-    @objc public override init() {
-        self.route = emptyRoute
-        self.distance = RadarRouteDistance(route: emptyRoute)
-        self.duration = RadarRouteDuration(route: emptyRoute)
-        self.geometry = RadarRouteGeometry(route: emptyRoute)
-    }
-
-    @objc public func dictionaryValue() -> [String: Any] {
-        var dict = [
-            "distance": distance.dictionaryValue(),
-            "duration": duration.dictionaryValue(),
-        ]
-        if let geometry {
-            dict["geometry"] = geometry.dictionaryValue()
-        }
-        return dict
     }
 }

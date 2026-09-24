@@ -11,10 +11,11 @@ import Foundation
 
 @objc(RadarTrip)
 @objcMembers
-class RadarTrip: NSObject {
+public class RadarTrip: NSObject {
 
+    private let idValue: String?
     // swiftlint:disable:next identifier_name
-    public let _id: String?
+    public var _id: String { idValue ?? "" }
     public let externalId: String?
     public let metadata: [AnyHashable: Any]?
     public let destinationGeofenceTag: String?
@@ -28,7 +29,7 @@ class RadarTrip: NSObject {
     public let legs: [RadarTripLeg]?
     public let currentLegId: String?
 
-    public init(
+    init(
         id: String?,
         externalId: String,
         metadata: [AnyHashable: Any]?,
@@ -43,7 +44,7 @@ class RadarTrip: NSObject {
         legs: [RadarTripLeg]?,
         currentLegId: String?
     ) {
-        self._id = id
+        idValue = id
         self.externalId = externalId
         self.metadata = metadata
         self.destinationGeofenceTag = destinationGeofenceTag
@@ -132,7 +133,7 @@ class RadarTrip: NSObject {
             dictionary["externalId"] = externalId
         }
 
-        if let id = _id {
+        if let id = idValue {
             dictionary["_id"] = id
         }
         if let metadata {

@@ -71,7 +71,7 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
         Task {
             do {
                 let token = try await self.revealRisk(useSecondaryVerifiedHost: useSecondaryVerifiedHost)
-                RadarLogger.shared.debug("RadarRevealRiskManager: revealRisk() succeeded \(RadarUtils.dictionaryToJson(token.dictionaryValue))")
+                RadarLogger.shared.debug("RadarRevealRiskManager: revealRisk() succeeded \(RadarUtils.dictionaryToJson(token.dictionaryValue()))")
 
                 revealRiskId = token.id
                 completionHandler(.success, token)

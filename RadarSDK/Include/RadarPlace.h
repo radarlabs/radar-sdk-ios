@@ -5,11 +5,11 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarChain.h"
 #import "RadarAddress.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
+@class RadarChain;
 @class RadarCoordinate;
 
 /**

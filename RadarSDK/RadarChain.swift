@@ -9,11 +9,11 @@ import Foundation
 
 @objc(RadarChain)
 @objcMembers
-final class RadarChain: NSObject, Codable {
-    let slug: String
-    let name: String
-    let externalId: String?
-    let metadata: NSDictionary?
+public final class RadarChain: NSObject, Codable {
+    public let slug: String
+    public let name: String
+    public let externalId: String?
+    public let metadata: [AnyHashable: Any]?
 
     private enum CodingKeys: String, CodingKey {
         case slug
@@ -22,7 +22,7 @@ final class RadarChain: NSObject, Codable {
         case metadata
     }
 
-    override init() {
+    public override init() {
         slug = ""
         name = ""
         externalId = nil
@@ -36,7 +36,7 @@ final class RadarChain: NSObject, Codable {
         self.slug = slug
         self.name = name
         self.externalId = externalId
-        self.metadata = metadata
+        self.metadata = metadata as? [AnyHashable: Any]
         super.init()
     }
 
@@ -53,11 +53,11 @@ final class RadarChain: NSObject, Codable {
         self.slug = slug
         self.name = name
         self.externalId = dictionary["externalId"] as? String
-        self.metadata = dictionary["metadata"] as? NSDictionary
+        self.metadata = dictionary["metadata"] as? [AnyHashable: Any]
         super.init()
     }
 
-    required init(from decoder: Decoder) throws {
+    public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         slug = try container.decode(String.self, forKey: .slug)
         name = try container.decode(String.self, forKey: .name)
@@ -67,7 +67,7 @@ final class RadarChain: NSObject, Codable {
             let foundationMetadata = metadata.reduce(into: [AnyHashable: Any]()) { result, entry in
                 result[entry.key] = entry.value.anyValue
             }
-            self.metadata = NSDictionary(dictionary: foundationMetadata)
+            self.metadata = foundationMetadata
         } else {
             self.metadata = nil
         }
@@ -76,7 +76,7 @@ final class RadarChain: NSObject, Codable {
     }
 
     /// JSON cannot encode NSDictionary directly, so use the same primitive values as Codable metadata.
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(slug, forKey: .slug)
         try container.encode(name, forKey: .name)
@@ -90,11 +90,11 @@ final class RadarChain: NSObject, Codable {
     }
 
     @objc(arrayForChains:)
-    static func arrayForChains(_ chains: [RadarChain]?) -> [[String: Any]]? {
+    public static func arrayForChains(_ chains: [RadarChain]?) -> [[String: Any]]? {
         chains?.map { $0.dictionaryValue() }
     }
 
-    func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [String: Any] {
         var dictionary: [String: Any] = [
             "slug": slug,
             "name": name,

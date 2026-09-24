@@ -5,11 +5,11 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarTimeZone.h"
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
 @class RadarCoordinate;
+@class RadarTimeZone;
 
 /**
   The confidence levels for geocoding results.

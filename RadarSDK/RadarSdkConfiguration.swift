@@ -8,31 +8,31 @@
 import Foundation
 
 @objc(RadarSdkConfiguration) @objcMembers
-class RadarSdkConfiguration: NSObject {
+public class RadarSdkConfiguration: NSObject {
     private let originalDict: [String: Any]?
 
-    let logLevel: RadarLogLevel
-    let startTrackingOnInitialize: Bool
-    let trackOnceOnAppOpen: Bool
-    let usePersistence: Bool
-    let extendFlushReplays: Bool
-    let useLogPersistence: Bool
-    let useRadarModifiedBeacon: Bool
-    let useOpenedAppConversion: Bool
-    let useForegroundLocationUpdatedAtMsDiff: Bool
-    let syncAfterSetUser: Bool
-    let useSyncRegion: Bool
-    let defaultGeofenceDwellThreshold: Int
-    let bufferGeofenceEntries: Bool
-    let bufferGeofenceExits: Bool
-    let stopDetection: Bool
-    let skipForegroundCheck: Bool
-    let useOfflineRTOUpdates: Bool
-    let offlineEventGenerationEnabled: Bool
-    let useSwiftLocationManager: Bool
-    let startUpdatesWhileInUse: Bool
-    let remoteTrackingOptions: [RadarRemoteTrackingOptions]?
-    let useSwiftVerificationManager: Bool
+    public let logLevel: RadarLogLevel
+    public let startTrackingOnInitialize: Bool
+    public let trackOnceOnAppOpen: Bool
+    public let usePersistence: Bool
+    public let extendFlushReplays: Bool
+    public let useLogPersistence: Bool
+    public let useRadarModifiedBeacon: Bool
+    public let useOpenedAppConversion: Bool
+    public let useForegroundLocationUpdatedAtMsDiff: Bool
+    public let syncAfterSetUser: Bool
+    public let useSyncRegion: Bool
+    public let defaultGeofenceDwellThreshold: Int
+    public let bufferGeofenceEntries: Bool
+    public let bufferGeofenceExits: Bool
+    public let stopDetection: Bool
+    public let skipForegroundCheck: Bool
+    public let useOfflineRTOUpdates: Bool
+    public let offlineEventGenerationEnabled: Bool
+    public let useSwiftLocationManager: Bool
+    public let startUpdatesWhileInUse: Bool
+    public let remoteTrackingOptions: [RadarRemoteTrackingOptions]?
+    public let useSwiftVerificationManager: Bool
 
     public init(dict: [String: Any]?) {
         originalDict = dict
@@ -56,7 +56,9 @@ class RadarSdkConfiguration: NSObject {
         offlineEventGenerationEnabled = dict?["offlineEventGenerationEnabled"] as? Bool ?? false
         useSwiftLocationManager = dict?["useSwiftLocationManager"] as? Bool ?? false
         startUpdatesWhileInUse = dict?["startUpdatesWhileInUse"] as? Bool ?? false
-        remoteTrackingOptions = RadarRemoteTrackingOptions.from(array: dict?["remoteTrackingOptions"] as? [[String: Any]])
+        remoteTrackingOptions = RadarRemoteTrackingOptions.from(
+            array: dict?["remoteTrackingOptions"] as? [[String: Any]]
+        )
         useSwiftVerificationManager = dict?["useSwiftVerificationManager"] as? Bool ?? false
     }
 
@@ -98,7 +100,7 @@ class RadarSdkConfiguration: NSObject {
 extension RadarSdkConfiguration {
     /// QA accessor exposed via the public ObjC header. Returns the cached
     /// SDK configuration, or nil if none has been fetched yet.
-    @objc static func current() -> RadarSdkConfiguration? {
+    @objc public static func current() -> RadarSdkConfiguration? {
         RadarSettings.sdkConfiguration
     }
 }

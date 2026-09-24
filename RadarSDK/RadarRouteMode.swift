@@ -8,9 +8,9 @@
 import Foundation
 
 @objc(RadarRouteModeUtils)
-final class RadarRouteModeUtils: NSObject {
+public final class RadarRouteModeUtils: NSObject {
     @objc(stringForMode:)
-    static func stringForMode(_ mode: RadarRouteMode) -> String {
+    public static func stringForMode(_ mode: RadarRouteMode) -> String {
         switch mode {
         case .foot:
             return "foot"
