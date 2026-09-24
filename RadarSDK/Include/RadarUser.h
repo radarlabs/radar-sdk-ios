@@ -7,7 +7,6 @@
 
 #import "RadarBeacon.h"
 #import "RadarChain.h"
-#import "RadarExpectedAddress.h"
 #import "RadarFraud.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
@@ -15,6 +14,8 @@
 #import "RadarSegment.h"
 #import "RadarTrip.h"
 #import <Foundation/Foundation.h>
+
+@class RadarExpectedAddress;
 
 typedef NS_ENUM(NSInteger, RadarLocationSource);
 typedef NS_ENUM(NSInteger, RadarActivityType);
