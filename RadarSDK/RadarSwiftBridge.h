@@ -6,14 +6,16 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarEvent+Internal.h"
-#import "RadarGeofence+Internal.h"
+#import "RadarEvent.h"
+#import "RadarGeofence.h"
 #import "RadarTrackingOptions.h"
 #import "RadarState.h"
-#import "RadarBeacon+Internal.h"
-#import "RadarPlace+Internal.h"
+#import "RadarBeacon.h"
+#import "RadarPlace.h"
 #import <CoreLocation/CoreLocation.h>
 #import "Radar.h"
+
+@class RadarTripOptions;
 
 @protocol RadarSwiftBridgeProtocol
 - (void)flushReplays;
