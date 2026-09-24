@@ -27,12 +27,18 @@ Large stateful managers may use a temporary Swift seam only when a user explicit
 that staged migration. The nightly workflow does not select managers or leave parallel
 implementations for ordinary files.
 
-When a migration keeps a handwritten public Objective-C header, implement the imported class
-with `@objc @implementation extension`, not a standalone `@objc(ClassName)` Swift class. Before
-handing off the change, run `make ci-build-example`; its Release build generates and links an
-Objective-C consumer for every handwritten public class interface. Public headers must import
-only public headers; import `+Internal.h` categories from implementation files, and run `make lint`
-to verify the CocoaPods header boundary.
+A public class migrated to Swift becomes `@objc(ClassName) @objcMembers public class ClassName`,
+with the same name in Swift and Objective-C. Its public API must be `public` so the generated
+`RadarSDK-Swift.h` declares it and the class symbol is exported. Remove the class's `@interface`
+from its handwritten public header: delete the header, or keep only the enums and constants that
+still need an Objective-C declaration. Other public headers refer to the class with
+`@class ClassName;`, because they cannot import `RadarSDK-Swift.h`. Objective-C-only initializers
+used inside the SDK stay internal in Swift (`@objc(initWithObject:)`) and are declared in a class
+extension in `ClassName+Internal.h`, which imports `RadarSDK-Swift.h` behind `__has_include`
+(see `RadarChain+Internal.h`). Public headers must import only public headers; import `+Internal.h`
+headers from implementation files. Before handing off the change, run `make ci-build-example`: its
+Release build generates an Objective-C consumer for every public class in the handwritten headers
+and `RadarSDK-Swift.h`, then links it. Also run `make lint` to verify the CocoaPods header boundary.
 
 ## Concurrency
 
@@ -94,9 +100,9 @@ Run `git submodule update --init --recursive` to initialize submodules.
 
 The Xcode project is `RadarSDK.xcodeproj`. When adding new Swift files, add them to the
 project file (`project.pbxproj`) so they are compiled. Remove the corresponding `.m` file
-and project references when migrating a class. Keep the `.h` file and its Headers entry
-while Objective-C consumers still import the compatibility surface; remove it only after
-confirming it is unused.
+and project references when migrating a class. Remove the class's public `.h` and its
+Headers entry too, unless the header still declares enums or constants; Objective-C consumers
+reach the class through `RadarSDK-Swift.h`.
 
 ## Debugging CI Failures
 
