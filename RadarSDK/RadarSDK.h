@@ -41,3 +41,19 @@ FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 #elif __has_include("RadarSDK-Swift.h")
 #import "RadarSDK-Swift.h"
 #endif
+
+// Compatibility headers for classes now declared in RadarSDK-Swift.h. Listed here so the
+// umbrella covers every public header; each one only re-imports this file.
+#import "RadarChain.h"
+#import "RadarCircleGeometry.h"
+#import "RadarCoordinate.h"
+#import "RadarFraud.h"
+#import "RadarInitializeOptions.h"
+#import "RadarOperatingHours.h"
+#import "RadarPolygonGeometry.h"
+#import "RadarRevealRiskToken.h"
+#import "RadarRouteDistance.h"
+#import "RadarRouteDuration.h"
+#import "RadarRouteGeometry.h"
+#import "RadarTimeZone.h"
+#import "RadarTripOptions.h"

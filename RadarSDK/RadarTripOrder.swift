@@ -22,7 +22,7 @@ public class RadarTripOrder: NSObject {
     public let firedReason: String?
     public let updatedAt: Date
 
-    public init(
+    public init?(
         id: String,
         guid: String?,
         handoffMode: String?,
@@ -105,7 +105,7 @@ public class RadarTripOrder: NSObject {
 
     @objc(arrayForOrders:)
     public static func array(
-        forOrders orders: [RadarTripOrder]?
+        for orders: [RadarTripOrder]?
     ) -> [[AnyHashable: Any]]? {
         orders?.map { $0.dictionaryValue() }
     }

@@ -142,12 +142,12 @@ struct RadarChainTests {
     @Test("Serializes chain arrays")
     func serializesArrays() throws {
         let chain = RadarChain(slug: "starbucks", name: "Starbucks", externalId: nil, metadata: nil)
-        let dictionaries = try #require(RadarChain.arrayForChains([chain]))
+        let dictionaries = try #require(RadarChain.array(for: [chain]))
 
         #expect(dictionaries.count == 1)
         #expect(dictionaries[0]["slug"] as? String == "starbucks")
         #expect(dictionaries[0]["name"] as? String == "Starbucks")
-        #expect(RadarChain.arrayForChains(nil) == nil)
+        #expect(RadarChain.array(for: nil) == nil)
     }
 
     @Test("Rejects non-dictionary payloads")

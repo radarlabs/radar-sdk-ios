@@ -12,7 +12,7 @@ import Foundation
 @objcMembers
 public class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
 
-    public var externalId: String?
+    public var externalId: String!
     public var metadata: [AnyHashable: Any]?
     public var destinationGeofenceTag: String?
     public var destinationGeofenceExternalId: String?

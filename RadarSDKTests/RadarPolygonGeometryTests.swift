@@ -15,7 +15,7 @@ import Testing
 struct RadarPolygonGeometryTests {
 
     private static func coordinate(latitude: Double, longitude: Double) -> RadarCoordinate {
-        RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
+        RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))!
     }
 
     private static func square() -> [RadarCoordinate] {

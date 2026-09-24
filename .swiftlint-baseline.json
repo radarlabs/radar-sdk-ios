@@ -292,7 +292,7 @@
         "file": "RadarSDK/RadarSyncManager.swift",
         "line": 13
       },
-      "reason": "Class body should span 350 lines or less excluding comments and whitespace: currently spans 603 lines",
+      "reason": "Class body should span 350 lines or less excluding comments and whitespace: currently spans 602 lines",
       "ruleDescription": "Type bodies should not span too many lines",
       "ruleIdentifier": "type_body_length",
       "ruleName": "Type Body Length",
@@ -365,9 +365,9 @@
       "location": {
         "character": 1,
         "file": "RadarSDK/RadarSyncManager.swift",
-        "line": 871
+        "line": 870
       },
-      "reason": "File should contain 400 lines or less: currently contains 871",
+      "reason": "File should contain 400 lines or less: currently contains 870",
       "ruleDescription": "Files should not span too many lines.",
       "ruleIdentifier": "file_length",
       "ruleName": "File Length",

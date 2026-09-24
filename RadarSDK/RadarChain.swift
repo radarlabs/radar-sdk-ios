@@ -90,7 +90,7 @@ public final class RadarChain: NSObject, Codable {
     }
 
     @objc(arrayForChains:)
-    public static func arrayForChains(_ chains: [RadarChain]?) -> [[String: Any]]? {
+    public static func array(for chains: [RadarChain]?) -> [[String: Any]]? {
         chains?.map { $0.dictionaryValue() }
     }
 

@@ -173,7 +173,7 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
         #expect(NSStringFromClass(RadarCoordinate.self) == "RadarCoordinate")
 
         let objc = RadarCoordinate(
-            coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude))
+            coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude))!
         let swift = try #require(objc as Any as? RadarCoordinate)
 
         #expect(swift.valueEquals(RadarCoordinate(latitude: Self.latitude, longitude: Self.longitude)))
@@ -184,7 +184,7 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
     @Test("initWithCoordinate: and the coordinate property are reachable from Objective-C")
     func objcInitWithCoordinate() {
         let coordinate = RadarCoordinate(
-            coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude))
+            coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude))!
 
         #expect(coordinate.coordinate.latitude == Self.latitude)
         #expect(coordinate.coordinate.longitude == Self.longitude)
@@ -234,7 +234,7 @@ struct RadarCoordinateTests {  // swiftlint:disable:this type_body_length
     @Test("dictionaryValue is reachable from Objective-C")
     func objcDictionaryValue() throws {
         let coordinate = RadarCoordinate(
-            coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude))
+            coordinate: CLLocationCoordinate2D(latitude: Self.latitude, longitude: Self.longitude))!
         let dictionary = coordinate.dictionaryValue()
 
         #expect(dictionary["type"] as? String == "Point")

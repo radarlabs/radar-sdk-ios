@@ -32,7 +32,7 @@ public final class RadarCoordinate: NSObject, Codable, Sendable {
     }
 
     @objc
-    public init(coordinate: CLLocationCoordinate2D) {
+    public init?(coordinate: CLLocationCoordinate2D) {
         self.latitude = coordinate.latitude
         self.longitude = coordinate.longitude
     }

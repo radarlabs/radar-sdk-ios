@@ -74,7 +74,7 @@ extension RadarSerializedTests {
         }
 
         private func geofence(id: String, activeIndoorModelId: String?) -> RadarGeofence {
-            let center = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+            let center = RadarCoordinate(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))!
             return RadarGeofence(
                 id: id,
                 description: id,

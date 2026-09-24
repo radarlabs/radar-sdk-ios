@@ -18,9 +18,8 @@ public final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendabl
     @nonobjc var id: String { _id }
     public let token: String?
     public let expiresAt: Date?
-    let expiresIn: Double?
-    // swiftlint:disable:next identifier_name
-    @objc(expiresIn) public var _expiresIn: NSNumber? { expiresIn.map { NSNumber(value: $0) } }
+    let expiresInValue: Double?
+    public var expiresIn: NSNumber? { expiresInValue.map { NSNumber(value: $0) } }
     public let risk: RadarRevealRiskTokenRisk
     public let network: RadarRevealRiskTokenNetwork
     public let device: RadarRevealRiskTokenDevice
@@ -32,7 +31,7 @@ public final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendabl
         // swiftlint:disable:next identifier_name
         case _id
         case token
-        case expiresIn
+        case expiresInValue = "expiresIn"
         case expiresAt
         case risk
         case network
@@ -148,61 +147,90 @@ public final class RadarRevealRiskTokenNetworkIpAddress: NSObject, Decodable, Se
     public let state: String?
     public let city: String?
     public let postalCode: String?
-    let latitude: Double?
-    // swiftlint:disable:next identifier_name
-    @objc(latitude) public var _latitude: NSNumber? { latitude.map { NSNumber(value: $0) } }
-    let longitude: Double?
-    // swiftlint:disable:next identifier_name
-    @objc(longitude) public var _longitude: NSNumber? { longitude.map { NSNumber(value: $0) } }
+    let latitudeValue: Double?
+    public var latitude: NSNumber? { latitudeValue.map { NSNumber(value: $0) } }
+    let longitudeValue: Double?
+    public var longitude: NSNumber? { longitudeValue.map { NSNumber(value: $0) } }
     public let connectionType: String?
     public let stateCode: String?
     public let stateConfidence: String?
     public let countryConfidence: String?
     public let dma: String?
     public let dmaCode: String?
-    let stateAllowed: Bool?
-    // swiftlint:disable:next identifier_name
-    @objc(stateAllowed) public var _stateAllowed: Bool { stateAllowed ?? false }
-    let countryAllowed: Bool?
-    // swiftlint:disable:next identifier_name
-    @objc(countryAllowed) public var _countryAllowed: Bool { countryAllowed ?? false }
+    let stateAllowedValue: Bool?
+    public var stateAllowed: Bool { stateAllowedValue ?? false }
+    let countryAllowedValue: Bool?
+    public var countryAllowed: Bool { countryAllowedValue ?? false }
     public let layer: String?
     public let geometry: RadarRevealRiskIpGeometry?
+
+    enum CodingKeys: String, CodingKey {
+        // swiftlint:disable:next identifier_name
+        case ip
+        case countryCode
+        case country
+        case countryFlag
+        case state
+        case city
+        case postalCode
+        case latitudeValue = "latitude"
+        case longitudeValue = "longitude"
+        case connectionType
+        case stateCode
+        case stateConfidence
+        case countryConfidence
+        case dma
+        case dmaCode
+        case stateAllowedValue = "stateAllowed"
+        case countryAllowedValue = "countryAllowed"
+        case layer
+        case geometry
+    }
 }
 
 @objc(RadarRevealRiskIpGeometry) @objcMembers
 public final class RadarRevealRiskIpGeometry: NSObject, Decodable, Sendable {
     public let type: String
-    public let coordinates: [Double]
+    let coordinateValues: [Double]
+    public var coordinates: [NSNumber] { coordinateValues.map { NSNumber(value: $0) } }
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case coordinateValues = "coordinates"
+    }
 }
 
 @objc(RadarRevealRiskTokenNetworkPrivacy) @objcMembers
 public final class RadarRevealRiskTokenNetworkPrivacy: NSObject, Decodable, Sendable {
-    let hosting: Bool?
-    // swiftlint:disable:next identifier_name
-    @objc(hosting) public var _hosting: Bool { hosting ?? false }
+    let hostingValue: Bool?
+    public var hosting: Bool { hostingValue ?? false }
 
-    let proxy: Bool?
-    // swiftlint:disable:next identifier_name
-    @objc(proxy) public var _proxy: Bool { proxy ?? false }
+    let proxyValue: Bool?
+    public var proxy: Bool { proxyValue ?? false }
 
-    let relay: Bool?
-    // swiftlint:disable:next identifier_name
-    @objc(relay) public var _relay: Bool { relay ?? false }
+    let relayValue: Bool?
+    public var relay: Bool { relayValue ?? false }
 
     public let service: String?
 
-    let tor: Bool?
-    // swiftlint:disable:next identifier_name
-    @objc(tor) public var _tor: Bool { tor ?? false }
+    let torValue: Bool?
+    public var tor: Bool { torValue ?? false }
 
-    let vpn: Bool?
-    // swiftlint:disable:next identifier_name
-    @objc(vpn) public var _vpn: Bool { vpn ?? false }
+    let vpnValue: Bool?
+    public var vpn: Bool { vpnValue ?? false }
 
-    let residentialProxy: Bool?
-    // swiftlint:disable:next identifier_name
-    @objc(residentialProxy) public var _residentialProxy: Bool { residentialProxy ?? false }
+    let residentialProxyValue: Bool?
+    public var residentialProxy: Bool { residentialProxyValue ?? false }
+
+    enum CodingKeys: String, CodingKey {
+        case hostingValue = "hosting"
+        case proxyValue = "proxy"
+        case relayValue = "relay"
+        case service
+        case torValue = "tor"
+        case vpnValue = "vpn"
+        case residentialProxyValue = "residentialProxy"
+    }
 }
 
 @objc(RadarRevealRiskTokenDevice) @objcMembers
