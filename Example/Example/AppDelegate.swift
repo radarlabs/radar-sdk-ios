@@ -21,6 +21,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     /// with your own address. Overrides the API + verified hosts on launch; leave blank to use
     /// the SDK defaults.
     static let TARGET_HOST = ""
+    
+    /// Hardcoded publishable key used when no override is set.
+    static let DEFAULT_PUBLISHABLE_KEY = "prj_live_pk_..."
 
     let locationManager = CLLocationManager()
     var window: UIWindow?  // required for UIWindowSceneDelegate
