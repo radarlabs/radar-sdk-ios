@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RadarVerificationManager : NSObject
 
 @property (assign, nonatomic) BOOL started;
+@property (copy, nonatomic, nullable) NSString *expectedAddress;
 
 + (instancetype)sharedInstance;
 - (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;

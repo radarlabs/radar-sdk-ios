@@ -222,6 +222,7 @@
                  fraudPayload:fraudPayload
                  expectedCountryCode:self.expectedCountryCode
                  expectedStateCode:self.expectedStateCode
+                 expectedAddress:self.expectedAddress
                  reason:reason
                  transactionId:transactionId
                  revealRiskId:revealRiskId

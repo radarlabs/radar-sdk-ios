@@ -9,6 +9,7 @@
 #import "Radar.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarChain+Internal.h"
+#import "RadarExpectedAddress+Internal.h"
 #import "RadarFraud+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
@@ -102,7 +103,8 @@
                                debug:(BOOL)debug
                                fraud:(RadarFraud *_Nullable)fraud 
                    locationInsights:(RadarUserLocationInsights *_Nullable)locationInsights
-                            altitude:(double)altitude {
+                            altitude:(double)altitude
+                     expectedAddress:(RadarExpectedAddress *_Nullable)expectedAddress {
     self = [super init];
     if (self) {
         __id = _id;
@@ -130,6 +132,7 @@
         _fraud = fraud;
         _locationInsights = locationInsights;
         _altitude = altitude;
+        _expectedAddress = expectedAddress;
     }
     return self;
 }
@@ -166,6 +169,7 @@
     RadarUserLocationInsights *locationInsights;
     BOOL debug = NO;
     double altitude = NAN;
+    RadarExpectedAddress *expectedAddress;
 
     id idObj = dict[@"_id"];
     if (idObj && [idObj isKindOfClass:[NSString class]]) {
@@ -376,6 +380,9 @@
         altitude = [((NSNumber *)altitudeObj) doubleValue];
     }
 
+    id expectedAddressObj = dict[@"expectedAddress"];
+    expectedAddress = [[RadarExpectedAddress alloc] initWithObject:expectedAddressObj];
+
     if (_id && location) {
         return [[RadarUser alloc] initWithId:_id
                                       userId:userId
@@ -401,7 +408,8 @@
                                        debug:debug
                                        fraud:fraud
                             locationInsights:locationInsights
-                                    altitude:altitude];
+                                    altitude:altitude
+                             expectedAddress:expectedAddress];
     }
 
     return nil;
@@ -467,6 +475,9 @@
     }
     if (!isnan(self.altitude)) {
         [dict setValue:@(self.altitude) forKey:@"altitude"];
+    }
+    if (self.expectedAddress) {
+        [dict setValue:[self.expectedAddress dictionaryValue] forKey:@"expectedAddress"];
     }
     return dict;
 }
