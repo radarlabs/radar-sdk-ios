@@ -1,6 +1,6 @@
 # Migration guides
 
-## 3.41.0 to 3.41.1
+## 3.41.0 to 3.42.0
 
 These models are now declared in Swift: `RadarChain`, `RadarCoordinate`, `RadarCircleGeometry`, `RadarPolygonGeometry`, `RadarFraud`, `RadarInitializeOptions`, `RadarOperatingHours`, `RadarRevealRiskToken` (and its nested types), `RadarRoute`, `RadarRouteDistance`, `RadarRouteDuration`, `RadarRouteGeometry`, `RadarRouteModeUtils`, `RadarTimeZone`, `RadarTrip`, `RadarTripLeg`, `RadarTripOptions`, and `RadarTripOrder`. Their properties and methods keep the same names and types in Swift and Objective-C.
 
