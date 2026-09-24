@@ -7,12 +7,26 @@
 
 import Foundation
 
+/// Represents the chain of a place.
+///
+/// - SeeAlso: https://radar.com/documentation/places
 @objc(RadarChain)
 @objcMembers
 public final class RadarChain: NSObject, Codable {
+    /// The unique ID of the chain. For a full list of chains, see https://radar.com/documentation/places/chains.
+    ///
+    /// - SeeAlso: https://radar.com/documentation/places/chains
     public let slug: String
+
+    /// The name of the chain. For a full list of chains, see https://radar.com/documentation/places/chains.
+    ///
+    /// - SeeAlso: https://radar.com/documentation/places/chains
     public let name: String
+
+    /// The external ID of the chain.
     public let externalId: String?
+
+    /// The optional set of custom key-value pairs for the chain.
     public let metadata: [AnyHashable: Any]?
 
     private enum CodingKeys: String, CodingKey {
@@ -22,7 +36,7 @@ public final class RadarChain: NSObject, Codable {
         case metadata
     }
 
-    public override init() {
+    override init() {
         slug = ""
         name = ""
         externalId = nil
@@ -30,7 +44,7 @@ public final class RadarChain: NSObject, Codable {
         super.init()
     }
 
-    /// Keeps the hand-written Objective-C initializer working after the implementation moved to Swift.
+    // Keeps the Objective-C initializer declared in RadarChain+Internal.h working.
     @objc(initWithSlug:name:externalId:metadata:)
     init(slug: String, name: String, externalId: String?, metadata: NSDictionary?) {
         self.slug = slug
@@ -40,7 +54,7 @@ public final class RadarChain: NSObject, Codable {
         super.init()
     }
 
-    /// Keeps the hand-written Objective-C parser working for existing SDK callers.
+    // Keeps the hand-written Objective-C parser working for existing SDK callers.
     @objc(initWithObject:)
     init?(object: Any) {
         guard let dictionary = object as? NSDictionary,
@@ -75,7 +89,7 @@ public final class RadarChain: NSObject, Codable {
         super.init()
     }
 
-    /// JSON cannot encode NSDictionary directly, so use the same primitive values as Codable metadata.
+    // JSON cannot encode NSDictionary directly, so use the same primitive values as Codable metadata.
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(slug, forKey: .slug)
@@ -90,12 +104,12 @@ public final class RadarChain: NSObject, Codable {
     }
 
     @objc(arrayForChains:)
-    public static func array(for chains: [RadarChain]?) -> [[String: Any]]? {
+    public static func array(for chains: [RadarChain]?) -> [[AnyHashable: Any]]? {
         chains?.map { $0.dictionaryValue() }
     }
 
-    public func dictionaryValue() -> [String: Any] {
-        var dictionary: [String: Any] = [
+    public func dictionaryValue() -> [AnyHashable: Any] {
+        var dictionary: [AnyHashable: Any] = [
             "slug": slug,
             "name": name,
         ]

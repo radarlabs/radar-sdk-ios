@@ -11,33 +11,72 @@
 import CoreLocation
 import Foundation
 
+/// Represents a leg of a multi-destination trip.
+///
+/// - SeeAlso: https://radar.com/documentation/trip-tracking
 @objc(RadarTripLeg)
 @objcMembers
 public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_length
 
-    // swiftlint:disable:next identifier_name
-    public private(set) var _id: String?
+    /// The Radar ID of the leg. Set from server response.
+    /// Use this when calling updateTripLeg.
+    public private(set) var _id: String?  // swiftlint:disable:this identifier_name
+
+    /// The status of the leg. Set from server response.
     public private(set) var status: RadarTripLegStatus = .unknown
+
+    /// The destination type for this leg.
+    /// When parsed from a server response, reflects the server's `destination.type`.
+    /// Otherwise, inferred from which properties are set (geofence > address > coordinates).
     public private(set) var destinationType: RadarTripLegDestinationType = .unknown
+
+    /// The date when the leg was created. Set from server response.
     public private(set) var createdAt: Date?
+
+    /// The date when the leg was last updated. Set from server response.
     public private(set) var updatedAt: Date?
+
+    /// The ETA duration in minutes to this leg's destination. Set from server response.
     public private(set) var etaDuration: Float = 0
+
+    /// The ETA distance in meters to this leg's destination. Set from server response.
     public private(set) var etaDistance: Float = 0
 
+    /// The tag of the destination geofence for this leg.
+    /// Use with destinationGeofenceExternalId for geofence-based destinations.
     public var destinationGeofenceTag: String?
+
+    /// The external ID of the destination geofence for this leg.
+    /// Use with destinationGeofenceTag for geofence-based destinations.
     public var destinationGeofenceExternalId: String?
+
+    /// The Radar ID of the destination geofence for this leg.
+    /// Alternative to using destinationGeofenceTag + destinationGeofenceExternalId.
     public var destinationGeofenceId: String?
+
+    /// The address string for the destination of this leg.
+    /// Use for address-based destinations.
     public var address: String?
 
+    /// The coordinates for the destination of this leg.
+    /// Use for coordinate-based destinations. Set latitude and longitude.
     public var coordinates: CLLocationCoordinate2D {
         didSet {
             hasCoordinates = CLLocationCoordinate2DIsValid(coordinates)
         }
     }
 
+    /// Whether coordinates have been explicitly set.
     public private(set) var hasCoordinates: Bool = false
+
+    /// The arrival radius in meters for coordinate-based destinations.
+    /// Only used when coordinates are set.
     public var arrivalRadius: Int = 0
+
+    /// The stop duration in minutes for this leg.
     public var stopDuration: Int = 0
+
+    /// An optional set of custom key-value pairs for this leg.
     public var metadata: [AnyHashable: Any]?
 
     public override init() {
@@ -45,6 +84,13 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         super.init()
     }
 
+    /// Initializes a RadarTripLeg with the specified destination geofence tag and external ID.
+    ///
+    /// - Parameters:
+    ///   - destinationGeofenceTag: The tag of the destination geofence.
+    ///   - destinationGeofenceExternalId: The external ID of the destination geofence.
+    ///
+    /// - Returns: A new RadarTripLeg instance.
     @objc(initWithDestinationGeofenceTag:destinationGeofenceExternalId:)
     public convenience init(
         destinationGeofenceTag: String?,
@@ -57,6 +103,11 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         destinationType = .geofence
     }
 
+    /// Initializes a RadarTripLeg with the specified destination geofence ID.
+    ///
+    /// - Parameter destinationGeofenceId: The Radar ID of the destination geofence.
+    ///
+    /// - Returns: A new RadarTripLeg instance.
     @objc(initWithDestinationGeofenceId:)
     public convenience init(destinationGeofenceId: String) {
         self.init()
@@ -64,6 +115,11 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         destinationType = .geofence
     }
 
+    /// Initializes a RadarTripLeg with the specified address.
+    ///
+    /// - Parameter address: The address string for the destination.
+    ///
+    /// - Returns: A new RadarTripLeg instance.
     @objc(initWithAddress:)
     public convenience init(address: String) {
         self.init()
@@ -71,6 +127,11 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         destinationType = .address
     }
 
+    /// Initializes a RadarTripLeg with the specified coordinates.
+    ///
+    /// - Parameter coordinates: The coordinates for the destination.
+    ///
+    /// - Returns: A new RadarTripLeg instance.
     @objc(initWithCoordinates:)
     public convenience init(coordinates: CLLocationCoordinate2D) {
         self.init()
@@ -79,6 +140,11 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         destinationType = .coordinates
     }
 
+    /// Returns the string representation of a trip leg status.
+    ///
+    /// - Parameter status: The trip leg status.
+    ///
+    /// - Returns: The string representation.
     @objc(stringForStatus:)
     public static func string(
         for status: RadarTripLegStatus
@@ -103,6 +169,11 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         }
     }
 
+    /// Returns the trip leg status for a string representation.
+    ///
+    /// - Parameter string: The string representation.
+    ///
+    /// - Returns: The trip leg status.
     @objc(statusForString:)
     public static func status(
         for string: String
@@ -127,6 +198,11 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         }
     }
 
+    /// Returns the string representation of a trip leg destination type.
+    ///
+    /// - Parameter destinationType: The trip leg destination type.
+    ///
+    /// - Returns: The string representation.
     @objc(stringForDestinationType:)
     public static func string(
         for destinationType: RadarTripLegDestinationType
@@ -143,6 +219,11 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         }
     }
 
+    /// Returns the trip leg destination type for a string representation.
+    ///
+    /// - Parameter string: The string representation.
+    ///
+    /// - Returns: The trip leg destination type.
     @objc(destinationTypeForString:)
     public static func destinationType(
         for string: String
@@ -159,6 +240,11 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         }
     }
 
+    /// Creates a RadarTripLeg from a dictionary representation.
+    ///
+    /// - Parameter dictionary: The dictionary containing leg data.
+    ///
+    /// - Returns: A new RadarTripLeg instance, or nil if the dictionary is invalid.
     @nonobjc
     public convenience init?(
         from dictionary: [AnyHashable: Any]?
@@ -207,6 +293,11 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         metadata = dictionary["metadata"] as? [AnyHashable: Any]
     }
 
+    /// Creates a RadarTripLeg from a dictionary representation.
+    ///
+    /// - Parameter object: The dictionary containing leg data.
+    ///
+    /// - Returns: A new RadarTripLeg instance, or nil if the dictionary is invalid.
     @objc(legFromDictionary:)
     public static func leg(
         fromDictionary object: Any?
@@ -338,6 +429,11 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         return nil
     }
 
+    /// Creates an array of RadarTripLeg objects from an array of dictionaries.
+    ///
+    /// - Parameter array: The array of dictionaries containing leg data.
+    ///
+    /// - Returns: An array of RadarTripLeg instances, or nil if the array is invalid.
     @objc(legsFromArray:)
     public static func legs(
         from array: [Any]?
@@ -353,6 +449,9 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         return legs.isEmpty ? nil : legs
     }
 
+    /// Converts the leg to a dictionary representation for API serialization.
+    ///
+    /// - Returns: A dictionary representation of the leg.
     public func dictionaryValue() -> [AnyHashable: Any] {
         var dictionary: [AnyHashable: Any] = [:]
 
@@ -447,6 +546,11 @@ public class RadarTripLeg: NSObject {  // swiftlint:disable:this type_body_lengt
         return eta
     }
 
+    /// Converts an array of legs to an array of dictionaries.
+    ///
+    /// - Parameter legs: The array of RadarTripLeg instances.
+    ///
+    /// - Returns: An array of dictionary representations.
     @objc(arrayForLegs:)
     public static func array(
         for legs: [RadarTripLeg]?

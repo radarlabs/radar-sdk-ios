@@ -10,6 +10,10 @@ import Foundation
 @objc(RadarRouteModeUtils)
 @objcMembers
 public final class RadarRouteModeUtils: NSObject {
+    /// Returns a display string for a travel mode value.
+    ///
+    /// - Parameter mode: A travel mode value.
+    /// - Returns: A display string for the travel mode value.
     @objc(stringForMode:)
     public static func stringForMode(_ mode: RadarRouteMode) -> String {
         switch mode {

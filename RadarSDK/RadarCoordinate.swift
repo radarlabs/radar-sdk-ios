@@ -1,6 +1,7 @@
 import CoreLocation
 import Foundation
 
+/// Represents a location coordinate.
 @objc(RadarCoordinate)
 @objcMembers
 public final class RadarCoordinate: NSObject, Codable, Sendable {
@@ -14,6 +15,7 @@ public final class RadarCoordinate: NSObject, Codable, Sendable {
     let latitude: Double
     let longitude: Double
 
+    /// The coordinate.
     public var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
@@ -50,7 +52,7 @@ public final class RadarCoordinate: NSObject, Codable, Sendable {
         self.latitude = coords[1]
     }
 
-    public override init() {
+    override init() {
         self.latitude = 0
         self.longitude = 0
     }
@@ -65,7 +67,7 @@ public final class RadarCoordinate: NSObject, Codable, Sendable {
         return result
     }
 
-    public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         return [
             "type": "Point",
             "coordinates": [longitude, latitude],

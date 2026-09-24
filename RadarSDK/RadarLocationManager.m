@@ -9,6 +9,7 @@
 
 #import "CLLocation+Radar.h"
 #import "RadarAPIClient.h"
+#import "RadarSdkConfiguration.h"
 #import "Radar+Internal.h"
 #import "RadarBeaconManagerSwift.h"
 #import "RadarDelegateHolder.h"

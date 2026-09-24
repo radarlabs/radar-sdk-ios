@@ -92,6 +92,7 @@
 		96A5A0CF27AD9F41007B960B /* RadarAddress+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0B727AD9F40007B960B /* RadarAddress+Internal.h */; };
 		96A5A0D127AD9F41007B960B /* RadarEvent+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0B927AD9F41007B960B /* RadarEvent+Internal.h */; };
 		96A5A0D227AD9F41007B960B /* RadarContext+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0BA27AD9F41007B960B /* RadarContext+Internal.h */; };
+		96A5A0C427AD9F41007B960B /* RadarCircleGeometry+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0AC27AD9F40007B960B /* RadarCircleGeometry+Internal.h */; };
 		96A5A0D327AD9F41007B960B /* RadarPolygonGeometry+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0BB27AD9F41007B960B /* RadarPolygonGeometry+Internal.h */; };
 		96A5A0D427AD9F41007B960B /* RadarGeofence+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0BC27AD9F41007B960B /* RadarGeofence+Internal.h */; };
 		96A5A0D627AD9F41007B960B /* RadarRouteMatrix+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0BE27AD9F41007B960B /* RadarRouteMatrix+Internal.h */; };
@@ -251,7 +252,7 @@
 		F65AF72C2C10B242002BA009 /* get_config_response.json in Resources */ = {isa = PBXBuildFile; fileRef = F65AF72B2C10B242002BA009 /* get_config_response.json */; };
 		F65F79372EF4560B00399E84 /* RadarInAppMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F65F79362EF4560400399E84 /* RadarInAppMessage.m */; };
 		F662FFB62EF5DC81005D2D29 /* RadarUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F662FFB52EF5DC78005D2D29 /* RadarUtils.swift */; };
-		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F667F8292BFBF3D1001F2F67 /* RadarSdkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F667F8282BFBF3D1001F2F67 /* RadarSdkConfiguration.h */; };
 		F66D6297304620CB00B95B82 /* RadarRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66D6296304620C700B95B82 /* RadarRoute.swift */; };
 		F66D643B3050A24D00B95B82 /* RadarVerificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66D643A3050A24D00B95B82 /* RadarVerificationManager.swift */; };
 		F66D643D3050A54100B95B82 /* RadarRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66D643C3050A54100B95B82 /* RadarRouteTests.swift */; };
@@ -349,6 +350,7 @@
 		96A5A0B727AD9F40007B960B /* RadarAddress+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarAddress+Internal.h"; sourceTree = "<group>"; };
 		96A5A0B927AD9F41007B960B /* RadarEvent+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarEvent+Internal.h"; sourceTree = "<group>"; };
 		96A5A0BA27AD9F41007B960B /* RadarContext+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarContext+Internal.h"; sourceTree = "<group>"; };
+		96A5A0AC27AD9F40007B960B /* RadarCircleGeometry+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarCircleGeometry+Internal.h"; sourceTree = "<group>"; };
 		96A5A0BB27AD9F41007B960B /* RadarPolygonGeometry+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarPolygonGeometry+Internal.h"; sourceTree = "<group>"; };
 		96A5A0BC27AD9F41007B960B /* RadarGeofence+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarGeofence+Internal.h"; sourceTree = "<group>"; };
 		96A5A0BE27AD9F41007B960B /* RadarRouteMatrix+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarRouteMatrix+Internal.h"; sourceTree = "<group>"; };
@@ -916,6 +918,7 @@
 				CA5E9A0230A3000000000001 /* RadarInitializeOptions.swift */,
 				96A5A0B127AD9F40007B960B /* RadarPlace+Internal.h */,
 				DD236CB22308812600EB88F9 /* RadarPlace.m */,
+				96A5A0AC27AD9F40007B960B /* RadarCircleGeometry+Internal.h */,
 				96A5A0BB27AD9F41007B960B /* RadarPolygonGeometry+Internal.h */,
 				CA5E9A0130B3000000000001 /* RadarPolygonGeometry.swift */,
 				E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */,
@@ -1097,6 +1100,7 @@
 				828D1A562E295FD400663787 /* RadarTripOrder.h in Headers */,
 				9679F4A127CD8D0600800797 /* CLLocation+Radar.h in Headers */,
 				96A5A0D127AD9F41007B960B /* RadarEvent+Internal.h in Headers */,
+				96A5A0C427AD9F41007B960B /* RadarCircleGeometry+Internal.h in Headers */,
 				96A5A0D327AD9F41007B960B /* RadarPolygonGeometry+Internal.h in Headers */,
 				96A5A11027AD9F7F007B960B /* RadarPlace.h in Headers */,
 				96A5A0D427AD9F41007B960B /* RadarGeofence+Internal.h in Headers */,

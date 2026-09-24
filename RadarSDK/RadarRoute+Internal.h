@@ -5,7 +5,6 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarRoute.h"
 #import <Foundation/Foundation.h>
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)

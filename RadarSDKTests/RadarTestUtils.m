@@ -6,6 +6,7 @@
 //
 
 #import "RadarTestUtils.h"
+#import "../RadarSDK/RadarSdkConfiguration.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>

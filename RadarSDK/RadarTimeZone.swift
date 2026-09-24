@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Represents a time zone.
+/// - SeeAlso: https://radar.com/documentation/api#geocoding
 @objc(RadarTimeZone)
 @objcMembers
 public final class RadarTimeZone: NSObject {
@@ -23,16 +25,21 @@ public final class RadarTimeZone: NSObject {
     private let codeValue: String?
     private let currentTimeValue: Date?
 
-    // swiftlint:disable:next identifier_name
-    public var _id: String { idValue ?? "" }
+    /// The ID of the time zone.
+    public var _id: String { idValue ?? "" }  // swiftlint:disable:this identifier_name
     @nonobjc var id: String? { idValue }
+    /// The name of of the time zone.
     public var name: String { nameValue ?? "" }
+    /// The time zone abbreviation.
     public var code: String { codeValue ?? "" }
+    /// The current time for the time zone.
     public var currentTime: Date { currentTimeValue ?? Date(timeIntervalSince1970: 0) }
+    /// The UTC offset for the time zone.
     public let utcOffset: Int32
+    /// The DST offset for the time zone.
     public let dstOffset: Int32
 
-    public override init() {
+    override init() {
         idValue = nil
         nameValue = nil
         codeValue = nil
@@ -42,7 +49,7 @@ public final class RadarTimeZone: NSObject {
         super.init()
     }
 
-    /// Keeps the hand-written Objective-C header's `initWithObject:` selector working.
+    // Keeps the hand-written Objective-C header's `initWithObject:` selector working.
     @objc(initWithObject:)
     init?(object: Any) {
         guard let dictionary = object as? NSDictionary else {
@@ -62,8 +69,8 @@ public final class RadarTimeZone: NSObject {
         super.init()
     }
 
-    public func dictionaryValue() -> [String: Any] {
-        var dictionary: [String: Any] = [:]
+    public func dictionaryValue() -> [AnyHashable: Any] {
+        var dictionary: [AnyHashable: Any] = [:]
         if let id = idValue {
             dictionary["id"] = id
         }

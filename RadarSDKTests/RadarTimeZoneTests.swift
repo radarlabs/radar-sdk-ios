@@ -75,6 +75,20 @@ struct RadarTimeZoneTests {
         #expect(timeZone.dstOffset == 0)
     }
 
+    // The public getters fall back to "" and the epoch, but dictionaryValue only serializes what
+    // the API sent, so the defaults never leak into the wire format.
+    @Test("dictionaryValue omits keys the payload didn't include")
+    func dictionaryValueOmitsMissingKeys() throws {
+        let dictionary = try timeZone(from: "{}").dictionaryValue()
+
+        #expect(dictionary["id"] == nil)
+        #expect(dictionary["name"] == nil)
+        #expect(dictionary["code"] == nil)
+        #expect(dictionary["currentTime"] == nil)
+        #expect(dictionary["utcOffset"] as? Int32 == 0)
+        #expect(dictionary["dstOffset"] as? Int32 == 0)
+    }
+
     @Test(
         "values of the wrong type fall back to defaults",
         arguments: [

@@ -8,18 +8,26 @@
 
 import Foundation
 
+/// Represents a trip order.
 @objc(RadarTripOrder)
 @objcMembers
-public class RadarTripOrder: NSObject {
+public final class RadarTripOrder: NSObject {
 
-    // swiftlint:disable:next identifier_name
-    public let _id: String
+    /// The ID of the trip order.
+    public let _id: String  // swiftlint:disable:this identifier_name
+    /// The optional GUID of the trip order.
     public let guid: String?
+    /// The optional handoff mode of the trip order.
     public let handoffMode: String?
+    /// The status of the trip order.
     public let status: RadarTripOrderStatus
+    /// The optional date when the order was fired.
     public let firedAt: Date?
+    /// The optional number of fired attempts.
     public let firedAttempts: NSNumber?
+    /// The optional reason why the order was fired.
     public let firedReason: String?
+    /// The date when the order was last updated.
     public let updatedAt: Date
 
     public init?(

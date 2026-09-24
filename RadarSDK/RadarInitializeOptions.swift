@@ -19,7 +19,8 @@ public class RadarInitializeOptions: NSObject {
     public var trackVerifiedAutoFailover: Bool
 
     /// Request and resource timeout in seconds for standard API calls. Default 10 seconds.
-    /// Invalid values (non-finite or ≤ 0) fall back to the default.
+    /// Invalid values (non-finite or ≤ 0) fall back to the default; values are
+    /// clamped to the range 1…300.
     public var networkTimeoutInterval: TimeInterval
 
     /// Minimum interval in seconds between deliveries of `RadarVerifiedDelegate.didChangeIP()`.

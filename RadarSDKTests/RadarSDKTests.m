@@ -12,6 +12,7 @@
 #import "../RadarSDK/RadarAPIHelper.h"
 #import "../RadarSDK/RadarLocationManager.h"
 #import "../RadarSDK/RadarNotificationHelper.h"
+#import "../RadarSDK/RadarSdkConfiguration.h"
 #import "../RadarSDK/RadarSettings.h"
 #import "../RadarSDK/RadarState.h"
 #import "../RadarSDK/RadarLogger.h"

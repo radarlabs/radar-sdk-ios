@@ -13,6 +13,7 @@
 
 #import "Radar+Internal.h"
 #import "RadarAPIClient.h"
+#import "RadarSdkConfiguration.h"
 #import "RadarBeaconManagerSwift.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"

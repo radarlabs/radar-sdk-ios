@@ -8,18 +8,34 @@
 
 import Foundation
 
+/// An options class used to configure trip tracking.
+///
+/// - SeeAlso: https://radar.com/documentation/sdk/ios
 @objc(RadarTripOptions)
 @objcMembers
 public class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
 
+    /// A stable unique ID for the trip.
     public var externalId: String!
+
+    /// An optional set of custom key-value pairs for the trip.
     public var metadata: [AnyHashable: Any]?
+
+    /// For trips with a destination, the tag of the destination geofence.
     public var destinationGeofenceTag: String?
+
+    /// For trips with a destination, the external ID of the destination geofence.
     public var destinationGeofenceExternalId: String?
+
+    /// The scheduled arrival time for the trip.
     public var scheduledArrivalAt: Date?
+
+    /// For trips with a destination, the travel mode.
     public var mode: RadarRouteMode
     public var approachingThreshold: UInt16
     public var startTracking: Bool
+
+    /// For multi-destination trips, an optional array of trip legs.
     public var legs: [RadarTripLeg]?
 
     private init(

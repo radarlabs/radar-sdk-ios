@@ -5,12 +5,14 @@
 
 import Foundation
 
-/// Objective-C compatible model for the Reveal Risk API response.
+// Each type is both the `@objc` interface and the `Decodable` parser: the compiler
+// synthesizes `init(from:)` for these `NSObject` subclasses, so there is no separate parsing
+// struct or mapping layer to keep in sync. `CodingKeys` is only declared where a JSON key
+// differs from the property name; the `Date` format is handled once on the decoder.
+
+/// Represents device and network risk signals.
 ///
-/// Each type is both the `@objc` interface and the `Decodable` parser: the compiler
-/// synthesizes `init(from:)` for these `NSObject` subclasses, so there is no separate parsing
-/// struct or mapping layer to keep in sync. `CodingKeys` is only declared where a JSON key
-/// differs from the property name; the `Date` format is handled once on the decoder.
+/// - SeeAlso: https://radar.com/documentation/fraud
 @objc(RadarRevealRiskToken) @objcMembers
 public final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
     // swiftlint:disable:next identifier_name
@@ -25,7 +27,7 @@ public final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendabl
     public let device: RadarRevealRiskTokenDevice
 
     // unchecked sendable, set on init, should not be modified afterwards
-    var dictionaryValueStorage: [String: Sendable]?
+    private(set) var dictionaryValueStorage: [String: Sendable]?
 
     enum CodingKeys: String, CodingKey {
         // swiftlint:disable:next identifier_name
@@ -55,12 +57,6 @@ public final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendabl
     static func fromData(_ data: Data) -> RadarRevealRiskToken? {
         let decoder = JSONDecoder()
 
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
-        let formatterNoFractional = ISO8601DateFormatter()
-        formatterNoFractional.formatOptions = [.withInternetDateTime]
-
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let string = try container.decode(String.self)
@@ -83,7 +79,7 @@ public final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendabl
         return decoded
     }
 
-    public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         dictionaryValueStorage?.reduce(into: [:]) { dictionary, entry in
             dictionary[entry.key] = entry.value
         } ?? [:]

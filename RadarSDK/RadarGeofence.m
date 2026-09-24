@@ -7,6 +7,7 @@
 
 #import "RadarCoordinate+Internal.h"
 #import "RadarGeofence+Internal.h"
+#import "RadarCircleGeometry+Internal.h"
 #import "RadarPolygonGeometry+Internal.h"
 #import "RadarOperatingHours+Internal.h"
 

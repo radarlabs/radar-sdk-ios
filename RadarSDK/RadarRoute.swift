@@ -29,22 +29,25 @@ struct RadarRouteValue: Codable, Sendable {
     let geometry: Geometry?
 }
 
-// used by empty initializers like [[RadarRoute alloc] init] or [RadarRoute new]
+// Backs the empty placeholder values the SDK creates internally.
 private let emptyRoute = RadarRouteValue(
     distance: RadarRouteValue.Distance(value: 0, text: ""),
     duration: RadarRouteValue.Duration(value: 0, text: ""),
     geometry: nil
 )
 
-// MARK: - ObjC classes, backed by RadarRoute struct
+// MARK: - Public classes, backed by RadarRouteValue
 
+/// Represents the distance of a route.
 @objc(RadarRouteDistance)
 @objcMembers
-public class RadarRouteDistance: NSObject {
+public final class RadarRouteDistance: NSObject {
+    /// The distance in feet (for imperial units) or meters (for metric units).
     public var value: Double { route.distance.value }
+    /// A display string for the distance.
     public var text: String { route.distance.text }
 
-    public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         return RadarUtils.dictionary(from: route.distance) ?? [:]
     }
 
@@ -53,7 +56,8 @@ public class RadarRouteDistance: NSObject {
         self.route = route
     }
 
-    internal convenience init?(object: Any) {
+    @objc(initWithObject:)
+    convenience init?(object: Any) {
         guard let dict = object as? [String: Any] else {
             return nil
         }
@@ -70,18 +74,21 @@ public class RadarRouteDistance: NSObject {
         )
     }
 
-    public override init() {
+    override init() {
         self.route = emptyRoute
     }
 }
 
+/// Represents the duration of a route.
 @objc(RadarRouteDuration)
 @objcMembers
-public class RadarRouteDuration: NSObject {
+public final class RadarRouteDuration: NSObject {
+    /// The duration in minutes.
     public var value: Double { route.duration.value }
+    /// A display string for the duration.
     public var text: String { route.duration.text }
 
-    public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         return RadarUtils.dictionary(from: route.duration) ?? [:]
     }
 
@@ -90,17 +97,19 @@ public class RadarRouteDuration: NSObject {
         self.route = route
     }
 
-    public override init() {
+    override init() {
         self.route = emptyRoute
     }
 }
 
+/// Represents the geometry of a route.
 @objc(RadarRouteGeometry)
 @objcMembers
-public class RadarRouteGeometry: NSObject {
+public final class RadarRouteGeometry: NSObject {
+    /// The geometry of the route.
     public var coordinates: [RadarCoordinate]? { route.geometry?.coordinates }
 
-    public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         return [
             "type": "LineString",
             "coordinates": (coordinates ?? []).map { [$0.coordinate.longitude, $0.coordinate.latitude] },
@@ -115,45 +124,39 @@ public class RadarRouteGeometry: NSObject {
         self.route = route
     }
 
-    public override init() {
+    override init() {
         self.route = emptyRoute
     }
 }
 
-@objc @implementation extension RadarRoute {
-    private final var route = emptyRoute
-    private final var hasGeometry = false
+/// Represents a route between an origin and a destination.
+///
+/// - SeeAlso: https://radar.com/documentation/api#routing
+@objc(RadarRoute)
+@objcMembers
+public final class RadarRoute: NSObject {
+    /// The distance of the route.
+    public let distance: RadarRouteDistance
+    /// The duration of the route.
+    public let duration: RadarRouteDuration
+    /// The geometry of the route.
+    public let geometry: RadarRouteGeometry
+    // `geometry` is nonnull for Objective-C, so a route without one carries an empty geometry
+    // and omits it from `dictionaryValue`.
+    private let hasGeometry: Bool
 
-    var distance = RadarRouteDistance()
-    var duration = RadarRouteDuration()
-    var geometry = RadarRouteGeometry()
-
-    override init() {
-        super.init()
-        distance = RadarRouteDistance(route: emptyRoute)
-        duration = RadarRouteDuration(route: emptyRoute)
-    }
-
-    func dictionaryValue() -> [AnyHashable: Any] {
-        var dictionary: [AnyHashable: Any] = [
-            "distance": distance.dictionaryValue(),
-            "duration": duration.dictionaryValue(),
-        ]
-        if hasGeometry {
-            dictionary["geometry"] = geometry.dictionaryValue()
-        }
-        return dictionary
-    }
-}
-
-extension RadarRoute {
-    convenience init(route: RadarRouteValue) {
-        self.init()
-        self.route = route
-        hasGeometry = route.geometry != nil
+    init(route: RadarRouteValue) {
         distance = RadarRouteDistance(route: route)
         duration = RadarRouteDuration(route: route)
         geometry = RadarRouteGeometry(route: route) ?? RadarRouteGeometry()
+        hasGeometry = route.geometry != nil
+        super.init()
+    }
+
+    // Internal, so it isn't public API, but still an override, so an Objective-C `-init`
+    // produces an empty route instead of trapping.
+    override convenience init() {
+        self.init(route: emptyRoute)
     }
 
     @objc(initWithObject:)
@@ -172,5 +175,16 @@ extension RadarRoute {
             return nil
         }
         self.init(route: route)
+    }
+
+    public func dictionaryValue() -> [AnyHashable: Any] {
+        var dictionary: [AnyHashable: Any] = [
+            "distance": distance.dictionaryValue(),
+            "duration": duration.dictionaryValue(),
+        ]
+        if hasGeometry {
+            dictionary["geometry"] = geometry.dictionaryValue()
+        }
+        return dictionary
     }
 }
