@@ -27,6 +27,49 @@ Large stateful managers may use a temporary Swift seam only when a user explicit
 that staged migration. The nightly workflow does not select managers or leave parallel
 implementations for ordinary files.
 
+### Public classes implemented in Swift
+
+Every public type is declared once. Types implemented in Swift are declared in Swift, and the
+compiler generates their Objective-C interface in `RadarSDK-Swift.h`. See `RadarChain.swift`,
+`Include/RadarChain.h`, and `RadarChain+Internal.h` for the full pattern.
+
+1. **Declaration:** `@objc(ClassName) @objcMembers public final class ClassName: NSObject`, with the
+   same name in Swift and Objective-C. Models the SDK returns are `final` and have no public `init()`.
+   Keep an internal `override init()` that builds an empty value, so an Objective-C `-init` doesn't
+   trap. Option types customers create, such as `RadarTripOptions`, keep their public initializers
+   and aren't `final`. Use `@objc(selector:)` on a member only when it needs a custom selector.
+2. **Public surface:** exactly what the class's old header declared, spelled the way Swift imported
+   it: the same names, types, nullability, selectors, and failable initializers. For example,
+   `dictionaryValue()` returns `[AnyHashable: Any]`. Everything else is `internal`.
+3. **Docs:** move the header's `/** */` comments onto the Swift members as `///` comments. They
+   become the customer docs in Quick Help and `RadarSDK-Swift.h`. Keep maintainer notes as `//`.
+   Put a `swiftlint:disable:this` comment at the end of the declaration line, so it doesn't
+   separate the `///` doc from its declaration.
+4. **Headers:** reduce the class's public header to a one-line forwarder that imports
+   `<RadarSDK/RadarSDK.h>`, and list it in the umbrella after `RadarSDK-Swift.h` (see
+   `Include/RadarChain.h`). No SDK header may import a forwarder, because that creates an import
+   cycle through the umbrella. If the header also declares enums that other headers use (like
+   `RadarTrip.h`), keep only the enums and don't add the umbrella import. Other public headers
+   refer to the class with `@class ClassName;`, because they can't import `RadarSDK-Swift.h`.
+   So an Objective-C file that imports only such a header, like `RadarUser.h`, can't use the
+   class's members. Customers import the whole SDK. That limit goes away as the Objective-C models
+   that reference Swift classes (`RadarUser`, `RadarEvent`, `RadarPlace`, `RadarGeofence`,
+   `RadarAddress`, `RadarBeacon`, `RadarRoutes`, `RadarRouteMatrix`) move to Swift. `Radar.h`
+   stays handwritten and moves last.
+5. **Internal Objective-C access:** Objective-C-only initializers used inside the SDK stay
+   internal in Swift (`@objc(initWithObject:)`). Declare them in a class extension in
+   `ClassName+Internal.h`, which imports `RadarSDK-Swift.h` behind `__has_include`. An internal
+   Swift class that Objective-C code uses isn't in `RadarSDK-Swift.h`, so give it an explicit
+   `@objc(ClassName)` (otherwise its runtime name is mangled and won't link) and declare its
+   Objective-C interface in `ClassName+Internal.h`, like `RadarInAppMessageManager+Internal.h`.
+   The `+Internal.h` suffix matters: the podspec makes every other header in `RadarSDK/` public.
+   Public headers import only public headers; import `+Internal.h` headers from implementation
+   files.
+6. **Verify:** run `make ci-build-example`. Its Release build links an Objective-C consumer of
+   every public class in the handwritten headers and `RadarSDK-Swift.h`, and compiles the same
+   consumer as non-modular Objective-C++ through the umbrella. Also run `make lint` to check the
+   CocoaPods header boundary.
+
 ## Concurrency
 
 When Swift starts work that can run later on the main actor, prefer `Task { @MainActor in ... }`
@@ -87,9 +130,9 @@ Run `git submodule update --init --recursive` to initialize submodules.
 
 The Xcode project is `RadarSDK.xcodeproj`. When adding new Swift files, add them to the
 project file (`project.pbxproj`) so they are compiled. Remove the corresponding `.m` file
-and project references when migrating a class. Keep the `.h` file and its Headers entry
-while Objective-C consumers still import the compatibility surface; remove it only after
-confirming it is unused.
+and project references when migrating a class. Keep the public `.h` and its Headers entry,
+reduced to a compatibility forwarder (see "Public classes implemented in Swift" above).
+Objective-C consumers reach the class itself through `RadarSDK-Swift.h`.
 
 ## Debugging CI Failures
 

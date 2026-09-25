@@ -127,6 +127,16 @@ jobs:
             represented elsewhere. State the selected file and rationale before editing.
             Replace it with a same-basename Swift implementation, preserve Objective-C
             compatibility, delete the old .m and project references, and do not select
-            another file or leave the old implementation beside Swift. The workflow
-            provides GH_TOKEN and MIGRATION_DESTINATION.
+            another file or leave the old implementation beside Swift. For a public
+            class, follow "Public classes implemented in Swift" in AGENTS.md: declare it once
+            as `@objc(ClassName) @objcMembers public final class ClassName` (option types
+            customers create keep public initializers and are not final), keep exactly the
+            old header's public API as Swift imported it, move the header's docs onto the Swift members
+            as `///`, reduce the header to a forwarder that nothing else imports (keep enums
+            other headers use, without the umbrella import), and use `@class` in other public
+            headers. Declare internal Objective-C initializers in `ClassName+Internal.h`;
+            public headers must not import `+Internal.h` headers. Run `make ci-build-example CI_DESTINATION="$MIGRATION_DESTINATION"`
+            and `make lint`, then resolve any Release linkage or CocoaPods header failures
+            before opening the PR. The workflow provides GH_TOKEN and
+            MIGRATION_DESTINATION.
           claude_args: '--allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 80'
