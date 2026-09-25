@@ -35,9 +35,7 @@ struct RadarExpectedAddressData: Codable, Sendable, Equatable {
     let distance: Double?
 }
 
-/**
- The confidence levels for a match between the user's location and their expected address.
- */
+/// The confidence levels for a match between the user's location and their expected address.
 @objc(RadarExpectedAddressConfidence)
 public enum RadarExpectedAddressConfidence: Int {
     case unknown = 0
@@ -46,9 +44,7 @@ public enum RadarExpectedAddressConfidence: Int {
     case high = 3
 }
 
-/**
- Represents a comparison between the user's location and the expected address set with `setExpectedAddress:`.
- */
+/// Represents a comparison between the user's location and the expected address set with `setExpectedAddress:`.
 @objc(RadarExpectedAddress)
 public final class RadarExpectedAddress: NSObject {
     let data: RadarExpectedAddressData
