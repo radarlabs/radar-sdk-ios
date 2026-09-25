@@ -38,7 +38,7 @@ struct RadarTimeZoneTests {
     func decodesAllFields() throws {
         let timeZone = try timeZone(from: Self.fullJSON)
 
-        #expect(timeZone.id == "America/New_York")
+        #expect(timeZone._id == "America/New_York")
         #expect(timeZone.name == "Eastern Standard Time")
         #expect(timeZone.code == "EST")
         #expect(timeZone.currentTime == Self.fixtureDate)
@@ -48,7 +48,7 @@ struct RadarTimeZoneTests {
 
     @Test("reads the id wire key")
     func readsIdKey() throws {
-        #expect(try timeZone(from: #"{"id": "UTC"}"#).id == "UTC")
+        #expect(try timeZone(from: #"{"id": "UTC"}"#)._id == "UTC")
     }
 
     @Test("parses currentTime offsets other than the device's")
@@ -60,14 +60,14 @@ struct RadarTimeZoneTests {
 
     @Test("ignores unknown keys")
     func ignoresUnknownKeys() throws {
-        #expect(try timeZone(from: #"{"id": "UTC", "unexpected": 1}"#).id == "UTC")
+        #expect(try timeZone(from: #"{"id": "UTC", "unexpected": 1}"#)._id == "UTC")
     }
 
     @Test("an empty payload uses defaults")
     func emptyPayloadUsesDefaults() throws {
         let timeZone = try timeZone(from: "{}")
 
-        #expect(timeZone.id == nil)
+        #expect(timeZone._id.isEmpty)
         #expect(timeZone.name.isEmpty)
         #expect(timeZone.code.isEmpty)
         #expect(timeZone.currentTime == Date(timeIntervalSince1970: 0))
@@ -100,7 +100,7 @@ struct RadarTimeZoneTests {
     func wrongTypesFallBack(json: String) throws {
         let timeZone = try timeZone(from: json)
 
-        #expect(timeZone.id == nil)
+        #expect(timeZone._id.isEmpty)
         #expect(timeZone.name.isEmpty)
         #expect(timeZone.code.isEmpty)
         #expect(timeZone.currentTime == Date(timeIntervalSince1970: 0))

@@ -27,7 +27,6 @@ public final class RadarTimeZone: NSObject {
 
     /// The ID of the time zone.
     public var _id: String { idValue ?? "" }  // swiftlint:disable:this identifier_name
-    @nonobjc var id: String? { idValue }
     /// The name of of the time zone.
     public var name: String { nameValue ?? "" }
     /// The time zone abbreviation.
