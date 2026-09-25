@@ -1,8 +1,10 @@
 import CoreLocation
 import Foundation
 
+/// Represents a location coordinate.
 @objc(RadarCoordinate)
-final class RadarCoordinateSwift: NSObject, Codable, Sendable {
+@objcMembers
+public final class RadarCoordinate: NSObject, Codable, Sendable {
 
     static let codingStrategy = CodingUserInfoKey(rawValue: "coordinateDecodingStrategy")!
     enum CodingStrategy: Sendable {
@@ -13,7 +15,7 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
     let latitude: Double
     let longitude: Double
 
-    @objc
+    /// The coordinate.
     public var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
@@ -31,13 +33,11 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         self.longitude = longitude
     }
 
-    @objc
-    public init(coordinate: CLLocationCoordinate2D) {
+    public init?(coordinate: CLLocationCoordinate2D) {
         self.latitude = coordinate.latitude
         self.longitude = coordinate.longitude
     }
 
-    @objc
     internal init?(object: Any?) {
         guard let dict = object as? [String: Any] else {
             return nil
@@ -52,25 +52,22 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         self.latitude = coords[1]
     }
 
-    @objc
-    public override init() {
+    override init() {
         self.latitude = 0
         self.longitude = 0
     }
 
-    @objc
-    internal static func coordinatesFrom(object: Any) -> [RadarCoordinateSwift]? {
+    internal static func coordinatesFrom(object: Any) -> [RadarCoordinate]? {
         guard let array = object as? [Any] else {
             return nil
         }
-        guard let result = array.map(RadarCoordinateSwift.init) as? [RadarCoordinateSwift] else {
+        guard let result = array.map(RadarCoordinate.init) as? [RadarCoordinate] else {
             return nil
         }
         return result
     }
 
-    @objc
-    public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         return [
             "type": "Point",
             "coordinates": [longitude, latitude],
@@ -84,8 +81,8 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         case longitude
     }
 
-    init(from decoder: Decoder) throws {
-        let strategy = decoder.userInfo[RadarCoordinateSwift.codingStrategy] as? CodingStrategy
+    public init(from decoder: Decoder) throws {
+        let strategy = decoder.userInfo[RadarCoordinate.codingStrategy] as? CodingStrategy
         if strategy == CodingStrategy.lngLatArray {
             var container = try decoder.unkeyedContainer()
             self.longitude = try container.decode(Double.self)
@@ -97,8 +94,8 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         }
     }
 
-    func encode(to encoder: Encoder) throws {
-        let strategy = encoder.userInfo[RadarCoordinateSwift.codingStrategy] as? CodingStrategy
+    public func encode(to encoder: Encoder) throws {
+        let strategy = encoder.userInfo[RadarCoordinate.codingStrategy] as? CodingStrategy
         if strategy == CodingStrategy.lngLatArray {
             var container = encoder.unkeyedContainer()
             try container.encode(longitude)
@@ -110,7 +107,7 @@ final class RadarCoordinateSwift: NSObject, Codable, Sendable {
         }
     }
 
-    func valueEquals(_ other: RadarCoordinateSwift) -> Bool {
+    func valueEquals(_ other: RadarCoordinate) -> Bool {
         return latitude == other.latitude && longitude == other.longitude
     }
 }

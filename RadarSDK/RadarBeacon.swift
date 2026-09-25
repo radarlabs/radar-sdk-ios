@@ -17,7 +17,7 @@ struct RadarBeaconSwift: Codable, Sendable {
     let uuid: String
     let major: String
     let minor: String
-    let geometry: RadarCoordinateSwift?
+    let geometry: RadarCoordinate?
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -41,7 +41,7 @@ struct RadarBeaconSwift: Codable, Sendable {
         minor = try container.decode(String.self, forKey: .minor)
 
         if let geoJSON = try container.decodeIfPresent(GeoJSONPoint.self, forKey: .geometry) {
-            geometry = RadarCoordinateSwift(latitude: geoJSON.coordinates[1], longitude: geoJSON.coordinates[0])
+            geometry = RadarCoordinate(latitude: geoJSON.coordinates[1], longitude: geoJSON.coordinates[0])
         } else {
             geometry = nil
         }
@@ -49,7 +49,7 @@ struct RadarBeaconSwift: Codable, Sendable {
 
     init(
         id: String, description: String?, tag: String?, externalId: String?,
-        uuid: String, major: String, minor: String, geometry: RadarCoordinateSwift?
+        uuid: String, major: String, minor: String, geometry: RadarCoordinate?
     ) {
         self.id = id
         self.description = description

@@ -290,9 +290,9 @@
       "location": {
         "character": 14,
         "file": "RadarSDK/RadarSyncManager.swift",
-        "line": 13
+        "line": 14
       },
-      "reason": "Class body should span 350 lines or less excluding comments and whitespace: currently spans 603 lines",
+      "reason": "Class body should span 350 lines or less excluding comments and whitespace: currently spans 602 lines",
       "ruleDescription": "Type bodies should not span too many lines",
       "ruleIdentifier": "type_body_length",
       "ruleName": "Type Body Length",
@@ -305,7 +305,7 @@
       "location": {
         "character": 119,
         "file": "RadarSDK/RadarSyncManager.swift",
-        "line": 257
+        "line": 258
       },
       "reason": "Variable name 't' should be between 3 and 40 characters long",
       "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
@@ -320,7 +320,7 @@
       "location": {
         "character": 13,
         "file": "RadarSDK/RadarSyncManager.swift",
-        "line": 267
+        "line": 268
       },
       "reason": "Variable name 'h' should be between 3 and 40 characters long",
       "ruleDescription": "Identifier names should only contain alphanumeric characters and start with a lowercase character or should only contain capital letters. In an exception to the above, variable names may start with a capital letter when they are declared as static. Variable names should not be too long or too short.",
@@ -330,12 +330,12 @@
     }
   },
   {
-    "text": "    @objc public static func reconcileSyncState(user: RadarUser) {",
+    "text": "    public static func reconcileSyncState(user: RadarUser) {",
     "violation": {
       "location": {
-        "character": 18,
+        "character": 12,
         "file": "RadarSDK/RadarSyncManager.swift",
-        "line": 620
+        "line": 621
       },
       "reason": "Function should have complexity 10 or less; currently complexity is 11",
       "ruleDescription": "Complexity of function bodies should be limited.",
@@ -345,12 +345,12 @@
     }
   },
   {
-    "text": "    @objc public static func reconcileSyncState(user: RadarUser) {",
+    "text": "    public static func reconcileSyncState(user: RadarUser) {",
     "violation": {
       "location": {
-        "character": 25,
+        "character": 19,
         "file": "RadarSDK/RadarSyncManager.swift",
-        "line": 620
+        "line": 621
       },
       "reason": "Function body should span 50 lines or less excluding comments and whitespace: currently spans 58 lines",
       "ruleDescription": "Function bodies should not span too many lines",

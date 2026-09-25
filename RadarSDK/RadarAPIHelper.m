@@ -13,6 +13,12 @@
 
 #import <math.h>
 
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
+
 static NSTimeInterval RadarAPIHelperStandardNetworkTimeoutInterval(void) {
     RadarInitializeOptions *opts = [RadarSettings initializeOptions];
     NSTimeInterval interval = opts ? opts.networkTimeoutInterval : 10;
