@@ -14,12 +14,12 @@ import Testing
 struct RadarChainTests {
 
     private static func decode(_ json: String) throws -> RadarChain {
-        try JSONDecoder().decode(RadarChain.self, from: Data(json.utf8))
+        let object = try JSONSerialization.jsonObject(with: Data(json.utf8))
+        return try #require(RadarChain(object: object))
     }
 
-    private static func encodeToDictionary(_ chain: RadarChain) throws -> [String: Any] {
-        let data = try JSONEncoder().encode(chain)
-        return try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
+    private static func dictionary(_ chain: RadarChain) throws -> [String: Any] {
+        try #require(chain.dictionaryValue() as? [String: Any])
     }
 
     @Test("Decodes a fully populated chain")
@@ -70,25 +70,19 @@ struct RadarChainTests {
 
     @Test("Rejects a payload missing a required field")
     func rejectsMissingRequiredField() {
-        #expect(throws: DecodingError.self) {
-            try Self.decode(#"{"name": "Starbucks"}"#)
-        }
         #expect(RadarChain(object: ["name": "Starbucks"]) == nil)
         #expect(RadarChain(object: ["slug": "starbucks"]) == nil)
     }
 
     @Test("Rejects a non-string required field")
     func rejectsNonStringRequiredField() {
-        #expect(throws: DecodingError.self) {
-            try Self.decode(#"{"slug": 1, "name": "Starbucks"}"#)
-        }
         #expect(RadarChain(object: ["slug": 1, "name": "Starbucks"]) == nil)
     }
 
-    @Test("Encodes every populated field")
-    func encodesFullChain() throws {
+    @Test("Serializes every populated field")
+    func serializesFullChain() throws {
         let metadata: NSDictionary = ["customFlag": true]
-        let dict = try Self.encodeToDictionary(
+        let dict = try Self.dictionary(
             RadarChain(
                 slug: "starbucks",
                 name: "Starbucks",
@@ -102,16 +96,16 @@ struct RadarChainTests {
         #expect((dict["metadata"] as? [String: Any])?["customFlag"] as? Bool == true)
     }
 
-    @Test("Omits nil fields when encoding")
-    func encodeOmitsNilFields() throws {
-        let dict = try Self.encodeToDictionary(
+    @Test("Omits nil fields when serializing")
+    func serializeOmitsNilFields() throws {
+        let dict = try Self.dictionary(
             RadarChain(slug: "starbucks", name: "Starbucks", externalId: nil, metadata: nil))
 
         #expect(dict.keys.sorted() == ["name", "slug"])
     }
 
-    @Test("Round-trips through JSON without losing fields")
-    func roundTripsThroughJSON() throws {
+    @Test("Round-trips through dictionaryValue without losing fields")
+    func roundTripsThroughDictionaryValue() throws {
         let originalMetadata: NSDictionary = ["aString": "x", "anInt": 7]
         let original = RadarChain(
             slug: "starbucks",
@@ -120,8 +114,7 @@ struct RadarChainTests {
             metadata: originalMetadata
         )
 
-        let decoded = try JSONDecoder().decode(
-            RadarChain.self, from: JSONEncoder().encode(original))
+        let decoded = try #require(RadarChain(object: original.dictionaryValue()))
 
         #expect(decoded.slug == original.slug)
         #expect(decoded.name == original.name)
@@ -136,7 +129,7 @@ struct RadarChainTests {
             #"{"slug": "starbucks", "name": "Starbucks", "unexpected": "value"}"#)
 
         #expect(chain.slug == "starbucks")
-        #expect(try Self.encodeToDictionary(chain).keys.sorted() == ["name", "slug"])
+        #expect(try Self.dictionary(chain).keys.sorted() == ["name", "slug"])
     }
 
     @Test("Serializes chain arrays")
