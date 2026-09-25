@@ -59,9 +59,12 @@ compiler generates their Objective-C interface in `RadarSDK-Swift.h`. See `Radar
 5. **Internal Objective-C access:** Objective-C-only initializers used inside the SDK stay
    internal in Swift (`@objc(initWithObject:)`). Declare them in a class extension in
    `ClassName+Internal.h`, which imports `RadarSDK-Swift.h` behind `__has_include`. An internal
-   Swift class that Objective-C code uses is declared in a project (non-public) header, like
-   `RadarSdkConfiguration.h`. Public headers import only public headers; import `+Internal.h`
-   headers from implementation files.
+   Swift class that Objective-C code uses isn't in `RadarSDK-Swift.h`, so give it an explicit
+   `@objc(ClassName)` (otherwise its runtime name is mangled and won't link) and declare its
+   Objective-C interface in `ClassName+Internal.h`, like `RadarInAppMessageManager+Internal.h`.
+   The `+Internal.h` suffix matters: the podspec makes every other header in `RadarSDK/` public.
+   Public headers import only public headers; import `+Internal.h` headers from implementation
+   files.
 6. **Verify:** run `make ci-build-example`. Its Release build links an Objective-C consumer of
    every public class in the handwritten headers and `RadarSDK-Swift.h`, and compiles the same
    consumer as non-modular Objective-C++ through the umbrella. Also run `make lint` to check the
