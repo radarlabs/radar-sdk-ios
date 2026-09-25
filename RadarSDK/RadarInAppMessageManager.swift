@@ -8,14 +8,15 @@
 import Foundation
 import SwiftUI
 
+// Internal to the SDK; Objective-C callers use the declarations in RadarInAppMessageManager+Internal.h.
 @MainActor
-@objc
+@objc(RadarInAppMessageManager)
 @objcMembers
-public class RadarInAppMessageManager: NSObject {
-    public static let shared = RadarInAppMessageManager()
+class RadarInAppMessageManager: NSObject {
+    static let shared = RadarInAppMessageManager()
 
-    @nonobjc public var delegate: RadarInAppMessageProtocol = RadarInAppMessageDelegate()
-    @nonobjc public var view: UIView?
+    @nonobjc var delegate: RadarInAppMessageProtocol = RadarInAppMessageDelegate()
+    @nonobjc var view: UIView?
 
     var messageShownTime: Date?
     var currentMessage: RadarInAppMessage_Swift?
@@ -50,7 +51,7 @@ public class RadarInAppMessageManager: NSObject {
         currentMessage = nil
     }
 
-    public func showInAppMessage(_ message: RadarInAppMessage) async {
+    func showInAppMessage(_ message: RadarInAppMessage) async {
         guard let message = message as? RadarInAppMessage_Swift else {
             return
         }
@@ -98,13 +99,13 @@ public class RadarInAppMessageManager: NSObject {
         self.logConversion(name: "user.displayed_in_app_message", withDuration: false)
     }
 
-    public func onInAppMessageReceived(messages: [RadarInAppMessage]) {
+    func onInAppMessageReceived(messages: [RadarInAppMessage]) {
         for message in messages {
             delegate.onNewInAppMessage(message)
         }
     }
 
-    public func setDelegate(_ delegate: RadarInAppMessageProtocol) {
+    func setDelegate(_ delegate: RadarInAppMessageProtocol) {
         self.delegate = delegate
     }
 }

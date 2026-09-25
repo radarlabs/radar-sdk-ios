@@ -23,6 +23,7 @@
 #import "RadarIndoorsProtocol.h"
 #import "RadarIndoors.h"
 #import "RadarInAppMessageDelegate.h"
+#import "RadarInAppMessageManager+Internal.h"
 #import "RadarSDKFraudProtocol.h"
 #import "RadarSwiftBridge.h"
 #import "RadarRevealRiskManager.h"

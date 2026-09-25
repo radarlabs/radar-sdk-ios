@@ -18,6 +18,7 @@
 #import "RadarDelegateHolder.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
+#import "RadarInAppMessageManager+Internal.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarPlace+Internal.h"
