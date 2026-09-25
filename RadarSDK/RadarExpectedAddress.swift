@@ -35,6 +35,9 @@ struct RadarExpectedAddressData: Codable, Sendable, Equatable {
     let distance: Double?
 }
 
+/**
+ The confidence levels for a match between the user's location and their expected address.
+ */
 @objc(RadarExpectedAddressConfidence)
 public enum RadarExpectedAddressConfidence: Int {
     case unknown = 0
@@ -43,16 +46,48 @@ public enum RadarExpectedAddressConfidence: Int {
     case high = 3
 }
 
+/**
+ Represents a comparison between the user's location and the expected address set with `setExpectedAddress:`.
+ */
 @objc(RadarExpectedAddress)
 public final class RadarExpectedAddress: NSObject {
     let data: RadarExpectedAddressData
-
+    
+    /**
+     The user's expected address, as passed to `setExpectedAddress:`.
+     */
     @objc public var expectedAddress: String { data.expectedAddress }
+    
+    /**
+     The formatted expected address, as geocoded by Radar. May be `nil` if the expected address could not be geocoded.
+     */
     @objc public var formattedAddress: String? { data.formattedAddress }
+    
+    /**
+     The latitude of the geocoded expected address. May be `nil` if the expected address could not be geocoded.
+     */
     @objc public var latitude: NSNumber? { data.latitude.map(NSNumber.init(value:)) }
+    
+    /**
+     The longitude of the geocoded expected address. May be `nil` if the expected address could not be geocoded.
+     */
     @objc public var longitude: NSNumber? { data.longitude.map(NSNumber.init(value:)) }
+    
+    /**
+     A boolean indicating whether the user is at their expected address.
+     */
     @objc public var atAddress: Bool { data.atAddress }
+    
+    /**
+     The confidence of the match between the user's location and their expected address. May be
+     `RadarExpectedAddressConfidenceUnknown` if confidence is not available.
+     */
     @objc public var confidence: RadarExpectedAddressConfidence { data.confidence.toObjC() }
+    
+    /**
+     The distance in meters between the user's location and their expected address. May be `nil` if the expected
+     address could not be geocoded.
+     */
     @objc public var distance: NSNumber? { data.distance.map(NSNumber.init(value:)) }
 
     /// Keeps `[[RadarExpectedAddress alloc] init]` from trapping on Swift's unimplemented-initializer
