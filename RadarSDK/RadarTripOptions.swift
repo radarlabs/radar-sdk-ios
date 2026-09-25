@@ -8,18 +8,41 @@
 
 import Foundation
 
+/// An options class used to configure trip tracking.
+///
+/// - SeeAlso: https://radar.com/documentation/sdk/ios
 @objc(RadarTripOptions)
 @objcMembers
-class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
+public class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
 
-    public var externalId: String?
+    // Optional so serialization and equality can tell "never set" apart from a real ID, while
+    // `externalId` stays a non-optional `String` as the Objective-C header declared it.
+    private var externalIdStorage: String?
+
+    /// A stable unique ID for the trip.
+    public var externalId: String {
+        get { externalIdStorage ?? "" }
+        set { externalIdStorage = newValue }
+    }
+
+    /// An optional set of custom key-value pairs for the trip.
     public var metadata: [AnyHashable: Any]?
+
+    /// For trips with a destination, the tag of the destination geofence.
     public var destinationGeofenceTag: String?
+
+    /// For trips with a destination, the external ID of the destination geofence.
     public var destinationGeofenceExternalId: String?
+
+    /// The scheduled arrival time for the trip.
     public var scheduledArrivalAt: Date?
+
+    /// For trips with a destination, the travel mode.
     public var mode: RadarRouteMode
     public var approachingThreshold: UInt16
     public var startTracking: Bool
+
+    /// For multi-destination trips, an optional array of trip legs.
     public var legs: [RadarTripLeg]?
 
     private init(
@@ -32,7 +55,7 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
         startTracking: Bool,
         legs: [RadarTripLeg]?
     ) {
-        externalId = externalIdValue
+        externalIdStorage = externalIdValue
         metadata = nil
         self.destinationGeofenceTag = destinationGeofenceTag
         self.destinationGeofenceExternalId =
@@ -244,7 +267,7 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
     public func dictionaryValue() -> [AnyHashable: Any] {
         var dictionary: [AnyHashable: Any] = [:]
 
-        if let externalId {
+        if let externalId = externalIdStorage {
             dictionary["externalId"] = externalId
         }
 
@@ -305,8 +328,8 @@ class RadarTripOptions: NSObject {  // swiftlint:disable:this type_body_length
         _ other: RadarTripOptions
     ) -> Bool {
         guard
-            let externalId,
-            let otherExternalId = other.externalId,
+            let externalId = externalIdStorage,
+            let otherExternalId = other.externalIdStorage,
             externalId == otherExternalId
         else {
             return false

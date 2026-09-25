@@ -9,6 +9,10 @@
 #import <Foundation/Foundation.h>
 
 #import "RadarSwiftBridge.h"
+#import "RadarBeacon+Internal.h"
+#import "RadarEvent+Internal.h"
+#import "RadarGeofence+Internal.h"
+#import "RadarUser+Internal.h"
 #import "RadarReplayBuffer.h"
 #import "Radar+Internal.h"
 #import "RadarState.h"

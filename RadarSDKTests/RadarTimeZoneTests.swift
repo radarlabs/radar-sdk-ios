@@ -38,7 +38,7 @@ struct RadarTimeZoneTests {
     func decodesAllFields() throws {
         let timeZone = try timeZone(from: Self.fullJSON)
 
-        #expect(timeZone.id == "America/New_York")
+        #expect(timeZone._id == "America/New_York")
         #expect(timeZone.name == "Eastern Standard Time")
         #expect(timeZone.code == "EST")
         #expect(timeZone.currentTime == Self.fixtureDate)
@@ -48,7 +48,7 @@ struct RadarTimeZoneTests {
 
     @Test("reads the id wire key")
     func readsIdKey() throws {
-        #expect(try timeZone(from: #"{"id": "UTC"}"#).id == "UTC")
+        #expect(try timeZone(from: #"{"id": "UTC"}"#)._id == "UTC")
     }
 
     @Test("parses currentTime offsets other than the device's")
@@ -60,19 +60,33 @@ struct RadarTimeZoneTests {
 
     @Test("ignores unknown keys")
     func ignoresUnknownKeys() throws {
-        #expect(try timeZone(from: #"{"id": "UTC", "unexpected": 1}"#).id == "UTC")
+        #expect(try timeZone(from: #"{"id": "UTC", "unexpected": 1}"#)._id == "UTC")
     }
 
     @Test("an empty payload uses defaults")
     func emptyPayloadUsesDefaults() throws {
         let timeZone = try timeZone(from: "{}")
 
-        #expect(timeZone.id == nil)
-        #expect(timeZone.name == nil)
-        #expect(timeZone.code == nil)
-        #expect(timeZone.currentTime == nil)
+        #expect(timeZone._id.isEmpty)
+        #expect(timeZone.name.isEmpty)
+        #expect(timeZone.code.isEmpty)
+        #expect(timeZone.currentTime == Date(timeIntervalSince1970: 0))
         #expect(timeZone.utcOffset == 0)
         #expect(timeZone.dstOffset == 0)
+    }
+
+    // The public getters fall back to "" and the epoch, but dictionaryValue only serializes what
+    // the API sent, so the defaults never leak into the wire format.
+    @Test("dictionaryValue omits keys the payload didn't include")
+    func dictionaryValueOmitsMissingKeys() throws {
+        let dictionary = try timeZone(from: "{}").dictionaryValue()
+
+        #expect(dictionary["id"] == nil)
+        #expect(dictionary["name"] == nil)
+        #expect(dictionary["code"] == nil)
+        #expect(dictionary["currentTime"] == nil)
+        #expect(dictionary["utcOffset"] as? Int32 == 0)
+        #expect(dictionary["dstOffset"] as? Int32 == 0)
     }
 
     @Test(
@@ -86,17 +100,19 @@ struct RadarTimeZoneTests {
     func wrongTypesFallBack(json: String) throws {
         let timeZone = try timeZone(from: json)
 
-        #expect(timeZone.id == nil)
-        #expect(timeZone.name == nil)
-        #expect(timeZone.code == nil)
-        #expect(timeZone.currentTime == nil)
+        #expect(timeZone._id.isEmpty)
+        #expect(timeZone.name.isEmpty)
+        #expect(timeZone.code.isEmpty)
+        #expect(timeZone.currentTime == Date(timeIntervalSince1970: 0))
         #expect(timeZone.utcOffset == 0)
         #expect(timeZone.dstOffset == 0)
     }
 
-    @Test("an unparseable currentTime decodes to nil")
-    func unparseableDateIsNil() throws {
-        #expect(try timeZone(from: #"{"currentTime": "not a date"}"#).currentTime == nil)
+    @Test("an unparseable currentTime uses the public default")
+    func unparseableDateUsesDefault() throws {
+        #expect(
+            try timeZone(from: #"{"currentTime": "not a date"}"#).currentTime
+                == Date(timeIntervalSince1970: 0))
     }
 
     @Test("a fractional offset truncates toward zero")

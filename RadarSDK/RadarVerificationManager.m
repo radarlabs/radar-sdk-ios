@@ -13,6 +13,7 @@
 
 #import "Radar+Internal.h"
 #import "RadarAPIClient.h"
+#import "RadarSdkConfiguration.h"
 #import "RadarBeaconManagerSwift.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
@@ -26,6 +27,11 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
 
 @protocol RadarVerificationManagerSwiftHost
 

@@ -7,8 +7,10 @@
 
 import Foundation
 
+// Server-driven SDK configuration. Internal: Objective-C callers inside the SDK see it through
+// the project header RadarSdkConfiguration.h.
 @objc(RadarSdkConfiguration) @objcMembers
-class RadarSdkConfiguration: NSObject {
+final class RadarSdkConfiguration: NSObject {
     private let originalDict: [String: Any]?
 
     let logLevel: RadarLogLevel
@@ -34,7 +36,7 @@ class RadarSdkConfiguration: NSObject {
     let remoteTrackingOptions: [RadarRemoteTrackingOptions]?
     let useSwiftVerificationManager: Bool
 
-    public init(dict: [String: Any]?) {
+    init(dict: [String: Any]?) {
         originalDict = dict
         logLevel = RadarLogLevel.from(string: dict?["logLevel"] as? String ?? "none")
         startTrackingOnInitialize = dict?["startTrackingOnInitialize"] as? Bool ?? false
@@ -56,11 +58,13 @@ class RadarSdkConfiguration: NSObject {
         offlineEventGenerationEnabled = dict?["offlineEventGenerationEnabled"] as? Bool ?? false
         useSwiftLocationManager = dict?["useSwiftLocationManager"] as? Bool ?? false
         startUpdatesWhileInUse = dict?["startUpdatesWhileInUse"] as? Bool ?? false
-        remoteTrackingOptions = RadarRemoteTrackingOptions.from(array: dict?["remoteTrackingOptions"] as? [[String: Any]])
+        remoteTrackingOptions = RadarRemoteTrackingOptions.from(
+            array: dict?["remoteTrackingOptions"] as? [[String: Any]]
+        )
         useSwiftVerificationManager = dict?["useSwiftVerificationManager"] as? Bool ?? false
     }
 
-    public func dictionaryValue() -> [String: Any] {
+    func dictionaryValue() -> [String: Any] {
         if let originalDict {
             return originalDict
         }
@@ -92,13 +96,5 @@ class RadarSdkConfiguration: NSObject {
             dictionary["remoteTrackingOptions"] = remoteTrackingOptions
         }
         return dictionary
-    }
-}
-
-extension RadarSdkConfiguration {
-    /// QA accessor exposed via the public ObjC header. Returns the cached
-    /// SDK configuration, or nil if none has been fetched yet.
-    @objc static func current() -> RadarSdkConfiguration? {
-        RadarSettings.sdkConfiguration
     }
 }

@@ -19,7 +19,8 @@
 #import "RadarRoutes.h"
 #import "RadarUser.h"
 #import "RadarVerifiedLocationToken.h"
-#import "RadarTripLeg.h"
+
+@class RadarTripLeg;
 
 NS_ASSUME_NONNULL_BEGIN
 

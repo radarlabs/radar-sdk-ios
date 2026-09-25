@@ -7,30 +7,38 @@
 
 import Foundation
 
-@objc @implementation extension RadarInitializeOptions {
+@objc(RadarInitializeOptions)
+@objcMembers
+public class RadarInitializeOptions: NSObject {
     private static let defaultNetworkTimeoutInterval: TimeInterval = 10
     private static let defaultIPChangeDebounceInterval: TimeInterval = 10
 
-    var autoLogNotificationConversions = false
-    var autoHandleNotificationDeepLinks = false
-    var silentPush = false
-    var trackVerifiedAutoFailover = false
+    public var autoLogNotificationConversions: Bool
+    public var autoHandleNotificationDeepLinks: Bool
+    public var silentPush: Bool
+    public var trackVerifiedAutoFailover: Bool
 
     /// Request and resource timeout in seconds for standard API calls. Default 10 seconds.
-    /// Invalid values (non-finite or ≤ 0) fall back to the default.
-    var networkTimeoutInterval: TimeInterval = RadarInitializeOptions.defaultNetworkTimeoutInterval
+    /// Invalid values (non-finite or ≤ 0) fall back to the default; values are
+    /// clamped to the range 1…300.
+    public var networkTimeoutInterval: TimeInterval
 
     /// Minimum interval in seconds between deliveries of `RadarVerifiedDelegate.didChangeIP()`.
     /// Default 10 seconds. Set to 0 to disable throttling (deliver every detected change).
     /// Negative or non-finite values fall back to the default.
-    var ipChangeDebounceInterval: TimeInterval = RadarInitializeOptions.defaultIPChangeDebounceInterval
+    public var ipChangeDebounceInterval: TimeInterval
 
-    override init() {
+    public override init() {
+        autoLogNotificationConversions = false
+        autoHandleNotificationDeepLinks = false
+        silentPush = false
+        trackVerifiedAutoFailover = false
+        networkTimeoutInterval = RadarInitializeOptions.defaultNetworkTimeoutInterval
+        ipChangeDebounceInterval = RadarInitializeOptions.defaultIPChangeDebounceInterval
         super.init()
     }
 
-    @objc(initWithDict:)
-    init(dict: [AnyHashable: Any]?) {
+    public init(dict: [AnyHashable: Any]?) {
         autoLogNotificationConversions = RadarInitializeOptions.parseBool(dict?["autoLogNotificationConversions"])
         autoHandleNotificationDeepLinks = RadarInitializeOptions.parseBool(dict?["autoHandleNotificationDeepLinks"])
         silentPush = RadarInitializeOptions.parseBool(dict?["silentPush"])
@@ -43,10 +51,9 @@ import Foundation
             dict?["ipChangeDebounceInterval"],
             allowsZero: true,
             defaultValue: RadarInitializeOptions.defaultIPChangeDebounceInterval)
-        super.init()
     }
 
-    func dictionaryValue() -> [AnyHashable: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         [
             "autoLogNotificationConversions": autoLogNotificationConversions,
             "autoHandleNotificationDeepLinks": autoHandleNotificationDeepLinks,

@@ -15,6 +15,7 @@ public actor RadarDelegateActor {
 
 @RadarDelegateActor
 @objc(RadarDelegateHolder_Swift)
+@objcMembers
 public class RadarDelegateHolder: NSObject {
 
     // Routes through RadarSwiftBridge to the ObjC RadarDelegateHolder singleton, which owns the

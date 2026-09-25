@@ -9,7 +9,7 @@
 import CoreLocation
 import Foundation
 
-public struct RadarRoute: Codable, Sendable {
+struct RadarRouteValue: Codable, Sendable {
     struct Distance: Codable {
         let value: Double
         let text: String
@@ -21,7 +21,7 @@ public struct RadarRoute: Codable, Sendable {
     }
 
     struct Geometry: Codable {
-        let coordinates: [RadarCoordinateSwift]
+        let coordinates: [RadarCoordinate]
     }
 
     let distance: Distance
@@ -29,27 +29,35 @@ public struct RadarRoute: Codable, Sendable {
     let geometry: Geometry?
 }
 
-// used by empty initializers like [[RadarRoute alloc] init] or [RadarRoute new]
-let emptyRoute = RadarRoute(distance: RadarRoute.Distance(value: 0, text: ""), duration: RadarRoute.Duration(value: 0, text: ""), geometry: nil)
+// Backs the empty placeholder values the SDK creates internally.
+private let emptyRoute = RadarRouteValue(
+    distance: RadarRouteValue.Distance(value: 0, text: ""),
+    duration: RadarRouteValue.Duration(value: 0, text: ""),
+    geometry: nil
+)
 
-// MARK: - ObjC classes, backed by RadarRoute struct
+// MARK: - Public classes, backed by RadarRouteValue
 
+/// Represents the distance of a route.
 @objc(RadarRouteDistance)
-class RadarRouteDistance: NSObject {
-    @objc public var value: Double { route.distance.value }
-    @objc public var text: String { route.distance.text }
+@objcMembers
+public final class RadarRouteDistance: NSObject {
+    /// The distance in feet (for imperial units) or meters (for metric units).
+    public var value: Double { route.distance.value }
+    /// A display string for the distance.
+    public var text: String { route.distance.text }
 
-    @objc public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         return RadarUtils.dictionary(from: route.distance) ?? [:]
     }
 
-    let route: RadarRoute
-    init(route: RadarRoute) {
+    let route: RadarRouteValue
+    init(route: RadarRouteValue) {
         self.route = route
     }
 
-    @objc
-    internal convenience init?(object: Any) {
+    @objc(initWithObject:)
+    convenience init?(object: Any) {
         guard let dict = object as? [String: Any] else {
             return nil
         }
@@ -59,110 +67,124 @@ class RadarRouteDistance: NSObject {
             return nil
         }
         self.init(
-            route: RadarRoute(
-                distance: RadarRoute.Distance(value: value, text: text),
-                duration: RadarRoute.Duration(value: 0, text: ""),
-                geometry: RadarRoute.Geometry(coordinates: []))
+            route: RadarRouteValue(
+                distance: RadarRouteValue.Distance(value: value, text: text),
+                duration: RadarRouteValue.Duration(value: 0, text: ""),
+                geometry: RadarRouteValue.Geometry(coordinates: []))
         )
     }
 
-    @objc public override init() {
+    override init() {
         self.route = emptyRoute
     }
 }
 
+/// Represents the duration of a route.
 @objc(RadarRouteDuration)
-class RadarRouteDuration: NSObject {
-    @objc public var value: Double { route.duration.value }
-    @objc public var text: String { route.duration.text }
+@objcMembers
+public final class RadarRouteDuration: NSObject {
+    /// The duration in minutes.
+    public var value: Double { route.duration.value }
+    /// A display string for the duration.
+    public var text: String { route.duration.text }
 
-    @objc public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         return RadarUtils.dictionary(from: route.duration) ?? [:]
     }
 
-    let route: RadarRoute
-    init(route: RadarRoute) {
+    let route: RadarRouteValue
+    init(route: RadarRouteValue) {
         self.route = route
     }
 
-    @objc public override init() {
+    override init() {
         self.route = emptyRoute
     }
 }
 
+/// Represents the geometry of a route.
 @objc(RadarRouteGeometry)
-class RadarRouteGeometry: NSObject {
-    @objc public var coordinates: [RadarCoordinate] { route.geometry?.coordinates as? [RadarCoordinate] ?? [] }
+@objcMembers
+public final class RadarRouteGeometry: NSObject {
+    /// The geometry of the route.
+    public var coordinates: [RadarCoordinate]? { route.geometry?.coordinates }
 
-    @objc public func dictionaryValue() -> [String: Any] {
+    public func dictionaryValue() -> [AnyHashable: Any] {
         return [
             "type": "LineString",
-            "coordinates": coordinates.map { [$0.coordinate.longitude, $0.coordinate.latitude] },
+            "coordinates": (coordinates ?? []).map { [$0.coordinate.longitude, $0.coordinate.latitude] },
         ]
     }
 
-    let route: RadarRoute
-    init?(route: RadarRoute) {
+    let route: RadarRouteValue
+    init?(route: RadarRouteValue) {
         guard route.geometry != nil else {
             return nil
         }
         self.route = route
     }
 
-    @objc public override init() {
+    override init() {
         self.route = emptyRoute
     }
 }
 
+/// Represents a route between an origin and a destination.
+///
+/// - SeeAlso: https://radar.com/documentation/api#routing
 @objc(RadarRoute)
-class RadarRouteObjc: NSObject {
-    let route: RadarRoute
+@objcMembers
+public final class RadarRoute: NSObject {
+    /// The distance of the route.
+    public let distance: RadarRouteDistance
+    /// The duration of the route.
+    public let duration: RadarRouteDuration
+    /// The geometry of the route.
+    public let geometry: RadarRouteGeometry
+    // `geometry` is nonnull for Objective-C, so a route without one carries an empty geometry
+    // and omits it from `dictionaryValue`.
+    private let hasGeometry: Bool
 
-    @objc public let distance: RadarRouteDistance
-    @objc public let duration: RadarRouteDuration
-    @objc public let geometry: RadarRouteGeometry?
-
-    init(route: RadarRoute) {
-        self.route = route
-        self.distance = RadarRouteDistance(route: route)
-        self.duration = RadarRouteDuration(route: route)
-        self.geometry = RadarRouteGeometry(route: route)
+    init(route: RadarRouteValue) {
+        distance = RadarRouteDistance(route: route)
+        duration = RadarRouteDuration(route: route)
+        geometry = RadarRouteGeometry(route: route) ?? RadarRouteGeometry()
+        hasGeometry = route.geometry != nil
+        super.init()
     }
 
-    @objc
-    internal convenience init?(object: Any) {
-        guard let dict = object as? [String: Any] else {
+    // Internal, so it isn't public API, but still an override, so an Objective-C `-init`
+    // produces an empty route instead of trapping.
+    override convenience init() {
+        self.init(route: emptyRoute)
+    }
+
+    @objc(initWithObject:)
+    convenience init?(object: Any) {
+        guard let dictionary = object as? [String: Any] else {
             return nil
         }
 
-        let jsonString = RadarUtils.dictionaryToJson(dict)
-
+        let jsonString = RadarUtils.dictionaryToJson(dictionary)
         let decoder = JSONDecoder()
-        decoder.userInfo[RadarCoordinateSwift.codingStrategy] = RadarCoordinateSwift.CodingStrategy.lngLatArray
+        decoder.userInfo[RadarCoordinate.codingStrategy] = RadarCoordinate.CodingStrategy.lngLatArray
 
         guard let data = jsonString.data(using: .utf8),
-            let route = try? decoder.decode(RadarRoute.self, from: data)
+            let route = try? decoder.decode(RadarRouteValue.self, from: data)
         else {
             return nil
         }
         self.init(route: route)
     }
 
-    @objc public override init() {
-        self.route = emptyRoute
-        self.distance = RadarRouteDistance(route: emptyRoute)
-        self.duration = RadarRouteDuration(route: emptyRoute)
-        self.geometry = RadarRouteGeometry(route: emptyRoute)
-    }
-
-    @objc public func dictionaryValue() -> [String: Any] {
-        var dict = [
+    public func dictionaryValue() -> [AnyHashable: Any] {
+        var dictionary: [AnyHashable: Any] = [
             "distance": distance.dictionaryValue(),
             "duration": duration.dictionaryValue(),
         ]
-        if let geometry {
-            dict["geometry"] = geometry.dictionaryValue()
+        if hasGeometry {
+            dictionary["geometry"] = geometry.dictionaryValue()
         }
-        return dict
+        return dictionary
     }
 }

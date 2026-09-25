@@ -301,55 +301,48 @@ extension SettingsStore {
     /// settings). Returns a single placeholder row if no config has been fetched
     /// yet. Re-evaluated on each access; refresh via `settingsStore.refresh()`.
     var currentSdkConfigFields: [TrackingField] {
-        guard let c = RadarSdkConfiguration.current() else {
+        // `RadarSdkConfiguration` isn't public, so read the dictionary the SDK
+        // persists under `radar-sdkConfiguration` directly.
+        guard let config = Utils.radarUserDefaults?.dictionary(forKey: "radar-sdkConfiguration") else {
             return [.text("status", "No SDK config fetched yet")]
         }
-        return Self.fields(from: c)
+        return Self.fields(from: config)
     }
 
-    private static func fields(from c: RadarSdkConfiguration) -> [TrackingField] {
+    /// Missing keys fall back to the same defaults `RadarSdkConfiguration` uses
+    /// when parsing the dictionary.
+    private static func fields(from config: [String: Any]) -> [TrackingField] {
+        func bool(_ key: String, default value: Bool = false) -> TrackingField {
+            .bool(key, config[key] as? Bool ?? value)
+        }
         var fields: [TrackingField] = [
             // Logging
-            .text("logLevel", logLevelString(c.logLevel())),
+            .text("logLevel", config["logLevel"] as? String ?? "none"),
             // Lifecycle
-            .bool("startTrackingOnInitialize", c.startTrackingOnInitialize()),
-            .bool("trackOnceOnAppOpen", c.trackOnceOnAppOpen()),
+            bool("startTrackingOnInitialize"),
+            bool("trackOnceOnAppOpen"),
             // Sync mode
-            .bool("useSyncRegion", c.useSyncRegion()),
-            .bool("syncAfterSetUser", c.syncAfterSetUser()),
+            bool("useSyncRegion"),
+            bool("syncAfterSetUser"),
             // Geofence behavior
-            .bool("bufferGeofenceEntries", c.bufferGeofenceEntries()),
-            .bool("bufferGeofenceExits", c.bufferGeofenceExits()),
-            .text("defaultGeofenceDwellThreshold", "\(c.defaultGeofenceDwellThreshold())"),
-            .bool("stopDetection", c.stopDetection()),
+            bool("bufferGeofenceEntries", default: true),
+            bool("bufferGeofenceExits", default: true),
+            .text("defaultGeofenceDwellThreshold", "\(config["defaultGeofenceDwellThreshold"] as? Int ?? 0)"),
+            bool("stopDetection"),
             // Persistence / logging
-            .bool("usePersistence", c.usePersistence()),
-            .bool("useLogPersistence", c.useLogPersistence()),
-            .bool("extendFlushReplays", c.extendFlushReplays()),
+            bool("usePersistence"),
+            bool("useLogPersistence"),
+            bool("extendFlushReplays"),
             // Misc / less-common
-            .bool("useRadarModifiedBeacon", c.useRadarModifiedBeacon()),
-            .bool("useOpenedAppConversion", c.useOpenedAppConversion()),
-            .bool("useForegroundLocationUpdatedAtMsDiff", c.useForegroundLocationUpdatedAtMsDiff()),
-            .bool("useOfflineRTOUpdates", c.useOfflineRTOUpdates()),
-            .bool("offlineEventGenerationEnabled", c.offlineEventGenerationEnabled()),
-            .bool("skipForegroundCheck", c.skipForegroundCheck()),
+            bool("useRadarModifiedBeacon"),
+            bool("useOpenedAppConversion"),
+            bool("useForegroundLocationUpdatedAtMsDiff"),
+            bool("useOfflineRTOUpdates"),
+            bool("offlineEventGenerationEnabled"),
+            bool("skipForegroundCheck", default: true),
         ]
-        let rtoCount = c.remoteTrackingOptions()?.count ?? 0
+        let rtoCount = (config["remoteTrackingOptions"] as? [Any])?.count ?? 0
         fields.append(.text("remoteTrackingOptions", "\(rtoCount) preset(s)"))
         return fields
-    }
-
-    /// `RadarLogLevel.toString()` is internal in the SDK module, so duplicate
-    /// the mapping here. If the SDK ever exposes it publicly (or adds
-    /// `+stringForLogLevel:` like the other tracking-options enums), drop this.
-    private static func logLevelString(_ level: RadarLogLevel) -> String {
-        switch level {
-        case .none: return "none"
-        case .error: return "error"
-        case .warning: return "warning"
-        case .info: return "info"
-        case .debug: return "debug"
-        @unknown default: return "unknown"
-        }
     }
 }

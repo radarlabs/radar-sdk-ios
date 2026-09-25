@@ -36,7 +36,7 @@ extension RadarSerializedTests {
         // MARK: - Helpers
 
         func makeCircleGeofence(id: String, lat: Double, lng: Double, radius: Double) -> RadarGeofenceSwift {
-            let center = RadarCoordinateSwift(latitude: lat, longitude: lng)
+            let center = RadarCoordinate(latitude: lat, longitude: lng)
             return RadarGeofenceSwift(
                 id: id, description: "Test Geofence", tag: "test", externalId: id,
                 geometry: .circle(center: center, radius: radius),
@@ -48,7 +48,7 @@ extension RadarSerializedTests {
             return RadarBeaconSwift(
                 id: id, description: "Test Beacon", tag: "test", externalId: id,
                 uuid: "test-uuid", major: "1", minor: "1",
-                geometry: RadarCoordinateSwift(latitude: lat, longitude: lng)
+                geometry: RadarCoordinate(latitude: lat, longitude: lng)
             )
         }
 
