@@ -63,7 +63,10 @@ extension RadarSerializedTests {
             locationManager.permissionsHelper = permissionsHelperMock
         }
 
+        /// The mocks call back synchronously, so the track response is handled on the caller's thread.
+        /// It must be main, because the response handler touches `@MainActor` `RadarInAppMessageManager`.
         @Test("Includes the expected address in the track request after setExpectedAddress")
+        @MainActor
         func expectedAddressIncludedInTrackRequest() async {
             Radar.setExpectedAddress("111 5th Ave, NY")
             defer { Radar.setExpectedAddress(nil) }

@@ -226,7 +226,6 @@
 		CA5E9A0330A4000000000004 /* RadarTimeZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0330A4000000000003 /* RadarTimeZoneTests.swift */; };
 		CA5E9A0430A5000000000002 /* RadarFraud.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0430A5000000000001 /* RadarFraud.swift */; };
 		CA5E9A0430A5000000000004 /* RadarFraudTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0430A5000000000003 /* RadarFraudTests.swift */; };
-		F645D8E83061C900001A78B6 /* RadarExpectedAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F645D8E73061C900001A78B6 /* RadarExpectedAddressTests.swift */; };
 		DD103211237E0C47003DD408 /* RadarSDKTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DD103210237E0C47003DD408 /* RadarSDKTests.m */; };
 		DD103215237F1795003DD408 /* track.json in Resources */ = {isa = PBXBuildFile; fileRef = DD103214237F1795003DD408 /* track.json */; };
 		DD4D4D2523E648D000D36C1D /* search_autocomplete.json in Resources */ = {isa = PBXBuildFile; fileRef = DD4D4D2423E648D000D36C1D /* search_autocomplete.json */; };
@@ -492,7 +491,6 @@
 		CA5E9A0330A4000000000003 /* RadarTimeZoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTimeZoneTests.swift; sourceTree = "<group>"; };
 		CA5E9A0430A5000000000001 /* RadarFraud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFraud.swift; sourceTree = "<group>"; };
 		CA5E9A0430A5000000000003 /* RadarFraudTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFraudTests.swift; sourceTree = "<group>"; };
-		F645D8E73061C900001A78B6 /* RadarExpectedAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarExpectedAddressTests.swift; sourceTree = "<group>"; };
 		D1FACB1BB65B49969B63CEA7 /* RadarAPIHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelperTests.swift; sourceTree = "<group>"; };
 		DD103210237E0C47003DD408 /* RadarSDKTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarSDKTests.m; sourceTree = "<group>"; };
 		DD103214237F1795003DD408 /* track.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = track.json; sourceTree = "<group>"; };
@@ -652,7 +650,6 @@
 				96A5A0E327AD9F7F007B960B /* RadarCoordinate.h */,
 				96A5A0E727AD9F7F007B960B /* RadarDelegate.h */,
 				96A5A0DA27AD9F7F007B960B /* RadarEvent.h */,
-				F645D8E13061C890001A78B6 /* RadarExpectedAddress.h */,
 				96A5A0E927AD9F7F007B960B /* RadarFraud.h */,
 				96A5A0E627AD9F7F007B960B /* RadarGeofence.h */,
 				96A5A0E227AD9F7F007B960B /* RadarGeofenceGeometry.h */,
