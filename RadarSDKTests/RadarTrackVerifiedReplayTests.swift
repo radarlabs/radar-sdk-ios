@@ -147,7 +147,7 @@ extension RadarVerifiedHostOverrideTests {
     }
 
     private func seedReplayTestGeofence() {
-        let center = RadarCoordinateSwift(latitude: 40.0, longitude: -73.0)
+        let center = RadarCoordinate(latitude: 40.0, longitude: -73.0)
         let geofence = RadarGeofenceSwift(
             id: "verified-replay-offline-test",
             description: "Replay regression test",

@@ -19,7 +19,8 @@
 #import "RadarRoutes.h"
 #import "RadarUser.h"
 #import "RadarVerifiedLocationToken.h"
-#import "RadarTripLeg.h"
+
+@class RadarTripLeg;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -100,25 +101,10 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
            indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
-            preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
+             preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
         expectedStateCode:(NSString *_Nullable)expectedStateCode
-                   reason:(NSString *_Nullable)reason
-            transactionId:(NSString *_Nullable)transactionId
-             revealRiskId:(NSString *_Nullable)revealRiskId
-        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
-
-- (void)trackWithLocation:(CLLocation *_Nonnull)location
-                  stopped:(BOOL)stopped
-               foreground:(BOOL)foreground
-                   source:(RadarLocationSource)source
-                 replayed:(BOOL)replayed
-                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-           indoorLocation:(CLLocation *_Nullable)indoorLocation
-                 verified:(BOOL)verified
-            preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
-      expectedCountryCode:(NSString *_Nullable)expectedCountryCode
-        expectedStateCode:(NSString *_Nullable)expectedStateCode
+          expectedAddress:(NSString *_Nullable)expectedAddress
                    reason:(NSString *_Nullable)reason
             transactionId:(NSString *_Nullable)transactionId
              revealRiskId:(NSString *_Nullable)revealRiskId

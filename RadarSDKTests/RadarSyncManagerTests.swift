@@ -37,7 +37,7 @@ extension RadarSerializedTests {
             id: String, lat: Double, lng: Double, radius: Double,
             dwellThreshold: Double? = nil, stopDetection: Bool? = nil
         ) -> RadarGeofenceSwift {
-            let center = RadarCoordinateSwift(latitude: lat, longitude: lng)
+            let center = RadarCoordinate(latitude: lat, longitude: lng)
 
             return RadarGeofenceSwift(
                 id: id, description: "Test Geofence", tag: "test", externalId: id,
@@ -47,8 +47,8 @@ extension RadarSerializedTests {
         }
 
         func makePolygonGeofence(
-            id: String, coords: [RadarCoordinateSwift],
-            center: RadarCoordinateSwift, radius: Double
+            id: String, coords: [RadarCoordinate],
+            center: RadarCoordinate, radius: Double
         ) -> RadarGeofenceSwift {
 
             return RadarGeofenceSwift(
@@ -63,7 +63,7 @@ extension RadarSerializedTests {
             return RadarBeaconSwift(
                 id: id, description: "Test Beacon", tag: "test", externalId: id,
                 uuid: "test-uuid", major: "1", minor: "1",
-                geometry: RadarCoordinateSwift(latitude: lat, longitude: lng)
+                geometry: RadarCoordinate(latitude: lat, longitude: lng)
             )
         }
 
@@ -71,7 +71,7 @@ extension RadarSerializedTests {
 
             return RadarPlaceSwift(
                 id: id, name: "Test Place", categories: ["test"],
-                location: RadarCoordinateSwift(latitude: lat, longitude: lng), group: "test",
+                location: RadarCoordinate(latitude: lat, longitude: lng), group: "test",
                 geometryRadius: geometryRadius
             )
         }
@@ -117,7 +117,7 @@ extension RadarSerializedTests {
         @Test("shouldTrack returns true when outside synced region")
         func shouldTrack_outsideSyncedRegion() {
             var state = RadarSyncState()
-            state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
+            state.syncedRegionCenter = RadarCoordinate(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 100
             setState(state)
 
@@ -132,7 +132,7 @@ extension RadarSerializedTests {
         func shouldTrack_geofenceEntry() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
             var state = RadarSyncState()
-            state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
+            state.syncedRegionCenter = RadarCoordinate(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 500
             state.syncedGeofences = [geofence]
             state.lastSyncedGeofenceIds = []
@@ -149,7 +149,7 @@ extension RadarSerializedTests {
         func shouldTrack_geofenceExit() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLatFar, lng: testLng, radius: 50)
             var state = RadarSyncState()
-            state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
+            state.syncedRegionCenter = RadarCoordinate(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 500
             state.syncedGeofences = [geofence]
             state.lastSyncedGeofenceIds = ["geofence1"]
@@ -166,7 +166,7 @@ extension RadarSerializedTests {
         func shouldNotTrack_noStateChange() {
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100)
             var state = RadarSyncState()
-            state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
+            state.syncedRegionCenter = RadarCoordinate(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 500
             state.syncedGeofences = [geofence]
             state.lastSyncedGeofenceIds = ["geofence1"]
@@ -575,7 +575,7 @@ extension RadarSerializedTests {
         @Test("isOutsideSyncedRegion returns false when inside")
         func isOutsideSyncedRegion_inside() {
             var state = RadarSyncState()
-            state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
+            state.syncedRegionCenter = RadarCoordinate(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 100
             setState(state)
 
@@ -586,7 +586,7 @@ extension RadarSerializedTests {
         @Test("isOutsideSyncedRegion returns true when outside")
         func isOutsideSyncedRegion_outside() {
             var state = RadarSyncState()
-            state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
+            state.syncedRegionCenter = RadarCoordinate(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 100
             setState(state)
 
@@ -652,13 +652,13 @@ extension RadarSerializedTests {
         @Test("getGeofences returns geofence when inside polygon")
         func getGeofences_insidePolygon() {
             let coords = [
-                RadarCoordinateSwift(latitude: testLat + 0.001, longitude: testLng - 0.001),
-                RadarCoordinateSwift(latitude: testLat + 0.001, longitude: testLng + 0.001),
-                RadarCoordinateSwift(latitude: testLat - 0.001, longitude: testLng + 0.001),
-                RadarCoordinateSwift(latitude: testLat - 0.001, longitude: testLng - 0.001),
-                RadarCoordinateSwift(latitude: testLat + 0.001, longitude: testLng - 0.001),
+                RadarCoordinate(latitude: testLat + 0.001, longitude: testLng - 0.001),
+                RadarCoordinate(latitude: testLat + 0.001, longitude: testLng + 0.001),
+                RadarCoordinate(latitude: testLat - 0.001, longitude: testLng + 0.001),
+                RadarCoordinate(latitude: testLat - 0.001, longitude: testLng - 0.001),
+                RadarCoordinate(latitude: testLat + 0.001, longitude: testLng - 0.001),
             ]
-            let center = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
+            let center = RadarCoordinate(latitude: testLat, longitude: testLng)
             let geofence = makePolygonGeofence(id: "poly1", coords: coords, center: center, radius: 150)
             var state = RadarSyncState()
             state.syncedGeofences = [geofence]
@@ -674,13 +674,13 @@ extension RadarSerializedTests {
         @Test("getGeofences returns empty when outside polygon")
         func getGeofences_outsidePolygon() {
             let coords = [
-                RadarCoordinateSwift(latitude: testLatFar + 0.001, longitude: testLng - 0.001),
-                RadarCoordinateSwift(latitude: testLatFar + 0.001, longitude: testLng + 0.001),
-                RadarCoordinateSwift(latitude: testLatFar - 0.001, longitude: testLng + 0.001),
-                RadarCoordinateSwift(latitude: testLatFar - 0.001, longitude: testLng - 0.001),
-                RadarCoordinateSwift(latitude: testLatFar + 0.001, longitude: testLng - 0.001),
+                RadarCoordinate(latitude: testLatFar + 0.001, longitude: testLng - 0.001),
+                RadarCoordinate(latitude: testLatFar + 0.001, longitude: testLng + 0.001),
+                RadarCoordinate(latitude: testLatFar - 0.001, longitude: testLng + 0.001),
+                RadarCoordinate(latitude: testLatFar - 0.001, longitude: testLng - 0.001),
+                RadarCoordinate(latitude: testLatFar + 0.001, longitude: testLng - 0.001),
             ]
-            let center = RadarCoordinateSwift(latitude: testLatFar, longitude: testLng)
+            let center = RadarCoordinate(latitude: testLatFar, longitude: testLng)
             let geofence = makePolygonGeofence(id: "poly1", coords: coords, center: center, radius: 150)
             var state = RadarSyncState()
             state.syncedGeofences = [geofence]
@@ -696,13 +696,13 @@ extension RadarSerializedTests {
         func getGeofences_mixedCircleAndPolygon() {
             let circleGeofence = makeCircleGeofence(id: "circle1", lat: testLat, lng: testLng, radius: 100)
             let coords = [
-                RadarCoordinateSwift(latitude: testLat + 0.001, longitude: testLng - 0.001),
-                RadarCoordinateSwift(latitude: testLat + 0.001, longitude: testLng + 0.001),
-                RadarCoordinateSwift(latitude: testLat - 0.001, longitude: testLng + 0.001),
-                RadarCoordinateSwift(latitude: testLat - 0.001, longitude: testLng - 0.001),
-                RadarCoordinateSwift(latitude: testLat + 0.001, longitude: testLng - 0.001),
+                RadarCoordinate(latitude: testLat + 0.001, longitude: testLng - 0.001),
+                RadarCoordinate(latitude: testLat + 0.001, longitude: testLng + 0.001),
+                RadarCoordinate(latitude: testLat - 0.001, longitude: testLng + 0.001),
+                RadarCoordinate(latitude: testLat - 0.001, longitude: testLng - 0.001),
+                RadarCoordinate(latitude: testLat + 0.001, longitude: testLng - 0.001),
             ]
-            let center = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
+            let center = RadarCoordinate(latitude: testLat, longitude: testLng)
             let polyGeofence = makePolygonGeofence(id: "poly1", coords: coords, center: center, radius: 150)
             var state = RadarSyncState()
             state.syncedGeofences = [circleGeofence, polyGeofence]
@@ -854,7 +854,7 @@ extension RadarSerializedTests {
         @Test("isNearSyncedRegionBoundary returns true when near boundary")
         func isNearSyncedRegionBoundary_near() {
             var state = RadarSyncState()
-            state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
+            state.syncedRegionCenter = RadarCoordinate(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 1000
             setState(state)
 
@@ -865,7 +865,7 @@ extension RadarSerializedTests {
         @Test("isNearSyncedRegionBoundary returns false when not near boundary")
         func isNearSyncedRegionBoundary_notNear() {
             var state = RadarSyncState()
-            state.syncedRegionCenter = RadarCoordinateSwift(latitude: testLat, longitude: testLng)
+            state.syncedRegionCenter = RadarCoordinate(latitude: testLat, longitude: testLng)
             state.syncedRegionRadius = 1000
             setState(state)
 

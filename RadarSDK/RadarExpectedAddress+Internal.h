@@ -1,11 +1,9 @@
 //
-//  RadarRoute+Internal.h
+//  RadarExpectedAddress+Internal.h
 //  RadarSDK
 //
-//  Copyright © 2020 Radar Labs, Inc. All rights reserved.
+//  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
-
-#import <Foundation/Foundation.h>
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -13,14 +11,12 @@
 #import "RadarSDK-Swift.h"
 #endif
 
-@interface RadarRoute ()
+NS_ASSUME_NONNULL_BEGIN
+
+@interface RadarExpectedAddress ()
 
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end
 
-@interface RadarRouteDistance ()
-
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
-
-@end
+NS_ASSUME_NONNULL_END

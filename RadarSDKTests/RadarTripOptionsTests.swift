@@ -500,7 +500,11 @@ struct RadarTripOptionsTests {  // swiftlint:disable:this type_body_length
             RadarTripOptions(from: [:])
         )
 
-        #expect(options.externalId == nil)
+        // The public getter is a non-optional String, so a missing ID reads as empty, but it stays
+        // missing in serialization and doesn't make two ID-less options equal.
+        #expect(options.externalId.isEmpty)
+        #expect(options.dictionaryValue()["externalId"] == nil)
+        #expect(options != (try #require(RadarTripOptions(from: [:]))))
     }
 
     private func makeCompleteOptions() -> RadarTripOptions {

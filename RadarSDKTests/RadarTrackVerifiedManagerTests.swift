@@ -111,6 +111,7 @@ extension RadarVerifiedHostOverrideTests {
 
         let instance = makeCollectedFraudInstance(result: ["payload": "encrypted-envelope"])
         let manager = try makeVerificationManager(instance: instance)
+        manager.instance.setValue("111 5th Ave, NY", forKey: "expectedAddress")
         // Collection succeeds; the mocked track endpoint returns an error.
         runVerificationManager(manager, expectedStatus: .errorServer)
 
@@ -122,6 +123,7 @@ extension RadarVerifiedHostOverrideTests {
         )
         XCTAssertEqual(helper.lastParams?["latitude"] as? Double, 40.0)
         XCTAssertEqual(helper.lastParams?["longitude"] as? Double, -73.0)
+        XCTAssertEqual(helper.lastParams?["expectedAddress"] as? String, "111 5th Ave, NY")
 
         try assertMatchingEncryptionContext(instance: instance, helper: helper)
     }

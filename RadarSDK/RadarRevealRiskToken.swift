@@ -5,33 +5,35 @@
 
 import Foundation
 
-// swiftlint:disable identifier_name
+// Each type is both the `@objc` interface and the `Decodable` parser: the compiler
+// synthesizes `init(from:)` for these `NSObject` subclasses, so there is no separate parsing
+// struct or mapping layer to keep in sync. `CodingKeys` is only declared where a JSON key
+// differs from the property name; the `Date` format is handled once on the decoder.
 
-/// Objective-C compatible model for the Reveal Risk API response.
+/// Represents device and network risk signals.
 ///
-/// Each type is both the `@objc` interface and the `Decodable` parser: the compiler
-/// synthesizes `init(from:)` for these `NSObject` subclasses, so there is no separate parsing
-/// struct or mapping layer to keep in sync. `CodingKeys` is only declared where a JSON key
-/// differs from the property name; the `Date` format is handled once on the decoder.
+/// - SeeAlso: https://radar.com/documentation/fraud
 @objc(RadarRevealRiskToken) @objcMembers
-final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
-    @objc(_id)
-    let id: String
-    let token: String?
-    let expiresAt: Date?
-    let expiresIn: Double?
-    @objc(expiresIn) var _expiresIn: NSNumber? { expiresIn.map { NSNumber(value: $0) } }
-    let risk: RadarRevealRiskTokenRisk
-    let network: RadarRevealRiskTokenNetwork
-    let device: RadarRevealRiskTokenDevice
+public final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
+    // swiftlint:disable:next identifier_name
+    public let _id: String
+    @nonobjc var id: String { _id }
+    public let token: String?
+    public let expiresAt: Date?
+    let expiresInValue: Double?
+    public var expiresIn: NSNumber? { expiresInValue.map { NSNumber(value: $0) } }
+    public let risk: RadarRevealRiskTokenRisk
+    public let network: RadarRevealRiskTokenNetwork
+    public let device: RadarRevealRiskTokenDevice
 
     // unchecked sendable, set on init, should not be modified afterwards
-    var dictionaryValue: [String: Sendable]?
+    private(set) var dictionaryValueStorage: [String: Sendable]?
 
     enum CodingKeys: String, CodingKey {
-        case id = "_id"
+        // swiftlint:disable:next identifier_name
+        case _id
         case token
-        case expiresIn
+        case expiresInValue = "expiresIn"
         case expiresAt
         case risk
         case network
@@ -39,27 +41,21 @@ final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
     }
 
     nonisolated(unsafe) private static let isoFormatter: ISO8601DateFormatter = {
-        let f = ISO8601DateFormatter()
-        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return f
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
     }()
 
     nonisolated(unsafe) private static let isoFormatterNoFractional: ISO8601DateFormatter = {
-        let f = ISO8601DateFormatter()
-        f.formatOptions = [.withInternetDateTime]
-        return f
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter
     }()
 
     /// Parses a Reveal Risk API response into an Objective-C compatible object.
     /// Returns `nil` if the data cannot be decoded.
     static func fromData(_ data: Data) -> RadarRevealRiskToken? {
         let decoder = JSONDecoder()
-
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
-        let formatterNoFractional = ISO8601DateFormatter()
-        formatterNoFractional.formatOptions = [.withInternetDateTime]
 
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
@@ -79,14 +75,20 @@ final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendable {
         var dict: [String: Sendable]? = (try? JSONSerialization.jsonObject(with: data)) as? [String: Sendable]
         // raw data from response returns with a meta field for the http status, ignore this for reveal risk response dict
         dict?["meta"] = nil
-        decoded.dictionaryValue = dict
+        decoded.dictionaryValueStorage = dict
         return decoded
+    }
+
+    public func dictionaryValue() -> [AnyHashable: Any] {
+        dictionaryValueStorage?.reduce(into: [:]) { dictionary, entry in
+            dictionary[entry.key] = entry.value
+        } ?? [:]
     }
 }
 
 /// Risk level for a Reveal Risk token, ordered from lowest to highest.
 @objc(RadarRevealRiskLevel)
-enum RadarRevealRiskLevel: Int, Sendable, Decodable {
+public enum RadarRevealRiskLevel: Int, Sendable, Decodable {
     case none
     case low
     case medium
@@ -101,7 +103,7 @@ enum RadarRevealRiskLevel: Int, Sendable, Decodable {
         }
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let value = try decoder.singleValueContainer()
         let string = try value.decode(String.self)
         self.init(string: string)
@@ -109,99 +111,137 @@ enum RadarRevealRiskLevel: Int, Sendable, Decodable {
 }
 
 @objc(RadarRevealRiskTokenRisk) @objcMembers
-final class RadarRevealRiskTokenRisk: NSObject, Decodable, Sendable {
-    let level: RadarRevealRiskLevel
-    let reasons: [String]
+public final class RadarRevealRiskTokenRisk: NSObject, Decodable, Sendable {
+    public let level: RadarRevealRiskLevel
+    public let reasons: [String]
 }
 
 @objc(RadarRevealRiskTokenNetwork) @objcMembers
-final class RadarRevealRiskTokenNetwork: NSObject, Decodable, Sendable {
-    let ipAddress: RadarRevealRiskTokenNetworkIpAddress?
+public final class RadarRevealRiskTokenNetwork: NSObject, Decodable, Sendable {
+    public let ipAddress: RadarRevealRiskTokenNetworkIpAddress?
     public let privacy: RadarRevealRiskTokenNetworkPrivacy?
-    let asn: RadarRevealRiskTokenNetworkAsn?
+    public let asn: RadarRevealRiskTokenNetworkAsn?
 }
 
 @objc(RadarRevealRiskTokenNetworkAsn) @objcMembers
-final class RadarRevealRiskTokenNetworkAsn: NSObject, Decodable, Sendable {
-    let asn: String?
-    let country: String?
-    let domain: String?
-    let name: String?
-    let network: String?
-    let type: String?
+public final class RadarRevealRiskTokenNetworkAsn: NSObject, Decodable, Sendable {
+    public let asn: String?
+    public let country: String?
+    public let domain: String?
+    public let name: String?
+    public let network: String?
+    public let type: String?
 }
 
 @objc(RadarRevealRiskTokenNetworkIpAddress) @objcMembers
-final class RadarRevealRiskTokenNetworkIpAddress: NSObject, Decodable, Sendable {
+public final class RadarRevealRiskTokenNetworkIpAddress: NSObject, Decodable, Sendable {
+    // swiftlint:disable:next identifier_name
     let ip: String?
-    let countryCode: String?
-    let country: String?
-    let countryFlag: String?
-    let state: String?
-    let city: String?
-    let postalCode: String?
-    let latitude: Double?
-    @objc(latitude) var _latitude: NSNumber? { latitude.map { NSNumber(value: $0) } }
-    let longitude: Double?
-    @objc(longitude) var _longitude: NSNumber? { longitude.map { NSNumber(value: $0) } }
-    let connectionType: String?
-    let stateCode: String?
-    let stateConfidence: String?
-    let countryConfidence: String?
-    let dma: String?
-    let dmaCode: String?
-    let stateAllowed: Bool?
-    @objc(stateAllowed) var _stateAllowed: Bool { stateAllowed ?? false }
-    let countryAllowed: Bool?
-    @objc(countryAllowed) var _countryAllowed: Bool { countryAllowed ?? false }
-    let layer: String?
-    let geometry: RadarRevealRiskIpGeometry?
+    public let countryCode: String?
+    public let country: String?
+    public let countryFlag: String?
+    public let state: String?
+    public let city: String?
+    public let postalCode: String?
+    let latitudeValue: Double?
+    public var latitude: NSNumber? { latitudeValue.map { NSNumber(value: $0) } }
+    let longitudeValue: Double?
+    public var longitude: NSNumber? { longitudeValue.map { NSNumber(value: $0) } }
+    public let connectionType: String?
+    public let stateCode: String?
+    public let stateConfidence: String?
+    public let countryConfidence: String?
+    public let dma: String?
+    public let dmaCode: String?
+    let stateAllowedValue: Bool?
+    public var stateAllowed: Bool { stateAllowedValue ?? false }
+    let countryAllowedValue: Bool?
+    public var countryAllowed: Bool { countryAllowedValue ?? false }
+    public let layer: String?
+    public let geometry: RadarRevealRiskIpGeometry?
+
+    enum CodingKeys: String, CodingKey {
+        // swiftlint:disable:next identifier_name
+        case ip
+        case countryCode
+        case country
+        case countryFlag
+        case state
+        case city
+        case postalCode
+        case latitudeValue = "latitude"
+        case longitudeValue = "longitude"
+        case connectionType
+        case stateCode
+        case stateConfidence
+        case countryConfidence
+        case dma
+        case dmaCode
+        case stateAllowedValue = "stateAllowed"
+        case countryAllowedValue = "countryAllowed"
+        case layer
+        case geometry
+    }
 }
 
 @objc(RadarRevealRiskIpGeometry) @objcMembers
-final class RadarRevealRiskIpGeometry: NSObject, Decodable, Sendable {
-    let type: String
-    let coordinates: [Double]
+public final class RadarRevealRiskIpGeometry: NSObject, Decodable, Sendable {
+    public let type: String
+    let coordinateValues: [Double]
+    public var coordinates: [NSNumber] { coordinateValues.map { NSNumber(value: $0) } }
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case coordinateValues = "coordinates"
+    }
 }
 
 @objc(RadarRevealRiskTokenNetworkPrivacy) @objcMembers
-final class RadarRevealRiskTokenNetworkPrivacy: NSObject, Decodable, Sendable {
-    let hosting: Bool?
-    @objc(hosting) var _hosting: Bool { hosting ?? false }
+public final class RadarRevealRiskTokenNetworkPrivacy: NSObject, Decodable, Sendable {
+    let hostingValue: Bool?
+    public var hosting: Bool { hostingValue ?? false }
 
-    let proxy: Bool?
-    @objc(proxy) var _proxy: Bool { proxy ?? false }
+    let proxyValue: Bool?
+    public var proxy: Bool { proxyValue ?? false }
 
-    let relay: Bool?
-    @objc(relay) var _relay: Bool { relay ?? false }
+    let relayValue: Bool?
+    public var relay: Bool { relayValue ?? false }
 
-    let service: String?
+    public let service: String?
 
-    let tor: Bool?
-    @objc(tor) var _tor: Bool { tor ?? false }
+    let torValue: Bool?
+    public var tor: Bool { torValue ?? false }
 
-    let vpn: Bool?
-    @objc(vpn) var _vpn: Bool { vpn ?? false }
+    let vpnValue: Bool?
+    public var vpn: Bool { vpnValue ?? false }
 
-    let residentialProxy: Bool?
-    @objc(residentialProxy) var _residentialProxy: Bool { residentialProxy ?? false }
+    let residentialProxyValue: Bool?
+    public var residentialProxy: Bool { residentialProxyValue ?? false }
+
+    enum CodingKeys: String, CodingKey {
+        case hostingValue = "hosting"
+        case proxyValue = "proxy"
+        case relayValue = "relay"
+        case service
+        case torValue = "tor"
+        case vpnValue = "vpn"
+        case residentialProxyValue = "residentialProxy"
+    }
 }
 
 @objc(RadarRevealRiskTokenDevice) @objcMembers
-final class RadarRevealRiskTokenDevice: NSObject, Decodable, Sendable {
-    let deviceId: String?
-    let deviceType: String?
-    let deviceMake: String?
-    let deviceModel: String?
-    let deviceOSName: String?
-    let deviceOSVersion: String?
-    let sdkVersion: String?
-    let xPlatformType: String?
-    let installId: String?
-    let appId: String?
-    let appName: String?
-    let appVersion: String?
-    let appBuild: String?
+public final class RadarRevealRiskTokenDevice: NSObject, Decodable, Sendable {
+    public let deviceId: String?
+    public let deviceType: String?
+    public let deviceMake: String?
+    public let deviceModel: String?
+    public let deviceOSName: String?
+    public let deviceOSVersion: String?
+    public let sdkVersion: String?
+    public let xPlatformType: String?
+    public let installId: String?
+    public let appId: String?
+    public let appName: String?
+    public let appVersion: String?
+    public let appBuild: String?
 }
-
-// swiftlint:enable identifier_name
