@@ -15,6 +15,7 @@ CI_SCHEME ?= RadarSDK
 CI_WORKSPACE ?= Example/Example.xcodeproj/project.xcworkspace
 CI_DESTINATION ?= platform=iOS Simulator,name=iPhone 17,OS=26.4.1
 CI_XC_ARGS := -scheme $(CI_SCHEME) -workspace $(CI_WORKSPACE) -destination "$(CI_DESTINATION)"
+CI_EXAMPLE_DERIVED_DATA ?= /tmp/radar-sdk-ios-ci-example-derived-data
 CI_TEST_LOG ?= /tmp/radar-sdk-ios-ci-test.log
 CI_SWIFT_TEST_LOG ?= /tmp/radar-sdk-ios-ci-swift-test.log
 
@@ -149,10 +150,21 @@ build-example-pretty:
 
 ci-build-example:
 	@set -o pipefail; \
-	  xcodebuild -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -destination "$(CI_DESTINATION)" -skipMacroValidation ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode" 2>&1 \
+	  xcodebuild -project $(PROJECT_EXAMPLE).xcodeproj -scheme $(SCHEME_EXAMPLE) -configuration Release -derivedDataPath "$(CI_EXAMPLE_DERIVED_DATA)" -destination "$(CI_DESTINATION)" -skipMacroValidation ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode" 2>&1 \
 	    | tee /tmp/radar-sdk-ios-ci-build-example.log \
 	    | xcpretty; \
-	  exit $$?
+	  status=$$?; \
+	  if [ $$status -ne 0 ]; then exit $$status; fi; \
+	  framework="$(CI_EXAMPLE_DERIVED_DATA)/Build/Products/Release-iphonesimulator/RadarSDK.framework"; \
+	  consumer_source="$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage.m"; \
+	  awk 'BEGIN { print "@import RadarSDK;\nint main(void) {" } $$1 == "@interface" && $$3 == ":" { name = $$2; sub(/<.*/, "", name); if (!seen[name]++) print "    (void)[" name " class];" } END { print "    return 0;\n}" }' "$$framework"/Headers/*.h > "$$consumer_source"; \
+	  class_count=$$(grep -c '    (void)\[' "$$consumer_source"); \
+	  test $$class_count -gt 0; \
+	  echo "Linking Objective-C consumer for $$class_count public Objective-C and Swift classes"; \
+	  xcrun --sdk iphonesimulator clang -arch "$$(uname -m)" -mios-simulator-version-min="$$(xcrun --sdk iphonesimulator --show-sdk-version)" -fobjc-arc -fmodules -fmodules-cache-path="$(CI_EXAMPLE_DERIVED_DATA)/ModuleCache.noindex" -Wno-incomplete-umbrella -F "$$(dirname "$$framework")" -framework RadarSDK -framework Foundation "$$consumer_source" -o "$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage"; \
+	  echo "Compiling the same consumer as non-modular Objective-C++ through the umbrella header"; \
+	  sed 's|^@import RadarSDK;$$|#import <RadarSDK/RadarSDK.h>|' "$$consumer_source" > "$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage.mm"; \
+	  xcrun --sdk iphonesimulator clang++ -fsyntax-only -arch "$$(uname -m)" -mios-simulator-version-min="$$(xcrun --sdk iphonesimulator --show-sdk-version)" -fobjc-arc -fno-modules -F "$$(dirname "$$framework")" "$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage.mm"
 
 docs:
 	jazzy
