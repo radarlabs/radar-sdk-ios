@@ -40,9 +40,6 @@ import RadarSDK
 final class SettingsStore: ObservableObject {
     // MARK: - Defaults
 
-    /// Hardcoded publishable key used when no override is set.
-    static let defaultPublishableKey = "prj_test_pk_0000000000000000000000000000000000000000"
-
     private enum Keys {
         static let publishableKeyOverride = "settings.publishableKeyOverride"
         static let defaultTabRaw = "settings.defaultTabRaw"
@@ -130,7 +127,7 @@ final class SettingsStore: ObservableObject {
     /// The publishable key to pass to `Radar.initialize`. Returns the override if set,
     /// otherwise the hardcoded default.
     var resolvedPublishableKey: String {
-        publishableKeyOverride.isEmpty ? Self.defaultPublishableKey : publishableKeyOverride
+        publishableKeyOverride.isEmpty ? AppDelegate.DEFAULT_PUBLISHABLE_KEY : publishableKeyOverride
     }
 
     /// Reads SDK-backed settings into the store. Call once after `Radar.initialize`.
