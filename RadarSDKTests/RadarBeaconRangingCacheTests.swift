@@ -11,28 +11,6 @@ import UIKit
 
 @testable import RadarSDK
 
-final class BeaconRangingTestClock {
-    var time: TimeInterval = 1000
-}
-
-final class BeaconSearchStub {
-    var callCount = 0
-    var uuids = ["2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6"]
-}
-
-/// Records what the cache asked CoreLocation to range.
-final class BeaconRangingRecorder: RadarBeaconRanging {
-    private(set) var active: Set<String> = []
-
-    func startRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint) {
-        active.insert(constraint.uuid.uuidString)
-    }
-
-    func stopRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint) {
-        active.remove(constraint.uuid.uuidString)
-    }
-}
-
 extension RadarSerializedTests {
 
     @Suite("RadarBeaconRangingCache")
@@ -48,9 +26,6 @@ extension RadarSerializedTests {
         let mockPermissions = MockRadarPermissionsHelper()
         let mockBridge = MockRadarSwiftBridge()
         let notificationCenter = NotificationCenter()
-        let clock = BeaconRangingTestClock()
-        let search = BeaconSearchStub()
-        let recorder = BeaconRangingRecorder()
 
         init() {
             mockBridge.mockIsForeground = true
@@ -58,14 +33,10 @@ extension RadarSerializedTests {
 
             cache.permissionsHelper = mockPermissions
             cache.notificationCenter = notificationCenter
-            let clock = clock
-            cache.now = { clock.time }
-            let search = search
+            cache.now = { 1000 }
             cache.searchBeacons = { _ in
-                search.callCount += 1
-                return RadarBeaconRangingCache.constraints(uuids: search.uuids, beacons: [])
+                RadarBeaconRangingCache.constraints(uuids: [Self.testUUID], beacons: [])
             }
-            cache.ranger = recorder
         }
 
         // MARK: - Helpers
@@ -84,6 +55,11 @@ extension RadarSerializedTests {
             for _ in 0..<100 where !condition() {
                 await Task.yield()
             }
+        }
+
+        /// UUIDs CoreLocation is currently ranging for the cache.
+        private var rangedUUIDs: Set<String> {
+            Set(cache.locationManager.rangedBeaconConstraints.map(\.uuid.uuidString))
         }
 
         private func startAndWaitForRanging() async {
@@ -109,9 +85,9 @@ extension RadarSerializedTests {
             await withBridge {
                 await startAndWaitForRanging()
 
-                #expect(search.callCount == 1)
+                #expect(cache.searchLocation == mockBridge.mockLastLocation)
                 #expect(cache.ranging)
-                #expect(cache.constraints.count == 1)
+                #expect(rangedUUIDs == [Self.testUUID])
                 #expect(cache.cachedBeacons() == nil)
             }
         }
@@ -135,13 +111,13 @@ extension RadarSerializedTests {
                 cache.handleRanged([Self.entry(rssi: -60), Self.entry(rssi: -70, minor: "3")])
                 #expect(cache.cachedBeacons()?.count == 2)
 
-                clock.time += RadarBeaconRangingCache.maxBeaconAge - 1
+                cache.now = { 1000 + RadarBeaconRangingCache.maxBeaconAge - 1 }
                 cache.handleRanged([Self.entry(rssi: -62)])
 
-                clock.time += 2
+                cache.now = { 1000 + RadarBeaconRangingCache.maxBeaconAge + 1 }
                 #expect(cache.cachedBeacons()?.count == 1)
 
-                clock.time += RadarBeaconRangingCache.maxBeaconAge
+                cache.now = { 1000 + 2 * RadarBeaconRangingCache.maxBeaconAge }
                 #expect(cache.cachedBeacons()?.isEmpty == true)
             }
         }
@@ -167,13 +143,18 @@ extension RadarSerializedTests {
                 await waitUntil { !cache.ranging }
 
                 #expect(!cache.ranging)
+                #expect(rangedUUIDs.isEmpty)
                 #expect(cache.cachedBeacons() == nil)
 
+                // The new search on foreground finds different beacons.
+                cache.searchBeacons = { _ in
+                    RadarBeaconRangingCache.constraints(uuids: [Self.otherUUID], beacons: [])
+                }
                 notificationCenter.post(name: UIApplication.willEnterForegroundNotification, object: nil)
-                await waitUntil { search.callCount == 2 }
+                await waitUntil { rangedUUIDs == [Self.otherUUID] }
 
                 #expect(cache.ranging)
-                #expect(search.callCount == 2)
+                #expect(rangedUUIDs == [Self.otherUUID])
                 #expect(cache.cachedBeacons() == nil)
             }
         }
@@ -188,6 +169,7 @@ extension RadarSerializedTests {
 
                 #expect(!cache.requested)
                 #expect(!cache.ranging)
+                #expect(rangedUUIDs.isEmpty)
                 #expect(cache.cachedBeacons() == nil)
 
                 notificationCenter.post(name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -201,8 +183,9 @@ extension RadarSerializedTests {
                 mockPermissions.mockAuthorizationStatus = .denied
 
                 cache.start()
+                await waitUntil { cache.searchLocation != nil }
 
-                #expect(search.callCount == 0)
+                #expect(cache.searchLocation == nil)
                 #expect(!cache.ranging)
             }
         }
@@ -213,8 +196,9 @@ extension RadarSerializedTests {
                 mockPermissions.mockRangingAvailable = false
 
                 cache.start()
+                await waitUntil { cache.searchLocation != nil }
 
-                #expect(search.callCount == 0)
+                #expect(cache.searchLocation == nil)
                 #expect(!cache.ranging)
             }
         }
@@ -225,7 +209,8 @@ extension RadarSerializedTests {
                 mockBridge.mockLastLocation = nil
 
                 cache.start()
-                #expect(search.callCount == 0)
+                await waitUntil { cache.searchLocation != nil }
+                #expect(cache.searchLocation == nil)
                 #expect(!cache.ranging)
 
                 cache.seedIfNeeded(uuids: [Self.testUUID], beacons: nil)
@@ -273,11 +258,11 @@ extension RadarSerializedTests {
         func update_newBeacons_stopsPreviousBeacons() async {
             await withBridge {
                 await startAndWaitForRanging()
-                #expect(recorder.active == [Self.testUUID])
+                #expect(rangedUUIDs == [Self.testUUID])
 
                 cache.update(constraints: RadarBeaconRangingCache.constraints(uuids: [Self.otherUUID], beacons: []))
 
-                #expect(recorder.active == [Self.otherUUID])
+                #expect(rangedUUIDs == [Self.otherUUID])
             }
         }
 
@@ -289,7 +274,7 @@ extension RadarSerializedTests {
 
                 cache.stop()
 
-                #expect(recorder.active.isEmpty)
+                #expect(rangedUUIDs.isEmpty)
             }
         }
 
@@ -326,10 +311,8 @@ extension RadarSerializedTests.BeaconRangingCacheTests {
         await withBridge {
             // Last session's location, near a different venue's beacons.
             mockBridge.mockLastLocation = Self.venueA
-            search.uuids = []
             cache.searchBeacons = { _ in
-                self.search.callCount += 1
-                return RadarBeaconRangingCache.constraints(
+                RadarBeaconRangingCache.constraints(
                     uuids: nil,
                     beacons: [.init(uuid: Self.testUUID, major: "1", minor: "2")]
                 )
@@ -353,11 +336,11 @@ extension RadarSerializedTests.BeaconRangingCacheTests {
 
             #expect(cache.cachedBeacons(near: Self.venueB) == nil)
             #expect(cache.constraints.isEmpty)
-            #expect(recorder.active.isEmpty)
+            #expect(rangedUUIDs.isEmpty)
 
             // trackVerified's own search near venue B returns B's beacons.
             cache.seedIfNeeded(uuids: [Self.otherUUID], beacons: nil)
-            #expect(recorder.active == [Self.otherUUID])
+            #expect(rangedUUIDs == [Self.otherUUID])
 
             cache.handleRanged([])
             #expect(cache.cachedBeacons(near: Self.venueB)?.isEmpty == true)

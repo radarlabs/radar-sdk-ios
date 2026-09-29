@@ -41,14 +41,6 @@ extension Radar {
     }
 }
 
-/// The ranging calls `RadarBeaconRangingCache` makes, so tests can record them.
-protocol RadarBeaconRanging: AnyObject {
-    func startRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint)
-    func stopRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint)
-}
-
-extension CLLocationManager: RadarBeaconRanging {}
-
 /// Continuously ranges nearby beacons while the app is in the foreground so `trackVerified` can
 /// attach beacons without waiting on a one-shot ranging window.
 ///
@@ -85,7 +77,7 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
         )
     }
 
-    lazy var ranger: RadarBeaconRanging = {
+    private(set) lazy var locationManager: CLLocationManager = {
         let manager = CLLocationManager()
         manager.delegate = self
         return manager
@@ -228,7 +220,7 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
 
     private func pause() {
         for constraint in rangingConstraints {
-            ranger.stopRangingBeacons(satisfying: constraint)
+            locationManager.stopRangingBeacons(satisfying: constraint)
         }
         rangingConstraints = []
         ranging = false
@@ -248,7 +240,7 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
                 level: .debug,
                 message:
                     "Beacon ranging cache ranging | uuid = \(constraint.uuid.uuidString); major = \(constraint.major.map { "\($0)" } ?? "nil"); minor = \(constraint.minor.map { "\($0)" } ?? "nil")")
-            ranger.startRangingBeacons(satisfying: constraint)
+            locationManager.startRangingBeacons(satisfying: constraint)
         }
         rangingConstraints = constraints
     }
