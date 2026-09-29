@@ -41,6 +41,8 @@ extension RadarSerializedTests {
 
         private static let testUUID = "2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6"
         private static let otherUUID = "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0"
+        private static let venueA = CLLocation(latitude: 43.0300, longitude: -87.9300)
+        private static let venueB = CLLocation(latitude: 43.0372, longitude: -87.9300)
 
         let cache = RadarBeaconRangingCache()
         let mockPermissions = MockRadarPermissionsHelper()
@@ -311,6 +313,66 @@ extension RadarSerializedTests {
 
                 #expect(cache.cachedBeacons()?.count == 1)
             }
+        }
+    }
+}
+
+// MARK: - Search location
+
+extension RadarSerializedTests.BeaconRangingCacheTests {
+
+    @Test("cachedBeacons(near:) is nil when the beacons were searched from somewhere else")
+    func cachedBeaconsNear_farFromSearchLocation_isNil() async {
+        await withBridge {
+            // Last session's location, near a different venue's beacons.
+            mockBridge.mockLastLocation = Self.venueA
+            search.uuids = []
+            cache.searchBeacons = { _ in
+                self.search.callCount += 1
+                return RadarBeaconRangingCache.constraints(
+                    uuids: nil,
+                    beacons: [.init(uuid: Self.testUUID, major: "1", minor: "2")]
+                )
+            }
+
+            await startAndWaitForRanging()
+            // CoreLocation reports empty ranging results for venue A's beacon.
+            cache.handleRanged([])
+
+            // trackVerified runs at venue B, 800m away.
+            #expect(cache.cachedBeacons(near: Self.venueB) == nil)
+        }
+    }
+
+    @Test("after moving far away, the next one-shot request re-targets the cache")
+    func cachedBeaconsNear_farAway_reseedsFromOneShot() async {
+        await withBridge {
+            mockBridge.mockLastLocation = Self.venueA
+            await startAndWaitForRanging()
+            cache.handleRanged([])
+
+            #expect(cache.cachedBeacons(near: Self.venueB) == nil)
+            #expect(cache.constraints.isEmpty)
+            #expect(recorder.active.isEmpty)
+
+            // trackVerified's own search near venue B returns B's beacons.
+            cache.seedIfNeeded(uuids: [Self.otherUUID], beacons: nil)
+            #expect(recorder.active == [Self.otherUUID])
+
+            cache.handleRanged([])
+            #expect(cache.cachedBeacons(near: Self.venueB)?.isEmpty == true)
+        }
+    }
+
+    @Test("cachedBeacons(near:) returns cached beacons near the search location")
+    func cachedBeaconsNear_nearSearchLocation_returnsBeacons() async {
+        await withBridge {
+            mockBridge.mockLastLocation = Self.venueA
+            await startAndWaitForRanging()
+            cache.handleRanged([Self.entry(rssi: -60)])
+
+            let nearby = CLLocation(latitude: Self.venueA.coordinate.latitude + 0.001, longitude: Self.venueA.coordinate.longitude)
+            #expect(cache.cachedBeacons(near: nearby)?.count == 1)
         }
     }
 }

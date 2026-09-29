@@ -53,7 +53,7 @@
 // Implemented in RadarBeaconRangingCache.swift. It's internal, so it isn't in RadarSDK-Swift.h.
 @interface RadarBeaconRangingCache : NSObject
 @property (class, readonly, strong) RadarBeaconRangingCache *shared;
-- (NSArray<RadarBeacon *> *_Nullable)cachedBeacons;
+- (NSArray<RadarBeacon *> *_Nullable)cachedBeaconsNear:(CLLocation *_Nonnull)location;
 @end
 
 @interface RadarVerificationManager () <RadarVerificationManagerSwiftHost>
@@ -303,7 +303,7 @@
 
             if (beacons) {
                 [RadarUtilsDeprecated runOnMainThread:^{
-                    NSArray<RadarBeacon *> *cachedBeacons = [[RadarBeaconRangingCache shared] cachedBeacons];
+                    NSArray<RadarBeacon *> *cachedBeacons = [[RadarBeaconRangingCache shared] cachedBeaconsNear:location];
                     if (!cachedBeacons) {
                         rangeBeaconsAndTrack();
                         return;
