@@ -56,24 +56,25 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
     /// Beacons not ranged within this many seconds are treated as out of range.
     static let maxBeaconAge: TimeInterval = 5
     static let searchRadius = 1000
-    /// If `trackVerified` runs farther than this from where the beacons were searched, the cache
-    /// defers to a new search. Half the search radius keeps every beacon within this distance of
-    /// the user inside the original search area.
-    static let maxDistanceFromSearch: CLLocationDistance = CLLocationDistance(searchRadius) / 2
     static let searchLimit = 10
+    /// About the farthest a device can range a beacon. Cached beacons are only used where the
+    /// search included every beacon within this distance of the device.
+    static let beaconRange: CLLocationDistance = 100
 
     var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
     var now: () -> TimeInterval = { ProcessInfo.processInfo.systemUptime }
     var notificationCenter: NotificationCenter = .default
-    var searchBeacons: @MainActor (CLLocation) async throws -> [CLBeaconIdentityConstraint] = { location in
+    var searchBeacons: @MainActor (CLLocation) async throws -> SearchResult = { location in
         let response = try await RadarAPIClient.shared.searchBeacons(
             near: location,
             radius: RadarBeaconRangingCache.searchRadius,
             limit: RadarBeaconRangingCache.searchLimit
         )
-        return RadarBeaconRangingCache.constraints(
+        return SearchResult(
             uuids: response.uuids,
-            beacons: response.beacons.map { BeaconIdentity(uuid: $0.uuid, major: $0.major, minor: $0.minor) }
+            beacons: response.beacons.map {
+                BeaconIdentity(uuid: $0.uuid, major: $0.major, minor: $0.minor, location: $0.geometry?.clLocation)
+            }
         )
     }
 
@@ -89,6 +90,9 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
     private(set) var constraints: [CLBeaconIdentityConstraint] = []
     // Where `constraints` were searched from, if known.
     private(set) var searchLocation: CLLocation?
+    // The search result `constraints` came from, used to tell how far from `searchLocation` it
+    // included every beacon.
+    private var searchResult: SearchResult?
     // What CoreLocation is actually ranging, which can differ from `constraints` while they're
     // being replaced.
     private var rangingConstraints: [CLBeaconIdentityConstraint] = []
@@ -122,12 +126,15 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
         pause()
         constraints = []
         searchLocation = nil
+        searchResult = nil
     }
 
     /// Replaces the beacons being ranged. No-op unless the cache has been started.
-    func update(constraints newConstraints: [CLBeaconIdentityConstraint], searchedFrom location: CLLocation? = nil) {
+    func update(_ result: SearchResult, searchedFrom location: CLLocation? = nil) {
         guard requested else { return }
         searchLocation = location ?? searchLocation
+        searchResult = result
+        let newConstraints = result.constraints
         guard Self.keys(for: newConstraints) != Self.keys(for: constraints) || !ranging else { return }
 
         constraints = newConstraints
@@ -140,29 +147,31 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
         guard requested, constraints.isEmpty else { return }
 
         update(
-            constraints: Self.constraints(
-                uuids: uuids,
-                beacons: (beacons ?? []).map { BeaconIdentity(uuid: $0.uuid, major: $0.major, minor: $0.minor) }
+            SearchResult(
+                uuids: uuids ?? [],
+                beacons: (beacons ?? []).map {
+                    BeaconIdentity(uuid: $0.uuid, major: $0.major, minor: $0.minor, location: $0.geometry?.clLocation)
+                }
             )
         )
     }
 
-    /// Beacons ranged within `maxBeaconAge`, or `nil` if the cache is not ranging or has not yet
-    /// received a ranging callback. An empty array means no beacons are nearby.
-    /// Like `cachedBeacons()`, but `nil` if `location` is too far from where the beacons were
-    /// searched. In that case the beacons are cleared, so the one-shot ranging request that
+    /// Like `cachedBeacons()`, but `nil` if the search didn't include every beacon in range of
+    /// `location`. In that case the beacons are cleared, so the one-shot ranging request that
     /// follows searches near `location` and seeds the cache.
     @objc(cachedBeaconsNear:)
     func cachedBeacons(near location: CLLocation) -> [RadarBeacon]? {
         guard requested else { return nil }
 
-        if let searchLocation, location.distance(from: searchLocation) > Self.maxDistanceFromSearch {
+        if let searchLocation, location.distance(from: searchLocation) + Self.beaconRange > coverageRadius {
             RadarLogger.shared.log(
                 level: .debug,
-                message: "Beacon ranging cache searched too far away | distance = \(Int(location.distance(from: searchLocation)))m"
+                message:
+                    "Beacon ranging cache search doesn't cover location | distance = \(Int(location.distance(from: searchLocation)))m; coverage = \(Int(min(coverageRadius, 1_000_000)))m"
             )
             pause()
             constraints = []
+            searchResult = nil
             self.searchLocation = location
             return nil
         }
@@ -173,6 +182,8 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
         return cachedBeacons()
     }
 
+    /// Beacons ranged within `maxBeaconAge`, or `nil` if the cache is not ranging or has not yet
+    /// received a ranging callback. An empty array means no beacons are nearby.
     func cachedBeacons() -> [RadarBeacon]? {
         guard ranging, warmedUp else { return nil }
 
@@ -211,7 +222,7 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
         Task { @MainActor [weak self] in
             guard let self else { return }
             do {
-                update(constraints: try await searchBeacons(location), searchedFrom: location)
+                update(try await searchBeacons(location), searchedFrom: location)
             } catch {
                 RadarLogger.shared.log(level: .debug, message: "Beacon ranging cache search failed | error = \(error.localizedDescription)")
             }
@@ -298,6 +309,9 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
         }
         observers.removeAll()
     }
+}
+
+extension RadarBeaconRangingCache {
 
     // MARK: - Helpers
 
@@ -305,10 +319,32 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
         let uuid: String
         let major: String
         let minor: String
+        var location: CLLocation?
+    }
+
+    struct SearchResult {
+        let uuids: [String]
+        let beacons: [BeaconIdentity]
+
+        var constraints: [CLBeaconIdentityConstraint] {
+            RadarBeaconRangingCache.constraints(uuids: uuids, beacons: beacons)
+        }
+    }
+
+    /// How far from `searchLocation` the search result included every beacon.
+    private var coverageRadius: CLLocationDistance {
+        guard let searchResult else { return 0 }
+        // UUID ranging matches every beacon with those UUIDs, wherever the device is.
+        if !searchResult.uuids.isEmpty { return .infinity }
+        // Fewer beacons than the limit means the search returned every beacon in its radius.
+        if searchResult.beacons.count < Self.searchLimit { return CLLocationDistance(Self.searchRadius) }
+        // A full result is the nearest beacons, so it only covers out to the farthest one.
+        guard let searchLocation else { return 0 }
+        return searchResult.beacons.compactMap { $0.location?.distance(from: searchLocation) }.max() ?? 0
     }
 
     /// UUIDs take precedence over specific beacons, matching the one-shot ranging path.
-    static func constraints(uuids: [String]?, beacons: [BeaconIdentity]) -> [CLBeaconIdentityConstraint] {
+    nonisolated static func constraints(uuids: [String]?, beacons: [BeaconIdentity]) -> [CLBeaconIdentityConstraint] {
         if let uuids, !uuids.isEmpty {
             return uuids.compactMap { UUID(uuidString: $0).map { CLBeaconIdentityConstraint(uuid: $0) } }
         }
@@ -324,6 +360,9 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
     private static func keys(for constraints: [CLBeaconIdentityConstraint]) -> Set<String> {
         Set(constraints.map { "\($0.uuid.uuidString)-\($0.major.map { "\($0)" } ?? "")-\($0.minor.map { "\($0)" } ?? "")" })
     }
+}
+
+extension RadarBeaconRangingCache {
 
     // MARK: - CLLocationManagerDelegate
 

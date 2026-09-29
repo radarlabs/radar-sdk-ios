@@ -17,10 +17,10 @@ extension RadarSerializedTests {
     @MainActor
     struct BeaconRangingCacheTests {
 
-        private static let testUUID = "2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6"
-        private static let otherUUID = "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0"
-        private static let venueA = CLLocation(latitude: 43.0300, longitude: -87.9300)
-        private static let venueB = CLLocation(latitude: 43.0372, longitude: -87.9300)
+        static let testUUID = "2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6"
+        static let otherUUID = "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0"
+        static let venueA = CLLocation(latitude: 43.0300, longitude: -87.9300)
+        static let venueB = CLLocation(latitude: 43.0450, longitude: -87.9300)
 
         let cache = RadarBeaconRangingCache()
         let mockPermissions = MockRadarPermissionsHelper()
@@ -35,13 +35,13 @@ extension RadarSerializedTests {
             cache.notificationCenter = notificationCenter
             cache.now = { 1000 }
             cache.searchBeacons = { _ in
-                RadarBeaconRangingCache.constraints(uuids: [Self.testUUID], beacons: [])
+                .init(uuids: [Self.testUUID], beacons: [])
             }
         }
 
         // MARK: - Helpers
 
-        private func withBridge(_ body: () async throws -> Void) async rethrows {
+        func withBridge(_ body: () async throws -> Void) async rethrows {
             let original = RadarSwift.bridge
             RadarSwift.bridge = mockBridge
             defer {
@@ -51,23 +51,23 @@ extension RadarSerializedTests {
             try await body()
         }
 
-        private func waitUntil(_ condition: () -> Bool) async {
+        func waitUntil(_ condition: () -> Bool) async {
             for _ in 0..<100 where !condition() {
                 await Task.yield()
             }
         }
 
         /// UUIDs CoreLocation is currently ranging for the cache.
-        private var rangedUUIDs: Set<String> {
+        var rangedUUIDs: Set<String> {
             Set(cache.locationManager.rangedBeaconConstraints.map(\.uuid.uuidString))
         }
 
-        private func startAndWaitForRanging() async {
+        func startAndWaitForRanging() async {
             cache.start()
             await waitUntil { cache.ranging }
         }
 
-        private static func entry(rssi: Int, major: String = "1", minor: String = "2") -> RadarBeaconRangingCache.RangedBeacon {
+        static func entry(rssi: Int, major: String = "1", minor: String = "2") -> RadarBeaconRangingCache.RangedBeacon {
             RadarBeaconRangingCache.RangedBeacon(uuid: testUUID, major: major, minor: minor, rssi: rssi)
         }
 
@@ -148,7 +148,7 @@ extension RadarSerializedTests {
 
                 // The new search on foreground finds different beacons.
                 cache.searchBeacons = { _ in
-                    RadarBeaconRangingCache.constraints(uuids: [Self.otherUUID], beacons: [])
+                    .init(uuids: [Self.otherUUID], beacons: [])
                 }
                 notificationCenter.post(name: UIApplication.willEnterForegroundNotification, object: nil)
                 await waitUntil { rangedUUIDs == [Self.otherUUID] }
@@ -260,7 +260,7 @@ extension RadarSerializedTests {
                 await startAndWaitForRanging()
                 #expect(rangedUUIDs == [Self.testUUID])
 
-                cache.update(constraints: RadarBeaconRangingCache.constraints(uuids: [Self.otherUUID], beacons: []))
+                cache.update(.init(uuids: [Self.otherUUID], beacons: []))
 
                 #expect(rangedUUIDs == [Self.otherUUID])
             }
@@ -270,7 +270,7 @@ extension RadarSerializedTests {
         func stop_afterUpdate_stopsAllRanging() async {
             await withBridge {
                 await startAndWaitForRanging()
-                cache.update(constraints: RadarBeaconRangingCache.constraints(uuids: [Self.otherUUID], beacons: []))
+                cache.update(.init(uuids: [Self.otherUUID], beacons: []))
 
                 cache.stop()
 
@@ -281,7 +281,7 @@ extension RadarSerializedTests {
         @Test("update before start is a no-op")
         func update_beforeStart_noop() async {
             await withBridge {
-                cache.update(constraints: RadarBeaconRangingCache.constraints(uuids: [Self.testUUID], beacons: []))
+                cache.update(.init(uuids: [Self.testUUID], beacons: []))
 
                 #expect(!cache.ranging)
                 #expect(cache.constraints.isEmpty)
@@ -294,68 +294,10 @@ extension RadarSerializedTests {
                 await startAndWaitForRanging()
                 cache.handleRanged([Self.entry(rssi: -60)])
 
-                cache.update(constraints: RadarBeaconRangingCache.constraints(uuids: [Self.testUUID], beacons: []))
+                cache.update(.init(uuids: [Self.testUUID], beacons: []))
 
                 #expect(cache.cachedBeacons()?.count == 1)
             }
-        }
-    }
-}
-
-// MARK: - Search location
-
-extension RadarSerializedTests.BeaconRangingCacheTests {
-
-    @Test("cachedBeacons(near:) is nil when the beacons were searched from somewhere else")
-    func cachedBeaconsNear_farFromSearchLocation_isNil() async {
-        await withBridge {
-            // Last session's location, near a different venue's beacons.
-            mockBridge.mockLastLocation = Self.venueA
-            cache.searchBeacons = { _ in
-                RadarBeaconRangingCache.constraints(
-                    uuids: nil,
-                    beacons: [.init(uuid: Self.testUUID, major: "1", minor: "2")]
-                )
-            }
-
-            await startAndWaitForRanging()
-            // CoreLocation reports empty ranging results for venue A's beacon.
-            cache.handleRanged([])
-
-            // trackVerified runs at venue B, 800m away.
-            #expect(cache.cachedBeacons(near: Self.venueB) == nil)
-        }
-    }
-
-    @Test("after moving far away, the next one-shot request re-targets the cache")
-    func cachedBeaconsNear_farAway_reseedsFromOneShot() async {
-        await withBridge {
-            mockBridge.mockLastLocation = Self.venueA
-            await startAndWaitForRanging()
-            cache.handleRanged([])
-
-            #expect(cache.cachedBeacons(near: Self.venueB) == nil)
-            #expect(cache.constraints.isEmpty)
-            #expect(rangedUUIDs.isEmpty)
-
-            // trackVerified's own search near venue B returns B's beacons.
-            cache.seedIfNeeded(uuids: [Self.otherUUID], beacons: nil)
-            #expect(rangedUUIDs == [Self.otherUUID])
-
-            cache.handleRanged([])
-            #expect(cache.cachedBeacons(near: Self.venueB)?.isEmpty == true)
-        }
-    }
-
-    @Test("cachedBeacons(near:) returns cached beacons near the search location")
-    func cachedBeaconsNear_nearSearchLocation_returnsBeacons() async {
-        await withBridge {
-            mockBridge.mockLastLocation = Self.venueA
-            await startAndWaitForRanging()
-            cache.handleRanged([Self.entry(rssi: -60)])
-
-            let nearby = CLLocation(latitude: Self.venueA.coordinate.latitude + 0.001, longitude: Self.venueA.coordinate.longitude)
-            #expect(cache.cachedBeacons(near: nearby)?.count == 1)
         }
     }
 }
