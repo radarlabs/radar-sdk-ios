@@ -29,7 +29,9 @@ public final class RadarAPIClient: Sendable {
     }
 
     private func assertResponseCode(_ code: Int) throws {
-        if code == 401 {
+        if code == 400 {
+            throw RadarError(status: .errorBadRequest, message: "Bad request")
+        } else if code == 401 {
             throw RadarError(status: .errorUnauthorized, message: "Unauthorized")
         } else if code == 402 {
             throw RadarError(status: .errorPaymentRequired, message: "Payment required")
