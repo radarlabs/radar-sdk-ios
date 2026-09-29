@@ -9,38 +9,6 @@ import CoreLocation
 import Foundation
 import UIKit
 
-extension Radar {
-
-    /// Starts continuously ranging nearby beacons while the app is in the foreground, so
-    /// `trackVerified(beacons: true)` can attach nearby beacons without waiting on a new ranging
-    /// window.
-    ///
-    /// Call this after `initialize` and after location permissions are granted, ideally when the
-    /// user enters a flow that calls `trackVerified(beacons: true)`, and call
-    /// `stopRangingBeacons()` when beacons are no longer needed. Ranging pauses automatically when
-    /// the app enters the background and resumes when it returns to the foreground. Requires
-    /// foreground location permissions and Bluetooth. Until ranging results are available,
-    /// `trackVerified(beacons: true)` ranges beacons as usual.
-    ///
-    /// - SeeAlso: https://radar.com/documentation/beacons
-    @objc public static func startRangingBeacons() {
-        RadarLogger.shared.info("startRangingBeacons()", type: .sdkCall)
-        Task { @MainActor in
-            RadarBeaconRangingCache.shared.start()
-        }
-    }
-
-    /// Stops ranging beacons started with `startRangingBeacons()`.
-    ///
-    /// - SeeAlso: https://radar.com/documentation/beacons
-    @objc public static func stopRangingBeacons() {
-        RadarLogger.shared.info("stopRangingBeacons()", type: .sdkCall)
-        Task { @MainActor in
-            RadarBeaconRangingCache.shared.stop()
-        }
-    }
-}
-
 /// Continuously ranges nearby beacons while the app is in the foreground so `trackVerified` can
 /// attach beacons without waiting on a one-shot ranging window.
 ///
@@ -93,6 +61,8 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
     // The search result `constraints` came from, used to tell how far from `searchLocation` it
     // included every beacon.
     private var searchResult: SearchResult?
+    // Incremented to invalidate a search that's still running.
+    private var searchGeneration = 0
     // What CoreLocation is actually ranging, which can differ from `constraints` while they're
     // being replaced.
     private var rangingConstraints: [CLBeaconIdentityConstraint] = []
@@ -127,6 +97,7 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
         constraints = []
         searchLocation = nil
         searchResult = nil
+        searchGeneration += 1
     }
 
     /// Replaces the beacons being ranged. No-op unless the cache has been started.
@@ -173,6 +144,7 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
             constraints = []
             searchResult = nil
             self.searchLocation = location
+            searchGeneration += 1
             return nil
         }
 
@@ -219,10 +191,17 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
             return
         }
 
+        searchGeneration += 1
+        let generation = searchGeneration
         Task { @MainActor [weak self] in
             guard let self else { return }
             do {
-                update(try await searchBeacons(location), searchedFrom: location)
+                let result = try await searchBeacons(location)
+                guard generation == searchGeneration else {
+                    RadarLogger.shared.log(level: .debug, message: "Beacon ranging cache ignoring stale search")
+                    return
+                }
+                update(result, searchedFrom: location)
             } catch {
                 RadarLogger.shared.log(level: .debug, message: "Beacon ranging cache search failed | error = \(error.localizedDescription)")
             }
