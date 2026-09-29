@@ -38,6 +38,7 @@ protocol RadarSwiftBridgeProtocol {
     func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon
     func createBeacon(fromRegion region: CLBeaconRegion) -> RadarBeacon
     func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon)
+    func searchBeacons(near: CLLocation, radius: Int, limit: Int, completionHandler: @escaping (RadarStatus, [RadarBeacon]?, [String]?) -> Void)
 }
 
 @objc(RadarSwift) @objcMembers

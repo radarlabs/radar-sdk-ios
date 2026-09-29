@@ -15,6 +15,7 @@
 #import "RadarAPIClient.h"
 #import "RadarSdkConfiguration.h"
 #import "RadarBeaconManagerSwift.h"
+#import "RadarBeaconRangingCache.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
@@ -254,13 +255,17 @@
                     }];
                 };
             
-            if (beacons) {
+            void (^rangeBeaconsAndTrack)(void) = ^{
                 [[RadarAPIClient sharedInstance]
                      searchBeaconsNear:location
                      radius:1000
                      limit:10
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                          NSArray<NSString *> *_Nullable beaconUUIDs) {
+                        [RadarUtilsDeprecated runOnMainThread:^{
+                            [[RadarBeaconRangingCache shared] updateBeacons:beacons uuids:beaconUUIDs];
+                        }];
+
                         if (beaconUUIDs && beaconUUIDs.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
                                 [[RadarBeaconManagerSwift shared]
@@ -293,9 +298,24 @@
                             callTrackAPI(@[]);
                         }
                     }];
-                } else {
-                    callTrackAPI(nil);
-                }
+            };
+
+            if (beacons) {
+                [RadarUtilsDeprecated runOnMainThread:^{
+                    NSArray<RadarBeacon *> *cachedBeacons = [[RadarBeaconRangingCache shared] cachedBeacons];
+                    if (!cachedBeacons) {
+                        rangeBeaconsAndTrack();
+                        return;
+                    }
+
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                       message:[NSString stringWithFormat:@"Using cached beacons | cachedBeacons.count = %lu", (unsigned long)cachedBeacons.count]];
+
+                    callTrackAPI(cachedBeacons);
+                }];
+            } else {
+                callTrackAPI(nil);
+            }
             }];
         }];
     };

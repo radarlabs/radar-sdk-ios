@@ -48,6 +48,10 @@
 - (RadarBeacon * _Nonnull)createBeaconWithUuid:(NSString * _Nonnull)uuid major:(NSString * _Nonnull)major minor:(NSString * _Nonnull)minor rssi:(NSInteger)rssi;
 - (RadarBeacon * _Nonnull)createBeaconFromRegion:(CLBeaconRegion * _Nonnull)region;
 - (void)setRssi:(NSInteger)rssi onBeacon:(RadarBeacon * _Nonnull)beacon;
+- (void)searchBeaconsNear:(CLLocation * _Nonnull)near
+                   radius:(NSInteger)radius
+                    limit:(NSInteger)limit
+        completionHandler:(void (^_Nonnull)(RadarStatus status, NSArray<RadarBeacon *> * _Nullable beacons, NSArray<NSString *> * _Nullable beaconUUIDs))completionHandler;
 @end
 
 @interface RadarSwiftBridge: NSObject<RadarSwiftBridgeProtocol>

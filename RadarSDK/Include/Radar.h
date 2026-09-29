@@ -664,6 +664,22 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 + (void)stopTrackingVerified NS_SWIFT_NAME(stopTrackingVerified());
 
 /**
+ Starts continuously ranging nearby beacons while the app is in the foreground, so that `trackVerified(beacons: true)` can attach nearby beacons without waiting on a new ranging window.
+
+ Call this on app open or when the user enters a flow that calls `trackVerified(beacons: true)`, and call `stopRangingBeacons()` when beacons are no longer needed. Ranging pauses automatically when the app enters the background and resumes when it returns to the foreground. Requires foreground location permissions and Bluetooth. Until ranging results are available, `trackVerified(beacons: true)` ranges beacons as usual.
+
+ @see https://radar.com/documentation/beacons
+ */
++ (void)startRangingBeacons NS_SWIFT_NAME(startRangingBeacons());
+
+/**
+ Stops ranging beacons started with `startRangingBeacons()`.
+
+ @see https://radar.com/documentation/beacons
+ */
++ (void)stopRangingBeacons NS_SWIFT_NAME(stopRangingBeacons());
+
+/**
  Returns a boolean indicating whether verified tracking has been started.
 
  @return A boolean indicating whether verified tracking has been started.

@@ -100,6 +100,18 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
 
     func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon) {}
 
+    var mockSearchBeaconsStatus: RadarStatus = .success
+    var mockSearchBeacons: [RadarBeacon]?
+    var mockSearchBeaconUUIDs: [String]?
+    private(set) var searchBeaconsCallCount = 0
+    func searchBeacons(
+        near: CLLocation, radius: Int, limit: Int,
+        completionHandler: @escaping (RadarStatus, [RadarBeacon]?, [String]?) -> Void
+    ) {
+        searchBeaconsCallCount += 1
+        completionHandler(mockSearchBeaconsStatus, mockSearchBeacons, mockSearchBeaconUUIDs)
+    }
+
     func extractContent(fromMetadata metadata: [AnyHashable: Any]?, identifier: String?) -> UNMutableNotificationContent? {
         nil
     }
