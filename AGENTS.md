@@ -4,6 +4,23 @@
 
 iOS SDK for [Radar](https://radar.com). The SDK is an Xcode project with an Objective-C foundation that is actively being migrated to Swift.
 
+## Public Repository: No Customer Information
+
+This repository is public. Commits, branch names, PR titles and descriptions, code, comments,
+tests, and docs are visible to anyone. Linear tickets and Slack threads often include customer
+details. Never copy those into anything in this repo.
+
+Never include:
+- Customer, prospect, or partner names, or venue/app names that identify them
+- Deal sizes, pricing, contract terms, launch dates, or certification/compliance timelines
+- Customer-specific use cases (e.g. "their checkout flow") or quotes from customer conversations
+- Links to Slack threads, customer logs, or other internal-only material
+
+Instead, describe the problem and the fix in product terms (e.g. "`trackVerified(beacons: true)`
+waits up to 5s in large venues"), and link the Linear ticket by ID (e.g. `FENCE-1234`) for
+internal context. Before creating a branch, commit, or PR, check the title, message, and body
+for customer details. If a suggested branch name from a ticket contains a customer name, rename it.
+
 ## Language Policy
 
 **All new code must be written in Swift.**
