@@ -197,6 +197,10 @@ public final class RadarAPIClient: Sendable {
         return RadarConfig.from(dictionary: json)
     }
 
+    // Swift port of -[RadarAPIClient searchBeaconsNear:radius:limit:completionHandler:] in
+    // RadarAPIClient.m, used by RadarBeaconRangingCache. The Objective-C version is still used by
+    // trackVerified, trackOnce, and background tracking. Keep the request and the beaconUUIDs side
+    // effect in sync with it until those callers move to Swift, then delete the Objective-C version.
     struct SearchBeaconsResponse {
         let beacons: [RadarBeaconSwift]
         let uuids: [String]
