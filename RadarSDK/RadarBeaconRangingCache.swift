@@ -38,12 +38,7 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
             radius: RadarBeaconRangingCache.searchRadius,
             limit: RadarBeaconRangingCache.searchLimit
         )
-        return SearchResult(
-            uuids: response.uuids,
-            beacons: response.beacons.map {
-                BeaconIdentity(uuid: $0.uuid, major: $0.major, minor: $0.minor, location: $0.geometry?.clLocation)
-            }
-        )
+        return SearchResult(uuids: response.uuids, beacons: response.beacons.map(BeaconIdentity.init))
     }
 
     private(set) lazy var locationManager: CLLocationManager = {
@@ -53,7 +48,6 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
     }()
 
     private(set) var requested = false
-    private(set) var ranging = false
     private(set) var warmedUp = false
     private(set) var constraints: [CLBeaconIdentityConstraint] = []
     // Where `constraints` were searched from, if known.
@@ -69,9 +63,7 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
     private var cache: [String: (beacon: RadarBeacon, lastSeen: TimeInterval)] = [:]
     private var observers: [NSObjectProtocol] = []
 
-    override init() {
-        super.init()
-    }
+    var ranging: Bool { !rangingConstraints.isEmpty }
 
     // MARK: - Control
 
@@ -93,10 +85,15 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
 
         requested = false
         removeObservers()
+        reset(searchLocation: nil)
+    }
+
+    /// Stops ranging and forgets the beacons, invalidating any search that's still running.
+    private func reset(searchLocation location: CLLocation?) {
         pause()
         constraints = []
-        searchLocation = nil
         searchResult = nil
+        searchLocation = location
         searchGeneration += 1
     }
 
@@ -115,16 +112,9 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
     /// Uses the beacons from a one-shot ranging request when the cache has started but has no
     /// beacons yet, for example because there was no location to search from.
     func seedIfNeeded(uuids: [String]?, beacons: [RadarBeacon]?) {
-        guard requested, constraints.isEmpty else { return }
+        guard constraints.isEmpty else { return }
 
-        update(
-            SearchResult(
-                uuids: uuids ?? [],
-                beacons: (beacons ?? []).map {
-                    BeaconIdentity(uuid: $0.uuid, major: $0.major, minor: $0.minor, location: $0.geometry?.clLocation)
-                }
-            )
-        )
+        update(SearchResult(uuids: uuids ?? [], beacons: (beacons ?? []).map(BeaconIdentity.init)))
     }
 
     /// Like `cachedBeacons()`, but `nil` if the search didn't include every beacon in range of
@@ -140,17 +130,11 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
                 message:
                     "Beacon ranging cache search doesn't cover location | distance = \(Int(location.distance(from: searchLocation)))m; coverage = \(Int(min(coverageRadius, 1_000_000)))m"
             )
-            pause()
-            constraints = []
-            searchResult = nil
-            self.searchLocation = location
-            searchGeneration += 1
+            reset(searchLocation: location)
             return nil
         }
 
-        if searchLocation == nil {
-            searchLocation = location
-        }
+        searchLocation = searchLocation ?? location
         return cachedBeacons()
     }
 
@@ -213,7 +197,6 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
             locationManager.stopRangingBeacons(satisfying: constraint)
         }
         rangingConstraints = []
-        ranging = false
         warmedUp = false
         cache.removeAll()
     }
@@ -224,7 +207,6 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
         pause()
         guard !constraints.isEmpty else { return }
 
-        ranging = true
         for constraint in constraints {
             RadarLogger.shared.log(
                 level: .debug,
@@ -266,18 +248,16 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
     private func addObservers() {
         guard observers.isEmpty else { return }
 
+        observe(UIApplication.didEnterBackgroundNotification, "Pausing beacon ranging cache in background") { $0.pause() }
+        observe(UIApplication.willEnterForegroundNotification, "Resuming beacon ranging cache in foreground") { $0.resume() }
+    }
+
+    private func observe(_ name: Notification.Name, _ message: String, _ action: @escaping @MainActor (RadarBeaconRangingCache) -> Void) {
         observers.append(
-            notificationCenter.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
+            notificationCenter.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
                 MainActor.assumeIsolated {
-                    RadarLogger.shared.log(level: .debug, message: "Pausing beacon ranging cache in background")
-                    self?.pause()
-                }
-            })
-        observers.append(
-            notificationCenter.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
-                MainActor.assumeIsolated {
-                    RadarLogger.shared.log(level: .debug, message: "Resuming beacon ranging cache in foreground")
-                    self?.resume()
+                    RadarLogger.shared.log(level: .debug, message: message)
+                    if let self { action(self) }
                 }
             })
     }
@@ -305,8 +285,18 @@ extension RadarBeaconRangingCache {
         let uuids: [String]
         let beacons: [BeaconIdentity]
 
+        /// UUIDs take precedence over specific beacons, matching the one-shot ranging path.
         var constraints: [CLBeaconIdentityConstraint] {
-            RadarBeaconRangingCache.constraints(uuids: uuids, beacons: beacons)
+            if !uuids.isEmpty {
+                return uuids.compactMap { UUID(uuidString: $0).map { CLBeaconIdentityConstraint(uuid: $0) } }
+            }
+            return beacons.compactMap { beacon in
+                guard let uuid = UUID(uuidString: beacon.uuid),
+                    let major = CLBeaconMajorValue(beacon.major),
+                    let minor = CLBeaconMinorValue(beacon.minor)
+                else { return nil }
+                return CLBeaconIdentityConstraint(uuid: uuid, major: major, minor: minor)
+            }
         }
     }
 
@@ -322,22 +312,18 @@ extension RadarBeaconRangingCache {
         return searchResult.beacons.compactMap { $0.location?.distance(from: searchLocation) }.max() ?? 0
     }
 
-    /// UUIDs take precedence over specific beacons, matching the one-shot ranging path.
-    nonisolated static func constraints(uuids: [String]?, beacons: [BeaconIdentity]) -> [CLBeaconIdentityConstraint] {
-        if let uuids, !uuids.isEmpty {
-            return uuids.compactMap { UUID(uuidString: $0).map { CLBeaconIdentityConstraint(uuid: $0) } }
-        }
-        return beacons.compactMap { beacon in
-            guard let uuid = UUID(uuidString: beacon.uuid),
-                let major = CLBeaconMajorValue(beacon.major),
-                let minor = CLBeaconMinorValue(beacon.minor)
-            else { return nil }
-            return CLBeaconIdentityConstraint(uuid: uuid, major: major, minor: minor)
-        }
-    }
-
     private static func keys(for constraints: [CLBeaconIdentityConstraint]) -> Set<String> {
         Set(constraints.map { "\($0.uuid.uuidString)-\($0.major.map { "\($0)" } ?? "")-\($0.minor.map { "\($0)" } ?? "")" })
+    }
+}
+
+extension RadarBeaconRangingCache.BeaconIdentity {
+    init(_ beacon: RadarBeacon) {
+        self.init(uuid: beacon.uuid, major: beacon.major, minor: beacon.minor, location: beacon.geometry?.clLocation)
+    }
+
+    init(_ beacon: RadarBeaconSwift) {
+        self.init(uuid: beacon.uuid, major: beacon.major, minor: beacon.minor, location: beacon.geometry?.clLocation)
     }
 }
 

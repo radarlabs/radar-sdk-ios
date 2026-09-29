@@ -234,21 +234,21 @@ extension RadarSerializedTests {
 
         @Test("constraints prefer UUIDs and otherwise use specific beacons, skipping invalid ones")
         func constraints_builder() {
-            let fromUUIDs = RadarBeaconRangingCache.constraints(
+            let fromUUIDs = RadarBeaconRangingCache.SearchResult(
                 uuids: [Self.testUUID],
                 beacons: [.init(uuid: Self.testUUID, major: "1", minor: "2")]
-            )
+            ).constraints
             #expect(fromUUIDs.count == 1)
             #expect(fromUUIDs.first?.major == nil)
 
-            let fromBeacons = RadarBeaconRangingCache.constraints(
+            let fromBeacons = RadarBeaconRangingCache.SearchResult(
                 uuids: [],
                 beacons: [
                     .init(uuid: Self.testUUID, major: "1", minor: "2"),
                     .init(uuid: "not-a-uuid", major: "1", minor: "2"),
                     .init(uuid: Self.testUUID, major: "x", minor: "2"),
                 ]
-            )
+            ).constraints
             #expect(fromBeacons.count == 1)
             #expect(fromBeacons.first?.major == 1)
             #expect(fromBeacons.first?.minor == 2)
