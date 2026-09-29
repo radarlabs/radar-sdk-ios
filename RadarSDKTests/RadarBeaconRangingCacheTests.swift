@@ -15,6 +15,10 @@ final class BeaconRangingTestClock {
     var time: TimeInterval = 1000
 }
 
+final class BeaconSearchStub {
+    var callCount = 0
+}
+
 extension RadarSerializedTests {
 
     @Suite("RadarBeaconRangingCache")
@@ -28,16 +32,21 @@ extension RadarSerializedTests {
         let mockBridge = MockRadarSwiftBridge()
         let notificationCenter = NotificationCenter()
         let clock = BeaconRangingTestClock()
+        let search = BeaconSearchStub()
 
         init() {
             mockBridge.mockIsForeground = true
             mockBridge.mockLastLocation = CLLocation(latitude: 43.03, longitude: -87.93)
-            mockBridge.mockSearchBeaconUUIDs = [Self.testUUID]
 
             cache.permissionsHelper = mockPermissions
             cache.notificationCenter = notificationCenter
             let clock = clock
             cache.now = { clock.time }
+            let search = search
+            cache.searchBeacons = { _ in
+                search.callCount += 1
+                return RadarBeaconRangingCache.constraints(uuids: [Self.testUUID], beacons: [])
+            }
         }
 
         // MARK: - Helpers
@@ -81,7 +90,7 @@ extension RadarSerializedTests {
             await withBridge {
                 await startAndWaitForRanging()
 
-                #expect(mockBridge.searchBeaconsCallCount == 1)
+                #expect(search.callCount == 1)
                 #expect(cache.ranging)
                 #expect(cache.constraints.count == 1)
                 #expect(cache.cachedBeacons() == nil)
@@ -142,10 +151,10 @@ extension RadarSerializedTests {
                 #expect(cache.cachedBeacons() == nil)
 
                 notificationCenter.post(name: UIApplication.willEnterForegroundNotification, object: nil)
-                await waitUntil { mockBridge.searchBeaconsCallCount == 2 }
+                await waitUntil { search.callCount == 2 }
 
                 #expect(cache.ranging)
-                #expect(mockBridge.searchBeaconsCallCount == 2)
+                #expect(search.callCount == 2)
                 #expect(cache.cachedBeacons() == nil)
             }
         }
@@ -174,7 +183,7 @@ extension RadarSerializedTests {
 
                 cache.start()
 
-                #expect(mockBridge.searchBeaconsCallCount == 0)
+                #expect(search.callCount == 0)
                 #expect(!cache.ranging)
             }
         }
@@ -186,29 +195,65 @@ extension RadarSerializedTests {
 
                 cache.start()
 
-                #expect(mockBridge.searchBeaconsCallCount == 0)
+                #expect(search.callCount == 0)
                 #expect(!cache.ranging)
             }
         }
 
-        @Test("start without a last location waits for beacons from trackVerified")
+        @Test("start without a last location ranges once a one-shot request seeds beacons")
         func start_noLocation_rangesAfterUpdate() async {
             await withBridge {
                 mockBridge.mockLastLocation = nil
 
                 cache.start()
-                #expect(mockBridge.searchBeaconsCallCount == 0)
+                #expect(search.callCount == 0)
                 #expect(!cache.ranging)
 
-                cache.update(beacons: nil, uuids: [Self.testUUID])
+                cache.seedIfNeeded(uuids: [Self.testUUID], beacons: nil)
                 #expect(cache.ranging)
             }
+        }
+
+        @Test("seedIfNeeded does not replace beacons the cache is already ranging")
+        func seedIfNeeded_alreadyRanging_keepsConstraints() async {
+            await withBridge {
+                await startAndWaitForRanging()
+                cache.handleRanged([Self.entry(rssi: -60)])
+
+                cache.seedIfNeeded(uuids: ["E2C56DB5-DFFB-48D2-B060-D0F5A71096E0"], beacons: nil)
+
+                #expect(cache.constraints.count == 1)
+                #expect(cache.constraints.first?.uuid.uuidString == Self.testUUID)
+                #expect(cache.cachedBeacons()?.count == 1)
+            }
+        }
+
+        @Test("constraints prefer UUIDs and otherwise use specific beacons, skipping invalid ones")
+        func constraints_builder() {
+            let fromUUIDs = RadarBeaconRangingCache.constraints(
+                uuids: [Self.testUUID],
+                beacons: [.init(uuid: Self.testUUID, major: "1", minor: "2")]
+            )
+            #expect(fromUUIDs.count == 1)
+            #expect(fromUUIDs.first?.major == nil)
+
+            let fromBeacons = RadarBeaconRangingCache.constraints(
+                uuids: [],
+                beacons: [
+                    .init(uuid: Self.testUUID, major: "1", minor: "2"),
+                    .init(uuid: "not-a-uuid", major: "1", minor: "2"),
+                    .init(uuid: Self.testUUID, major: "x", minor: "2"),
+                ]
+            )
+            #expect(fromBeacons.count == 1)
+            #expect(fromBeacons.first?.major == 1)
+            #expect(fromBeacons.first?.minor == 2)
         }
 
         @Test("update before start is a no-op")
         func update_beforeStart_noop() async {
             await withBridge {
-                cache.update(beacons: nil, uuids: [Self.testUUID])
+                cache.update(constraints: RadarBeaconRangingCache.constraints(uuids: [Self.testUUID], beacons: []))
 
                 #expect(!cache.ranging)
                 #expect(cache.constraints.isEmpty)
@@ -221,7 +266,7 @@ extension RadarSerializedTests {
                 await startAndWaitForRanging()
                 cache.handleRanged([Self.entry(rssi: -60)])
 
-                cache.update(beacons: nil, uuids: [Self.testUUID])
+                cache.update(constraints: RadarBeaconRangingCache.constraints(uuids: [Self.testUUID], beacons: []))
 
                 #expect(cache.cachedBeacons()?.count == 1)
             }

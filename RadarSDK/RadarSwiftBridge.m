@@ -143,17 +143,4 @@
     [beacon setRssi:rssi];
 }
 
-- (void)searchBeaconsNear:(CLLocation *)near
-                   radius:(NSInteger)radius
-                    limit:(NSInteger)limit
-        completionHandler:(void (^)(RadarStatus, NSArray<RadarBeacon *> *_Nullable, NSArray<NSString *> *_Nullable))completionHandler {
-    [[RadarAPIClient sharedInstance] searchBeaconsNear:near
-                                                radius:(int)radius
-                                                 limit:(int)limit
-                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
-                                                         NSArray<NSString *> *_Nullable beaconUUIDs) {
-        completionHandler(status, beacons, beaconUUIDs);
-    }];
-}
-
 @end

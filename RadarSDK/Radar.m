@@ -9,7 +9,6 @@
 #include "RadarSdkConfiguration.h"
 #import "RadarAPIClient.h"
 #import "RadarBeaconManagerSwift.h"
-#import "RadarBeaconRangingCache.h"
 #import "RadarConfig.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
@@ -479,20 +478,6 @@ BOOL _initialized = NO;
 + (void)stopTrackingVerified {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopTrackingVerified()"];
     [[RadarVerificationManager sharedInstance] stopTrackingVerified];
-}
-
-+ (void)startRangingBeacons {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"startRangingBeacons()"];
-    [RadarUtilsDeprecated runOnMainThread:^{
-        [[RadarBeaconRangingCache shared] start];
-    }];
-}
-
-+ (void)stopRangingBeacons {
-    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"stopRangingBeacons()"];
-    [RadarUtilsDeprecated runOnMainThread:^{
-        [[RadarBeaconRangingCache shared] stop];
-    }];
 }
 
 + (BOOL)isTrackingVerified {

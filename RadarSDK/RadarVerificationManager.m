@@ -15,7 +15,6 @@
 #import "RadarAPIClient.h"
 #import "RadarSdkConfiguration.h"
 #import "RadarBeaconManagerSwift.h"
-#import "RadarBeaconRangingCache.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
@@ -50,6 +49,12 @@
 
 @end
 
+
+// Implemented in RadarBeaconRangingCache.swift. It's internal, so it isn't in RadarSDK-Swift.h.
+@interface RadarBeaconRangingCache : NSObject
+@property (class, readonly, strong) RadarBeaconRangingCache *shared;
+- (NSArray<RadarBeacon *> *_Nullable)cachedBeacons;
+@end
 
 @interface RadarVerificationManager () <RadarVerificationManagerSwiftHost>
 
@@ -262,10 +267,6 @@
                      limit:10
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                          NSArray<NSString *> *_Nullable beaconUUIDs) {
-                        [RadarUtilsDeprecated runOnMainThread:^{
-                            [[RadarBeaconRangingCache shared] updateBeacons:beacons uuids:beaconUUIDs];
-                        }];
-
                         if (beaconUUIDs && beaconUUIDs.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
                                 [[RadarBeaconManagerSwift shared]

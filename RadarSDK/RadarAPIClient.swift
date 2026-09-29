@@ -5,6 +5,7 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 
 public final class RadarAPIClient: Sendable {
@@ -194,6 +195,48 @@ public final class RadarAPIClient: Sendable {
 
         let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
         return RadarConfig.from(dictionary: json)
+    }
+
+    struct SearchBeaconsResponse {
+        let beacons: [RadarBeaconSwift]
+        let uuids: [String]
+    }
+
+    func searchBeacons(near location: CLLocation, radius: Int, limit: Int) async throws -> SearchBeaconsResponse {
+        let query = [
+            URLQueryItem(
+                name: "near",
+                value: String(format: "%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude)
+            ),
+            URLQueryItem(name: "radius", value: "\(radius)"),
+            URLQueryItem(name: "limit", value: "\(min(limit, 100))"),
+        ]
+
+        let (data, response) = try await apiHelper.radarRequest(method: "GET", url: "search/beacons", query: query)
+
+        try assertResponseCode(response.statusCode)
+
+        guard let res = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw APIError(data: data, response: response, message: "Failed to parse search beacons response")
+        }
+
+        var beacons: [RadarBeaconSwift] = []
+        if let arr = res["beacons"] as? [[String: Any]],
+            let jsonData = try? JSONSerialization.data(withJSONObject: arr)
+        {
+            beacons = (try? JSONDecoder().decode([RadarBeaconSwift].self, from: jsonData)) ?? []
+        }
+
+        var uuids: [String] = []
+        if let meta = res["meta"] as? [String: Any],
+            let settings = meta["settings"] as? [String: Any],
+            let beaconSettings = settings["beacons"] as? [String: Any]
+        {
+            uuids = (beaconSettings["uuids"] as? [String] ?? []).filter { !$0.isEmpty }
+            RadarSettings.beaconUUIDs = uuids
+        }
+
+        return SearchBeaconsResponse(beacons: beacons, uuids: uuids)
     }
 
     // TODO: implement rest of RadarAPIClient
