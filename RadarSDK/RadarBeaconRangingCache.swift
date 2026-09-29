@@ -41,6 +41,14 @@ extension Radar {
     }
 }
 
+/// The ranging calls `RadarBeaconRangingCache` makes, so tests can record them.
+protocol RadarBeaconRanging: AnyObject {
+    func startRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint)
+    func stopRangingBeacons(satisfying constraint: CLBeaconIdentityConstraint)
+}
+
+extension CLLocationManager: RadarBeaconRanging {}
+
 /// Continuously ranges nearby beacons while the app is in the foreground so `trackVerified` can
 /// attach beacons without waiting on a one-shot ranging window.
 ///
@@ -73,7 +81,7 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
         )
     }
 
-    private lazy var locationManager: CLLocationManager = {
+    lazy var ranger: RadarBeaconRanging = {
         let manager = CLLocationManager()
         manager.delegate = self
         return manager
@@ -83,6 +91,9 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
     private(set) var ranging = false
     private(set) var warmedUp = false
     private(set) var constraints: [CLBeaconIdentityConstraint] = []
+    // What CoreLocation is actually ranging, which can differ from `constraints` while they're
+    // being replaced.
+    private var rangingConstraints: [CLBeaconIdentityConstraint] = []
     private var cache: [String: (beacon: RadarBeacon, lastSeen: TimeInterval)] = [:]
     private var observers: [NSObjectProtocol] = []
 
@@ -184,9 +195,10 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
     }
 
     private func pause() {
-        for constraint in constraints {
-            locationManager.stopRangingBeacons(satisfying: constraint)
+        for constraint in rangingConstraints {
+            ranger.stopRangingBeacons(satisfying: constraint)
         }
+        rangingConstraints = []
         ranging = false
         warmedUp = false
         cache.removeAll()
@@ -204,8 +216,9 @@ class RadarBeaconRangingCache: NSObject, CLLocationManagerDelegate {
                 level: .debug,
                 message:
                     "Beacon ranging cache ranging | uuid = \(constraint.uuid.uuidString); major = \(constraint.major.map { "\($0)" } ?? "nil"); minor = \(constraint.minor.map { "\($0)" } ?? "nil")")
-            locationManager.startRangingBeacons(satisfying: constraint)
+            ranger.startRangingBeacons(satisfying: constraint)
         }
+        rangingConstraints = constraints
     }
 
     /// A ranged beacon reading, copied out of `CLBeacon` so it can cross to the main actor.
