@@ -55,5 +55,6 @@ FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 #import "RadarRouteDistance.h"
 #import "RadarRouteDuration.h"
 #import "RadarRouteGeometry.h"
+#import "RadarRouteMatrix.h"
 #import "RadarTimeZone.h"
 #import "RadarTripOptions.h"
