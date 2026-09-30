@@ -47,6 +47,27 @@ extension RadarSerializedTests {
             #expect(response.uuids == ["2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6"])
         }
 
+        @Test("searchBeacons only requests iBeacons")
+        func searchBeacons_requestsOnlyIBeacons() async throws {
+            let session = MockURLSession()
+            session.on(
+                { request in
+                    Self.isSearchBeacons(request)
+                        && URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems?
+                            .contains(URLQueryItem(name: "type", value: "ibeacon")) == true
+                },
+                ["meta": ["code": 200], "beacons": []],
+                statusCode: 200
+            )
+
+            Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
+            let apiClient = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
+
+            let response = try await apiClient.searchBeacons(near: Self.location, radius: 1000, limit: 10)
+
+            #expect(response.beacons.isEmpty)
+        }
+
         @Test("searchBeacons throws bad request on a 400 instead of returning no beacons")
         func searchBeacons_badRequest_throws() async throws {
             let session = MockURLSession()

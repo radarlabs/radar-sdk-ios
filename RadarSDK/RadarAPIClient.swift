@@ -203,6 +203,7 @@ public final class RadarAPIClient: Sendable {
     // RadarAPIClient.m, used by RadarBeaconRangingCache. The Objective-C version is still used by
     // trackVerified, trackOnce, and background tracking. Keep the request and the beaconUUIDs side
     // effect in sync with it until those callers move to Swift, then delete the Objective-C version.
+    // Unlike the Objective-C version, it only requests iBeacons (see `type` below).
     struct SearchBeaconsResponse {
         let beacons: [RadarBeaconSwift]
         let uuids: [String]
@@ -216,6 +217,11 @@ public final class RadarAPIClient: Sendable {
             ),
             URLQueryItem(name: "radius", value: "\(radius)"),
             URLQueryItem(name: "limit", value: "\(min(limit, 100))"),
+            // Only iBeacons. CoreLocation can only range iBeacons, and Eddystone and Radar UWB
+            // beacons have no uuid/major/minor, so they can't be decoded as RadarBeaconSwift. The
+            // server filters by type before applying `limit`, so the limit counts only iBeacons.
+            // The Objective-C search doesn't send this: its callers tolerate other beacon types.
+            URLQueryItem(name: "type", value: "ibeacon"),
         ]
 
         let (data, response) = try await apiHelper.radarRequest(method: "GET", url: "search/beacons", query: query)
