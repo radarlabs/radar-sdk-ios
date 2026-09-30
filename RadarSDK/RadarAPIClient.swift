@@ -232,11 +232,10 @@ public final class RadarAPIClient: Sendable {
             throw APIError(data: data, response: response, message: "Failed to parse search beacons response")
         }
 
-        var beacons: [RadarBeaconSwift] = []
-        if let arr = res["beacons"] as? [[String: Any]],
-            let jsonData = try? JSONSerialization.data(withJSONObject: arr)
-        {
-            beacons = (try? JSONDecoder().decode([RadarBeaconSwift].self, from: jsonData)) ?? []
+        // Decode each beacon on its own, so one that can't be decoded doesn't drop the rest.
+        let beacons = (res["beacons"] as? [[String: Any]] ?? []).compactMap { dict -> RadarBeaconSwift? in
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: dict) else { return nil }
+            return try? JSONDecoder().decode(RadarBeaconSwift.self, from: jsonData)
         }
 
         var uuids: [String] = []
