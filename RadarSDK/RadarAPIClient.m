@@ -6,6 +6,7 @@
 //
 
 #import "RadarAPIClient.h"
+#import "RadarTrackVerifiedRequestPreparer.h"
 
 #import "Radar+Internal.h"
 #import "Radar.h"
@@ -213,7 +214,7 @@
                     beacons:beacons
              indoorLocation:indoorLocation
                    verified:NO
-               fraudPayload:nil
+              preparedFraudPayload:nil
         expectedCountryCode:nil
           expectedStateCode:nil
             expectedAddress:nil
@@ -232,7 +233,7 @@
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
            indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
-             fraudPayload:(NSString * _Nullable)fraudPayload
+             preparedFraudPayload:(RadarPreparedFraudPayloadWrapper * _Nullable)preparedFraudPayload
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
           expectedAddress:(NSString *_Nullable)expectedAddress
@@ -372,9 +373,6 @@
         if (revealRiskId) {
             params[@"revealRiskId"] = revealRiskId;
         }
-        if (fraudPayload) {
-            params[@"fraudPayload"] = fraudPayload;
-        }
     }
 
     params[@"appId"] = [[NSBundle mainBundle] bundleIdentifier];
@@ -467,6 +465,7 @@
         }
 
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
+                                            preparedFraudPayload:preparedFraudPayload
                                                             options:options
                                                             stopped:stopped
                                                         location:location
@@ -481,6 +480,7 @@
 }
 
 - (void)makeTrackRequestWithParams:(NSDictionary *)params
+            preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
                         options:(RadarTrackingOptions *)options
                         stopped:(BOOL)stopped
                         location:(CLLocation *)location
@@ -550,18 +550,15 @@
             }
         }];
     } else {
-        [self.apiHelper requestWithMethod:@"POST"
-                                    url:url
-                                headers:headers
-                                params:requestParams
-                                    sleep:YES
-                            logPayload:YES
-                        extendedTimeout:NO
-                        completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
+        RadarAPICompletionHandler handleResponse = ^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                             if (status != RadarStatusSuccess || !res) {
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
+                                    if (verified) {
+                                        // Replays must not persist an envelope tied to this request.
+                                        [bufferParams removeObjectForKey:@"fraudPayload"];
+                                    }
                                     bufferParams[@"replayed"] = @(YES);
 
                                     // Skip notification removal under XCTest. RadarNotificationHelper_Swift.shared resolves its
@@ -726,7 +723,21 @@
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
             
                             completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
-                        }];
+                        };
+        if (verified && preparedFraudPayload) {
+            [self.apiHelper requestWithMethod:@"POST" url:url headers:headers params:requestParams
+                                        sleep:YES logPayload:YES extendedTimeout:NO
+                               prepareRequest:^NSURLRequest *(NSURLRequest *request, NSError **error) {
+                                   return [preparedFraudPayload prepareRequest:request error:error];
+                               }
+                    preparationFailureHandler:^(NSError *error) {
+                        completionHandler(RadarStatusErrorUnknown, nil, nil, nil, nil, nil, nil);
+                    }
+                            completionHandler:handleResponse];
+        } else {
+            [self.apiHelper requestWithMethod:@"POST" url:url headers:headers params:requestParams
+                                        sleep:YES logPayload:YES extendedTimeout:NO completionHandler:handleResponse];
+        }
     }
 }
 

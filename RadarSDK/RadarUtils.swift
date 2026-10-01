@@ -53,7 +53,7 @@ class RadarUtils: NSObject {
 
     static let country = Locale.current.regionCode
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
-    static let sdkVersion = "3.42.0"
+    static let sdkVersion = "3.42.0-beta.1"
 
     static var deviceId: String? {
         get async {
@@ -285,6 +285,7 @@ class RadarUtils: NSObject {
         let jsonObject: Any = JSONSerialization.isValidJSONObject(dict) ? dict : (jsonSanitized(dict) ?? [:])
         return try? JSONSerialization.data(withJSONObject: jsonObject)
     }
+
 }
 
 internal extension CLLocation {

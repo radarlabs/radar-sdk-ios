@@ -136,11 +136,13 @@ public final class RadarAPIClient: Sendable {
     }
 
     func revealRisk(
-        fraudPayload: String,
-        useSecondaryVerifiedHost: Bool,
+        preparedPayload: RadarPreparedFraudPayload,
+        useSecondaryVerifiedHost: Bool
     ) async throws -> RadarRevealRiskToken {
+        let installId = RadarSettings.installId
+
         let params: [String: Any?] = [
-            "installId": RadarSettings.installId,
+            "installId": installId,
             "userId": RadarSettings.userId,
             "deviceId": await RadarUtils.deviceId,
             "description": RadarSettings.description,
@@ -154,7 +156,6 @@ public final class RadarAPIClient: Sendable {
             "country": RadarUtils.country,
             "timeZoneOffset": RadarUtils.timeZoneOffset,
             "lang": RadarSettings.userLanguage,
-            "fraudPayload": fraudPayload,
             "appId": Bundle.main.bundleIdentifier,
             "appName": Bundle.main.object(forInfoDictionaryKey: "CFBundleName"),
             "appVersion": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString"),
@@ -163,7 +164,15 @@ public final class RadarAPIClient: Sendable {
             "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
         ]
 
-        let (data, response) = try await apiHelper.radarRequest(host: .verifiedHost, method: "POST", url: "reveal/risk", body: params)
+        let (data, response) = try await apiHelper.radarRequest(
+            host: useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost,
+            method: "POST",
+            url: "reveal/risk",
+            body: params,
+            prepareRequest: { request in
+                try preparedPayload.prepareRequest(request)
+            }
+        )
 
         try assertResponseCode(response.statusCode)
 
