@@ -9,26 +9,46 @@
 import CoreLocation
 import Foundation
 
+/// Represents a trip.
+///
+/// - SeeAlso: https://radar.com/documentation/trip-tracking
 @objc(RadarTrip)
 @objcMembers
-class RadarTrip: NSObject {
+public final class RadarTrip: NSObject {
 
-    // swiftlint:disable:next identifier_name
-    public let _id: String?
+    private let idValue: String?
+    /// The Radar ID of the trip.
+    public var _id: String { idValue ?? "" }  // swiftlint:disable:this identifier_name
+    /// The external ID of the trip.
     public let externalId: String?
+    /// The optional set of custom key-value pairs for the trip.
     public let metadata: [AnyHashable: Any]?
+    /// For trips with a destination, the tag of the destination geofence.
     public let destinationGeofenceTag: String?
+    /// For trips with a destination, the external ID of the destination geofence.
     public let destinationGeofenceExternalId: String?
+    /// For trips with a destination, the location of the destination geofence.
     public let destinationLocation: RadarCoordinate?
+    /// The travel mode for the trip.
     public let mode: RadarRouteMode
+    /// For trips with a destination, the distance to the destination geofence in meters based on the travel mode
+    /// for the trip.
     public let etaDistance: Float
+    /// For trips with a destination, the ETA to the destination geofence in minutes based on the travel mode for
+    /// the trip.
     public let etaDuration: Float
+    /// The status of the trip.
     public let status: RadarTripStatus
+    /// The optional array of trip orders associated with this trip.
     public let orders: [RadarTripOrder]?
+    /// For multi-destination trips, the array of trip legs.
+    /// Each leg contains destination info, status, and metadata.
+    /// Use leg._id when calling updateTripLeg.
     public let legs: [RadarTripLeg]?
+    /// For multi-destination trips, the ID of the current active leg.
     public let currentLegId: String?
 
-    public init(
+    init(
         id: String?,
         externalId: String,
         metadata: [AnyHashable: Any]?,
@@ -43,7 +63,7 @@ class RadarTrip: NSObject {
         legs: [RadarTripLeg]?,
         currentLegId: String?
     ) {
-        self._id = id
+        idValue = id
         self.externalId = externalId
         self.metadata = metadata
         self.destinationGeofenceTag = destinationGeofenceTag
@@ -132,7 +152,7 @@ class RadarTrip: NSObject {
             dictionary["externalId"] = externalId
         }
 
-        if let id = _id {
+        if let id = idValue {
             dictionary["_id"] = id
         }
         if let metadata {

@@ -9,9 +9,10 @@
 #import "RadarPlace.h"
 #import "RadarRegion.h"
 #import "RadarUser.h"
-#import "RadarFraud.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+
+@class RadarFraud;
 
 /**
  Represents a change in user state.

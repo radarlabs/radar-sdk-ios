@@ -7,12 +7,14 @@
 //
 
 #import "Radar.h"
+@import Network;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarVerificationManager : NSObject
 
 @property (assign, nonatomic) BOOL started;
+@property (copy, nonatomic, nullable) NSString *expectedAddress;
 
 + (instancetype)sharedInstance;
 - (void)trackVerifiedWithCompletionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler;
@@ -26,6 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isSharing;
 - (void)clearSharing;
 
+@end
+
+// duplicate interface, with swift implementations
+@interface RadarVerificationManagerSwift : RadarVerificationManager
 @end
 
 NS_ASSUME_NONNULL_END

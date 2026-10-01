@@ -13,7 +13,11 @@ final class RadarSDKFraud: @unchecked Sendable {
     let instance: NSObject
 
     init?(instance: NSObject) {
-        if !instance.responds(to: RadarSDKFraud.initializeSelector) || !instance.responds(to: RadarSDKFraud.getFraudPayloadSelector) {
+        guard instance.responds(to: RadarSDKFraud.initializeSelector),
+            instance.responds(to: RadarSDKFraud.getFraudPayloadSelector),
+            instance.responds(to: RadarSDKFraud.isSharingSelector),
+            instance.responds(to: RadarSDKFraud.clearSharingSelector)
+        else {
             return nil
         }
         self.instance = instance
@@ -56,5 +60,21 @@ final class RadarSDKFraud: @unchecked Sendable {
             return (.errorUnknown, nil)
         }
         return (.success, payload)
+    }
+
+    static let isSharingSelector = NSSelectorFromString("isSharing")
+    public func isSharing() -> Bool {
+        let imp = instance.method(for: RadarSDKFraud.isSharingSelector)
+
+        typealias Function = @convention(c) (AnyObject, Selector) -> Bool
+        let function = unsafeBitCast(imp, to: Function.self)
+
+        let result = function(instance, RadarSDKFraud.isSharingSelector)
+        return result
+    }
+
+    static let clearSharingSelector = NSSelectorFromString("clearSharing")
+    public func clearSharing() {
+        instance.perform(RadarSDKFraud.clearSharingSelector)
     }
 }

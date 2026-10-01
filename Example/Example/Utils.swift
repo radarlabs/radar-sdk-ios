@@ -15,8 +15,14 @@ class Utils {
     /// everywhere instead of hardcoding `https://api.radar.io` so map, assets, and API calls
     /// all target the same host.
     static var radarHost: String {
+        radarUserDefaults?.string(forKey: "radar-host") ?? "https://api.radar.io"
+    }
+
+    /// The UserDefaults suite the SDK persists into (see RadarUserDefaults): the app-group
+    /// suite if one was set via `Radar.setAppGroup`, otherwise standard.
+    static var radarUserDefaults: UserDefaults? {
         let suite = UserDefaults.standard.string(forKey: "radar-appGroup")
-        return UserDefaults(suiteName: suite)?.string(forKey: "radar-host") ?? "https://api.radar.io"
+        return UserDefaults(suiteName: suite)
     }
 
     /// URL for a Radar-hosted asset (e.g. a floorplan image) at the given asset path,

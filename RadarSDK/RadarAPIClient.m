@@ -18,6 +18,7 @@
 #import "RadarDelegateHolder.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
+#import "RadarInAppMessageManager+Internal.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarPlace+Internal.h"
@@ -29,8 +30,6 @@
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarTrip+Internal.h"
-#import "RadarTripOptions.h"
-#import "RadarTripLeg.h"
 #import "RadarUser+Internal.h"
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
@@ -212,14 +211,16 @@
                      source:source
                    replayed:replayed
                     beacons:beacons
-               indoorLocation:indoorLocation
+             indoorLocation:indoorLocation
                    verified:NO
-              fraudPayload:nil
+               fraudPayload:nil
         expectedCountryCode:nil
           expectedStateCode:nil
+            expectedAddress:nil
                      reason:nil
               transactionId:nil
                revealRiskId:nil
+   useSecondaryVerifiedHost:NO
           completionHandler:completionHandler];
 }
 
@@ -231,42 +232,10 @@
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
            indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
-            fraudPayload:(NSString *_Nullable)fraudPayload
+             fraudPayload:(NSString * _Nullable)fraudPayload
       expectedCountryCode:(NSString * _Nullable)expectedCountryCode
         expectedStateCode:(NSString * _Nullable)expectedStateCode
-                   reason:(NSString * _Nullable)reason
-            transactionId:(NSString * _Nullable)transactionId
-             revealRiskId:(NSString * _Nullable)revealRiskId
-        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
-    [self trackWithLocation:location
-                    stopped:stopped
-                 foreground:foreground
-                     source:source
-                   replayed:replayed
-                    beacons:beacons
-                 indoorLocation:indoorLocation
-                   verified:verified
-               fraudPayload:fraudPayload
-        expectedCountryCode:expectedCountryCode
-          expectedStateCode:expectedStateCode
-                     reason:reason
-              transactionId:transactionId
-               revealRiskId:revealRiskId
-  useSecondaryVerifiedHost:NO
-          completionHandler:completionHandler];
-}
-
-- (void)trackWithLocation:(CLLocation *_Nonnull)location
-                  stopped:(BOOL)stopped
-               foreground:(BOOL)foreground
-                   source:(RadarLocationSource)source
-                 replayed:(BOOL)replayed
-                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-           indoorLocation:(CLLocation *_Nullable)indoorLocation
-                 verified:(BOOL)verified
-            fraudPayload:(NSString * _Nullable)fraudPayload
-      expectedCountryCode:(NSString * _Nullable)expectedCountryCode
-        expectedStateCode:(NSString * _Nullable)expectedStateCode
+          expectedAddress:(NSString *_Nullable)expectedAddress
                    reason:(NSString * _Nullable)reason
             transactionId:(NSString * _Nullable)transactionId
              revealRiskId:(NSString * _Nullable)revealRiskId
@@ -352,7 +321,9 @@
     if (tripOptions) {
         NSMutableDictionary *tripParams = [NSMutableDictionary new];
         tripParams[@"version"] = @("2");
-        [tripParams setValue:tripOptions.externalId forKey:@"externalId"];
+        if (tripOptions.externalId.length) {
+            tripParams[@"externalId"] = tripOptions.externalId;
+        }
         [tripParams setValue:tripOptions.metadata forKey:@"metadata"];
         [tripParams setValue:tripOptions.destinationGeofenceTag forKey:@"destinationGeofenceTag"];
         [tripParams setValue:tripOptions.destinationGeofenceExternalId forKey:@"destinationGeofenceExternalId"];
@@ -388,6 +359,9 @@
         }
         if (expectedStateCode) {
             params[@"expectedStateCode"] = expectedStateCode;
+        }
+        if (expectedAddress) {
+            params[@"expectedAddress"] = expectedAddress;
         }
         if (reason) {
             params[@"reason"] = reason;
@@ -795,7 +769,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    if (!options || !options.externalId) {
+    if (!options || !options.externalId.length) {
         return completionHandler(RadarStatusErrorBadRequest, nil, nil);
     }
 
@@ -866,7 +840,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    if (!options || !options.externalId) {
+    if (!options || !options.externalId.length) {
         return completionHandler(RadarStatusErrorBadRequest, nil, nil);
     }
 

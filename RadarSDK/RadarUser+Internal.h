@@ -35,7 +35,9 @@
                                 trip:(RadarTrip *_Nullable)trip
                                debug:(BOOL)debug
                                fraud:(RadarFraud *_Nullable)fraud
-                            altitude:(double)altitude;
+                    locationInsights:(RadarUserLocationInsights *_Nullable)locationInsights
+                            altitude:(double)altitude
+                     expectedAddress:(RadarExpectedAddress *_Nullable)expectedAddress;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
 
 @end

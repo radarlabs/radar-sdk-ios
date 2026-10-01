@@ -7,10 +7,7 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
-#import "RadarGeofence+Internal.h"
-#import "RadarBeacon+Internal.h"
-#import "RadarPlace+Internal.h"
-#import "RadarUser+Internal.h"
+#import "RadarUser.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

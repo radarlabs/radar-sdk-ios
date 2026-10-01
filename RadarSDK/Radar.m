@@ -20,10 +20,10 @@
 #import "RadarVerificationManager.h"
 #import "RadarReplayBuffer.h"
 #import "RadarNotificationHelper.h"
-#import "RadarTripOptions.h"
 #import "RadarIndoorsProtocol.h"
 #import "RadarIndoors.h"
 #import "RadarInAppMessageDelegate.h"
+#import "RadarInAppMessageManager+Internal.h"
 #import "RadarSDKFraudProtocol.h"
 #import "RadarSwiftBridge.h"
 #import "RadarRevealRiskManager.h"
@@ -511,6 +511,11 @@ BOOL _initialized = NO;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"setExpectedJurisdiction()"];
     [[RadarVerificationManager sharedInstance]
      setExpectedJurisdictionWithCountryCode:countryCode stateCode:stateCode];
+}
+
++ (void)setExpectedAddress:(NSString *)address {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"setExpectedAddress()"];
+    [[RadarVerificationManager sharedInstance] setExpectedAddress:address];
 }
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)options {

@@ -6,7 +6,9 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarRevealRiskToken.h"
+#import "Radar.h"
+
+@class RadarRevealRiskToken;
 
 @interface RadarRevealRiskManager : NSObject
 + (RadarRevealRiskManager * _Nonnull)shared;

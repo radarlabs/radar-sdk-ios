@@ -7,13 +7,17 @@
 
 import Foundation
 
+/// Represents the geometry of a circle geofence.
 @objc(RadarCircleGeometry)
 @objcMembers
-final class RadarCircleGeometry: RadarGeofenceGeometry {
-    let center: RadarCoordinate
-    let radius: Double
+public final class RadarCircleGeometry: RadarGeofenceGeometry {
+    /// The center of the circle geofence.
+    public let center: RadarCoordinate
 
-    /// Keeps the hand-written Objective-C initializer working after the implementation moved to Swift.
+    /// The radius of the circle geofence in meters.
+    public let radius: Double
+
+    // Internal: the SDK builds geometries from API responses (RadarGeofence.m, via +Internal.h).
     @objc(initWithCenter:radius:)
     init(center: RadarCoordinate, radius: Double) {
         self.center = center
