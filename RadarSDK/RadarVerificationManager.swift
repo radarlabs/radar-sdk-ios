@@ -70,6 +70,7 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
     let fraudSDK: RadarSDKFraud?
     let locationManagerHost: RadarLocationManagerSwiftHost?
     let verificationManagerHost: RadarVerificationManagerSwiftHost?
+    let permissionHelper = RadarPermissionsHelperSwift()
 
     private let sharingLock = NSLock()
 
@@ -91,6 +92,10 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
         get { return verificationManagerHost?.expectedCountryCode }
         set { verificationManagerHost?.expectedCountryCode = newValue }
     }
+    private var lastTokenBeacons: Bool {
+        get { return verificationManagerHost?.lastTokenBeacons ?? false }
+        set { verificationManagerHost?.lastTokenBeacons = newValue }
+    }
 
     init(
         apiClient: RadarAPIClient,
@@ -104,13 +109,148 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
         self.verificationManagerHost = verificationmanagerHost
     }
 
+    private func getLocation(withBeacons: Bool) async -> (RadarStatus, CLLocation?, [RadarBeacon]?) {
+        guard let locationManagerHost, let fraudSDK else {
+            return (.errorUnknown, nil, nil)
+        }
+        let authorizationStatus = permissionHelper.locationAuthorizationStatus()
+        let (locationStatus, location, stopped) = await RadarLocationManagerSwift.getLocation(host: locationManagerHost, authorizationStatus: authorizationStatus)
+        guard let location else {
+            return (locationStatus, nil, nil)
+        }
+
+        let beaconResults = try? await apiClient.searchBeacons(near: location, radius: 1000, limit: 10)
+
+        var beaconResult: [RadarBeacon]? = nil
+        if let (beacons, beaconUUIDs) = beaconResults {
+            RadarSettings.beaconUUIDs = beaconUUIDs
+            if (beaconUUIDs.count != 0) {
+                let (rangeStatus, rangeResult) = await RadarBeaconManagerSwift.shared.range(beaconUUIDs: beaconUUIDs)
+                if (rangeStatus == .success) {
+                    beaconResult = rangeResult
+                }
+            } else if (beacons.count != 0) {
+                let (rangeStatus, rangeResult) = await RadarBeaconManagerSwift.shared.range(beacons: beacons)
+                if (rangeStatus == .success) {
+                    beaconResult = rangeResult
+                }
+            }
+        }
+        return (locationStatus, location, beaconResult)
+    }
+    
+    
     public func trackVerified() async -> (RadarStatus, RadarVerifiedLocationToken?) {
-        // TODO: implement track verified
-        return (.errorUnknown, nil)
+        return await trackVerified(beacons: false, desiredAccuracy: .medium, transactionId: nil)
     }
 
-    public func trackVerified(beacons: Bool, desiredAccuracy: RadarTrackingOptionsDesiredAccuracy, reason: String?, transactionId: String?) async -> (RadarStatus, RadarVerifiedLocationToken?) {
-        // TODO: implement track verified
+    public func trackVerified(beacons: Bool, desiredAccuracy: RadarTrackingOptionsDesiredAccuracy, reason: String? = "manual", transactionId: String?) async -> (RadarStatus, RadarVerifiedLocationToken?) {
+        guard let locationManagerHost, let fraudSDK else {
+            return (.errorUnknown, nil)
+        }
+        
+        sharingLock.withLock {
+            self.lastTokenBeacons = beacons
+        }
+        
+        let foreground = await RadarUtils.foreground
+        let autoFailover = RadarSettings.initializeOptions?.trackVerifiedAutoFailover ?? false;
+        
+        // start location request
+        async let locationPromise = getLocation(withBeacons: beacons)
+        
+        // start config request
+        var config: RadarConfig? = nil
+        var configError: RadarError? = nil
+        do {
+            config = try await apiClient.getConfig(usage: "verify", host: .verifiedHost)
+        } catch let error as RadarError {
+            configError = error
+        } catch {
+            // do nothing, uses secondary fallback if enabled
+        }
+        
+        // secondary fallback
+        if (config?.meta == nil && autoFailover) {
+            RadarLogger.info("trackVerified: primary verified host returned non-Radar response, retrying on secondary")
+            do {
+                config = try await apiClient.getConfig(usage: "verify", host: .verifiedSecondaryHost)
+            } catch let error as RadarError {
+                configError = error
+            } catch {
+                // do nothing, second config check will return the error
+            }
+        }
+        
+        // still no config after fallback, return error
+        if (config?.meta == nil) {
+            RadarSwift.bridge?.didFail(status: configError?.status ?? .errorUnknown)
+            return (configError?.status ?? .errorUnknown, nil)
+        }
+        
+        // receive the location query we started
+        let (locationStatus, location, stopped) = await locationPromise
+        guard let location else {
+            RadarSwift.bridge?.didFail(status: locationStatus)
+            return (locationStatus, nil)
+        }
+        
+        let (payloadStatus, payload) = await fraudSDK.getFraudPayload(options: [
+            "location": location,
+            "nonce": config?.nonce
+        ])
+        
+        if (payload == nil) {
+            return (.errorUnknown, nil)
+        }
+        
+        let revealRiskId = RadarRevealRiskManager.shared.revealRiskId
+        
+        RadarAPIClient.track
+        
+        void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+        [[RadarAPIClient sharedInstance]
+         trackWithLocation:location
+         stopped:RadarState.stopped
+         foreground:foreground
+         source:RadarLocationSourceForegroundLocation
+         replayed:NO
+         beacons:beacons
+         indoorLocation:nil
+         verified:YES
+         fraudPayload:fraudPayload
+         expectedCountryCode:self.expectedCountryCode
+         expectedStateCode:self.expectedStateCode
+         expectedAddress:self.expectedAddress
+         reason:reason
+         transactionId:transactionId
+         revealRiskId:revealRiskId
+         useSecondaryVerifiedHost:useSecondaryVerifiedHost
+         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
+                             RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
+                             RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+            if (status == RadarStatusSuccess && config != nil) {
+                [RadarRevealRiskManager shared].revealRiskId = nil;
+                [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+            }
+            
+            if (token) {
+                self.lastToken = token;
+                self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
+                self.lastTokenBeacons = lastTokenBeacons;
+            }
+            
+            [RadarUtilsDeprecated runOnMainThread:^{
+                if (status != RadarStatusSuccess) {
+                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                }
+                
+                if (completionHandler) {
+                    completionHandler(status, token);
+                }
+                }];
+            }];
+        };
         return (.errorUnknown, nil)
     }
 

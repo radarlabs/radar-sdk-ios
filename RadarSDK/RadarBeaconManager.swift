@@ -224,6 +224,34 @@ class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
             }
         }
     }
+    
+    func range(beaconUUIDs: [String]) async -> (RadarStatus, [RadarBeacon]?) {
+        return await withCheckedContinuation { continuation in
+            rangeBeaconUUIDs(beaconUUIDs, completionHandler: { status, beacons in
+                continuation.resume(returning: (status, beacons))
+            })
+        }
+    }
+    func range(beacons: [RadarBeaconSwift]) async -> (RadarStatus, [RadarBeacon]?) {
+        let objcBeacons = beacons.compactMap { data in
+            RadarBeacon(
+                id: data.id,
+                description: data.description,
+                tag: data.tag ?? "",
+                externalId: data.externalId ?? "",
+                uuid: data.uuid,
+                major: data.major,
+                minor: data.minor,
+                metadata: nil,
+                geometry: data.geometry
+            )
+        }
+        return await withCheckedContinuation { continuation in
+            rangeBeacons(objcBeacons, completionHandler: { status, beacons in
+                continuation.resume(returning: (status, beacons))
+            })
+        }
+    }
 
     // MARK: - Stop Ranging
 

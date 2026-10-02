@@ -188,13 +188,85 @@ public final class RadarAPIClient: Sendable {
             value != nil ? URLQueryItem(name: key, value: value) : nil
         }
 
-        let (data, response) = try await apiHelper.radarRequest(host: host, method: "GET", url: "config")
+        let (data, response) = try await apiHelper.radarRequest(host: host, method: "GET", url: "config", query: params)
 
         try assertResponseCode(response.statusCode)
 
         let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
         return RadarConfig.from(dictionary: json)
     }
+    
+    func searchBeacons(near: CLLocation, radius: Int, limit: Int) async throws -> ([RadarBeaconSwift], [String]) {
+        let sixDecimal = FloatingPointFormatStyle<Double>.number.precision(.fractionLength(6))
+        let params: [URLQueryItem] = [
+            "near": "\(near.coordinate.latitude.formatted(sixDecimal)),\(near.coordinate.longitude.formatted(sixDecimal))",
+            "radius": String(radius),
+            "limit": String(min(limit, 100)),
+        ].compactMap { key, value in
+            value != nil ? URLQueryItem(name: key, value: value) : nil
+        }
+        
+        let (data, response) = try await apiHelper.radarRequest(method: "GET", url: "search/beacons", query: params)
+        
+        try assertResponseCode(response.statusCode)
+        
+        let json = try JSONDecoder().decode(SearchBeaconResponse.self, from: data)
 
+        return (json.beacons, json.meta.settings.beacons.uuids)
+    }
+
+    func trackVerified(
+        location: CLLocation,
+        stopped: Bool,
+        foreground: Bool,
+        source: RadarLocationSource,
+        beacons: [RadarBeacon]?,
+        fraudPayload: String,
+        expectedCountryCode: String?,
+        expectedStateCode: String?,
+        expectedAddress: String?,
+        reason: String?,
+        transactionId: String?,
+        revealRiskId: String?,
+        useSecondaryVerifiedHost: Bool,
+    ) async throws {
+        let params: [String: Any?] = [
+            // TODO: everything in anonymous block
+            "latitude": location.coordinate.latitude,
+            "longitude": location.coordinate.longitude,
+            "accuracy": location.horizontalAccuracy <= 0 ? 1 : location.horizontalAccuracy,
+            "altitude": location.altitude,
+            "verticalAccuracy": location.verticalAccuracy,
+            "speed": location.speed,
+            "speedAccuracy": location.speedAccuracy,
+            "course": location.course,
+            "courseAccuracy": location.courseAccuracy,
+            "floorLevel": location.floor?.level,
+            // TODO: updatedAtMsDiff
+            // TODO: locationMs
+            "foreground": foreground,
+            "stopped": stopped,
+            "replayed": false,
+            "deviceType": RadarUtils.deviceType,
+            "deviceMake": RadarUtils.deviceMake,
+            "sdkVersion": RadarUtils.sdkVersion,
+            "deviceModel": RadarUtils.deviceModel,
+            "deviceOS": await RadarUtils.deviceOSVersion,
+            "country": RadarUtils.country,
+            "timeZoneOffset": RadarUtils.timeZoneOffset,
+            "source": Radar.stringForLocationSource(source),
+            "lang": RadarSettings.userLanguage,
+            "xPlatformType": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKType : "Native",
+            "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
+            "pushNotificationToken": RadarSettings.pushNotificationToken,
+            "locationExtensionToken": RadarSettings.locationExtensionToken,
+            
+        ]
+        
+        let (data, response) = try await apiHelper.radarRequest(method: "POST", url: "track", body: params)
+        
+        
+    }
+    
     // TODO: implement rest of RadarAPIClient
 }

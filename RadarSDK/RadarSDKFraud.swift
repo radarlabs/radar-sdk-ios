@@ -43,9 +43,7 @@ final class RadarSDKFraud: @unchecked Sendable {
     }
 
     static let getFraudPayloadSelector = NSSelectorFromString("getFraudPayloadWithOptions:completionHandler:")
-    public func getFraudPayload(sdkConfiguration: RadarSdkConfiguration?) async -> (RadarStatus, String?) {
-        let options = sdkConfiguration?.dictionaryValue() ?? [:]
-
+    public func getFraudPayload(options: [String: Any?]) async -> (RadarStatus, String?) {
         let result = await withCheckedContinuation { continuation in
             let completionHandler: @convention(block) ([String: Sendable]?) -> Void = { payload in
                 continuation.resume(returning: payload)

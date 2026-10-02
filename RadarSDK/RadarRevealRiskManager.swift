@@ -51,7 +51,7 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
             throw RadarError(status: .errorPlugin)
         }
 
-        let (status, payload) = await fraudSDK.getFraudPayload(sdkConfiguration: RadarSettings.sdkConfiguration)
+        let (status, payload) = await fraudSDK.getFraudPayload(options: [:])
         guard let payload, status == .success else {
             throw RadarError(status: status)
         }
