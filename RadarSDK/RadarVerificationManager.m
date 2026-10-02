@@ -14,7 +14,7 @@
 #import "Radar+Internal.h"
 #import "RadarAPIClient.h"
 #import "RadarSdkConfiguration.h"
-#import "RadarBeaconManagerSwift.h"
+#import "RadarOneShotBeaconManager.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
@@ -269,7 +269,7 @@
                                          NSArray<NSString *> *_Nullable beaconUUIDs) {
                         if (beaconUUIDs && beaconUUIDs.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
-                                [[RadarBeaconManagerSwift shared]
+                                [[RadarOneShotBeaconManager shared]
                                  rangeBeaconUUIDs:beaconUUIDs
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                     if (status != RadarStatusSuccess || !beacons) {
@@ -283,7 +283,7 @@
                             }];
                         } else if (beacons && beacons.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
-                                [[RadarBeaconManagerSwift shared]
+                                [[RadarOneShotBeaconManager shared]
                                  rangeBeacons:beacons
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                     if (status != RadarStatusSuccess || !beacons) {

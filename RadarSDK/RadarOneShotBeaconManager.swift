@@ -1,5 +1,5 @@
 //
-//  RadarBeaconManager.swift
+//  RadarOneShotBeaconManager.swift
 //  RadarSDK
 //
 //  Created by Alan Charles on 7/10/26.
@@ -10,10 +10,10 @@ import CoreLocation
 import Foundation
 
 @MainActor
-@objc(RadarBeaconManagerSwift)
-class RadarBeaconManagerSwift: NSObject, CLLocationManagerDelegate {
+@objc(RadarOneShotBeaconManager)
+class RadarOneShotBeaconManager: NSObject, CLLocationManagerDelegate {
 
-    @objc static let shared = RadarBeaconManagerSwift()
+    @objc static let shared = RadarOneShotBeaconManager()
 
     var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
 

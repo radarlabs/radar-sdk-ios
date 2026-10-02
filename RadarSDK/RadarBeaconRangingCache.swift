@@ -13,7 +13,7 @@ import UIKit
 /// attach beacons without waiting on a one-shot ranging window.
 ///
 /// Uses its own `CLLocationManager` so it never shares state with the one-shot ranging in
-/// `RadarBeaconManagerSwift`. Ranging pauses when the app enters the background and resumes when
+/// `RadarOneShotBeaconManager`. Ranging pauses when the app enters the background and resumes when
 /// it returns to the foreground, until `stop()` is called.
 @MainActor
 @objc(RadarBeaconRangingCache)

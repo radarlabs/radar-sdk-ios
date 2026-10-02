@@ -11,7 +11,7 @@
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
-#import "RadarBeaconManagerSwift.h"
+#import "RadarOneShotBeaconManager.h"
 #import "RadarConfig.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
@@ -714,7 +714,7 @@
                                 id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
                                 if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
                                     NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
-                                    [[RadarBeaconManagerSwift shared] registerBeaconRegionNotificationsFromArray:beaconRegions];
+                                    [[RadarOneShotBeaconManager shared] registerBeaconRegionNotificationsFromArray:beaconRegions];
                                 }
                                 
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
