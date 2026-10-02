@@ -17,14 +17,14 @@ extension Radar {
     /// user enters a flow that calls `trackVerified(beacons: true)`, and call
     /// `stopRangingBeacons()` when beacons are no longer needed. Ranging pauses automatically when
     /// the app enters the background and resumes when it returns to the foreground. Requires
-    /// foreground location permissions and Bluetooth. Until ranging results are available,
+    /// foreground location permissions and Bluetooth. Until ranging has run for 5 seconds,
     /// `trackVerified(beacons: true)` ranges beacons as usual.
     ///
     /// - SeeAlso: https://radar.com/documentation/beacons
     @objc public static func startRangingBeacons() {
         RadarLogger.shared.info("startRangingBeacons()", type: .sdkCall)
         Task { @MainActor in
-            RadarBeaconRangingCache.shared.start()
+            RadarContinuousBeaconManager.shared.start()
         }
     }
 
@@ -34,7 +34,7 @@ extension Radar {
     @objc public static func stopRangingBeacons() {
         RadarLogger.shared.info("stopRangingBeacons()", type: .sdkCall)
         Task { @MainActor in
-            RadarBeaconRangingCache.shared.stop()
+            RadarContinuousBeaconManager.shared.stop()
         }
     }
 }

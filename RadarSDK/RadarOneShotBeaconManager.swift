@@ -140,8 +140,6 @@ class RadarOneShotBeaconManager: NSObject, CLLocationManagerDelegate {
             return
         }
 
-        RadarBeaconRangingCache.shared.seedIfNeeded(uuids: nil, beacons: beacons)
-
         addCompletionHandler(completionHandler)
 
         guard !started else {
@@ -202,8 +200,6 @@ class RadarOneShotBeaconManager: NSObject, CLLocationManagerDelegate {
             completionHandler(.success, [])
             return
         }
-
-        RadarBeaconRangingCache.shared.seedIfNeeded(uuids: beaconUUIDs, beacons: nil)
 
         addCompletionHandler(completionHandler)
 

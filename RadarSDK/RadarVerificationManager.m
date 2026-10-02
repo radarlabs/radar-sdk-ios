@@ -16,6 +16,7 @@
 #import "RadarSdkConfiguration.h"
 #import "RadarOneShotBeaconManager.h"
 #import "RadarNearbyBeaconSearch.h"
+#import "RadarContinuousBeaconManager.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
@@ -50,12 +51,6 @@
 
 @end
 
-
-// Implemented in RadarBeaconRangingCache.swift. It's internal, so it isn't in RadarSDK-Swift.h.
-@interface RadarBeaconRangingCache : NSObject
-@property (class, readonly, strong) RadarBeaconRangingCache *shared;
-- (NSArray<RadarBeacon *> *_Nullable)cachedBeaconsNear:(CLLocation *_Nonnull)location;
-@end
 
 @interface RadarVerificationManager () <RadarVerificationManagerSwiftHost>
 
@@ -268,6 +263,12 @@
                      limit:RadarNearbyBeaconSearch.limit
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                          NSArray<NSString *> *_Nullable beaconUUIDs) {
+                        // Continuous ranging couldn't serve this request, so it ranges this
+                        // search's beacons from now on rather than searching again itself.
+                        [RadarUtilsDeprecated runOnMainThread:^{
+                            [[RadarContinuousBeaconManager shared] handleSearchFrom:location status:status beaconUUIDs:beaconUUIDs beacons:beacons];
+                        }];
+
                         if (beaconUUIDs && beaconUUIDs.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
                                 [[RadarOneShotBeaconManager shared]
@@ -304,16 +305,16 @@
 
             if (beacons) {
                 [RadarUtilsDeprecated runOnMainThread:^{
-                    NSArray<RadarBeacon *> *cachedBeacons = [[RadarBeaconRangingCache shared] cachedBeaconsNear:location];
-                    if (!cachedBeacons) {
+                    NSArray<RadarBeacon *> *continuousBeacons = [[RadarContinuousBeaconManager shared] beaconsNear:location];
+                    if (!continuousBeacons) {
                         rangeBeaconsAndTrack();
                         return;
                     }
 
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
-                                                       message:[NSString stringWithFormat:@"Using cached beacons | cachedBeacons.count = %lu", (unsigned long)cachedBeacons.count]];
+                                                       message:[NSString stringWithFormat:@"Using continuously ranged beacons | beacons.count = %lu", (unsigned long)continuousBeacons.count]];
 
-                    callTrackAPI(cachedBeacons);
+                    callTrackAPI(continuousBeacons);
                 }];
             } else {
                 callTrackAPI(nil);

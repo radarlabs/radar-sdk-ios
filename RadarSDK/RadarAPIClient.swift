@@ -200,7 +200,7 @@ public final class RadarAPIClient: Sendable {
     }
 
     // Swift port of -[RadarAPIClient searchBeaconsNear:radius:limit:completionHandler:] in
-    // RadarAPIClient.m, used by RadarBeaconRangingCache. The Objective-C version is still used by
+    // RadarAPIClient.m, used by RadarNearbyBeaconSearch. The Objective-C version is still used by
     // trackVerified, trackOnce, and background tracking. Keep the request and the beaconUUIDs side
     // effect in sync with it until those callers move to Swift, then delete the Objective-C version.
     // Unlike the Objective-C version, it only requests iBeacons (see `type` below).
