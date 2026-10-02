@@ -10,46 +10,130 @@ import Foundation
 
 // swiftlint:disable file_length
 
-@objc
-@implementation
-extension RadarTrackingOptions {
+/// An options class used to configure background tracking.
+///
+/// - SeeAlso: <https://radar.com/documentation/sdk/ios>
+@objc(RadarTrackingOptions)
+@objcMembers
+public class RadarTrackingOptions: NSObject {  // swiftlint:disable:this type_body_length
+    /// Determines the desired location update interval in seconds when stopped.
+    /// Use `0` to shut down when stopped.
+    ///
+    /// - Warning: Location updates may be delayed significantly by Low Power Mode,
+    /// connectivity issues, low battery, or Wi-Fi being disabled.
     public var desiredStoppedUpdateInterval: Int32 = 0
+
+    /// Determines the desired location update interval in seconds when moving.
+    ///
+    /// - Warning: Location updates may be delayed significantly by Low Power Mode,
+    /// connectivity issues, low battery, or Wi-Fi being disabled.
     public var desiredMovingUpdateInterval: Int32 = 0
+
+    /// Determines the desired sync interval in seconds.
     public var desiredSyncInterval: Int32 = 0
+
+    /// Determines the desired accuracy of location updates.
     public var desiredAccuracy: RadarTrackingOptionsDesiredAccuracy = .high
+
+    /// With `stopDistance`, determines the duration in seconds after which the
+    /// device is considered stopped.
     public var stopDuration: Int32 = 0
+
+    /// With `stopDuration`, determines the distance in meters within which the
+    /// device is considered stopped.
     public var stopDistance: Int32 = 0
+
     private var storedStartTrackingAfter: NSDate?
     private var storedStopTrackingAfter: NSDate?
 
+    /// Determines when to start tracking. Use `nil` to start tracking when
+    /// `startTracking` is called.
     public var startTrackingAfter: Date? {
         get { storedStartTrackingAfter as Date? }
         set { storedStartTrackingAfter = newValue as NSDate? }
     }
 
+    /// Determines when to stop tracking. Use `nil` to track until `stopTracking`
+    /// is called.
     public var stopTrackingAfter: Date? {
         get { storedStopTrackingAfter as Date? }
         set { storedStopTrackingAfter = newValue as NSDate? }
     }
 
+    /// Determines which failed location updates to replay to the server.
     public var replay: RadarTrackingOptionsReplay = .stops
+
+    /// Determines which location updates to sync to the server.
     public var syncLocations: RadarTrackingOptionsSyncLocations = .all
+
+    /// Determines whether the flashing blue status bar is shown when tracking.
+    ///
+    /// - SeeAlso: <https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator>
     public var showBlueBar = false
+
+    /// Determines whether to use the iOS region monitoring service (geofencing)
+    /// to create a client geofence around the device's current location when
+    /// stopped.
+    ///
+    /// - SeeAlso: <https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions>
     public var useStoppedGeofence = false
+
+    /// Determines the radius in meters of the client geofence around the
+    /// device's current location when stopped.
     public var stoppedGeofenceRadius: Int32 = 0
+
+    /// Determines whether to use the iOS region monitoring service (geofencing)
+    /// to create a client geofence around the device's current location when
+    /// moving.
+    ///
+    /// - SeeAlso: <https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions>
     public var useMovingGeofence = false
+
+    /// Determines the radius in meters of the client geofence around the
+    /// device's current location when moving.
     public var movingGeofenceRadius: Int32 = 0
+
+    /// Determines whether to sync nearby geofences from the server to the
+    /// client to improve responsiveness.
     public var syncGeofences = false
+
+    /// Determines whether to use the iOS visit monitoring service.
+    ///
+    /// - SeeAlso: <https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service>
     public var useVisits = false
+
+    /// Determines whether to use the iOS significant location change service.
+    ///
+    /// - SeeAlso: <https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_significant-change_location_service>
     public var useSignificantLocationChanges = false
+
+    /// Determines whether to monitor beacons.
     public var beacons = false
+
+    /// Determines whether to use indoor scanning.
     public var useIndoorScan = false
+
+    /// Determines whether to use the iOS motion activity service.
     public var useMotion = false
+
+    /// Determines whether to use the iOS pressure service.
     public var usePressure = false
+
+    /// Determines the time interval between batch events, in seconds. Set to
+    /// `0` to disable interval-based batching.
     public var batchInterval: Int32 = 0
+
+    /// Determines the size of each batch. Set to `0` to disable size-based
+    /// batching.
     public var batchSize: Int32 = 0
+
+    /// The type of tracking options.
     public var type: RadarTrackingOptionsType = .default
 
+    /// Updates about every 30 seconds while moving or stopped. Moderate battery
+    /// usage. Shows the flashing blue status bar during tracking.
+    ///
+    /// - SeeAlso: <https://developer.apple.com/documentation/corelocation/cllocationmanager/2923541-showsbackgroundlocationindicator>
     public class var presetContinuous: RadarTrackingOptions {
         let options = RadarTrackingOptions()
 
@@ -67,6 +151,13 @@ extension RadarTrackingOptions {
         return options
     }
 
+    /// Updates about every 2.5 minutes when moving and shuts down when stopped
+    /// to save battery. Once stopped, the device must move more than 100 meters
+    /// to wake up and start moving again. Low battery usage. Requires the
+    /// `location` background mode.
+    ///
+    /// Location updates may be delayed significantly by Low Power Mode,
+    /// connectivity issues, low battery, or Wi-Fi being disabled.
     public class var presetResponsive: RadarTrackingOptions {
         let options = RadarTrackingOptions()
 
@@ -88,6 +179,14 @@ extension RadarTrackingOptions {
         return options
     }
 
+    /// Uses the iOS visit monitoring service to update only on stops and exits.
+    /// Once stopped, the device must move several hundred meters and trigger a
+    /// visit departure to wake up and start moving again. Lowest battery usage.
+    ///
+    /// Location updates may be delayed significantly by Low Power Mode,
+    /// connectivity issues, low battery, or Wi-Fi being disabled.
+    ///
+    /// - SeeAlso: <https://developer.apple.com/documentation/corelocation/getting_the_user_s_location/using_the_visits_location_service>
     public class var presetEfficient: RadarTrackingOptions {
         let options = RadarTrackingOptions()
 
@@ -232,21 +331,18 @@ extension RadarTrackingOptions {
 
     // MARK: - Dictionary Parsing
 
-    @objc(radar_trackingOptionsFromDictionary:)
-    private class func radarTrackingOptions(
-        from dictionary: [AnyHashable: Any]?
+    @available(swift, obsoleted: 1.0, message: "Use init(from:) instead.")
+    @objc(trackingOptionsFromDictionary:)
+    public class func trackingOptions(
+        fromDictionary dictionary: [AnyHashable: Any]
     ) -> RadarTrackingOptions? {
-        RadarTrackingOptions(dictionary: dictionary)
+        RadarTrackingOptions(from: dictionary)
     }
 
     @nonobjc
-    private convenience init?(  // swiftlint:disable:this function_body_length
-        dictionary: [AnyHashable: Any]?
+    public convenience init?(  // swiftlint:disable:this function_body_length
+        from dictionary: [AnyHashable: Any]
     ) {
-        guard let dictionary else {
-            return nil
-        }
-
         self.init()
 
         desiredStoppedUpdateInterval = Self.intValue(
