@@ -12,6 +12,7 @@
 #import "RadarSdkConfiguration.h"
 #import "Radar+Internal.h"
 #import "RadarOneShotBeaconManager.h"
+#import "RadarNearbyBeaconSearch.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
@@ -1196,8 +1197,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             } else {
                 [[RadarAPIClient sharedInstance]
                  searchBeaconsNear:location
-                 radius:1000
-                 limit:10
+                 radius:RadarNearbyBeaconSearch.radius
+                 limit:RadarNearbyBeaconSearch.limit
                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons, NSArray<NSString *> *_Nullable beaconUUIDs) {
                     if (beaconUUIDs && beaconUUIDs.count) {
                         [self replaceSyncedBeaconUUIDs:beaconUUIDs];
@@ -1307,8 +1308,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 } else {
                     [[RadarAPIClient sharedInstance]
                         searchBeaconsNear:location
-                                   radius:1000
-                                    limit:10
+                                   radius:RadarNearbyBeaconSearch.radius
+                                    limit:RadarNearbyBeaconSearch.limit
                         completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons, NSArray<NSString *> *_Nullable beaconUUIDs) {
                             if (beaconUUIDs && beaconUUIDs.count) {
                                 [self replaceSyncedBeaconUUIDs:beaconUUIDs];

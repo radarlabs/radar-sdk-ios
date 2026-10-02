@@ -15,6 +15,7 @@
 #import "RadarAPIClient.h"
 #import "RadarSdkConfiguration.h"
 #import "RadarOneShotBeaconManager.h"
+#import "RadarNearbyBeaconSearch.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
@@ -263,8 +264,8 @@
             void (^rangeBeaconsAndTrack)(void) = ^{
                 [[RadarAPIClient sharedInstance]
                      searchBeaconsNear:location
-                     radius:1000
-                     limit:10
+                     radius:RadarNearbyBeaconSearch.radius
+                     limit:RadarNearbyBeaconSearch.limit
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                          NSArray<NSString *> *_Nullable beaconUUIDs) {
                         if (beaconUUIDs && beaconUUIDs.count) {

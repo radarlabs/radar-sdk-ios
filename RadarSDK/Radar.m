@@ -9,6 +9,7 @@
 #include "RadarSdkConfiguration.h"
 #import "RadarAPIClient.h"
 #import "RadarOneShotBeaconManager.h"
+#import "RadarNearbyBeaconSearch.h"
 #import "RadarConfig.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
@@ -370,8 +371,8 @@ BOOL _initialized = NO;
                          if (beacons) {
                              [[RadarAPIClient sharedInstance]
                                  searchBeaconsNear:location
-                                            radius:1000
-                                             limit:10
+                                            radius:RadarNearbyBeaconSearch.radius
+                                             limit:RadarNearbyBeaconSearch.limit
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                                      NSArray<NSString *> *_Nullable beaconUUIDs) {
                                      if (beaconUUIDs && beaconUUIDs.count) {
