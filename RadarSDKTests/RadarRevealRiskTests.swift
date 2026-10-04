@@ -102,10 +102,7 @@ extension RadarSerializedTests {
             let responseData = try #require(try? JSONSerialization.data(withJSONObject: RadarRevealRiskTests.revealRiskResponse))
             let session = MockURLSession()
 
-            // The handler both matches the reveal/risk endpoint and verifies the params the manager sent,
-            // proving the fraud SDK's payload was forwarded to the API. It only returns the response
-            // (letting the call succeed) when the request looks right; otherwise the call fails and the
-            // token is never produced.
+            // Return a response only when the complete envelope is sent as the request body.
             session.on(
                 { request in
                     guard request.url?.absoluteString == RadarRevealRiskTests.revealRiskURL,
@@ -115,10 +112,11 @@ extension RadarSerializedTests {
                     else {
                         return false
                     }
-                    return json["fraudPayload"] as? String == "mock-fraud-payload"
+                    return body == Data(MockFraudEnvelope.payload.utf8)
+                        && Set(json.keys) == MockFraudEnvelope.fieldNames
                 }, responseData)
 
-            let manager = makeManager(sealResult: ["payload": "mock-fraud-payload"], session: session)
+            let manager = makeManager(sealResult: ["payload": MockFraudEnvelope.payload], session: session)
             let token = try await manager.revealRisk(useSecondaryVerifiedHost: false)
 
             // The API response was parsed into a fully-populated token.
@@ -141,7 +139,7 @@ extension RadarSerializedTests {
             let session = MockURLSession()
             session.on(RadarRevealRiskTests.revealRiskURL, RadarRevealRiskTests.revealRiskResponse)
 
-            let manager = makeManager(sealResult: ["payload": "mock-fraud-payload"], session: session)
+            let manager = makeManager(sealResult: ["payload": MockFraudEnvelope.payload], session: session)
 
             let (status, token) = await withCheckedContinuation { continuation in
                 manager.revealRisk(useSecondaryVerifiedHost: false) { status, token in
@@ -171,7 +169,7 @@ extension RadarSerializedTests {
                         && request.value(forHTTPHeaderField: "X-Radar-Product") == "trip-tracking"
                 }, responseData)
 
-            let manager = makeManager(sealResult: ["payload": "mock-fraud-payload"], session: session)
+            let manager = makeManager(sealResult: ["payload": MockFraudEnvelope.payload], session: session)
             let token = try await manager.revealRisk(useSecondaryVerifiedHost: false)
 
             #expect(token.id == "risk-token-123")
@@ -192,7 +190,7 @@ extension RadarSerializedTests {
                         && request.value(forHTTPHeaderField: "X-Radar-Product") == nil
                 }, responseData)
 
-            let manager = makeManager(sealResult: ["payload": "mock-fraud-payload"], session: session)
+            let manager = makeManager(sealResult: ["payload": MockFraudEnvelope.payload], session: session)
             let token = try await manager.revealRisk(useSecondaryVerifiedHost: false)
 
             #expect(token.id == "risk-token-123")

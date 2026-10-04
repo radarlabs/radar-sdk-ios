@@ -88,7 +88,7 @@ extension RadarVerifiedHostOverrideTests {
         helper.mockError = URLError(.networkConnectionLost)
         client.apiHelper = helper
         let instance = makeCollectedFraudInstance(
-            result: preparationFails ? ["error": "encryption failed"] : ["payload": "encrypted-envelope"]
+            result: preparationFails ? ["error": "encryption failed"] : ["payload": MockFraudEnvelope.payload]
         )
         let preparer = try makeTrackPreparer(instance: instance)
 
@@ -122,7 +122,9 @@ extension RadarVerifiedHostOverrideTests {
         } else {
             XCTAssertEqual(helper.lastMethod, "POST")
             XCTAssertEqual(helper.lastUrl, "\(RadarSettings.verifiedHost)/v1/track")
-            XCTAssertEqual(helper.lastParams?["fraudPayload"] as? String, "encrypted-envelope")
+            let sentBody = try XCTUnwrap(helper.lastParams as? [String: Any])
+            XCTAssertEqual(Set(sentBody.keys), MockFraudEnvelope.fieldNames)
+            XCTAssertEqual(sentBody["ct"] as? String, "mock-ct")
         }
         assertReplayAndOfflineState(preparationFails: preparationFails)
     }
