@@ -19,10 +19,7 @@ extension RadarSerializedTests.RadarRevealRiskTests {
         let preparedInstance = MockPreparedFraudPayloadInstance(
             result: nil,
             resultForOptions: { options in
-                guard let attemptId = options["encryptionAttemptId"] as? String else {
-                    return ["error": "Missing attempt ID"]
-                }
-                return ["payload": "encrypted-\(attemptId)"]
+                MockFraudEnvelope.result(for: options)
             }
         )
         let instance = MockCollectingFraudInstance(
@@ -70,6 +67,8 @@ extension RadarSerializedTests.RadarRevealRiskTests {
         #expect(requests[0].httpBody != requests[1].httpBody)
         #expect(requests[0].url == requests[1].url)
         #expect(requests[0].allHTTPHeaderFields == requests[1].allHTTPHeaderFields)
+        let coreBody = try #require(options[0]["body"] as? Data)
+        #expect(options[1]["body"] as? Data == coreBody)
 
         for index in options.indices {
             try assertRetryContexts(
@@ -98,9 +97,18 @@ extension RadarSerializedTests.RadarRevealRiskTests {
             #expect(context["method"] as? String == request.httpMethod)
             #expect(context["canonicalRoute"] as? String == "/v1/reveal/risk")
             #expect(context["environment"] == nil)
-            #expect(context["installId"] as? String == body["installId"] as? String)
+            #expect(context["installId"] == nil)
+            let coreData = try #require(context["body"] as? Data)
+            let coreBody = try #require(
+                try JSONSerialization.jsonObject(with: coreData) as? [String: Any]
+            )
+            #expect(coreBody["installId"] is String)
+            #expect(coreBody["fraudPayload"] == nil)
             let attemptId = try #require(context["encryptionAttemptId"] as? String)
-            #expect(body["fraudPayload"] as? String == "encrypted-\(attemptId)")
+            #expect(Set(body.keys) == MockFraudEnvelope.fieldNames)
+            #expect(body["encryptionAttemptId"] as? String == attemptId)
+            #expect(body["issuedAt"] as? Int == context["issuedAt"] as? Int)
+            #expect(body["ct"] as? String == "encrypted-\(attemptId)")
 
             let fields = [
                 ("origin", "X-Radar-Mobile-Origin"),
@@ -142,7 +150,7 @@ extension RadarSerializedTests.RadarRevealRiskTests {
             resultForOptions: { _ in
                 sealCalls += 1
                 if sealCalls == 1 {
-                    return ["payload": "first-encrypted-envelope"]
+                    return ["payload": MockFraudEnvelope.payload]
                 }
                 return ["error": "Resealing failed"]
             }
@@ -187,6 +195,7 @@ extension RadarSerializedTests.RadarRevealRiskTests {
         let body = try #require(
             try JSONSerialization.jsonObject(with: bodyData) as? [String: Any]
         )
-        #expect(body["fraudPayload"] as? String == "first-encrypted-envelope")
+        #expect(bodyData == Data(MockFraudEnvelope.payload.utf8))
+        #expect(Set(body.keys) == MockFraudEnvelope.fieldNames)
     }
 }

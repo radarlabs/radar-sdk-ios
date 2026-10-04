@@ -50,7 +50,9 @@ extension RadarSerializedTests {
             let manager = try #require(ObjCVerificationManager.shared)
             let originalFactory = manager.instance.value(forKey: "trackVerifiedPayloadFactory")
             defer { manager.instance.setValue(originalFactory, forKey: "trackVerifiedPayloadFactory") }
-            let fraudSDK = try #require(RadarSDKFraud(instance: makeCollectedFraudInstance(result: ["payload": "mock-fraud-payload"])))
+            let prepared = MockPreparedFraudPayloadInstance(result: ["payload": MockFraudEnvelope.payload])
+            let instance = MockCollectingFraudInstance(result: ["preparedPayload": prepared])
+            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
             let factory: @convention(block) ([String: Any]) -> NSObject = { options in
                 RadarTrackVerifiedRequestPreparer(fraudSDK: fraudSDK, options: options)
             }
@@ -77,7 +79,12 @@ extension RadarSerializedTests {
             }
 
             #expect(apiHelperMock.lastUrl?.contains("/v1/track") == true)
-            #expect(apiHelperMock.lastParams?["expectedAddress"] as? String == "111 5th Ave, NY")
+            let context = try #require(prepared.capturedOptions.last)
+            let coreData = try #require(context["body"] as? Data)
+            let coreBody = try #require(try JSONSerialization.jsonObject(with: coreData) as? [String: Any])
+            #expect(coreBody["expectedAddress"] as? String == "111 5th Ave, NY")
+            let sentBody = try #require(apiHelperMock.lastParams as? [String: Any])
+            #expect(Set(sentBody.keys) == MockFraudEnvelope.fieldNames)
         }
     }
 }

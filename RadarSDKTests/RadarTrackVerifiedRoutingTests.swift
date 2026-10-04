@@ -73,7 +73,7 @@ extension RadarVerifiedHostOverrideTests {
             helper.mockStatus = .errorServer
             helper.mockResponse = ["meta": ["config": [:]]]
             client.apiHelper = helper
-            let instance = makeCollectedFraudInstance(result: ["payload": "encrypted-envelope"])
+            let instance = makeCollectedFraudInstance(result: ["payload": MockFraudEnvelope.payload])
             let preparer = try makeTrackPreparer(instance: instance, options: ["nonce": "test-nonce"])
             let finished = expectation(description: "Verified track completes")
             finished.assertForOverFulfill = true
@@ -85,16 +85,23 @@ extension RadarVerifiedHostOverrideTests {
             let host = secondary ? RadarSettings.defaultVerifiedHostSecondary : RadarSettings.verifiedHost
             XCTAssertEqual(helper.lastUrl, "\(host)/v1/track")
             XCTAssertEqual(helper.lastMethod, "POST")
-            XCTAssertEqual(helper.lastParams?["fraudPayload"] as? String, "encrypted-envelope")
-            XCTAssertEqual(helper.lastParams?["latitude"] as? Double, 40.0)
-            XCTAssertEqual(helper.lastParams?["longitude"] as? Double, -73.0)
+            let sentBody = try XCTUnwrap(helper.lastParams as? [String: Any])
+            XCTAssertEqual(Set(sentBody.keys), MockFraudEnvelope.fieldNames)
+            XCTAssertEqual(sentBody["ct"] as? String, "mock-ct")
             XCTAssertEqual(instance.recordedOptions().count, 1)
             let prepared = try XCTUnwrap(instance.result?["preparedPayload"] as? MockPreparedFraudPayloadInstance)
             let context = try XCTUnwrap(prepared.capturedOptions.first)
             XCTAssertEqual(context["method"] as? String, "POST")
             XCTAssertEqual(context["canonicalRoute"] as? String, "/v1/track")
             XCTAssertEqual(instance.recordedOptions().first?["nonce"] as? String, "test-nonce")
-            XCTAssertEqual(context["installId"] as? String, helper.lastParams?["installId"] as? String)
+            let coreBody = try XCTUnwrap(
+                JSONSerialization.jsonObject(with: try XCTUnwrap(context["body"] as? Data)) as? [String: Any]
+            )
+            XCTAssertEqual(coreBody["latitude"] as? Double, 40.0)
+            XCTAssertEqual(coreBody["longitude"] as? Double, -73.0)
+            XCTAssertNotNil(coreBody["installId"] as? String)
+            XCTAssertNil(coreBody["fraudPayload"])
+            XCTAssertNil(context["installId"])
             for (field, header) in [
                 ("authorization", "Authorization"), ("product", "X-Radar-Product"),
                 ("sdkVersion", "X-Radar-SDK-Version"), ("origin", "X-Radar-Mobile-Origin"),

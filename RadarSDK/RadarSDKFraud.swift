@@ -133,7 +133,7 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
     }
 
     func getEncryptedPayload(
-        installId: String,
+        coreBody: Data,
         canonicalRoute: String,
         origin: String? = nil,
         product: String? = nil,
@@ -141,12 +141,12 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
         authorization: String?
     ) throws -> String {
         var options: [String: Any] = [
+            "body": coreBody,
             "method": "POST",
             "canonicalRoute": canonicalRoute,
             "encryptionAttemptId":
                 try Self.makeFraudEncryptionAttemptId(),
             "issuedAt": Int(Date().timeIntervalSince1970),
-            "installId": installId,
         ]
         options["origin"] = origin
         options["product"] = product
@@ -161,27 +161,30 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
         guard
             request.httpMethod == "POST",
             let route = request.url?.path,
-            let data = request.httpBody,
-            var body = try JSONSerialization.jsonObject(with: data)
-                as? [String: Any],
-            let installId = body["installId"] as? String
+            let coreBody = request.httpBody
         else {
             throw RadarError(status: .errorUnknown)
         }
 
-        body["fraudPayload"] = try getEncryptedPayload(
-            installId: installId,
+        let encryptedPayload = try getEncryptedPayload(
+            coreBody: coreBody,
             canonicalRoute: route,
-            origin: request.value(forHTTPHeaderField: "X-Radar-Mobile-Origin"),
-            product: request.value(forHTTPHeaderField: "X-Radar-Product"),
-            sdkVersion: request.value(forHTTPHeaderField: "X-Radar-SDK-Version"),
-            authorization: request.value(forHTTPHeaderField: "Authorization")
+            origin: request.value(
+                forHTTPHeaderField: "X-Radar-Mobile-Origin"
+            ),
+            product: request.value(
+                forHTTPHeaderField: "X-Radar-Product"
+            ),
+            sdkVersion: request.value(
+                forHTTPHeaderField: "X-Radar-SDK-Version"
+            ),
+            authorization: request.value(
+                forHTTPHeaderField: "Authorization"
+            )
         )
 
         var preparedRequest = request
-        preparedRequest.httpBody = try JSONSerialization.data(
-            withJSONObject: body
-        )
+        preparedRequest.httpBody = Data(encryptedPayload.utf8)
         return preparedRequest
     }
 
