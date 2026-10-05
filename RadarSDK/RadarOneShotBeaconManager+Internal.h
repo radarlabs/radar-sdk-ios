@@ -1,5 +1,5 @@
 //
-//  RadarOneShotBeaconManager.h
+//  RadarOneShotBeaconManager+Internal.h
 //  RadarSDK
 //
 //  Created by Alan Charles on 7/10/26.

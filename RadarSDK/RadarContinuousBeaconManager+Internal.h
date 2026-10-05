@@ -1,5 +1,5 @@
 //
-//  RadarContinuousBeaconManager.h
+//  RadarContinuousBeaconManager+Internal.h
 //  RadarSDK
 //
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.

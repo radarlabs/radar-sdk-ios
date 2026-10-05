@@ -11,7 +11,7 @@
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
-#import "RadarOneShotBeaconManager.h"
+#import "RadarOneShotBeaconManager+Internal.h"
 #import "RadarConfig.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
