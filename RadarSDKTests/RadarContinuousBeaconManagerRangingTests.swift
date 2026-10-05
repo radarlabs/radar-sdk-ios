@@ -268,7 +268,7 @@ extension RadarSerializedTests.ContinuousBeaconManagerTests {
             // Back within the refresh interval: ranges the last search's beacons without searching.
             clock.time += 10
             let refreshCount = sleeper.delays.count
-            notificationCenter.post(name: UIApplication.willEnterForegroundNotification, object: nil)
+            notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil)
             await waitUntil { manager.ranging }
             #expect(rangedUUIDs == [Self.testUUID])
             await waitUntil { sleeper.delays.count > refreshCount }
@@ -281,7 +281,7 @@ extension RadarSerializedTests.ContinuousBeaconManagerTests {
             await waitUntil { !manager.ranging }
             clock.time += RadarContinuousBeaconManager.refreshInterval
             fakeSearch.result = Self.uuidResult(Self.otherUUID)
-            notificationCenter.post(name: UIApplication.willEnterForegroundNotification, object: nil)
+            notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil)
             await waitUntil { rangedUUIDs == [Self.otherUUID] }
 
             #expect(fakeSearch.locations.count == 2)
@@ -302,7 +302,7 @@ extension RadarSerializedTests.ContinuousBeaconManagerTests {
             #expect(manager.searchResult == nil)
             #expect(manager.beacons(near: Self.venueA) == nil)
 
-            notificationCenter.post(name: UIApplication.willEnterForegroundNotification, object: nil)
+            notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil)
             await settle()
             #expect(!manager.ranging)
             #expect(fakeSearch.locations.count == 1)

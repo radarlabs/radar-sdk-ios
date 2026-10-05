@@ -362,7 +362,10 @@ extension RadarContinuousBeaconManager {
             RadarLogger.shared.log(level: .debug, message: "Pausing continuous beacon manager in background")
             manager.pause()
         }
-        observe(UIApplication.willEnterForegroundNotification) { manager in
+        // Not willEnterForeground: the app is still in the background then, so `resume()` would
+        // see `isForeground()` as false. didBecomeActive also fires after interruptions like
+        // Control Center, which resumes ranging if Bluetooth was turned back on there.
+        observe(UIApplication.didBecomeActiveNotification) { manager in
             guard manager.started, !manager.ranging else { return }
             RadarLogger.shared.log(level: .debug, message: "Resuming continuous beacon manager in foreground")
             manager.resume()
