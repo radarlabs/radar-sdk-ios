@@ -26,8 +26,7 @@ extension RadarContinuousBeaconManager {
         let beacons: [BeaconIdentity]
 
         /// UUIDs take precedence over specific beacons, matching one-shot ranging. Beacons that
-        /// aren't valid iBeacons, such as Eddystone beacons from the Objective-C search, are
-        /// skipped.
+        /// aren't valid iBeacons are skipped.
         var constraints: [CLBeaconIdentityConstraint] {
             if !uuids.isEmpty {
                 return uuids.compactMap { UUID(uuidString: $0).map { CLBeaconIdentityConstraint(uuid: $0) } }

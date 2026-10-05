@@ -92,7 +92,7 @@ extension RadarSerializedTests.ContinuousBeaconManagerTests {
                 .init(uuid: Self.testUUID, major: "1", minor: "2"),
                 .init(uuid: "not-a-uuid", major: "1", minor: "2"),
                 .init(uuid: Self.testUUID, major: "x", minor: "2"),
-                // An Eddystone beacon from the Objective-C search.
+                // A beacon with no uuid, major, or minor, such as an Eddystone beacon.
                 .init(uuid: "", major: "", minor: ""),
             ]
         ).constraints

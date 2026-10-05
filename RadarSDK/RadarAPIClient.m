@@ -1174,6 +1174,9 @@
     [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
     [queryString appendFormat:@"&radius=%d", radius];
     [queryString appendFormat:@"&limit=%d", finalLimit];
+    // Only iBeacons. CoreLocation can only range and monitor iBeacons. The server filters by type
+    // before applying `limit`, so other beacon types can't crowd iBeacons out of the results.
+    [queryString appendString:@"&type=ibeacon"];
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/beacons?%@", host, queryString];
