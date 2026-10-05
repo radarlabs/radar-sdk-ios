@@ -41,6 +41,27 @@ struct VerifiedPanel: View {
                     )
                 }
             }
+            ActionButton("trackVerified (beacons)") {
+                let start = Date()
+                Radar.trackVerified(beacons: true, desiredAccuracy: .medium) { (status, token) in
+                    let elapsed = Int(Date().timeIntervalSince(start) * 1000)
+                    let beacons = token?.user?.beacons ?? []
+                    let beaconDesc = beacons.map { "\($0.__description ?? $0._id ?? "beacon") (\($0.uuid) \($0.major)/\($0.minor))" }
+                    logStream.write(
+                        status,
+                        summary: "trackVerified (beacons): \(Radar.stringForStatus(status)) in \(elapsed) ms, \(beacons.count) beacons",
+                        detail: beaconDesc.joined(separator: "\n")
+                    )
+                }
+            }
+            ActionButton("startRangingBeacons", style: .primary) {
+                Radar.startRangingBeacons()
+                logStream.write(.success, summary: "startRangingBeacons")
+            }
+            ActionButton("stopRangingBeacons", style: .destructive) {
+                Radar.stopRangingBeacons()
+                logStream.write(.success, summary: "stopRangingBeacons")
+            }
             ActionButton("revealRisk") {
                 Radar.revealRisk { (status, token) in
                     let tokenDesc = token?.dictionaryValue().description ?? "no token"

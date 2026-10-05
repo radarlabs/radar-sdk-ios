@@ -12,7 +12,7 @@
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
-#import "RadarBeaconManagerSwift.h"
+#import "RadarOneShotBeaconManager+Internal.h"
 #import "RadarConfig.h"
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
@@ -711,7 +711,7 @@
                                 id nearbyBeaconRegionsObj = res[@"nearbyBeaconRegions"];
                                 if (nearbyBeaconRegionsObj && [nearbyBeaconRegionsObj isKindOfClass:[NSArray class]]) {
                                     NSArray<NSDictionary<NSString *, NSString *> *> *beaconRegions = (NSArray<NSDictionary<NSString *, NSString *> *> *)nearbyBeaconRegionsObj;
-                                    [[RadarBeaconManagerSwift shared] registerBeaconRegionNotificationsFromArray:beaconRegions];
+                                    [[RadarOneShotBeaconManager shared] registerBeaconRegionNotificationsFromArray:beaconRegions];
                                 }
                                 
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
@@ -1185,6 +1185,9 @@
     [queryString appendFormat:@"near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
     [queryString appendFormat:@"&radius=%d", radius];
     [queryString appendFormat:@"&limit=%d", finalLimit];
+    // Only iBeacons. CoreLocation can only range and monitor iBeacons. The server filters by type
+    // before applying `limit`, so other beacon types can't crowd iBeacons out of the results.
+    [queryString appendString:@"&type=ibeacon"];
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/beacons?%@", host, queryString];
