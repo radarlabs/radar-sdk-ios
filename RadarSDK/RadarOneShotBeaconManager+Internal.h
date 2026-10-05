@@ -1,5 +1,5 @@
 //
-//  RadarBeaconManagerSwift.h
+//  RadarOneShotBeaconManager+Internal.h
 //  RadarSDK
 //
 //  Created by Alan Charles on 7/10/26.
@@ -14,9 +14,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RadarBeaconManagerSwift : NSObject
+@interface RadarOneShotBeaconManager : NSObject
 
-@property (class, readonly, strong) RadarBeaconManagerSwift *shared;
+@property (class, readonly, strong) RadarOneShotBeaconManager *shared;
 
 - (void)rangeBeacons:(NSArray<RadarBeacon *> *)beacons
    completionHandler:(RadarBeaconCompletionHandler)completionHandler;

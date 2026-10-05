@@ -14,7 +14,9 @@
 #import "Radar+Internal.h"
 #import "RadarAPIClient.h"
 #import "RadarSdkConfiguration.h"
-#import "RadarBeaconManagerSwift.h"
+#import "RadarOneShotBeaconManager+Internal.h"
+#import "RadarNearbyBeaconSearch+Internal.h"
+#import "RadarContinuousBeaconManager+Internal.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
@@ -254,16 +256,22 @@
                     }];
                 };
             
-            if (beacons) {
+            void (^rangeBeaconsAndTrack)(void) = ^{
                 [[RadarAPIClient sharedInstance]
                      searchBeaconsNear:location
-                     radius:1000
-                     limit:10
+                     radius:RadarNearbyBeaconSearch.radius
+                     limit:RadarNearbyBeaconSearch.limit
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                          NSArray<NSString *> *_Nullable beaconUUIDs) {
+                        // Continuous ranging couldn't serve this request, so it ranges this
+                        // search's beacons from now on rather than searching again itself.
+                        [RadarUtilsDeprecated runOnMainThread:^{
+                            [[RadarContinuousBeaconManager shared] handleSearchFrom:location status:status beaconUUIDs:beaconUUIDs beacons:beacons];
+                        }];
+
                         if (beaconUUIDs && beaconUUIDs.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
-                                [[RadarBeaconManagerSwift shared]
+                                [[RadarOneShotBeaconManager shared]
                                  rangeBeaconUUIDs:beaconUUIDs
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                     if (status != RadarStatusSuccess || !beacons) {
@@ -277,7 +285,7 @@
                             }];
                         } else if (beacons && beacons.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
-                                [[RadarBeaconManagerSwift shared]
+                                [[RadarOneShotBeaconManager shared]
                                  rangeBeacons:beacons
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                     if (status != RadarStatusSuccess || !beacons) {
@@ -293,9 +301,24 @@
                             callTrackAPI(@[]);
                         }
                     }];
-                } else {
-                    callTrackAPI(nil);
-                }
+            };
+
+            if (beacons) {
+                [RadarUtilsDeprecated runOnMainThread:^{
+                    NSArray<RadarBeacon *> *continuousBeacons = [[RadarContinuousBeaconManager shared] beaconsNear:location];
+                    if (!continuousBeacons) {
+                        rangeBeaconsAndTrack();
+                        return;
+                    }
+
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                       message:[NSString stringWithFormat:@"Using continuously ranged beacons | beacons.count = %lu", (unsigned long)continuousBeacons.count]];
+
+                    callTrackAPI(continuousBeacons);
+                }];
+            } else {
+                callTrackAPI(nil);
+            }
             }];
         }];
     };
