@@ -30,6 +30,10 @@ When working in an existing Objective-C file, consider migrating the file to Swi
 - New classes, structs, enums, and extensions → Swift only
 - New tests → Swift only
 
+**Objective-C-only files.** A file with an `// objc-only:` comment must stay in Objective-C;
+the comment gives the reason. Do not offer to migrate it interactively, and the nightly batch
+migration must never select it.
+
 **Sanctioned exception — the nightly batch migration.** The scheduled workflow
 `.github/workflows/objc-to-swift-nightly.yml` runs the `objc-to-swift` skill (from
 `radarlabs/clankers`) in its unattended batch mode: each run asks the skill to choose one
