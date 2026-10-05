@@ -47,6 +47,11 @@ class RadarContinuousBeaconManager: NSObject, CLLocationManagerDelegate {
     var searchBeacons: @MainActor (CLLocation) async -> SearchResult? = { location in
         do {
             return SearchResult(try await RadarNearbyBeaconSearch.search(near: location))
+        } catch is CancellationError {
+            // A newer search replaced this one.
+            return nil
+        } catch let error as URLError where error.code == .cancelled {
+            return nil
         } catch {
             RadarLogger.shared.log(
                 level: .debug, message: "Continuous beacon manager search failed | error = \(error.localizedDescription)")
@@ -69,8 +74,8 @@ class RadarContinuousBeaconManager: NSObject, CLLocationManagerDelegate {
     // The beacons being ranged, and the search they came from.
     private(set) var searchResult: SearchResult?
 
-    // Incremented to invalidate a search that's still running.
-    private var searchGeneration = 0
+    // The running search, if any. Cancelled when a newer search replaces it.
+    private var searchTask: Task<Void, Never>?
     private var refreshTask: Task<Void, Never>?
 
     // What CoreLocation is ranging, and when it started.
@@ -136,7 +141,8 @@ class RadarContinuousBeaconManager: NSObject, CLLocationManagerDelegate {
     func onSearched(from location: CLLocation, result: SearchResult?) {
         guard started else { return }
 
-        searchGeneration += 1
+        searchTask?.cancel()
+        searchTask = nil
         scheduleRefresh(after: Self.refreshInterval)
         guard let result else {
             RadarLogger.shared.log(level: .debug, message: "Continuous beacon manager search failed")
@@ -183,7 +189,8 @@ class RadarContinuousBeaconManager: NSObject, CLLocationManagerDelegate {
         searchResult = nil
         searchLocation = nil
         searchedAt = nil
-        searchGeneration += 1
+        searchTask?.cancel()
+        searchTask = nil
     }
 
     // MARK: - Searching
@@ -223,15 +230,15 @@ class RadarContinuousBeaconManager: NSObject, CLLocationManagerDelegate {
     private func search(from location: CLLocation) {
         refreshTask?.cancel()
         refreshTask = nil
-        searchGeneration += 1
-        let generation = searchGeneration
-        Task { @MainActor [weak self] in
+        searchTask?.cancel()
+        searchTask = Task { @MainActor [weak self] in
             guard let self else { return }
             let result = await searchBeacons(location)
-            guard generation == searchGeneration else {
+            guard !Task.isCancelled else {
                 RadarLogger.shared.log(level: .debug, message: "Continuous beacon manager ignoring stale search")
                 return
             }
+            searchTask = nil
             onSearched(from: location, result: result)
         }
     }
