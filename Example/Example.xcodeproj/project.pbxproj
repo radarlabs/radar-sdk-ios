@@ -116,6 +116,13 @@
 			remoteGlobalIDString = BA5198792ED10AEA004A3B35;
 			remoteInfo = TripActivityExtensionExtension;
 		};
+		BAE806B63054A05F000DA607 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F64C7FB22F645A9F00943B7A /* RadarSDKFraud.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BAE8060C3050C96A000DA607;
+			remoteInfo = RadarSDKFraudTests;
+		};
 		F64C7F082F64564F00943B7A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DD86FCF9239185F4003225F6 /* RadarSDK.xcodeproj */;
@@ -569,6 +576,7 @@
 			isa = PBXGroup;
 			children = (
 				F64C80442F645C3E00943B7A /* RadarSDKFraud.framework */,
+				BAE806B73054A05F000DA607 /* RadarSDKFraudTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -717,6 +725,13 @@
 			fileType = wrapper.cfbundle;
 			path = RadarSDKIndoorsTests.xctest;
 			remoteRef = 17C814CC302CC79400425933 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BAE806B73054A05F000DA607 /* RadarSDKFraudTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RadarSDKFraudTests.xctest;
+			remoteRef = BAE806B63054A05F000DA607 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		F64C7F092F64564F00943B7A /* RadarSDKTests.xctest */ = {
