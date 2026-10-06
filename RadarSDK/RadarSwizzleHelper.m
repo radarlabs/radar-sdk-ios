@@ -6,6 +6,10 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+// objc-only: Do not migrate to Swift. These methods are exchanged onto the host app's
+// delegate classes at runtime, so `self` is not a RadarSwizzleHelper and Swift's type
+// and dispatch assumptions do not hold.
+
 #import "RadarSwizzleHelper.h"
 #import "RadarSettings.h"
 #import "Radar+Internal.h"

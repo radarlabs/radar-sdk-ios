@@ -573,7 +573,7 @@ extension RadarSerializedTests.RadarLocationManagerSwiftLifecycleTests {
             "useRadarModifiedBeacon": false
         ])
         RadarSettings.tracking = true
-        let beaconManager = RadarBeaconManagerSwift.shared
+        let beaconManager = RadarOneShotBeaconManager.shared
         beaconManager.stopRanging()
         let locationManager = TrackingCLLocationManager()
         let location = CLLocation(

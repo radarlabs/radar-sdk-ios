@@ -130,7 +130,7 @@ extension RadarLocationManagerSwift {
         let beaconMinor = region.minor?.uint16Value
 
         Task { @MainActor in
-            let beaconManager = RadarBeaconManagerSwift.shared
+            let beaconManager = RadarOneShotBeaconManager.shared
             let completionHandler: RadarBeaconCompletionHandler = { _, nearbyBeacons in
                 RadarSwift.bridge?.handleLocation(
                     location,
@@ -171,7 +171,7 @@ extension RadarLocationManagerSwift {
         isEntry: Bool,
         completionHandler: @escaping RadarBeaconCompletionHandler
     ) {
-        let beaconManager = RadarBeaconManagerSwift.shared
+        let beaconManager = RadarOneShotBeaconManager.shared
         if region.identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
             if isEntry {
                 beaconManager.handleBeaconUUIDEntry(for: region, completionHandler: completionHandler)
