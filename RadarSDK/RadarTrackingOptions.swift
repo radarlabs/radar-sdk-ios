@@ -43,22 +43,13 @@ public class RadarTrackingOptions: NSObject {  // swiftlint:disable:this type_bo
     /// device is considered stopped.
     public var stopDistance: Int32 = 0
 
-    private var storedStartTrackingAfter: NSDate?
-    private var storedStopTrackingAfter: NSDate?
-
     /// Determines when to start tracking. Use `nil` to start tracking when
     /// `startTracking` is called.
-    public var startTrackingAfter: Date? {
-        get { storedStartTrackingAfter as Date? }
-        set { storedStartTrackingAfter = newValue as NSDate? }
-    }
+    public var startTrackingAfter: Date?
 
     /// Determines when to stop tracking. Use `nil` to track until `stopTracking`
     /// is called.
-    public var stopTrackingAfter: Date? {
-        get { storedStopTrackingAfter as Date? }
-        set { storedStopTrackingAfter = newValue as NSDate? }
-    }
+    public var stopTrackingAfter: Date?
 
     /// Determines which failed location updates to replay to the server.
     public var replay: RadarTrackingOptionsReplay = .stops
