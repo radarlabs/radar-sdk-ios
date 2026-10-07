@@ -111,6 +111,7 @@ jobs:
           echo "MIGRATION_DESTINATION=platform=iOS Simulator,id=$SIMULATOR_ID" >> "$GITHUB_ENV"
 
       - name: Run the migration agent
+        id: migrate
         if: steps.guard.outputs.open == '0'
         uses: anthropics/claude-code-action@v1
         env:
@@ -122,13 +123,15 @@ jobs:
             /objc-to-swift batch
 
             Inspect the full RadarSDK Objective-C backlog and choose exactly one eligible
-            implementation. Prefer the smallest implementation, then the least coupled,
-            then the filename. Exclude managers, partial migrations, files containing an
-            `// objc-only:` marker, and models already represented elsewhere. State the
-            selected file and rationale before editing.
+            implementation. First drop managers, partial migrations, files whose .m or .h
+            contains an `// objc-only:` marker, and models already represented elsewhere.
+            An excluded file is not a blocker: skip it and keep going down the list. Among
+            the files left, prefer the smallest implementation, then the least coupled,
+            then the filename. State the selected file, the rationale, and any smaller
+            files you skipped before editing.
             Replace it with a same-basename Swift implementation, preserve Objective-C
-            compatibility, delete the old .m and project references, and do not select
-            another file or leave the old implementation beside Swift. For a public
+            compatibility, delete the old .m and project references, and once editing has
+            started do not switch to another file or leave the old implementation beside Swift. For a public
             class, follow "Public classes implemented in Swift" in AGENTS.md: declare it once
             as `@objc(ClassName) @objcMembers public final class ClassName` (option types
             customers create keep public initializers and are not final), keep exactly the
@@ -140,4 +143,44 @@ jobs:
             and `make lint`, then resolve any Release linkage or CocoaPods header failures
             before opening the PR. The workflow provides GH_TOKEN and
             MIGRATION_DESTINATION.
+            End with exactly one status line as your final message: `PR: <url>`,
+            `NO_CANDIDATE: <why each remaining file was excluded>`, or
+            `BLOCKED: <file> - <the blocker or failing check and its error>`.
           claude_args: '--allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 80'
+
+      # The agent's transcript is hidden (show_full_output is off in this public repo),
+      # so surface only its final status line, and fail the run when no PR was opened.
+      - name: Report the migration result
+        if: always() && steps.guard.outputs.open == '0'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          EXECUTION_FILE: ${{ steps.migrate.outputs.execution_file }}
+        run: |
+          RESULT=""
+          if [ -n "$EXECUTION_FILE" ] && [ -f "$EXECUTION_FILE" ]; then
+            RESULT=$(jq -r '[.[] | select(.type == "result") | .result // empty] | last // empty' "$EXECUTION_FILE")
+          fi
+          [ -n "$RESULT" ] || RESULT="(the migration agent produced no final message)"
+
+          {
+            echo "## Migration agent result"
+            echo
+            echo "$RESULT"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          OPEN=$(gh pr list --repo "$GITHUB_REPOSITORY" --label swift-migration --state open --json number --jq 'length')
+          if [ "$OPEN" != "0" ]; then
+            echo "Migration PR opened."
+            exit 0
+          fi
+
+          SUMMARY=$(printf '%s' "$RESULT" | tail -n 1)
+          case "$SUMMARY" in
+            NO_CANDIDATE:*)
+              echo "::warning::No eligible Objective-C file to migrate. $SUMMARY"
+              ;;
+            *)
+              echo "::error::The migration agent did not open a PR. $SUMMARY"
+              exit 1
+              ;;
+          esac
