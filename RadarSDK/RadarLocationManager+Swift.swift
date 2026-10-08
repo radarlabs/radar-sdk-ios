@@ -72,6 +72,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     private static let trackingShutdownDelay: TimeInterval = 10
     private static let immediateShutdownDelay: TimeInterval = 0
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
+    nonisolated(unsafe) static var bootstrapIndoorTracking: () -> Void = { RadarIndoors.bootstrapTrackingIfNeeded() }
 
     @objc(startTrackingWithOptions:)
     static func startTracking(options: RadarTrackingOptions) {
@@ -84,6 +85,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
         RadarSettings.tracking = true
         RadarSettings.trackingOptions = options
         RadarSwift.bridge?.updateTracking()
+        bootstrapIndoorTracking()
     }
 
     @objc(shouldBypassDeviceLocationStateForSource:)
