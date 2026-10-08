@@ -66,6 +66,43 @@ extension RadarSerializedTests {
             #expect(circular?.center.longitude == -74.0)
         }
 
+        @Test("Back-to-back replaceBubbleGeofence calls leave one bubble while monitoredRegions is stale")
+        func replaceBubbleGeofenceBackToBackLeavesOneBubble() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarSettings.tracking = true
+
+            let manager = TrackingCLLocationManager()
+            manager.staleMonitoredRegions = []
+            let location = CLLocation(latitude: 40.7, longitude: -74.0)
+
+            for _ in 0..<3 {
+                RadarLocationManagerSwift.replaceBubbleGeofence(locationManager: manager, location: location, radius: 100)
+            }
+
+            let bubbleRegions = manager.trackedRegions.filter { $0.identifier.hasPrefix("radar_bubble_") }
+            #expect(bubbleRegions.count == 1)
+        }
+
+        @Test("removeBubbleGeofence removes the last registered bubble while monitoredRegions is stale")
+        func removeBubbleGeofenceRemovesLastRegisteredBubble() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            RadarSettings.tracking = true
+
+            let manager = TrackingCLLocationManager()
+            manager.staleMonitoredRegions = []
+            RadarLocationManagerSwift.replaceBubbleGeofence(
+                locationManager: manager,
+                location: CLLocation(latitude: 40.7, longitude: -74.0),
+                radius: 100
+            )
+
+            RadarLocationManagerSwift.removeBubbleGeofence(locationManager: manager)
+
+            #expect(manager.trackedRegions.isEmpty)
+        }
+
         // MARK: - removeBubbleGeofence
 
         @Test("removeBubbleGeofence removes only radar_bubble_* regions, leaves others")
