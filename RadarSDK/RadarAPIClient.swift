@@ -229,7 +229,7 @@ public final class RadarAPIClient: Sendable {
         transactionId: String?,
         revealRiskId: String?,
         useSecondaryVerifiedHost: Bool,
-    ) async throws {
+    ) async throws -> RadarVerifiedLocationToken {
         let params: [String: Any?] = [
             // TODO: everything in anonymous block
             "latitude": location.coordinate.latitude,
@@ -263,7 +263,10 @@ public final class RadarAPIClient: Sendable {
             
         ]
         
-        let (data, response) = try await apiHelper.radarRequest(method: "POST", url: "track", body: params)
+        let host: RadarAPIHelper.RadarHost = useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost
+        
+        let (data, response) = try await apiHelper.radarRequest(host: host, method: "POST", url: "track", body: params)
+        
         
         
     }
