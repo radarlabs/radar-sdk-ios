@@ -327,4 +327,36 @@ extension RadarSerializedTests {
             #expect(locationManager.desiredAccuracy == kCLLocationAccuracyKilometer)
         }
     }
+
+    @Suite(.serialized)
+    actor SwiftStartTrackingIndoorBootstrapTests {
+
+        @Test("start tracking bootstraps indoor tracking after updating tracking")
+        @MainActor
+        func startTrackingBootstrapsIndoorTracking() {
+            RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies { bridge in
+                var updateTrackingCallCountAtBootstrap: Int?
+                RadarLocationManagerSwift.bootstrapIndoorTracking = {
+                    updateTrackingCallCountAtBootstrap = bridge.updateTrackingCallCount
+                }
+
+                RadarLocationManagerSwift.startTracking(options: .presetResponsive)
+
+                #expect(updateTrackingCallCountAtBootstrap == 1)
+            }
+        }
+
+        @Test("start tracking does not bootstrap indoor tracking when unauthorized")
+        @MainActor
+        func startTrackingSkipsIndoorBootstrapWhenUnauthorized() {
+            RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies(authorizationStatus: .denied) { _ in
+                var bootstrapCallCount = 0
+                RadarLocationManagerSwift.bootstrapIndoorTracking = { bootstrapCallCount += 1 }
+
+                RadarLocationManagerSwift.startTracking(options: .presetResponsive)
+
+                #expect(bootstrapCallCount == 0)
+            }
+        }
+    }
 }
