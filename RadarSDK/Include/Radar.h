@@ -15,7 +15,6 @@
 #import "RadarEvent.h"
 #import "RadarRegion.h"
 #import "RadarRouteMode.h"
-#import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
 #import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
@@ -35,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RadarInitializeOptions;
 @class RadarTripLeg;
 @class RadarRouteMatrix;
+@class RadarRoutes;
 
 #pragma mark - Enums
 
