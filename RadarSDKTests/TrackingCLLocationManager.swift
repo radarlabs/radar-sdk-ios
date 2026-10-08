@@ -21,6 +21,11 @@ final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
     private(set) var stopUpdatingLocationCallCount = 0
     private(set) var stopUpdatingHeadingCallCount = 0
     private(set) var requestLocationCallCount = 0
+    private(set) var startUpdatingHeadingCallCount = 0
+    private(set) var startMonitoringVisitsCallCount = 0
+    private(set) var stopMonitoringVisitsCallCount = 0
+    private(set) var startMonitoringSLCCallCount = 0
+    private(set) var stopMonitoringSLCCallCount = 0
     var mockLocation: CLLocation?
 
     override var monitoredRegions: Set<CLRegion> { trackedRegions }
@@ -52,6 +57,26 @@ final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
 
     override func requestLocation() {
         requestLocationCallCount += 1
+    }
+
+    override func startUpdatingHeading() {
+        startUpdatingHeadingCallCount += 1
+    }
+
+    override func startMonitoringVisits() {
+        startMonitoringVisitsCallCount += 1
+    }
+
+    override func stopMonitoringVisits() {
+        stopMonitoringVisitsCallCount += 1
+    }
+
+    override func startMonitoringSignificantLocationChanges() {
+        startMonitoringSLCCallCount += 1
+    }
+
+    override func stopMonitoringSignificantLocationChanges() {
+        stopMonitoringSLCCallCount += 1
     }
 
     func seed(_ identifiers: [String]) {

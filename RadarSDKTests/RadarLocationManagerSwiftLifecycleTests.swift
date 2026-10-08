@@ -45,7 +45,11 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
     private(set) var scheduledShutdownDelays: [TimeInterval] = []
     private(set) var requestLocationCallCount = 0
     private(set) var addCompletionHandlerCallCount = 0
-    let locationManager: CLLocationManager = TrackingCLLocationManager()
+    private(set) var startMotionUpdatesOptions: [RadarTrackingOptions] = []
+    let trackingLocationManager = TrackingCLLocationManager()
+    let trackingLowPowerLocationManager = TrackingCLLocationManager()
+    var locationManager: CLLocationManager { trackingLocationManager }
+    var lowPowerLocationManager: CLLocationManager { trackingLowPowerLocationManager }
 
     func started() -> Bool { startedValue }
 
@@ -75,6 +79,10 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
 
     func addCompletionHandler(_ completionHandler: RadarLocationCompletionHandler?) {
         addCompletionHandlerCallCount += 1
+    }
+
+    func startMotionUpdates(options: RadarTrackingOptions) {
+        startMotionUpdatesOptions.append(options)
     }
 }
 

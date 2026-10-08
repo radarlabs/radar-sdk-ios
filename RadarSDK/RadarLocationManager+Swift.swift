@@ -43,6 +43,12 @@ import Foundation
     func addCompletionHandler(_ completionHandler: RadarLocationCompletionHandler?)
 
     var locationManager: CLLocationManager { get }
+    var lowPowerLocationManager: CLLocationManager { get }
+
+    // Keep motion and pressure setup in Objective-C until RadarActivityManager and the RadarState
+    // motion storage are reachable from Swift.
+    @objc(startMotionUpdatesWithOptions:)
+    func startMotionUpdates(options: RadarTrackingOptions)
 }
 
 private final class RadarLocationManagerSwiftHostBox: @unchecked Sendable {
