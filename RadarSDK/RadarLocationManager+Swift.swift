@@ -73,6 +73,10 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     private static let immediateShutdownDelay: TimeInterval = 0
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
     nonisolated(unsafe) static var bootstrapIndoorTracking: () -> Void = { RadarIndoors.bootstrapTrackingIfNeeded() }
+    // The bubble region this class last registered. `monitoredRegions` updates asynchronously, so
+    // a remove that runs right after an add may not see the new region in it. Stopping this region
+    // directly keeps back-to-back replaces from leaving two bubbles registered.
+    nonisolated(unsafe) static var bubbleGeofenceRegion: CLRegion?
 
     @objc(startTrackingWithOptions:)
     static func startTracking(options: RadarTrackingOptions) {
@@ -394,6 +398,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
             identifier: identifier
         )
         locationManager.startMonitoring(for: region)
+        bubbleGeofenceRegion = region
 
         RadarLogger.shared.debug(
             "🦅 Successfully added bubble geofence | latitude = \(location.coordinate.latitude); longitude = \(location.coordinate.longitude); radius = \(radius); identifier = \(identifier)"
@@ -402,6 +407,11 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
     @objc(removeBubbleGeofenceOnLocationManager:)
     static func removeBubbleGeofence(locationManager: CLLocationManager) {
+        if let bubbleGeofenceRegion {
+            locationManager.stopMonitoring(for: bubbleGeofenceRegion)
+            Self.bubbleGeofenceRegion = nil
+        }
+
         for region in locationManager.monitoredRegions
         where region.identifier.hasPrefix(bubbleGeofenceIdentifierPrefix) {
             locationManager.stopMonitoring(for: region)
