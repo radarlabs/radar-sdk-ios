@@ -262,6 +262,53 @@ extension RadarSerializedTests {
             #expect(host.scheduledShutdownDelays == [10])
         }
 
+        @Test("A second stopUpdates is a no-op once the timer is invalidated")
+        func stopUpdatesTwiceStopsOnce() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: TrackingCLLocationManager(),
+                interval: 10,
+                blueBar: false
+            )
+            defer { host.timer()?.invalidate() }
+
+            RadarLocationManagerSwift.stopUpdates(host: host, locationManager: locationManager)
+            RadarLocationManagerSwift.stopUpdates(host: host, locationManager: locationManager)
+
+            #expect(locationManager.stopUpdatingLocationCallCount == 2)
+            #expect(host.scheduledShutdownDelays == [10])
+        }
+
+        @Test("updateTracking stops a running timer when updates should no longer start")
+        func updateTrackingStopsTimerWhenUpdatesShouldNotStart() {
+            RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies(
+                authorizationStatus: .authorizedWhenInUse
+            ) { _ in
+                let host = TrackingRadarLocationManagerHost()
+                defer { host.timer()?.invalidate() }
+                RadarSettings.tracking = true
+
+                let blueBarOptions = RadarTrackingOptions()
+                blueBarOptions.desiredMovingUpdateInterval = 30
+                blueBarOptions.showBlueBar = true
+                RadarSettings.trackingOptions = blueBarOptions
+                RadarLocationManagerSwift.updateTracking(host: host, location: nil, fromInitialize: false)
+                #expect(host.started())
+
+                let noBlueBarOptions = RadarTrackingOptions()
+                noBlueBarOptions.desiredMovingUpdateInterval = 30
+                RadarSettings.trackingOptions = noBlueBarOptions
+                RadarLocationManagerSwift.updateTracking(host: host, location: nil, fromInitialize: false)
+
+                #expect(!host.started())
+                #expect(host.timer()?.isValid == false)
+            }
+        }
+
         @Test("stopUpdates does not schedule shutdown while a location is sending")
         func stopUpdatesSkipsShutdownWhileSending() {
             let host = TrackingRadarLocationManagerHost()
