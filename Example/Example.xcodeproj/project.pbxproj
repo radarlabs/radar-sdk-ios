@@ -34,6 +34,7 @@
 		BA77932C2FAA663C00E197CA /* TripsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77932B2FAA663800E197CA /* TripsPanel.swift */; };
 		BA77932E2FAA695B00E197CA /* VerifiedPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77932D2FAA695700E197CA /* VerifiedPanel.swift */; };
 		BA7793302FAA6A7300E197CA /* SearchPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA77932F2FAA6A6E00E197CA /* SearchPanel.swift */; };
+		C0FFEE012FAA6A7300E19744 /* RoutingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE002FAA6A6E00E19744 /* RoutingPanel.swift */; };
 		BA7793322FAA6FE600E197CA /* NotificationsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */; };
 		BA7793342FAA70F100E197CA /* MessagingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793332FAA70EC00E197CA /* MessagingPanel.swift */; };
 		BA7793362FAA997300E197CA /* ConsoleEntry+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7793352FAA996800E197CA /* ConsoleEntry+UI.swift */; };
@@ -234,6 +235,7 @@
 		BA77932B2FAA663800E197CA /* TripsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripsPanel.swift; sourceTree = "<group>"; };
 		BA77932D2FAA695700E197CA /* VerifiedPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedPanel.swift; sourceTree = "<group>"; };
 		BA77932F2FAA6A6E00E197CA /* SearchPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPanel.swift; sourceTree = "<group>"; };
+		C0FFEE002FAA6A6E00E19744 /* RoutingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutingPanel.swift; sourceTree = "<group>"; };
 		BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsPanel.swift; sourceTree = "<group>"; };
 		BA7793332FAA70EC00E197CA /* MessagingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingPanel.swift; sourceTree = "<group>"; };
 		BA7793352FAA996800E197CA /* ConsoleEntry+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConsoleEntry+UI.swift"; sourceTree = "<group>"; };
@@ -409,6 +411,7 @@
 				BA7793332FAA70EC00E197CA /* MessagingPanel.swift */,
 				BA7793312FAA6FE100E197CA /* NotificationsPanel.swift */,
 				BA77932F2FAA6A6E00E197CA /* SearchPanel.swift */,
+				C0FFEE002FAA6A6E00E19744 /* RoutingPanel.swift */,
 				BA77932D2FAA695700E197CA /* VerifiedPanel.swift */,
 				BA77932B2FAA663800E197CA /* TripsPanel.swift */,
 				BA7793292FAA62E300E197CA /* TrackingPanel.swift */,
@@ -815,6 +818,7 @@
 				BAB2ACAD2FB5102B00560332 /* GeofenceOverlay.swift in Sources */,
 				BA77932A2FAA62E700E197CA /* TrackingPanel.swift in Sources */,
 				BA7793302FAA6A7300E197CA /* SearchPanel.swift in Sources */,
+				C0FFEE012FAA6A7300E19744 /* RoutingPanel.swift in Sources */,
 				BA7792F82FA9087200E197CA /* TogglePanel.swift in Sources */,
 				BAB2ACBE2FB66A7700560332 /* MapViewRepresentable.swift in Sources */,
 				BA7793322FAA6FE600E197CA /* NotificationsPanel.swift in Sources */,

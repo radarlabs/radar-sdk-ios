@@ -157,8 +157,7 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         #expect(RadarRouteDistance(object: "not a dict") == nil)
     }
 
-    // `RadarRoutes.m` is still ObjC and builds every one of its routes through
-    // `-initWithObject:`, reached here via the test bridging header.
+    // `RadarRoutes` builds every one of its routes through `RadarRoute(object:)`.
     @Test
     func radarRoutesParsesSwiftBackedRoutes() throws {
         let routes = try #require(
@@ -329,10 +328,9 @@ struct RadarRouteTests {  // swiftlint:disable:this type_body_length
         #expect(route.value(forKeyPath: "geometry.coordinates") == nil)
     }
 
-    // `RadarRoutes` is still ObjC, so `routes.car` is typed by `RadarRoute.h` rather than by
-    // Swift — this is a compiled ObjC property chain, not KVC.
+    // Reads a route through the `RadarRoutes` property chain that customers use.
     @Test
-    func headerTypedPropertyChainThroughRadarRoutes() throws {
+    func propertyChainThroughRadarRoutes() throws {
         let routes = try #require(RadarRoutes(object: ["car": routeObject()]))
         let car = try #require(routes.car)
 
