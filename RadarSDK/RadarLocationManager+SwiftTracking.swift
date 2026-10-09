@@ -14,7 +14,6 @@ extension RadarLocationManagerSwift {
 
     @objc(updateTrackingWithHost:location:fromInitialize:)
     static func updateTracking(host: RadarLocationManagerSwiftHost, location: CLLocation?, fromInitialize: Bool) {
-        var tracking = RadarSettings.tracking
         let options = Radar.getTrackingOptions()
         let localOptions = RadarSettings.trackingOptions
 
@@ -22,23 +21,21 @@ extension RadarLocationManagerSwift {
             "🦅 Updating tracking | options = \(options.dictionaryValue()); location = \(String(describing: location))"
         )
 
-        if !tracking, let startTrackingAfter = localOptions?.startTrackingAfter, startTrackingAfter.timeIntervalSinceNow < 0 {
+        if !RadarSettings.tracking, let startTrackingAfter = localOptions?.startTrackingAfter, startTrackingAfter.timeIntervalSinceNow < 0 {
             RadarLogger.shared.debug(
                 "🦅 Starting time-based tracking | startTrackingAfter = \(String(describing: options.startTrackingAfter))"
             )
 
             RadarSettings.tracking = true
-            tracking = true
-        } else if tracking, let stopTrackingAfter = localOptions?.stopTrackingAfter, stopTrackingAfter.timeIntervalSinceNow < 0 {
+        } else if RadarSettings.tracking, let stopTrackingAfter = localOptions?.stopTrackingAfter, stopTrackingAfter.timeIntervalSinceNow < 0 {
             RadarLogger.shared.debug(
                 "🦅 Stopping time-based tracking | stopTrackingAfter = \(String(describing: options.stopTrackingAfter))"
             )
 
             RadarSettings.tracking = false
-            tracking = false
         }
 
-        if tracking {
+        if RadarSettings.tracking {
             applyTrackingOptions(options, host: host, location: location)
         } else {
             stopUpdates(host: host, locationManager: host.locationManager)
