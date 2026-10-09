@@ -35,6 +35,7 @@ extension RadarSerializedTests {
             tracking: Bool,
             stopped: Bool = false,
             authorizationStatus: CLAuthorizationStatus = .authorizedAlways,
+            sdkConfiguration: RadarSdkConfiguration? = nil,
             location: CLLocation? = CLLocation(latitude: 40.7, longitude: -74.0),
             fromInitialize: Bool = false,
             seedRegions: [String] = [],
@@ -46,6 +47,7 @@ extension RadarSerializedTests {
                 bridge.mockStopped = stopped
                 RadarSettings.tracking = tracking
                 RadarSettings.trackingOptions = options
+                RadarSettings.sdkConfiguration = sdkConfiguration
 
                 let host = TrackingRadarLocationManagerHost()
                 let locationManager = host.trackingLocationManager
@@ -121,12 +123,24 @@ extension RadarSerializedTests {
             }
         }
 
-        @Test("Updates don't start without always authorization, the blue bar, or startUpdatesWhileInUse")
-        func whenInUseDoesNotStartUpdatesByDefault() {
-            let options = trackingOptions { $0.desiredMovingUpdateInterval = 150 }
+        @Test(
+            "With when-in-use authorization, updates start only with the blue bar or startUpdatesWhileInUse",
+            arguments: [(false, false, false), (true, false, true), (false, true, true)]
+        )
+        func whenInUseStartsUpdatesOnlyWhenAllowed(showBlueBar: Bool, startUpdatesWhileInUse: Bool, expectStarted: Bool) {
+            let options = trackingOptions {
+                $0.desiredMovingUpdateInterval = 150
+                $0.showBlueBar = showBlueBar
+            }
+            let sdkConfiguration = RadarSdkConfiguration(dict: ["startUpdatesWhileInUse": startUpdatesWhileInUse])
 
-            runUpdateTracking(options: options, tracking: true, authorizationStatus: .authorizedWhenInUse) { host, _, _ in
-                #expect(!host.started())
+            runUpdateTracking(
+                options: options,
+                tracking: true,
+                authorizationStatus: .authorizedWhenInUse,
+                sdkConfiguration: sdkConfiguration
+            ) { host, _, _ in
+                #expect(host.started() == expectStarted)
             }
         }
 
