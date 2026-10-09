@@ -57,7 +57,8 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func isStopped() -> Bool { false }
     func getTripOptions() -> RadarTripOptions? { nil }
     func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?) {}
-    func createEvent(dict: [String: Any]) -> RadarEvent? { nil }
+    var createEventHandler: (([String: Any]) -> RadarEvent?)?
+    func createEvent(dict: [String: Any]) -> RadarEvent? { createEventHandler?(dict) }
     func createUser(dict: [String: Any]) -> RadarUser? { nil }
     func createGeofence(dict: [String: Any]) -> RadarGeofence? { nil }
     var mockIsForeground = false

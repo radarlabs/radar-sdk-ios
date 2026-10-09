@@ -16,11 +16,11 @@
 #import "RadarEvent.h"
 #import "RadarRegion.h"
 #import "RadarUser.h"
-#import "RadarVerifiedLocationToken.h"
 
 @class RadarTripLeg;
 @class RadarRouteMatrix;
 @class RadarRoutes;
+@class RadarVerifiedLocationToken;
 
 NS_ASSUME_NONNULL_BEGIN
 
