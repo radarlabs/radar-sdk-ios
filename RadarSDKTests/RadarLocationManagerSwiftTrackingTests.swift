@@ -272,8 +272,10 @@ extension RadarSerializedTests {
                 #expect(locationManager.monitoredRegions.map(\.identifier) == ["other_region"])
             }
         }
+    }
 
-        // MARK: - Public method routing
+    @Suite(.serialized)
+    actor UpdateTrackingRoutingTests {
 
         @Test("Public updateTracking reaches the same end state with the flag on or off", arguments: [true, false])
         func publicUpdateTrackingReachesSameEndState(useSwiftLocationManager: Bool) async {
