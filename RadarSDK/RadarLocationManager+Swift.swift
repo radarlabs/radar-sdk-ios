@@ -43,6 +43,12 @@ import Foundation
     func addCompletionHandler(_ completionHandler: RadarLocationCompletionHandler?)
 
     var locationManager: CLLocationManager { get }
+    var lowPowerLocationManager: CLLocationManager { get }
+
+    // Keep motion and pressure setup in Objective-C until RadarActivityManager and the RadarState
+    // motion storage are reachable from Swift.
+    @objc(startMotionUpdatesWithOptions:)
+    func startMotionUpdates(options: RadarTrackingOptions)
 }
 
 private final class RadarLocationManagerSwiftHostBox: @unchecked Sendable {
@@ -66,6 +72,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     private static let trackingShutdownDelay: TimeInterval = 10
     private static let immediateShutdownDelay: TimeInterval = 0
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
+    nonisolated(unsafe) static var bootstrapIndoorTracking: () -> Void = { RadarIndoors.bootstrapTrackingIfNeeded() }
 
     @objc(startTrackingWithOptions:)
     static func startTracking(options: RadarTrackingOptions) {
@@ -78,6 +85,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
         RadarSettings.tracking = true
         RadarSettings.trackingOptions = options
         RadarSwift.bridge?.updateTracking()
+        bootstrapIndoorTracking()
     }
 
     @objc(shouldBypassDeviceLocationStateForSource:)
