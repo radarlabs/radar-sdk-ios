@@ -404,10 +404,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             if (activity) {
                 RadarActivityType activityType = RadarActivityTypeUnknown;
                 if (activity.stationary) {
-                activityType = RadarActivityTypeStationary; 
-                } else if (activity.walking) {
-                    activityType = RadarActivityTypeFoot;
-                } else if (activity.running) {
+                    activityType = RadarActivityTypeStationary;
+                } else if (activity.walking || activity.running) {
                     activityType = RadarActivityTypeFoot;
                 } else if (activity.automotive) {
                     activityType = RadarActivityTypeCar;
