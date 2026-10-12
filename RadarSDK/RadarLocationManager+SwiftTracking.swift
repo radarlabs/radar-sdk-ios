@@ -117,11 +117,9 @@ extension RadarLocationManagerSwift {
         let useBubbleGeofence = stopped ? options.useStoppedGeofence : options.useMovingGeofence
         let bubbleGeofenceRadius = stopped ? options.stoppedGeofenceRadius : options.movingGeofenceRadius
 
-        // Stop updates when they shouldn't run, not only when the interval is 0. Otherwise a timer
-        // started under earlier options (for example, with the blue bar on) keeps running.
-        if interval == 0 || !shouldStartUpdates {
+        if interval == 0 {
             stopUpdates(host: host, locationManager: locationManager)
-        } else {
+        } else if shouldStartUpdates {
             startUpdates(
                 host: host,
                 locationManager: locationManager,

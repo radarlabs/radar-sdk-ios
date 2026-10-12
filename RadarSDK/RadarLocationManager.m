@@ -334,9 +334,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
-    // An invalidated timer means updates are already stopped. Skipping it keeps repeated
-    // updateTracking passes from stopping the location manager and scheduling shutdown again.
-    if (!self.timer || !self.timer.isValid) {
+    if (!self.timer) {
         return;
     }
 
@@ -545,12 +543,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             BOOL startUpdates = options.showBlueBar || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways ||
                                 (startUpdatesWhileInUse && authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse);
             BOOL stopped = [RadarState stopped];
-            // Stop updates when they shouldn't run, not only when the interval is 0. Otherwise a
-            // timer started under earlier options (for example, with the blue bar on) keeps running.
             if (stopped) {
-                if (options.desiredStoppedUpdateInterval == 0 || !startUpdates) {
+                if (options.desiredStoppedUpdateInterval == 0) {
                     [self stopUpdates];
-                } else {
+                } else if (startUpdates) {
                     [self startUpdates:options.desiredStoppedUpdateInterval blueBar:options.showBlueBar];
                 }
                 if (options.useStoppedGeofence) {
@@ -561,9 +557,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     [self removeBubbleGeofence];
                 }
             } else {
-                if (options.desiredMovingUpdateInterval == 0 || !startUpdates) {
+                if (options.desiredMovingUpdateInterval == 0) {
                     [self stopUpdates];
-                } else {
+                } else if (startUpdates) {
                     [self startUpdates:options.desiredMovingUpdateInterval blueBar:options.showBlueBar];
                 }
                 if (options.useMovingGeofence) {

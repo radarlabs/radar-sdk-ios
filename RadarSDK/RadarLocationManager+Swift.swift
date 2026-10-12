@@ -181,9 +181,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
     @objc(stopUpdatesWithHost:locationManager:)
     static func stopUpdates(host: RadarLocationManagerSwiftHost, locationManager: CLLocationManager) {
-        // An invalidated timer means updates are already stopped. Skipping it keeps repeated
-        // updateTracking passes from stopping the location manager and scheduling shutdown again.
-        guard let timer = host.timer(), timer.isValid else {
+        guard let timer = host.timer() else {
             return
         }
 
