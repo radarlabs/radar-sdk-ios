@@ -63,6 +63,14 @@
 @property (strong, nonatomic) NSTimer *timer;
 
 /**
+ The bubble region this manager last registered. `monitoredRegions` updates
+ asynchronously, so a remove that runs right after an add may not see the new
+ region in it. Stopping this region directly keeps back-to-back replaces from
+ leaving two bubbles registered.
+ */
+@property (nullable, strong, nonatomic) CLRegion *bubbleGeofenceRegion;
+
+/**
  Callbacks for sending events.
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
@@ -326,7 +334,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
-    if (!self.timer) {
+    // An invalidated timer means updates are already stopped. Skipping it keeps repeated
+    // updateTracking passes from stopping the location manager and scheduling shutdown again.
+    if (!self.timer || !self.timer.isValid) {
         return;
     }
 
@@ -535,10 +545,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             BOOL startUpdates = options.showBlueBar || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways ||
                                 (startUpdatesWhileInUse && authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse);
             BOOL stopped = [RadarState stopped];
+            // Stop updates when they shouldn't run, not only when the interval is 0. Otherwise a
+            // timer started under earlier options (for example, with the blue bar on) keeps running.
             if (stopped) {
-                if (options.desiredStoppedUpdateInterval == 0) {
+                if (options.desiredStoppedUpdateInterval == 0 || !startUpdates) {
                     [self stopUpdates];
-                } else if (startUpdates) {
+                } else {
                     [self startUpdates:options.desiredStoppedUpdateInterval blueBar:options.showBlueBar];
                 }
                 if (options.useStoppedGeofence) {
@@ -549,9 +561,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                     [self removeBubbleGeofence];
                 }
             } else {
-                if (options.desiredMovingUpdateInterval == 0) {
+                if (options.desiredMovingUpdateInterval == 0 || !startUpdates) {
                     [self stopUpdates];
-                } else if (startUpdates) {
+                } else {
                     [self startUpdates:options.desiredMovingUpdateInterval blueBar:options.showBlueBar];
                 }
                 if (options.useMovingGeofence) {
@@ -653,6 +665,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     NSString *identifier = [NSString stringWithFormat:@"%@%@", kBubbleGeofenceIdentifierPrefix, [[NSUUID UUID] UUIDString]];
     CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
     [self.locationManager startMonitoringForRegion:region];
+    self.bubbleGeofenceRegion = region;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Successfully added bubble geofence | latitude = %f; longitude = %f; radius = %d; identifier = %@",
                                                                           location.coordinate.latitude, location.coordinate.longitude, radius, identifier]];
@@ -662,6 +675,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift removeBubbleGeofenceOnLocationManager:self.locationManager];
         return;
+    }
+
+    if (self.bubbleGeofenceRegion) {
+        [self.locationManager stopMonitoringForRegion:self.bubbleGeofenceRegion];
+        self.bubbleGeofenceRegion = nil;
     }
 
     for (CLRegion *region in self.locationManager.monitoredRegions) {
