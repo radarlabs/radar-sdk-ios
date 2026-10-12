@@ -5,12 +5,17 @@
 //  Copyright © 2020 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarRoutes.h"
 #import <Foundation/Foundation.h>
+
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
 
 @interface RadarRoutes ()
 
-- (nullable instancetype)initWithGeodesic:(nullable RadarRouteDistance *)geodesic
+- (instancetype _Nonnull)initWithGeodesic:(nullable RadarRouteDistance *)geodesic
                                      foot:(nullable RadarRoute *)foot
                                      bike:(nullable RadarRoute *)bike
                                       car:(nullable RadarRoute *)car

@@ -218,56 +218,6 @@ struct SearchPanel: View {
                     )
                 }
             }
-            ActionButton("getDistance") {
-                let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
-                let destination = CLLocation(latitude: 40.70390, longitude: -73.98670)
-                Radar.getDistance(
-                    origin: origin,
-                    destination: destination,
-                    modes: [.foot, .car],
-                    units: .imperial
-                ) { (status, routes) in
-                    let detail = """
-                        car distance: \(String(describing: routes?.car?.distance.text))
-                        car duration: \(String(describing: routes?.car?.duration.text))
-                        foot distance: \(String(describing: routes?.foot?.distance.text))
-                        foot duration: \(String(describing: routes?.foot?.duration.text))
-                        """
-                    logStream.write(
-                        status,
-                        summary: "getDistance: \(Radar.stringForStatus(status))",
-                        detail: detail
-                    )
-                }
-            }
-            ActionButton("getMatrix") {
-                let origins = [
-                    CLLocation(latitude: 40.78382, longitude: -73.97536),
-                    CLLocation(latitude: 40.70390, longitude: -73.98670),
-                ]
-                let destinations = [
-                    CLLocation(latitude: 40.64189, longitude: -73.78779),
-                    CLLocation(latitude: 35.99801, longitude: -78.94294),
-                ]
-                Radar.getMatrix(
-                    origins: origins,
-                    destinations: destinations,
-                    mode: .car,
-                    units: .imperial
-                ) { (status, matrix) in
-                    let detail = """
-                        [0][0]: \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 0)?.duration.text))
-                        [0][1]: \(String(describing: matrix?.routeBetween(originIndex: 0, destinationIndex: 1)?.duration.text))
-                        [1][0]: \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 0)?.duration.text))
-                        [1][1]: \(String(describing: matrix?.routeBetween(originIndex: 1, destinationIndex: 1)?.duration.text))
-                        """
-                    logStream.write(
-                        status,
-                        summary: "getMatrix: \(Radar.stringForStatus(status))",
-                        detail: detail
-                    )
-                }
-            }
         }
     }
 }
