@@ -393,8 +393,92 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self updateTracking:location fromInitialize:NO];
 }
 
+// Temporary callback used by the Swift updateTracking twin. Motion and pressure setup stays in
+// Objective-C until RadarActivityManager and the RadarState motion storage are reachable from Swift.
+- (void)startMotionUpdatesWithOptions:(RadarTrackingOptions *)options {
+    if (options.useMotion) {
+        self.activityManager = [RadarActivityManager sharedInstance];
+        self.locationManager.headingFilter = 5;
+        [self.locationManager startUpdatingHeading];
+        [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
+            if (activity) {
+                RadarActivityType activityType = RadarActivityTypeUnknown;
+                if (activity.stationary) {
+                    activityType = RadarActivityTypeStationary;
+                } else if (activity.walking || activity.running) {
+                    activityType = RadarActivityTypeFoot;
+                } else if (activity.automotive) {
+                    activityType = RadarActivityTypeCar;
+                } else if (activity.cycling) {
+                    activityType = RadarActivityTypeBike;
+                }
+                
+                if (activityType == RadarActivityTypeUnknown) {
+                    return;
+                }
+                
+                NSString *previousActivityType = [RadarState lastMotionActivityData][@"type"];
+                if (previousActivityType != nil && [previousActivityType isEqualToString:[Radar stringForActivityType:activityType]]) {
+                    return;
+                }
+
+                [RadarState setLastMotionActivityData:@{
+                    @"type" : [Radar stringForActivityType:activityType],
+                    @"timestamp" : @([activity.startDate timeIntervalSince1970]),
+                    @"confidence" : @(activity.confidence)
+                }];
+                
+                if (options.syncLocations != RadarTrackingOptionsSyncEvents) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
+                    [Radar trackOnceWithCompletionHandler: nil];
+                }
+            }
+        }];
+    }
+    if (options.usePressure) {
+        self.activityManager = [RadarActivityManager sharedInstance];
+        [RadarState setMotionAuthorizationString:[Radar stringForMotionAuthorizationStatus]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting relative altitude updates, auth status: %@", [Radar stringForMotionAuthorizationStatus]]];
+        [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
+            if (!altitudeData) {
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Relative altitude callback received nil data"];
+                return;
+            }
+            NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
+            currentState[@"pressure"] = @(altitudeData.pressure.doubleValue *10); // convert to hPa
+            currentState[@"relativeAltitude"] = @(altitudeData.relativeAltitude.doubleValue);
+            currentState[@"relativeAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
+            [RadarState setLastRelativeAltitudeData:currentState];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored relative altitude: pressure=%.1f hPa, relative=%.3f m", altitudeData.pressure.doubleValue * 10.0, altitudeData.relativeAltitude.doubleValue]];
+        }];
+
+        if (@available(iOS 15.0, *)) {
+            [RadarState setMotionAuthorizationString:[Radar stringForMotionAuthorizationStatus]];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting absolute altitude updates (iOS 15+), auth status: %@", [Radar stringForMotionAuthorizationStatus]]];
+            [self.activityManager startAbsoluteAltitudeWithHandler: ^(CMAbsoluteAltitudeData * _Nullable altitudeData) {
+                if (!altitudeData) {
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Absolute altitude callback received nil data"];
+                    return;
+                }
+                NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
+                currentState[@"altitude"] = @(altitudeData.altitude);
+                currentState[@"accuracy"] = @(altitudeData.accuracy);
+                currentState[@"precision"] = @(altitudeData.precision);
+                currentState[@"absoluteAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
+                [RadarState setLastRelativeAltitudeData:currentState];
+                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored absolute altitude: altitude=%.3f m, accuracy=%.3f m, precision=%.3f m", altitudeData.altitude, altitudeData.accuracy, altitudeData.precision]];
+            }];
+        }
+    }
+}
+
 - (void)updateTracking:(CLLocation *)location fromInitialize:(BOOL)fromInitialize {
     dispatch_async(dispatch_get_main_queue(), ^{
+        if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+            [RadarLocationManagerSwift updateTrackingWithHost:self location:location fromInitialize:fromInitialize];
+            return;
+        }
+
         BOOL tracking = [RadarSettings tracking];
         RadarTrackingOptions *options = [Radar getTrackingOptions];
         RadarTrackingOptions *localOptions = [RadarSettings trackingOptions];
@@ -426,100 +510,21 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
                 
 
-            if (options.useMotion) {
-                self.activityManager = [RadarActivityManager sharedInstance];
-                self.locationManager.headingFilter = 5;
-                [self.locationManager startUpdatingHeading];
-                [self.activityManager startActivityUpdatesWithHandler:^(CMMotionActivity *activity) {
-                    if (activity) {
-                        RadarActivityType activityType = RadarActivityTypeUnknown;
-                        if (activity.stationary) {
-                        activityType = RadarActivityTypeStationary; 
-                        } else if (activity.walking) {
-                            activityType = RadarActivityTypeFoot;
-                        } else if (activity.running) {
-                            activityType = RadarActivityTypeFoot;
-                        } else if (activity.automotive) {
-                            activityType = RadarActivityTypeCar;
-                        } else if (activity.cycling) {
-                            activityType = RadarActivityTypeBike;
-                        }
-                        
-                        if (activityType == RadarActivityTypeUnknown) {
-                            return;
-                        }
-                        
-                        NSString *previousActivityType = [RadarState lastMotionActivityData][@"type"];
-                        if (previousActivityType != nil && [previousActivityType isEqualToString:[Radar stringForActivityType:activityType]]) {
-                            return;
-                        }
+            [self startMotionUpdatesWithOptions:options];
 
-                        [RadarState setLastMotionActivityData:@{
-                            @"type" : [Radar stringForActivityType:activityType],
-                            @"timestamp" : @([activity.startDate timeIntervalSince1970]),
-                            @"confidence" : @(activity.confidence)
-                        }];
-                        
-                        if (options.syncLocations != RadarTrackingOptionsSyncEvents) {
-                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Activity detected, initiating trackOnce"];
-                            [Radar trackOnceWithCompletionHandler: nil];
-                        }
-                    }
-                }];
-            }
-            if (options.usePressure) {
-                self.activityManager = [RadarActivityManager sharedInstance];
-                [RadarState setMotionAuthorizationString:[Radar stringForMotionAuthorizationStatus]];
-                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting relative altitude updates, auth status: %@", [Radar stringForMotionAuthorizationStatus]]];
-                [self.activityManager startRelativeAltitudeWithHandler: ^(CMAltitudeData * _Nullable altitudeData) {
-                    if (!altitudeData) {
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Relative altitude callback received nil data"];
-                        return;
-                    }
-                    NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
-                    currentState[@"pressure"] = @(altitudeData.pressure.doubleValue *10); // convert to hPa
-                    currentState[@"relativeAltitude"] = @(altitudeData.relativeAltitude.doubleValue);
-                    currentState[@"relativeAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
-                    [RadarState setLastRelativeAltitudeData:currentState];
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored relative altitude: pressure=%.1f hPa, relative=%.3f m", altitudeData.pressure.doubleValue * 10.0, altitudeData.relativeAltitude.doubleValue]];
-                }];
-
-                if (@available(iOS 15.0, *)) {
-                    [RadarState setMotionAuthorizationString:[Radar stringForMotionAuthorizationStatus]];
-                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"usePressure enabled: starting absolute altitude updates (iOS 15+), auth status: %@", [Radar stringForMotionAuthorizationStatus]]];
-                    [self.activityManager startAbsoluteAltitudeWithHandler: ^(CMAbsoluteAltitudeData * _Nullable altitudeData) {
-                        if (!altitudeData) {
-                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"Absolute altitude callback received nil data"];
-                            return;
-                        }
-                        NSMutableDictionary *currentState = [[RadarState lastRelativeAltitudeData] mutableCopy] ?: [NSMutableDictionary new];
-                        currentState[@"altitude"] = @(altitudeData.altitude);
-                        currentState[@"accuracy"] = @(altitudeData.accuracy);
-                        currentState[@"precision"] = @(altitudeData.precision);
-                        currentState[@"absoluteAltitudeTimestamp"] = @([[NSDate date] timeIntervalSince1970]);
-                        [RadarState setLastRelativeAltitudeData:currentState];
-                        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored absolute altitude: altitude=%.3f m, accuracy=%.3f m, precision=%.3f m", altitudeData.altitude, altitudeData.accuracy, altitudeData.precision]];
-                    }];
-                }
-            }
-        
             CLLocationAccuracy desiredAccuracy;
-            if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-                desiredAccuracy = [RadarLocationManagerSwift clLocationAccuracyForDesiredAccuracy:options.desiredAccuracy];
-            } else {
-                switch (options.desiredAccuracy) {
-                case RadarTrackingOptionsDesiredAccuracyHigh:
-                    desiredAccuracy = kCLLocationAccuracyBest;
-                    break;
-                case RadarTrackingOptionsDesiredAccuracyMedium:
-                    desiredAccuracy = kCLLocationAccuracyHundredMeters;
-                    break;
-                case RadarTrackingOptionsDesiredAccuracyLow:
-                    desiredAccuracy = kCLLocationAccuracyKilometer;
-                    break;
-                default:
-                    desiredAccuracy = kCLLocationAccuracyHundredMeters;
-                }
+            switch (options.desiredAccuracy) {
+            case RadarTrackingOptionsDesiredAccuracyHigh:
+                desiredAccuracy = kCLLocationAccuracyBest;
+                break;
+            case RadarTrackingOptionsDesiredAccuracyMedium:
+                desiredAccuracy = kCLLocationAccuracyHundredMeters;
+                break;
+            case RadarTrackingOptionsDesiredAccuracyLow:
+                desiredAccuracy = kCLLocationAccuracyKilometer;
+                break;
+            default:
+                desiredAccuracy = kCLLocationAccuracyHundredMeters;
             }
             self.locationManager.desiredAccuracy = desiredAccuracy;
 

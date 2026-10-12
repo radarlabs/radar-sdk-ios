@@ -37,6 +37,10 @@ enum RadarLocationManagerSwiftTestHelpers {
         RadarLocationManagerSwift.permissionsHelper = permissionsHelper
         defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
 
+        let originalBootstrapIndoorTracking = RadarLocationManagerSwift.bootstrapIndoorTracking
+        RadarLocationManagerSwift.bootstrapIndoorTracking = {}
+        defer { RadarLocationManagerSwift.bootstrapIndoorTracking = originalBootstrapIndoorTracking }
+
         body(bridge)
     }
 

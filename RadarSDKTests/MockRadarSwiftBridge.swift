@@ -54,7 +54,8 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func placeId() -> String? { nil }
     var mockLastLocation: CLLocation?
     func lastLocation() -> CLLocation? { mockLastLocation }
-    func isStopped() -> Bool { false }
+    var mockStopped = false
+    func isStopped() -> Bool { mockStopped }
     func getTripOptions() -> RadarTripOptions? { nil }
     func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?) {}
     func createEvent(dict: [String: Any]) -> RadarEvent? { nil }
