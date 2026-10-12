@@ -73,9 +73,12 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     private static let immediateShutdownDelay: TimeInterval = 0
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
     nonisolated(unsafe) static var bootstrapIndoorTracking: () -> Void = { RadarIndoors.bootstrapTrackingIfNeeded() }
-    // The bubble region this class last registered. `monitoredRegions` updates asynchronously, so
-    // a remove that runs right after an add may not see the new region in it. Stopping this region
-    // directly keeps back-to-back replaces from leaving two bubbles registered.
+    // The region the last `replaceBubbleGeofence(locationManager:location:radius:)` registered.
+    // `removeBubbleGeofence(locationManager:)` stops it directly instead of relying only on its
+    // `monitoredRegions` scan, because Core Location updates `monitoredRegions` asynchronously and
+    // may not list a region added a moment ago. That happens when locations arrive together:
+    // `handleLocation:source:beacons:` in RadarLocationManager.m calls `updateTracking:` for each
+    // one, so `updateTracking(host:location:fromInitialize:)` replaces the bubble back to back.
     nonisolated(unsafe) static var bubbleGeofenceRegion: CLRegion?
 
     @objc(startTrackingWithOptions:)
@@ -407,6 +410,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
     @objc(removeBubbleGeofenceOnLocationManager:)
     static func removeBubbleGeofence(locationManager: CLLocationManager) {
+        // Stop the last registered bubble first; the scan below can miss it (see `bubbleGeofenceRegion`).
         if let bubbleGeofenceRegion {
             locationManager.stopMonitoring(for: bubbleGeofenceRegion)
             Self.bubbleGeofenceRegion = nil

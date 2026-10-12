@@ -63,10 +63,13 @@
 @property (strong, nonatomic) NSTimer *timer;
 
 /**
- The bubble region this manager last registered. `monitoredRegions` updates
- asynchronously, so a remove that runs right after an add may not see the new
- region in it. Stopping this region directly keeps back-to-back replaces from
- leaving two bubbles registered.
+ The region the last `replaceBubbleGeofence:radius:` registered.
+ `removeBubbleGeofence` stops it directly instead of relying only on its
+ `monitoredRegions` scan, because Core Location updates `monitoredRegions`
+ asynchronously and may not list a region added a moment ago. That happens
+ when locations arrive together: `handleLocation:source:beacons:` calls
+ `updateTracking:` for each one, so `updateTracking:fromInitialize:` replaces
+ the bubble back to back.
  */
 @property (nullable, strong, nonatomic) CLRegion *bubbleGeofenceRegion;
 
@@ -673,6 +676,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    // Stop the last registered bubble first; the scan below can miss it (see `bubbleGeofenceRegion`).
     if (self.bubbleGeofenceRegion) {
         [self.locationManager stopMonitoringForRegion:self.bubbleGeofenceRegion];
         self.bubbleGeofenceRegion = nil;

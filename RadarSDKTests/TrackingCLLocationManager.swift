@@ -26,8 +26,9 @@ final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
     private(set) var startMonitoringSLCCallCount = 0
     private(set) var stopMonitoringSLCCallCount = 0
     var mockLocation: CLLocation?
-    // When set, `monitoredRegions` returns this instead of the live set, like Core Location
-    // before it has caught up with recent startMonitoring/stopMonitoring calls.
+    // When set, `monitoredRegions` returns this instead of `trackedRegions`, simulating Core
+    // Location before it has caught up with recent `startMonitoring`/`stopMonitoring` calls. Used to
+    // test that `removeBubbleGeofence` still stops a bubble its `monitoredRegions` scan can't see.
     var staleMonitoredRegions: Set<CLRegion>?
 
     override var monitoredRegions: Set<CLRegion> { staleMonitoredRegions ?? trackedRegions }

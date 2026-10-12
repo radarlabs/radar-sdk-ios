@@ -11,9 +11,9 @@ import Testing
 
 @testable import RadarSDK
 
-// Covers fixes to the Objective-C `RadarLocationManager` bodies that run while
-// `useSwiftLocationManager` is off. The Swift twins have matching tests in the
-// RadarLocationManagerSwift*Tests suites.
+// Covers `replaceBubbleGeofence:radius:` and `removeBubbleGeofence` in RadarLocationManager.m,
+// the bodies that run while `useSwiftLocationManager` is off. The Swift twins in
+// RadarLocationManager+Swift.swift are covered by RadarLocationManagerSwiftRegionTests.
 
 private func invokeReplaceBubbleGeofence(on manager: RadarLocationManager, location: CLLocation, radius: Int32) {
     typealias ReplaceBubbleGeofenceFunction = @convention(c) (AnyObject, Selector, CLLocation, Int32) -> Void
