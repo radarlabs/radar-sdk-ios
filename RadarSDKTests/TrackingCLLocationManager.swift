@@ -30,8 +30,20 @@ final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
     // Location before it has caught up with recent `startMonitoring`/`stopMonitoring` calls. Used to
     // test that `removeBubbleGeofence` still stops a bubble its `monitoredRegions` scan can't see.
     var staleMonitoredRegions: Set<CLRegion>?
+    // Counts `monitoredRegions` reads and records whether any ran on the main thread, so tests can
+    // check that a code path keeps the synchronous locationd call off the main thread.
+    private(set) var monitoredRegionsReadCount = 0
+    private(set) var monitoredRegionsReadOnMainThread = false
+    // Called after each `stopMonitoring(for:)`.
+    var onStopMonitoring: ((CLRegion) -> Void)?
 
-    override var monitoredRegions: Set<CLRegion> { staleMonitoredRegions ?? trackedRegions }
+    override var monitoredRegions: Set<CLRegion> {
+        monitoredRegionsReadCount += 1
+        if Thread.isMainThread {
+            monitoredRegionsReadOnMainThread = true
+        }
+        return staleMonitoredRegions ?? trackedRegions
+    }
     override var location: CLLocation? { mockLocation }
 
     override func startMonitoring(for region: CLRegion) {
@@ -40,6 +52,7 @@ final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
 
     override func stopMonitoring(for region: CLRegion) {
         trackedRegions.remove(region)
+        onStopMonitoring?(region)
     }
 
     override func requestState(for region: CLRegion) {

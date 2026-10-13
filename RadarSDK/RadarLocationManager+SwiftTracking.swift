@@ -39,7 +39,14 @@ extension RadarLocationManagerSwift {
             applyTrackingOptions(options, host: host, location: location)
         } else {
             stopUpdates(host: host, locationManager: host.locationManager)
-            removeAllRegions(locationManager: host.locationManager)
+            // initialize and config fetches run this on the main thread, so remove regions in the
+            // background to keep the synchronous `monitoredRegions` read off the main thread.
+            // Other callers, like stopTracking, still remove them right away.
+            if fromInitialize {
+                RadarRegionCleaner.removeAllRegionsInBackground()
+            } else {
+                removeAllRegions(locationManager: host.locationManager)
+            }
 
             // If updateTracking() was called from the RadarLocationManager initializer, don't tell
             // the CLLocationManager to stop, because the location manager may be in use by other

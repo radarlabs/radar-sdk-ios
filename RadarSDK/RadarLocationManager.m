@@ -28,6 +28,7 @@
 #import "RadarPlace+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarLocationManagerSwift.h"
+#import "RadarRegionCleaner+Internal.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -114,7 +115,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _locationManager.delegate = self;
         _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         _locationManager.distanceFilter = kCLDistanceFilterNone;
-        _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
+        // allowsBackgroundLocationUpdates is set in locationManager:didChangeAuthorizationStatus:,
+        // which Core Location calls with the current status after the manager is created. Reading
+        // +[CLLocationManager authorizationStatus] here is a synchronous call into locationd on
+        // the main thread during initialize.
 
         _lowPowerLocationManager = [CLLocationManager new];
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
@@ -591,7 +595,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         } else {
             [self stopUpdates];
-            [self removeAllRegions];
+            // initialize and config fetches run this on the main thread, so remove regions in the
+            // background to keep the synchronous monitoredRegions read off the main thread.
+            // Other callers, like stopTracking, still remove them right away.
+            if (fromInitialize) {
+                [RadarRegionCleaner removeAllRegionsInBackground];
+            } else {
+                [self removeAllRegions];
+            }
 
             // If updateTracking() was called from the RadarLocationManager
             // initializer, don't tell the CLLocationManager to stop, because
@@ -1631,6 +1642,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+    if (manager == self.locationManager) {
+        self.locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && status == kCLAuthorizationStatusAuthorizedAlways;
+    }
+
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift didChangeAuthorizationStatus:status];
         return;

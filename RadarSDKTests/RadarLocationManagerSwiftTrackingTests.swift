@@ -260,16 +260,26 @@ extension RadarSerializedTests {
 
         @Test("Tracking off stops visits and SLCs unless called from the initializer", arguments: [false, true])
         func trackingOffStopsMonitoringUnlessFromInitialize(fromInitialize: Bool) {
+            let cleanerLocationManager = TrackingCLLocationManager()
+            let originalMakeLocationManager = RadarRegionCleaner.makeLocationManager
+            RadarRegionCleaner.makeLocationManager = { cleanerLocationManager }
+            defer { RadarRegionCleaner.makeLocationManager = originalMakeLocationManager }
+
             runUpdateTracking(
                 options: nil,
                 tracking: false,
                 fromInitialize: fromInitialize,
                 seedRegions: ["radar_geofence_a", "other_region"]
             ) { _, locationManager, _ in
+                RadarRegionCleaner.waitUntilIdle()
+
                 let expectedStopCount = fromInitialize ? 0 : 1
                 #expect(locationManager.stopMonitoringVisitsCallCount == expectedStopCount)
                 #expect(locationManager.stopMonitoringSLCCallCount == expectedStopCount)
-                #expect(locationManager.monitoredRegions.map(\.identifier) == ["other_region"])
+                // From the initializer, regions are removed by RadarRegionCleaner on its own
+                // manager, so the host's manager is never read.
+                #expect(locationManager.monitoredRegionsReadCount == (fromInitialize ? 0 : 1))
+                #expect(cleanerLocationManager.monitoredRegionsReadCount == (fromInitialize ? 1 : 0))
             }
         }
     }
