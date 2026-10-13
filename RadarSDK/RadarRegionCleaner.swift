@@ -16,7 +16,7 @@ import Foundation
 @objc(RadarRegionCleaner)
 final class RadarRegionCleaner: NSObject {
 
-    private static let queue = DispatchQueue(label: "io.radar.regionCleaner", qos: .utility)
+    static let queue = DispatchQueue(label: "io.radar.regionCleaner", qos: .utility)
 
     // Called on `queue`. Each cleanup creates, uses, and releases its manager inside one block, so the
     // manager is only used on the thread that created it.
@@ -26,11 +26,6 @@ final class RadarRegionCleaner: NSObject {
         queue.async {
             removeAllRegions(locationManager: makeLocationManager())
         }
-    }
-
-    // Blocks until every queued cleanup has finished. Used by tests.
-    static func waitUntilIdle() {
-        queue.sync {}
     }
 
     static func removeAllRegions(locationManager: CLLocationManager) {

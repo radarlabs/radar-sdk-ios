@@ -115,10 +115,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _locationManager.delegate = self;
         _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         _locationManager.distanceFilter = kCLDistanceFilterNone;
-        // allowsBackgroundLocationUpdates is set in locationManager:didChangeAuthorizationStatus:,
-        // which Core Location calls with the current status after the manager is created. Reading
-        // +[CLLocationManager authorizationStatus] here is a synchronous call into locationd on
-        // the main thread during initialize.
 
         _lowPowerLocationManager = [CLLocationManager new];
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;

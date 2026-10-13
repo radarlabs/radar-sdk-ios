@@ -11,6 +11,13 @@ import Testing
 
 @testable import RadarSDK
 
+extension RadarRegionCleaner {
+    // Blocks until every queued cleanup has finished.
+    static func waitUntilIdle() {
+        queue.sync {}
+    }
+}
+
 private func drainMainQueue() async {
     await withCheckedContinuation { continuation in
         DispatchQueue.main.async {
