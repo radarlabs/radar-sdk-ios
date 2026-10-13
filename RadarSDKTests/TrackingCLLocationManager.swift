@@ -31,7 +31,7 @@ final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
     // test that `removeBubbleGeofence` still stops a bubble its `monitoredRegions` scan can't see.
     var staleMonitoredRegions: Set<CLRegion>?
     // Counts `monitoredRegions` reads and records whether any ran on the main thread, so tests can
-    // check that a code path keeps the synchronous locationd call off the main thread.
+    // check that a code path keeps the synchronous Core Location call off the main thread.
     private(set) var monitoredRegionsReadCount = 0
     private(set) var monitoredRegionsReadOnMainThread = false
     // Called after each `stopMonitoring(for:)`.

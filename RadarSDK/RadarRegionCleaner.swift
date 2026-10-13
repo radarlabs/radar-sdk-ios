@@ -9,12 +9,11 @@ import CoreLocation
 import Foundation
 
 // Removes Radar's monitored regions without reading `monitoredRegions` on the main thread. That getter
-// is a synchronous call into locationd, the system process behind Core Location, and it can block for a
-// long time at cold launch. The read runs on a background queue with a separate, delegate-less
-// `CLLocationManager` (monitored regions are shared by every manager in the app). The checks and the
-// `stopMonitoring` calls run on the main thread, where regions are registered. The cleanup is skipped
-// if tracking started or synced regions were registered since it began, so it never removes a region
-// registered after the read.
+// is a synchronous call into Core Location, and it can block for a long time at cold launch. The read
+// runs on a background queue with a separate, delegate-less `CLLocationManager` (monitored regions are
+// shared by every manager in the app). The checks and the `stopMonitoring` calls run on the main thread,
+// where regions are registered. The cleanup is skipped if tracking started or synced regions were
+// registered since it began, so it never removes a region registered after the read.
 @objc(RadarRegionCleaner)
 final class RadarRegionCleaner: NSObject {
 
