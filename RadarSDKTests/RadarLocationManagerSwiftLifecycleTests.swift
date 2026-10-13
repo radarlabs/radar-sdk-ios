@@ -84,6 +84,49 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
     func startMotionUpdates(options: RadarTrackingOptions) {
         startMotionUpdatesOptions.append(options)
     }
+
+    struct SentLocation {
+        let location: CLLocation
+        let stopped: Bool
+        let source: RadarLocationSource
+        let replayed: Bool
+        let beacons: [RadarBeacon]?
+        let forceTrack: Bool
+    }
+
+    private(set) var cancelTimeoutsCallCount = 0
+    private(set) var completionStatuses: [RadarStatus] = []
+    private(set) var updateTrackingLocations: [CLLocation?] = []
+    private(set) var sentLocations: [SentLocation] = []
+    var pendingCompletionHandlerCount = 0
+
+    func cancelTimeouts() {
+        cancelTimeoutsCallCount += 1
+    }
+
+    func callCompletionHandlers(status: RadarStatus, location: CLLocation?) {
+        completionStatuses.append(status)
+    }
+
+    func completionHandlerCount() -> Int { pendingCompletionHandlerCount }
+
+    func updateTracking(_ location: CLLocation?) {
+        updateTrackingLocations.append(location)
+    }
+
+    func sendLocation(  // swiftlint:disable:this function_parameter_count
+        _ location: CLLocation,
+        stopped: Bool,
+        source: RadarLocationSource,
+        replayed: Bool,
+        beacons: [RadarBeacon]?,
+        forceTrack: Bool
+    ) {
+        sentLocations.append(
+            SentLocation(
+                location: location, stopped: stopped, source: source, replayed: replayed, beacons: beacons,
+                forceTrack: forceTrack))
+    }
 }
 
 extension RadarSerializedTests {

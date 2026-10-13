@@ -21,8 +21,8 @@ enum RadarLocationManagerSwiftTestHelpers {
     /// prevents a test's bridge or authorization state from leaking into the next test.
     static func withMockedSwiftTrackingDependencies(
         authorizationStatus: CLAuthorizationStatus = .authorizedAlways,
-        _ body: (MockRadarSwiftBridge) -> Void
-    ) {
+        _ body: (MockRadarSwiftBridge) throws -> Void
+    ) rethrows {
         clearState()
         defer { clearState() }
 
@@ -41,7 +41,7 @@ enum RadarLocationManagerSwiftTestHelpers {
         RadarLocationManagerSwift.bootstrapIndoorTracking = {}
         defer { RadarLocationManagerSwift.bootstrapIndoorTracking = originalBootstrapIndoorTracking }
 
-        body(bridge)
+        try body(bridge)
     }
 
     /// Reset every `RadarSettings` key the seam tests write so each test starts

@@ -33,6 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
                       location:(nullable CLLocation *)location
                 fromInitialize:(BOOL)fromInitialize;
 
++ (void)handleLocationWithHost:(id<RadarLocationManagerSwiftHost>)host
+                      location:(CLLocation *)location
+                        source:(RadarLocationSource)source
+                       beacons:(nullable NSArray<RadarBeacon *> *)beacons;
+
 + (void)restartPreviousTrackingOptions;
 + (void)stopTrackingOnLocationManager:(CLLocationManager *)locationManager
                       activityManager:(nullable id)activityManager;

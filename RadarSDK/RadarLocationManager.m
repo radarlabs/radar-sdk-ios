@@ -159,6 +159,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 }
 
+// Temporary callback used by the Swift handleLocation twin, which needs to know whether a
+// location request is waiting. Completion storage stays in Objective-C until it is ported.
+- (NSInteger)completionHandlerCount {
+    @synchronized(self) {
+        return self.completionHandlers.count;
+    }
+}
+
 - (void)cancelTimeouts {
     @synchronized(self) {
         for (RadarLocationCompletionHandler completionHandler in self.completionHandlers) {
@@ -909,6 +917,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)handleLocation:(CLLocation *)location source:(RadarLocationSource)source beacons:(NSArray<RadarBeacon *> *)beacons {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift handleLocationWithHost:self location:location source:source beacons:beacons];
+        return;
+    }
+
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Handling location | source = %@; location = %@", [Radar stringForLocationSource:source], location]];
 
