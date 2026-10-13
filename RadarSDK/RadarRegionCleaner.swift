@@ -35,29 +35,19 @@ final class RadarRegionCleaner: NSObject {
     // manager is only used on the thread that created it.
     nonisolated(unsafe) static var makeLocationManager: () -> CLLocationManager = { CLLocationManager() }
 
-    // Carries the main-thread manager and the regions read on `queue` back to the main thread.
-    private final class Cleanup: @unchecked Sendable {
-        let locationManager: CLLocationManager
-        var regions: [CLRegion] = []
-
-        init(locationManager: CLLocationManager) {
-            self.locationManager = locationManager
-        }
-    }
-
     // Reads Radar's regions on `queue`, then stops them on `locationManager` on the main thread unless
     // tracking is on by then. Pass the manager Radar registers regions on. Safe to call from any thread.
     @objc(removeAllRegionsUsingLocationManager:)
     static func removeAllRegions(using locationManager: CLLocationManager) {
-        let cleanup = Cleanup(locationManager: locationManager)
+        // Only used on the main thread, in the stop task below.
+        nonisolated(unsafe) let locationManager = locationManager
         queue.async {
             guard let regions = radarRegions(locationManager: makeLocationManager()) else {
                 return
             }
 
-            cleanup.regions = regions
             Task { @MainActor in
-                stopMonitoring(cleanup.regions, locationManager: cleanup.locationManager)
+                stopMonitoring(regions, locationManager: locationManager)
             }
         }
     }
