@@ -18,10 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 // tracking is on. Call on the main thread with the manager Radar registers regions on.
 + (void)removeAllRegionsUsingLocationManager:(CLLocationManager *)locationManager;
 
-// Call on the main thread whenever synced regions are registered, so a pending cleanup doesn't
-// remove them.
-+ (void)didRegisterRegions;
-
 @end
 
 NS_ASSUME_NONNULL_END

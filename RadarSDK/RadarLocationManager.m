@@ -698,10 +698,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
-    if (geofences) {
-        [RadarRegionCleaner didRegisterRegions];
-    }
-
     // Xcode's XCTest agent has no app bundle proxy, which UNUserNotificationCenter requires.
     // Avoid an unavailable service while retaining geofence-replacement coverage in both routes.
     BOOL shouldRegisterGeofenceNotifications = NSClassFromString(@"XCTestCase") == nil;
@@ -799,10 +795,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
-    if (beacons) {
-        [RadarRegionCleaner didRegisterRegions];
-    }
-
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift replaceSyncedBeaconsOnLocationManager:self.locationManager beacons:beacons];
         return;
@@ -849,10 +841,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedBeaconUUIDs:(NSArray<NSString *> *)uuids {
-    if (uuids) {
-        [RadarRegionCleaner didRegisterRegions];
-    }
-
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift replaceSyncedBeaconUUIDsOnLocationManager:self.locationManager uuids:uuids];
         return;

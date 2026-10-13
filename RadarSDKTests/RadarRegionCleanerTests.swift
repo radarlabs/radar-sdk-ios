@@ -140,51 +140,10 @@ extension RadarSerializedTests {
             let regions = RadarRegionCleaner.radarRegions(locationManager: cleanerLocationManager) ?? []
             // startTracking registers its regions again between the read and the stops.
             RadarSettings.tracking = true
-            RadarRegionCleaner.stopMonitoring(
-                regions,
-                locationManager: locationManager,
-                registrationCount: RadarRegionCleaner.registrationCount
-            )
+            RadarRegionCleaner.stopMonitoring(regions, locationManager: locationManager)
 
             #expect(regions.count == 3)
             #expect(locationManager.trackedRegions.count == Self.seededRegions.count)
-        }
-
-        @Test("Regions read before synced regions are registered are not removed")
-        @MainActor
-        func stopsSkipWhenRegionsRegisteredAfterRead() {
-            RadarLocationManagerSwiftTestHelpers.clearState()
-            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
-            let cleanerLocationManager = TrackingCLLocationManager()
-            let locationManager = TrackingCLLocationManager()
-            cleanerLocationManager.seed(Self.seededRegions)
-            locationManager.seed(Self.seededRegions)
-            let registrationCount = RadarRegionCleaner.registrationCount
-
-            let regions = RadarRegionCleaner.radarRegions(locationManager: cleanerLocationManager) ?? []
-            // trackOnce registers synced geofences again between the read and the stops.
-            RadarRegionCleaner.didRegisterRegions()
-            RadarRegionCleaner.stopMonitoring(regions, locationManager: locationManager, registrationCount: registrationCount)
-
-            #expect(regions.count == 3)
-            #expect(locationManager.trackedRegions.count == Self.seededRegions.count)
-        }
-
-        @Test("Replacing synced regions counts as a registration", arguments: [false, true])
-        @MainActor
-        func replacingSyncedRegionsCountsRegistration(useSwiftLocationManager: Bool) {
-            RadarLocationManagerSwiftTestHelpers.clearState()
-            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
-            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": useSwiftLocationManager])
-            let manager = RadarLocationManager()
-            manager.locationManager = TrackingCLLocationManager()
-            let registrationCount = RadarRegionCleaner.registrationCount
-
-            manager.replaceSyncedGeofences([])
-            manager.replaceSyncedBeacons([])
-            manager.replaceSyncedBeaconUUIDs([])
-
-            #expect(RadarRegionCleaner.registrationCount == registrationCount + 3)
         }
 
         @Test("A changed authorization status applies tracking again while tracking", arguments: [false, true])

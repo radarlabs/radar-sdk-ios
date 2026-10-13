@@ -11,9 +11,8 @@ import Foundation
 // Removes Radar's monitored regions without reading `monitoredRegions` on the main thread. That getter
 // is a synchronous call into Core Location, and it can block for a long time at cold launch. The read
 // runs on a background queue with a separate, delegate-less `CLLocationManager` (monitored regions are
-// shared by every manager in the app). The checks and the `stopMonitoring` calls run on the main thread,
-// where regions are registered. The cleanup is skipped if tracking started or synced regions were
-// registered since it began, so it never removes a region registered after the read.
+// shared by every manager in the app). The tracking check and the `stopMonitoring` calls run on the main
+// thread, where regions are registered, so tracking can't register a region between them.
 @objc(RadarRegionCleaner)
 final class RadarRegionCleaner: NSObject {
 
@@ -23,25 +22,20 @@ final class RadarRegionCleaner: NSObject {
     // manager is only used on the thread that created it.
     nonisolated(unsafe) static var makeLocationManager: () -> CLLocationManager = { CLLocationManager() }
 
-    // Counts calls to `didRegisterRegions()`. Only read and written on the main thread.
-    nonisolated(unsafe) private(set) static var registrationCount = 0
-
     // Carries the main-thread manager and the regions read on `queue` back to the main thread.
     private final class Cleanup: @unchecked Sendable {
         let locationManager: CLLocationManager
-        let registrationCount: Int
         var regions: [CLRegion] = []
 
-        init(locationManager: CLLocationManager, registrationCount: Int) {
+        init(locationManager: CLLocationManager) {
             self.locationManager = locationManager
-            self.registrationCount = registrationCount
         }
     }
 
     // Call on the main thread with the manager Radar registers regions on.
     @objc(removeAllRegionsUsingLocationManager:)
     static func removeAllRegions(using locationManager: CLLocationManager) {
-        let cleanup = Cleanup(locationManager: locationManager, registrationCount: registrationCount)
+        let cleanup = Cleanup(locationManager: locationManager)
         queue.async {
             guard let regions = radarRegions(locationManager: makeLocationManager()) else {
                 return
@@ -49,20 +43,9 @@ final class RadarRegionCleaner: NSObject {
 
             cleanup.regions = regions
             Task { @MainActor in
-                stopMonitoring(
-                    cleanup.regions,
-                    locationManager: cleanup.locationManager,
-                    registrationCount: cleanup.registrationCount
-                )
+                stopMonitoring(cleanup.regions, locationManager: cleanup.locationManager)
             }
         }
-    }
-
-    // Call on the main thread whenever synced regions are registered. `trackOnce` registers synced
-    // geofences and beacons even with tracking off, and they reuse identifiers, so a pending cleanup's
-    // read may list a region that was just registered again.
-    @objc static func didRegisterRegions() {
-        registrationCount += 1
     }
 
     // Runs on `queue`. Returns nil while tracking is on, since tracking owns the regions then.
@@ -76,19 +59,17 @@ final class RadarRegionCleaner: NSObject {
         }
     }
 
-    // Skips the stops if tracking started or synced regions were registered since the cleanup began
-    // (`registrationCount` is the count it began with). Synced geofences reuse their identifiers, so a
-    // region from the read may be one that was just registered again. Regions are registered on the
-    // main thread, so none can be registered between these checks and the stops.
+    // Checks tracking again because it may have started since the read. Synced geofences reuse their
+    // identifiers, so a region from the read may be one tracking just registered again. Regions are
+    // registered on the main thread, so none can be registered between this check and the stops.
+    //
+    // With tracking off, synced regions are removed by design: `trackOnce` registers synced geofences
+    // and beacons, and the config in its response runs this cleanup right after. So the cleanup doesn't
+    // need to protect regions `trackOnce` registers while it's pending.
     @MainActor
-    static func stopMonitoring(_ regions: [CLRegion], locationManager: CLLocationManager, registrationCount: Int) {
+    static func stopMonitoring(_ regions: [CLRegion], locationManager: CLLocationManager) {
         if RadarSettings.tracking {
             RadarLogger.shared.debug("Tracking started, skipping region cleanup | regions = \(regions.count)")
-            return
-        }
-
-        if registrationCount != Self.registrationCount {
-            RadarLogger.shared.debug("Regions registered since the cleanup began, skipping it | regions = \(regions.count)")
             return
         }
 
