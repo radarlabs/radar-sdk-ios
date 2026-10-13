@@ -67,7 +67,9 @@ extension RadarLocationManagerSwift {
     ) {
         let locationManager = host.locationManager
         let lowPowerLocationManager = host.lowPowerLocationManager
-        let authorizationStatus = permissionsHelper.locationAuthorizationStatus()
+        // The status cached by the authorization callback, not `CLLocationManager.authorizationStatus()`,
+        // which is a synchronous call into locationd. See `updateTracking:fromInitialize:`.
+        let authorizationStatus = RadarState().locationAuthorizationStatus
 
         locationManager.allowsBackgroundLocationUpdates =
             RadarUtils.locationBackgroundMode && authorizationStatus == .authorizedAlways

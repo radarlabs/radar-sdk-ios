@@ -232,6 +232,11 @@ extension RadarLocationManagerSwift {
             return
         }
 
+        // `updateTracking` reads the cached status, so apply tracking again with the new one.
+        if RadarSettings.tracking {
+            RadarSwift.bridge?.updateTracking()
+        }
+
         guard let config = RadarSettings.sdkConfiguration else {
             return
         }

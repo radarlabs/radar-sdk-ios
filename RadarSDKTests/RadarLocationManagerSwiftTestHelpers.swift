@@ -37,6 +37,12 @@ enum RadarLocationManagerSwiftTestHelpers {
         RadarLocationManagerSwift.permissionsHelper = permissionsHelper
         defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
 
+        // `updateTracking` reads the status cached by the authorization callback.
+        let state = RadarState()
+        let originalAuthorizationStatus = state.locationAuthorizationStatus
+        state.locationAuthorizationStatus = authorizationStatus
+        defer { state.locationAuthorizationStatus = originalAuthorizationStatus }
+
         let originalBootstrapIndoorTracking = RadarLocationManagerSwift.bootstrapIndoorTracking
         RadarLocationManagerSwift.bootstrapIndoorTracking = {}
         defer { RadarLocationManagerSwift.bootstrapIndoorTracking = originalBootstrapIndoorTracking }

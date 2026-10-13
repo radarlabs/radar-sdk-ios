@@ -512,8 +512,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
 
         if (tracking) {
+            // Use the status cached by locationManager:didChangeAuthorizationStatus: instead of
+            // +[CLLocationManager authorizationStatus], a synchronous call into locationd that
+            // initialize and config fetches would otherwise make on the main thread. If the
+            // permission changed while the app wasn't running, the callback Core Location sends
+            // when the manager is created updates the cache and runs updateTracking again.
+            CLAuthorizationStatus authorizationStatus = [RadarState locationAuthorizationStatus];
             self.locationManager.allowsBackgroundLocationUpdates =
-                [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
+                [RadarUtils locationBackgroundMode] && authorizationStatus == kCLAuthorizationStatusAuthorizedAlways;
             self.locationManager.pausesLocationUpdatesAutomatically = NO;
 
             self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
@@ -541,7 +547,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
 
-            CLAuthorizationStatus authorizationStatus = [CLLocationManager authorizationStatus];
             BOOL startUpdatesWhileInUse = [RadarSettings sdkConfiguration].startUpdatesWhileInUse;
             BOOL startUpdates = options.showBlueBar || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways ||
                                 (startUpdatesWhileInUse && authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse);
@@ -698,6 +703,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedGeofences:(NSArray<RadarGeofence *> *)geofences {
+    if (geofences) {
+        [RadarRegionCleaner didRegisterRegions];
+    }
+
     // Xcode's XCTest agent has no app bundle proxy, which UNUserNotificationCenter requires.
     // Avoid an unavailable service while retaining geofence-replacement coverage in both routes.
     BOOL shouldRegisterGeofenceNotifications = NSClassFromString(@"XCTestCase") == nil;
@@ -795,6 +804,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedBeacons:(NSArray<RadarBeacon *> *)beacons {
+    if (beacons) {
+        [RadarRegionCleaner didRegisterRegions];
+    }
+
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift replaceSyncedBeaconsOnLocationManager:self.locationManager beacons:beacons];
         return;
@@ -841,6 +854,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)replaceSyncedBeaconUUIDs:(NSArray<NSString *> *)uuids {
+    if (uuids) {
+        [RadarRegionCleaner didRegisterRegions];
+    }
+
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift replaceSyncedBeaconUUIDsOnLocationManager:self.locationManager uuids:uuids];
         return;
@@ -1655,6 +1672,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     if (status == previousStatus) {
         return;
+    }
+
+    // updateTracking reads the cached status, so apply tracking again with the new one.
+    if ([RadarSettings tracking]) {
+        [self updateTracking];
     }
 
     if ((status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) && ([RadarSettings sdkConfiguration].trackOnceOnAppOpen || [RadarSettings sdkConfiguration].startTrackingOnInitialize)) {

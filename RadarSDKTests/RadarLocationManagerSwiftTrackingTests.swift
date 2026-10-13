@@ -330,19 +330,27 @@ extension RadarSerializedTests {
                 manager.lowPowerLocationManager = originalLowPowerLocationManager
             }
 
-            // Only the Swift twin reads the injected permissions helper, so updates start only on the Swift path.
-            let permissionsHelper = MockRadarPermissionsHelper()
-            permissionsHelper.mockAuthorizationStatus = .authorizedAlways
-            let originalPermissionsHelper = RadarLocationManagerSwift.permissionsHelper
-            RadarLocationManagerSwift.permissionsHelper = permissionsHelper
-            defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
+            // Only the Swift twin reads the stopped state from `RadarSwift.bridge`; the Objective-C path
+            // reads `RadarState`. Reporting stopped only through the bridge, with a zero moving interval,
+            // means updates start only on the Swift path.
+            let bridge = MockRadarSwiftBridge()
+            bridge.mockStopped = true
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer { RadarSwift.bridge = originalBridge }
+            RadarSyncTestHelper.setStopped(false)
+
+            let state = RadarState()
+            let originalAuthorizationStatus = state.locationAuthorizationStatus
+            state.locationAuthorizationStatus = .authorizedAlways
+            defer { state.locationAuthorizationStatus = originalAuthorizationStatus }
 
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer { RadarLocationManagerSwiftTestHelpers.clearState() }
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": true])
             RadarSettings.tracking = true
             RadarSettings.trackingOptions = trackingOptions {
-                $0.desiredMovingUpdateInterval = 150
+                $0.desiredMovingUpdateInterval = 0
                 $0.desiredStoppedUpdateInterval = 150
                 $0.desiredAccuracy = .low
             }
