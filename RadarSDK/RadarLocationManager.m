@@ -63,6 +63,17 @@
 @property (strong, nonatomic) NSTimer *timer;
 
 /**
+ The region the last `replaceBubbleGeofence:radius:` registered.
+ `removeBubbleGeofence` stops it directly instead of relying only on its
+ `monitoredRegions` scan, because Core Location updates `monitoredRegions`
+ asynchronously and may not list a region added a moment ago. That happens
+ when locations arrive together: `handleLocation:source:beacons:` calls
+ `updateTracking:` for each one, so `updateTracking:fromInitialize:` replaces
+ the bubble back to back.
+ */
+@property (nullable, strong, nonatomic) CLRegion *bubbleGeofenceRegion;
+
+/**
  Callbacks for sending events.
  */
 @property (nonnull, strong, nonatomic) NSMutableArray<RadarLocationCompletionHandler> *completionHandlers;
@@ -653,6 +664,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     NSString *identifier = [NSString stringWithFormat:@"%@%@", kBubbleGeofenceIdentifierPrefix, [[NSUUID UUID] UUIDString]];
     CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
     [self.locationManager startMonitoringForRegion:region];
+    self.bubbleGeofenceRegion = region;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Successfully added bubble geofence | latitude = %f; longitude = %f; radius = %d; identifier = %@",
                                                                           location.coordinate.latitude, location.coordinate.longitude, radius, identifier]];
@@ -662,6 +674,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift removeBubbleGeofenceOnLocationManager:self.locationManager];
         return;
+    }
+
+    // Stop the last registered bubble first; the scan below can miss it (see `bubbleGeofenceRegion`).
+    if (self.bubbleGeofenceRegion) {
+        [self.locationManager stopMonitoringForRegion:self.bubbleGeofenceRegion];
+        self.bubbleGeofenceRegion = nil;
     }
 
     for (CLRegion *region in self.locationManager.monitoredRegions) {
