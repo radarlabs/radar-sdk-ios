@@ -512,12 +512,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
 
         if (tracking) {
-            // Use the status cached by locationManager:didChangeAuthorizationStatus: instead of
-            // +[CLLocationManager authorizationStatus], a synchronous call into Core Location that
-            // initialize and config fetches would otherwise make on the main thread. If the
-            // permission changed while the app wasn't running, the callback Core Location sends
-            // when the manager is created updates the cache and runs updateTracking again.
-            CLAuthorizationStatus authorizationStatus = [RadarState locationAuthorizationStatus];
+            CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
             self.locationManager.allowsBackgroundLocationUpdates =
                 [RadarUtils locationBackgroundMode] && authorizationStatus == kCLAuthorizationStatusAuthorizedAlways;
             self.locationManager.pausesLocationUpdatesAutomatically = NO;
@@ -1674,7 +1669,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
-    // updateTracking reads the cached status, so apply tracking again with the new one.
+    // The permissions helper reads the cached status, so updateTracking may have run with the status
+    // from before the permission changed, for example while the app wasn't running. Apply tracking
+    // again with the new one.
     if ([RadarSettings tracking]) {
         [self updateTracking];
     }
