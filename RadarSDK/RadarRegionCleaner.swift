@@ -8,11 +8,24 @@
 import CoreLocation
 import Foundation
 
-// Removes Radar's monitored regions without reading `monitoredRegions` on the main thread. That getter
-// is a synchronous call into Core Location, and it can block for a long time at cold launch. The read
-// runs on a background queue with a separate, delegate-less `CLLocationManager` (monitored regions are
-// shared by every manager in the app). The tracking check and the `stopMonitoring` calls run on the main
-// thread, where regions are registered, so tracking can't register a region between them.
+// Removes Radar's monitored regions for `initialize` and config fetches without reading
+// `monitoredRegions` on the main thread.
+//
+// Threading:
+// - The `monitoredRegions` read runs on `queue`. The getter returns data, so it waits for Core Location
+//   to answer, and at cold launch that can take hundreds of milliseconds. Doing it on the main thread
+//   caused App Hangs in `initialize`.
+// - The read uses its own delegate-less `CLLocationManager`, created, used, and released inside one
+//   block on `queue`, so the manager stays on the thread that created it. A manager with no delegate
+//   needs no run loop, and monitored regions are shared by every manager in the app, so it sees the
+//   regions Radar's main-thread managers registered.
+// - The tracking check and the `stopMonitoring` calls run together on the main thread. That's where
+//   regions are registered (`updateTracking`, and API responses delivered on main), so `startTracking`
+//   can't register a region between the check and the stops. Synced geofences reuse identifiers, so
+//   without this a cleanup could remove a region tracking had just registered again.
+// - `stopMonitoring` returns nothing and doesn't wait for Core Location to reply, so it's cheap on the
+//   main thread: about 0.04 ms per region on an iPhone 16e, where a `monitoredRegions` read once took
+//   824 ms. The SDK already calls `startMonitoring` and `stopMonitoring` on the main thread elsewhere.
 @objc(RadarRegionCleaner)
 final class RadarRegionCleaner: NSObject {
 
