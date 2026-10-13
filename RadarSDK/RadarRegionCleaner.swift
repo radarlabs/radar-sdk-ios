@@ -33,7 +33,7 @@ final class RadarRegionCleaner: NSObject {
         queue.sync {}
     }
 
-    private static func removeAllRegions(locationManager: CLLocationManager) {
+    static func removeAllRegions(locationManager: CLLocationManager) {
         if RadarSettings.tracking {
             return
         }

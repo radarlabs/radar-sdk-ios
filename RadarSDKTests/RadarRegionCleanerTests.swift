@@ -25,16 +25,18 @@ extension RadarSerializedTests {
 
         private static let seededRegions = ["radar_geofence_a", "radar_bubble_b", "radar_beacon_c", "other_region"]
 
-        // Installs a mock as RadarRegionCleaner's manager and as the shared RadarLocationManager's
+        // Gives a fresh RadarLocationManager a mock manager and installs another as RadarRegionCleaner's
         // manager, seeds both with the same regions (monitored regions are shared app-wide), and
-        // restores everything afterward.
+        // restores everything afterward. Using a fresh RadarLocationManager keeps tests running in
+        // parallel from reading the mock through the shared instance. RadarRegionCleaner is global,
+        // so cleanups those tests start can still use the mock; assert on its contents, not exact
+        // read counts.
         private func withMockedLocationManagers(
             useSwiftLocationManager: Bool = false,
             _ body: (RadarLocationManager, TrackingCLLocationManager, TrackingCLLocationManager) async -> Void
         ) async {
             RadarLocationManagerSwiftTestHelpers.clearState()
-            let manager = RadarLocationManager.sharedInstance()
-            let originalLocationManager = manager.locationManager
+            let manager = RadarLocationManager()
             let originalMakeLocationManager = RadarRegionCleaner.makeLocationManager
             let locationManager = TrackingCLLocationManager()
             let cleanerLocationManager = TrackingCLLocationManager()
@@ -47,7 +49,6 @@ extension RadarSerializedTests {
             await body(manager, locationManager, cleanerLocationManager)
 
             RadarRegionCleaner.waitUntilIdle()
-            manager.locationManager = originalLocationManager
             RadarRegionCleaner.makeLocationManager = originalMakeLocationManager
             RadarLocationManagerSwiftTestHelpers.clearState()
         }
@@ -60,7 +61,7 @@ extension RadarSerializedTests {
                 RadarRegionCleaner.waitUntilIdle()
 
                 #expect(main.monitoredRegionsReadCount == 0)
-                #expect(cleaner.monitoredRegionsReadCount == 1)
+                #expect(cleaner.monitoredRegionsReadCount >= 1)
                 #expect(!cleaner.monitoredRegionsReadOnMainThread)
                 #expect(cleaner.trackedRegions.map(\.identifier) == ["other_region"])
             }
@@ -81,42 +82,43 @@ extension RadarSerializedTests {
 
         @Test("updateTracking with tracking off still removes Radar regions on the main manager", arguments: [false, true])
         func updateTrackingRemovesRegionsOnMainManager(useSwiftLocationManager: Bool) async {
-            await withMockedLocationManagers(useSwiftLocationManager: useSwiftLocationManager) { manager, main, cleaner in
+            await withMockedLocationManagers(useSwiftLocationManager: useSwiftLocationManager) { manager, main, _ in
                 manager.updateTracking()
                 await drainMainQueue()
                 RadarRegionCleaner.waitUntilIdle()
 
                 #expect(main.trackedRegions.map(\.identifier) == ["other_region"])
-                #expect(cleaner.monitoredRegionsReadCount == 0)
             }
         }
 
         @Test("The cleanup does nothing while tracking is on")
-        func cleanupSkipsWhileTracking() async {
-            await withMockedLocationManagers { _, _, cleanerLocationManager in
-                RadarSettings.tracking = true
+        func cleanupSkipsWhileTracking() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            let locationManager = TrackingCLLocationManager()
+            locationManager.seed(Self.seededRegions)
+            RadarSettings.tracking = true
 
-                RadarRegionCleaner.removeAllRegionsInBackground()
-                RadarRegionCleaner.waitUntilIdle()
+            RadarRegionCleaner.removeAllRegions(locationManager: locationManager)
 
-                #expect(cleanerLocationManager.monitoredRegionsReadCount == 0)
-                #expect(cleanerLocationManager.trackedRegions.count == Self.seededRegions.count)
-            }
+            #expect(locationManager.monitoredRegionsReadCount == 0)
+            #expect(locationManager.trackedRegions.count == Self.seededRegions.count)
         }
 
         @Test("The cleanup stops when tracking starts partway through")
-        func cleanupStopsWhenTrackingStarts() async {
-            await withMockedLocationManagers { _, _, cleanerLocationManager in
-                cleanerLocationManager.onStopMonitoring = { _ in
-                    RadarSettings.tracking = true
-                }
-
-                RadarRegionCleaner.removeAllRegionsInBackground()
-                RadarRegionCleaner.waitUntilIdle()
-
-                let radarRegions = cleanerLocationManager.trackedRegions.filter { $0.identifier.hasPrefix("radar_") }
-                #expect(radarRegions.count == 2)
+        func cleanupStopsWhenTrackingStarts() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            let locationManager = TrackingCLLocationManager()
+            locationManager.seed(Self.seededRegions)
+            locationManager.onStopMonitoring = { _ in
+                RadarSettings.tracking = true
             }
+
+            RadarRegionCleaner.removeAllRegions(locationManager: locationManager)
+
+            let radarRegions = locationManager.trackedRegions.filter { $0.identifier.hasPrefix("radar_") }
+            #expect(radarRegions.count == 2)
         }
 
         @Test("The authorization callback sets allowsBackgroundLocationUpdates", arguments: [CLAuthorizationStatus.authorizedAlways, .authorizedWhenInUse, .denied])
