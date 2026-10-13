@@ -276,9 +276,9 @@ extension RadarSerializedTests {
                 let expectedStopCount = fromInitialize ? 0 : 1
                 #expect(locationManager.stopMonitoringVisitsCallCount == expectedStopCount)
                 #expect(locationManager.stopMonitoringSLCCallCount == expectedStopCount)
-                // From the initializer, regions are removed by RadarRegionCleaner on its own
-                // manager, so the host's manager is never read. Other suites running in parallel
-                // can also start cleanups, so only check the cleaner's manager was used.
+                // From the initializer, RadarRegionCleaner reads regions on its own manager, so the
+                // host's manager is never read. Other suites running in parallel can also start
+                // cleanups, so only check the cleaner's manager was used.
                 #expect(locationManager.monitoredRegionsReadCount == (fromInitialize ? 0 : 1))
                 if fromInitialize {
                     #expect(cleanerLocationManager.monitoredRegionsReadCount >= 1)

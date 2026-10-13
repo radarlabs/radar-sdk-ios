@@ -591,11 +591,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         } else {
             [self stopUpdates];
-            // initialize and config fetches run this on the main thread, so remove regions in the
+            // initialize and config fetches run this on the main thread, so read the regions in the
             // background to keep the synchronous monitoredRegions read off the main thread.
             // Other callers, like stopTracking, still remove them right away.
             if (fromInitialize) {
-                [RadarRegionCleaner removeAllRegionsInBackground];
+                [RadarRegionCleaner removeAllRegionsUsingLocationManager:self.locationManager];
             } else {
                 [self removeAllRegions];
             }

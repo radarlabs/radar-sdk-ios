@@ -5,6 +5,7 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+#import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,8 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 // classes are not emitted into RadarSDK-Swift.h.
 @interface RadarRegionCleaner : NSObject
 
-// Removes Radar's monitored regions on a background queue, unless tracking is on.
-+ (void)removeAllRegionsInBackground;
+// Reads Radar's monitored regions on a background queue, then stops them on the main thread unless
+// tracking is on. Call on the main thread with the manager Radar registers regions on.
++ (void)removeAllRegionsUsingLocationManager:(CLLocationManager *)locationManager;
 
 @end
 

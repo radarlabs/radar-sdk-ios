@@ -34,10 +34,14 @@ extension RadarSerializedTests {
 
         // Gives a fresh RadarLocationManager a mock manager and installs another as RadarRegionCleaner's
         // manager, seeds both with the same regions (monitored regions are shared app-wide), and
-        // restores everything afterward. Using a fresh RadarLocationManager keeps tests running in
-        // parallel from reading the mock through the shared instance. RadarRegionCleaner is global,
-        // so cleanups those tests start can still use the mock; assert on its contents, not exact
-        // read counts.
+        // restores everything afterward. The cleaner reads regions from its own manager and stops them
+        // on the RadarLocationManager's manager. Using a fresh RadarLocationManager keeps tests running
+        // in parallel from reading the mock through the shared instance. RadarRegionCleaner is global,
+        // so cleanups those tests start can still read the cleaner's mock; assert on which manager was
+        // read and changed, not exact read counts.
+        //
+        // With the Swift location manager, config fetches reach `updateTrackingFromInitialize` through
+        // `RadarSwift.bridge`, so this also installs a bridge that routes it to the fresh manager.
         private func withMockedLocationManagers(
             useSwiftLocationManager: Bool = false,
             _ body: (RadarLocationManager, TrackingCLLocationManager, TrackingCLLocationManager) async -> Void
@@ -45,45 +49,57 @@ extension RadarSerializedTests {
             RadarLocationManagerSwiftTestHelpers.clearState()
             let manager = RadarLocationManager()
             let originalMakeLocationManager = RadarRegionCleaner.makeLocationManager
+            let originalBridge = RadarSwift.bridge
             let locationManager = TrackingCLLocationManager()
             let cleanerLocationManager = TrackingCLLocationManager()
             locationManager.seed(Self.seededRegions)
             cleanerLocationManager.seed(Self.seededRegions)
             manager.locationManager = locationManager
             RadarRegionCleaner.makeLocationManager = { cleanerLocationManager }
+            let bridge = MockRadarSwiftBridge()
+            bridge.onUpdateTrackingFromInitialize = { manager.updateTrackingFromInitialize() }
+            RadarSwift.bridge = bridge
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": useSwiftLocationManager])
 
             await body(manager, locationManager, cleanerLocationManager)
 
-            RadarRegionCleaner.waitUntilIdle()
+            await Self.waitForCleanup()
+            RadarSwift.bridge = originalBridge
             RadarRegionCleaner.makeLocationManager = originalMakeLocationManager
             RadarLocationManagerSwiftTestHelpers.clearState()
         }
 
-        @Test("updateTrackingFromInitialize with tracking off removes Radar regions off the main thread", arguments: [false, true])
+        // Waits for the main-queue `updateTracking` block, the read on the cleaner's queue, and the
+        // main-thread stops, in that order.
+        private static func waitForCleanup() async {
+            await drainMainQueue()
+            RadarRegionCleaner.waitUntilIdle()
+            await drainMainQueue()
+        }
+
+        @Test("updateTrackingFromInitialize with tracking off reads regions off the main thread and removes them", arguments: [false, true])
         func initializeRemovesRegionsOffMainThread(useSwiftLocationManager: Bool) async {
             await withMockedLocationManagers(useSwiftLocationManager: useSwiftLocationManager) { manager, main, cleaner in
                 manager.updateTrackingFromInitialize()
-                await drainMainQueue()
-                RadarRegionCleaner.waitUntilIdle()
+                await Self.waitForCleanup()
 
                 #expect(main.monitoredRegionsReadCount == 0)
                 #expect(cleaner.monitoredRegionsReadCount >= 1)
                 #expect(!cleaner.monitoredRegionsReadOnMainThread)
-                #expect(cleaner.trackedRegions.map(\.identifier) == ["other_region"])
+                #expect(main.trackedRegions.map(\.identifier) == ["other_region"])
             }
         }
 
-        @Test("updateTrackingFromMeta with tracking off removes Radar regions off the main thread", arguments: [false, true])
+        @Test("updateTrackingFromMeta with tracking off reads regions off the main thread and removes them", arguments: [false, true])
         func metaRemovesRegionsOffMainThread(useSwiftLocationManager: Bool) async {
             await withMockedLocationManagers(useSwiftLocationManager: useSwiftLocationManager) { manager, main, cleaner in
                 manager.updateTracking(from: nil)
-                await drainMainQueue()
-                RadarRegionCleaner.waitUntilIdle()
+                await Self.waitForCleanup()
 
                 #expect(main.monitoredRegionsReadCount == 0)
+                #expect(cleaner.monitoredRegionsReadCount >= 1)
                 #expect(!cleaner.monitoredRegionsReadOnMainThread)
-                #expect(cleaner.trackedRegions.map(\.identifier) == ["other_region"])
+                #expect(main.trackedRegions.map(\.identifier) == ["other_region"])
             }
         }
 
@@ -91,41 +107,41 @@ extension RadarSerializedTests {
         func updateTrackingRemovesRegionsOnMainManager(useSwiftLocationManager: Bool) async {
             await withMockedLocationManagers(useSwiftLocationManager: useSwiftLocationManager) { manager, main, _ in
                 manager.updateTracking()
-                await drainMainQueue()
-                RadarRegionCleaner.waitUntilIdle()
+                await Self.waitForCleanup()
 
                 #expect(main.trackedRegions.map(\.identifier) == ["other_region"])
             }
         }
 
-        @Test("The cleanup does nothing while tracking is on")
-        func cleanupSkipsWhileTracking() {
+        @Test("The read returns nothing while tracking is on")
+        func readSkipsWhileTracking() {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer { RadarLocationManagerSwiftTestHelpers.clearState() }
             let locationManager = TrackingCLLocationManager()
             locationManager.seed(Self.seededRegions)
             RadarSettings.tracking = true
 
-            RadarRegionCleaner.removeAllRegions(locationManager: locationManager)
-
+            #expect(RadarRegionCleaner.radarRegions(locationManager: locationManager) == nil)
             #expect(locationManager.monitoredRegionsReadCount == 0)
-            #expect(locationManager.trackedRegions.count == Self.seededRegions.count)
         }
 
-        @Test("The cleanup stops when tracking starts partway through")
-        func cleanupStopsWhenTrackingStarts() {
+        @Test("Regions read before tracking starts are not removed")
+        @MainActor
+        func stopsSkipWhenTrackingStartsAfterRead() {
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+            let cleanerLocationManager = TrackingCLLocationManager()
             let locationManager = TrackingCLLocationManager()
+            cleanerLocationManager.seed(Self.seededRegions)
             locationManager.seed(Self.seededRegions)
-            locationManager.onStopMonitoring = { _ in
-                RadarSettings.tracking = true
-            }
 
-            RadarRegionCleaner.removeAllRegions(locationManager: locationManager)
+            let regions = RadarRegionCleaner.radarRegions(locationManager: cleanerLocationManager) ?? []
+            // startTracking registers its regions again between the read and the stops.
+            RadarSettings.tracking = true
+            RadarRegionCleaner.stopMonitoring(regions, locationManager: locationManager)
 
-            let radarRegions = locationManager.trackedRegions.filter { $0.identifier.hasPrefix("radar_") }
-            #expect(radarRegions.count == 2)
+            #expect(regions.count == 3)
+            #expect(locationManager.trackedRegions.count == Self.seededRegions.count)
         }
 
         @Test(
