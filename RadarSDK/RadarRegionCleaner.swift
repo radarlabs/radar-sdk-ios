@@ -45,7 +45,8 @@ final class RadarRegionCleaner: NSObject {
         }
     }
 
-    // Call on the main thread with the manager Radar registers regions on.
+    // Reads Radar's regions on `queue`, then stops them on `locationManager` on the main thread unless
+    // tracking is on by then. Pass the manager Radar registers regions on. Safe to call from any thread.
     @objc(removeAllRegionsUsingLocationManager:)
     static func removeAllRegions(using locationManager: CLLocationManager) {
         let cleanup = Cleanup(locationManager: locationManager)

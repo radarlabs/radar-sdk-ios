@@ -14,8 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 // classes are not emitted into RadarSDK-Swift.h.
 @interface RadarRegionCleaner : NSObject
 
-// Reads Radar's monitored regions on a background queue, then stops them on the main thread unless
-// tracking is on. Call on the main thread with the manager Radar registers regions on.
+// Reads Radar's monitored regions on a background queue, then stops them on locationManager on the main
+// thread unless tracking is on by then. Pass the manager Radar registers regions on. Safe to call from
+// any thread.
 + (void)removeAllRegionsUsingLocationManager:(CLLocationManager *)locationManager;
 
 @end
