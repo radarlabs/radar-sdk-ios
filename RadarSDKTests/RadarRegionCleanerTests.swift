@@ -128,17 +128,40 @@ extension RadarSerializedTests {
             #expect(radarRegions.count == 2)
         }
 
-        @Test("The authorization callback sets allowsBackgroundLocationUpdates", arguments: [CLAuthorizationStatus.authorizedAlways, .authorizedWhenInUse, .denied])
+        @Test(
+            "The authorization callback sets allowsBackgroundLocationUpdates",
+            arguments: [CLAuthorizationStatus.authorizedAlways, .authorizedWhenInUse, .denied]
+        )
         func authorizationCallbackSetsBackgroundUpdates(status: CLAuthorizationStatus) async {
             await withMockedLocationManagers { manager, locationManager, _ in
                 let state = RadarState()
                 let originalStatus = state.locationAuthorizationStatus
                 defer { state.locationAuthorizationStatus = originalStatus }
+                state.locationAuthorizationStatus = .notDetermined
 
                 manager.locationManager(locationManager, didChangeAuthorization: status)
 
                 let expected = RadarUtils.locationBackgroundMode && status == .authorizedAlways
-                #expect(locationManager.allowsBackgroundLocationUpdates == expected)
+                #expect(locationManager.allowsBackgroundLocationUpdatesWrites == [expected])
+            }
+        }
+
+        // Core Location calls the callback with the current status when the manager is created, so on
+        // a launch where the permission hasn't changed, the status matches the stored one.
+        @Test(
+            "The authorization callback sets allowsBackgroundLocationUpdates when the status is unchanged",
+            arguments: [false, true]
+        )
+        func authorizationCallbackSetsBackgroundUpdatesWhenUnchanged(useSwiftLocationManager: Bool) async {
+            await withMockedLocationManagers(useSwiftLocationManager: useSwiftLocationManager) { manager, locationManager, _ in
+                let state = RadarState()
+                let originalStatus = state.locationAuthorizationStatus
+                defer { state.locationAuthorizationStatus = originalStatus }
+                state.locationAuthorizationStatus = .authorizedAlways
+
+                manager.locationManager(locationManager, didChangeAuthorization: .authorizedAlways)
+
+                #expect(locationManager.allowsBackgroundLocationUpdatesWrites == [RadarUtils.locationBackgroundMode])
             }
         }
     }

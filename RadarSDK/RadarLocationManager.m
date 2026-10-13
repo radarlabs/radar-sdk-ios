@@ -1638,6 +1638,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+    // Keep this above the status == previousStatus early return. Core Location calls this method
+    // once with the current status when the manager is created, on every launch, and that call is
+    // the only place allowsBackgroundLocationUpdates is set while tracking is off.
     if (manager == self.locationManager) {
         self.locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && status == kCLAuthorizationStatusAuthorizedAlways;
     }

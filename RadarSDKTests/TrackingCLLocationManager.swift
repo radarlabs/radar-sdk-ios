@@ -36,6 +36,14 @@ final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
     private(set) var monitoredRegionsReadOnMainThread = false
     // Called after each `stopMonitoring(for:)`.
     var onStopMonitoring: ((CLRegion) -> Void)?
+    // Records writes instead of passing them to Core Location, which raises an exception when
+    // `allowsBackgroundLocationUpdates` is set to true without the location background mode.
+    private(set) var allowsBackgroundLocationUpdatesWrites: [Bool] = []
+
+    override var allowsBackgroundLocationUpdates: Bool {
+        get { allowsBackgroundLocationUpdatesWrites.last ?? false }
+        set { allowsBackgroundLocationUpdatesWrites.append(newValue) }
+    }
 
     override var monitoredRegions: Set<CLRegion> {
         monitoredRegionsReadCount += 1
