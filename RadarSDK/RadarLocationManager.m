@@ -28,6 +28,7 @@
 #import "RadarPlace+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarLocationManagerSwift.h"
+#import "RadarRegionCleaner+Internal.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
@@ -61,6 +62,17 @@
  continuous tracking mode.
  */
 @property (strong, nonatomic) NSTimer *timer;
+
+/**
+ The region the last `replaceBubbleGeofence:radius:` registered.
+ `removeBubbleGeofence` stops it directly instead of relying only on its
+ `monitoredRegions` scan, because Core Location updates `monitoredRegions`
+ asynchronously and may not list a region added a moment ago. That happens
+ when locations arrive together: `handleLocation:source:beacons:` calls
+ `updateTracking:` for each one, so `updateTracking:fromInitialize:` replaces
+ the bubble back to back.
+ */
+@property (nullable, strong, nonatomic) CLRegion *bubbleGeofenceRegion;
 
 /**
  Callbacks for sending events.
@@ -103,7 +115,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         _locationManager.delegate = self;
         _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         _locationManager.distanceFilter = kCLDistanceFilterNone;
-        _locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
 
         _lowPowerLocationManager = [CLLocationManager new];
         _lowPowerLocationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
@@ -501,8 +512,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         }
 
         if (tracking) {
+            CLAuthorizationStatus authorizationStatus = [self.permissionsHelper locationAuthorizationStatus];
             self.locationManager.allowsBackgroundLocationUpdates =
-                [RadarUtils locationBackgroundMode] && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways;
+                [RadarUtils locationBackgroundMode] && authorizationStatus == kCLAuthorizationStatusAuthorizedAlways;
             self.locationManager.pausesLocationUpdatesAutomatically = NO;
 
             self.lowPowerLocationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode];
@@ -530,7 +542,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
             self.lowPowerLocationManager.showsBackgroundLocationIndicator = options.showBlueBar;
 
-            CLAuthorizationStatus authorizationStatus = [CLLocationManager authorizationStatus];
             BOOL startUpdatesWhileInUse = [RadarSettings sdkConfiguration].startUpdatesWhileInUse;
             BOOL startUpdates = options.showBlueBar || authorizationStatus == kCLAuthorizationStatusAuthorizedAlways ||
                                 (startUpdatesWhileInUse && authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse);
@@ -580,7 +591,14 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         } else {
             [self stopUpdates];
-            [self removeAllRegions];
+            // initialize and config fetches run this on the main thread, so read the regions in the
+            // background to keep the synchronous monitoredRegions read off the main thread.
+            // Other callers, like stopTracking, still remove them right away.
+            if (fromInitialize) {
+                [RadarRegionCleaner removeAllRegionsUsingLocationManager:self.locationManager];
+            } else {
+                [self removeAllRegions];
+            }
 
             // If updateTracking() was called from the RadarLocationManager
             // initializer, don't tell the CLLocationManager to stop, because
@@ -653,6 +671,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     NSString *identifier = [NSString stringWithFormat:@"%@%@", kBubbleGeofenceIdentifierPrefix, [[NSUUID UUID] UUIDString]];
     CLRegion *region = [[CLCircularRegion alloc] initWithCenter:location.coordinate radius:radius identifier:identifier];
     [self.locationManager startMonitoringForRegion:region];
+    self.bubbleGeofenceRegion = region;
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Successfully added bubble geofence | latitude = %f; longitude = %f; radius = %d; identifier = %@",
                                                                           location.coordinate.latitude, location.coordinate.longitude, radius, identifier]];
@@ -662,6 +681,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift removeBubbleGeofenceOnLocationManager:self.locationManager];
         return;
+    }
+
+    // Stop the last registered bubble first; the scan below can miss it (see `bubbleGeofenceRegion`).
+    if (self.bubbleGeofenceRegion) {
+        [self.locationManager stopMonitoringForRegion:self.bubbleGeofenceRegion];
+        self.bubbleGeofenceRegion = nil;
     }
 
     for (CLRegion *region in self.locationManager.monitoredRegions) {
@@ -1613,6 +1638,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+    // Keep this above the status == previousStatus early return. Core Location calls this method
+    // once with the current status when the manager is created, on every launch, and that call is
+    // the only place allowsBackgroundLocationUpdates is set while tracking is off.
+    if (manager == self.locationManager) {
+        self.locationManager.allowsBackgroundLocationUpdates = [RadarUtils locationBackgroundMode] && status == kCLAuthorizationStatusAuthorizedAlways;
+    }
+
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift didChangeAuthorizationStatus:status];
         return;
@@ -1623,6 +1655,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
     if (status == previousStatus) {
         return;
+    }
+
+    // The permissions helper reads the cached status, so updateTracking may have run with the status
+    // from before the permission changed, for example while the app wasn't running. Apply tracking
+    // again with the new one.
+    if ([RadarSettings tracking]) {
+        [self updateTracking];
     }
 
     if ((status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) && ([RadarSettings sdkConfiguration].trackOnceOnAppOpen || [RadarSettings sdkConfiguration].startTrackingOnInitialize)) {

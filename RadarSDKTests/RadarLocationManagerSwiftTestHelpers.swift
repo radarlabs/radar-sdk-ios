@@ -54,6 +54,8 @@ enum RadarLocationManagerSwiftTestHelpers {
         RadarSettings.tracking = false
         RadarSettings.trackingOptions = nil
         RadarSettings.remoteTrackingOptions = nil
+        RadarLocationManagerSwift.bubbleGeofenceRegion = nil
+        RadarLocationManager.sharedInstance().setValue(nil, forKey: "bubbleGeofenceRegion")
         RadarLocationManager.sharedInstance().permissionsHelper = RadarPermissionsHelper()
     }
 

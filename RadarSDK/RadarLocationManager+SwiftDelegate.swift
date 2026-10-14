@@ -232,6 +232,13 @@ extension RadarLocationManagerSwift {
             return
         }
 
+        // The permissions helper reads the cached status, so `updateTracking` may have run with the status
+        // from before the permission changed, for example while the app wasn't running. Apply tracking
+        // again with the new one.
+        if RadarSettings.tracking {
+            RadarSwift.bridge?.updateTracking()
+        }
+
         guard let config = RadarSettings.sdkConfiguration else {
             return
         }
