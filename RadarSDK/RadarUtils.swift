@@ -285,6 +285,7 @@ class RadarUtils: NSObject {
         let jsonObject: Any = JSONSerialization.isValidJSONObject(dict) ? dict : (jsonSanitized(dict) ?? [:])
         return try? JSONSerialization.data(withJSONObject: jsonObject)
     }
+
 }
 
 internal extension CLLocation {

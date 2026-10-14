@@ -299,10 +299,10 @@ extension RadarSerializedTests {
         /// `swiftInstance` on the Objective-C singleton, the other half of the
         /// dispatch condition.
         private func withSharedManagers(
-            _ body: (ObjCVerificationManager, RadarVerificationManager) throws -> Void
+            _ body: (ObjCVerificationManager, RadarSDK.RadarVerificationManager) throws -> Void
         ) throws {
             try Helpers.withRestoredObjCState { objcManager in
-                try body(objcManager, RadarVerificationManager.shared)
+                try body(objcManager, RadarSDK.RadarVerificationManager.shared)
             }
         }
 

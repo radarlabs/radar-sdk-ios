@@ -6,7 +6,6 @@
 //
 
 import CoreLocation
-import ObjectiveC
 import Testing
 
 @testable import RadarSDK
@@ -24,35 +23,15 @@ private final class RequestLocationCLLocationManager: CLLocationManager, @unchec
     }
 }
 
-/// `RadarVerificationManager` looks the fraud SDK up by name, so this is registered as
-/// `RadarSDKFraud` when the real submodule isn't linked into the test bundle.
-private class StubRadarSDKFraud: NSObject {
-    private static let instance = MockFraudSDK(result: ["payload": "mock-fraud-payload"], sharing: false)
-
-    @objc static func sharedInstance() -> NSObject {
-        return instance
-    }
-
-    static func registerIfNeeded() {
-        guard NSClassFromString("RadarSDKFraud") == nil,
-            let cls = objc_allocateClassPair(StubRadarSDKFraud.self, "RadarSDKFraud", 0)
-        else {
-            return
-        }
-        objc_registerClassPair(cls)
-    }
-}
-
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarSDKTestsSwift {
 
-        private let apiHelperMock = RadarAPIHelperMock()
+        private let apiHelperMock = MainQueueAPIHelperMock()
         private let locationManagerMock = RequestLocationCLLocationManager()
         private let permissionsHelperMock = RadarPermissionsHelperMock()
 
         init() {
-            StubRadarSDKFraud.registerIfNeeded()
             Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
 
             RadarAPIClient.sharedInstance().apiHelper = apiHelperMock
@@ -67,7 +46,16 @@ extension RadarSerializedTests {
         /// It must be main, because the response handler touches `@MainActor` `RadarInAppMessageManager`.
         @Test("Includes the expected address in the track request after setExpectedAddress")
         @MainActor
-        func expectedAddressIncludedInTrackRequest() async {
+        func expectedAddressIncludedInTrackRequest() async throws {
+            let manager = try #require(ObjCVerificationManager.shared)
+            let originalFactory = manager.instance.value(forKey: "trackVerifiedPayloadFactory")
+            defer { manager.instance.setValue(originalFactory, forKey: "trackVerifiedPayloadFactory") }
+            let fraudSDK = try #require(RadarSDKFraud(instance: makeCollectedFraudInstance(result: ["payload": "mock-fraud-payload"])))
+            let factory: @convention(block) ([String: Any]) -> NSObject = { options in
+                RadarTrackVerifiedRequestPreparer(fraudSDK: fraudSDK, options: options)
+            }
+            manager.instance.setValue(factory as AnyObject, forKey: "trackVerifiedPayloadFactory")
+
             Radar.setExpectedAddress("111 5th Ave, NY")
             defer { Radar.setExpectedAddress(nil) }
 
