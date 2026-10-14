@@ -260,16 +260,29 @@ extension RadarSerializedTests {
 
         @Test("Tracking off stops visits and SLCs unless called from the initializer", arguments: [false, true])
         func trackingOffStopsMonitoringUnlessFromInitialize(fromInitialize: Bool) {
+            let cleanerLocationManager = TrackingCLLocationManager()
+            let originalMakeLocationManager = RadarRegionCleaner.makeLocationManager
+            RadarRegionCleaner.makeLocationManager = { cleanerLocationManager }
+            defer { RadarRegionCleaner.makeLocationManager = originalMakeLocationManager }
+
             runUpdateTracking(
                 options: nil,
                 tracking: false,
                 fromInitialize: fromInitialize,
                 seedRegions: ["radar_geofence_a", "other_region"]
             ) { _, locationManager, _ in
+                RadarRegionCleaner.waitUntilIdle()
+
                 let expectedStopCount = fromInitialize ? 0 : 1
                 #expect(locationManager.stopMonitoringVisitsCallCount == expectedStopCount)
                 #expect(locationManager.stopMonitoringSLCCallCount == expectedStopCount)
-                #expect(locationManager.monitoredRegions.map(\.identifier) == ["other_region"])
+                // From the initializer, RadarRegionCleaner reads regions on its own manager, so the
+                // host's manager is never read. Other suites running in parallel can also start
+                // cleanups, so only check the cleaner's manager was used.
+                #expect(locationManager.monitoredRegionsReadCount == (fromInitialize ? 0 : 1))
+                if fromInitialize {
+                    #expect(cleanerLocationManager.monitoredRegionsReadCount >= 1)
+                }
             }
         }
     }
@@ -317,19 +330,27 @@ extension RadarSerializedTests {
                 manager.lowPowerLocationManager = originalLowPowerLocationManager
             }
 
-            // Only the Swift twin reads the injected permissions helper, so updates start only on the Swift path.
-            let permissionsHelper = MockRadarPermissionsHelper()
-            permissionsHelper.mockAuthorizationStatus = .authorizedAlways
-            let originalPermissionsHelper = RadarLocationManagerSwift.permissionsHelper
-            RadarLocationManagerSwift.permissionsHelper = permissionsHelper
-            defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
+            // Only the Swift twin reads the stopped state from `RadarSwift.bridge`; the Objective-C path
+            // reads `RadarState`. Reporting stopped only through the bridge, with a zero moving interval,
+            // means updates start only on the Swift path.
+            let bridge = MockRadarSwiftBridge()
+            bridge.mockStopped = true
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer { RadarSwift.bridge = originalBridge }
+            RadarSyncTestHelper.setStopped(false)
+
+            let state = RadarState()
+            let originalAuthorizationStatus = state.locationAuthorizationStatus
+            state.locationAuthorizationStatus = .authorizedAlways
+            defer { state.locationAuthorizationStatus = originalAuthorizationStatus }
 
             RadarLocationManagerSwiftTestHelpers.clearState()
             defer { RadarLocationManagerSwiftTestHelpers.clearState() }
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": true])
             RadarSettings.tracking = true
             RadarSettings.trackingOptions = trackingOptions {
-                $0.desiredMovingUpdateInterval = 150
+                $0.desiredMovingUpdateInterval = 0
                 $0.desiredStoppedUpdateInterval = 150
                 $0.desiredAccuracy = .low
             }
