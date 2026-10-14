@@ -3,6 +3,34 @@ import Testing
 
 @testable import RadarSDK
 
+enum MockFraudEnvelope {
+    // This is a transport fixture, not cryptographic output.
+    static let payload = #"{"encv":1,"kv":1,"encryptionAttemptId":"test-attempt","issuedAt":123,"enc":"mock-enc","ct":"mock-ct"}"#
+    static let fieldNames: Set<String> = ["encv", "kv", "encryptionAttemptId", "issuedAt", "enc", "ct"]
+
+    static func result(for options: [String: Any]) -> [String: Any] {
+        guard
+            options["body"] is Data,
+            let attemptId = options["encryptionAttemptId"] as? String,
+            let issuedAt = options["issuedAt"] as? Int
+        else {
+            return ["error": "Missing request body or encryption context"]
+        }
+
+        let envelope: [String: Any] = [
+            "encv": 1, "kv": 1, "encryptionAttemptId": attemptId,
+            "issuedAt": issuedAt, "enc": "mock-enc", "ct": "encrypted-\(attemptId)",
+        ]
+        guard
+            let data = try? JSONSerialization.data(withJSONObject: envelope, options: .sortedKeys),
+            let payload = String(data: data, encoding: .utf8)
+        else {
+            return ["error": "Invalid mock envelope"]
+        }
+        return ["payload": payload]
+    }
+}
+
 final class MockLegacyFraudInstance: NSObject, @unchecked Sendable {
     private let lock = NSLock()
     private var sharing = true

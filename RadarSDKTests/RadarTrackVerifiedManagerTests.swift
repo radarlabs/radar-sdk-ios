@@ -109,7 +109,7 @@ extension RadarVerifiedHostOverrideTests {
         helper.setMockStatus(.errorServer, forMethod: trackURL)
         client.apiHelper = helper
 
-        let instance = makeCollectedFraudInstance(result: ["payload": "encrypted-envelope"])
+        let instance = makeCollectedFraudInstance(result: ["payload": MockFraudEnvelope.payload])
         let manager = try makeVerificationManager(instance: instance)
         manager.instance.setValue("111 5th Ave, NY", forKey: "expectedAddress")
         // Collection succeeds; the mocked track endpoint returns an error.
@@ -117,13 +117,9 @@ extension RadarVerifiedHostOverrideTests {
 
         XCTAssertEqual(helper.lastMethod, "POST")
         XCTAssertEqual(helper.lastUrl, trackURL)
-        XCTAssertEqual(
-            helper.lastParams?["fraudPayload"] as? String,
-            "encrypted-envelope"
-        )
-        XCTAssertEqual(helper.lastParams?["latitude"] as? Double, 40.0)
-        XCTAssertEqual(helper.lastParams?["longitude"] as? Double, -73.0)
-        XCTAssertEqual(helper.lastParams?["expectedAddress"] as? String, "111 5th Ave, NY")
+        let sentBody = try XCTUnwrap(helper.lastParams as? [String: Any])
+        XCTAssertEqual(Set(sentBody.keys), MockFraudEnvelope.fieldNames)
+        XCTAssertEqual(sentBody["ct"] as? String, "mock-ct")
 
         try assertMatchingEncryptionContext(instance: instance, helper: helper)
     }
@@ -173,10 +169,15 @@ extension RadarVerifiedHostOverrideTests {
         XCTAssertEqual(context["product"] as? String, "manager-test-product")
         XCTAssertEqual(context["origin"] as? String, Bundle.main.bundleIdentifier)
 
-        let sentInstallId = try XCTUnwrap(
-            helper.lastParams?["installId"] as? String
+        let coreBody = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: try XCTUnwrap(context["body"] as? Data)) as? [String: Any]
         )
-        XCTAssertEqual(context["installId"] as? String, sentInstallId)
+        XCTAssertNotNil(coreBody["installId"] as? String)
+        XCTAssertEqual(coreBody["latitude"] as? Double, 40.0)
+        XCTAssertEqual(coreBody["longitude"] as? Double, -73.0)
+        XCTAssertEqual(coreBody["expectedAddress"] as? String, "111 5th Ave, NY")
+        XCTAssertNil(coreBody["fraudPayload"])
+        XCTAssertNil(context["installId"])
 
         let headers = try XCTUnwrap(helper.lastHeaders)
         XCTAssertNotNil(headers["Authorization"])
