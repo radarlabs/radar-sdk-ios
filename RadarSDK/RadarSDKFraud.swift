@@ -38,7 +38,7 @@ final class RadarSDKFraud: @unchecked Sendable {
         else {
             RadarLogger.shared.warning(
                 "Installed Radar Fraud SDK is incompatible with this Radar SDK. "
-                + "Update to compatible Radar SDK and Radar Fraud SDK versions."
+                    + "Update to compatible Radar SDK and Radar Fraud SDK versions."
             )
             return nil
         }
