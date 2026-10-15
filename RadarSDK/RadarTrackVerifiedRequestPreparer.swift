@@ -34,7 +34,7 @@ final class RadarTrackVerifiedRequestPreparer: NSObject, @unchecked Sendable {
         do {
             return (.success, try await fraudSDK.prepareFraudPayload(options: options), nil)
         } catch {
-            return ((error as? RadarError)?.status ?? .errorUnknown, nil, error as NSError)
+            return ((error as? RadarError)?.status ?? .errorBadRequest, nil, error as NSError)
         }
     }
 }

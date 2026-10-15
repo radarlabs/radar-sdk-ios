@@ -259,7 +259,7 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                         if (preparationFailureHandler) {
                             preparationFailureHandler(preparationError);
                         } else {
-                            completionHandler(RadarStatusErrorUnknown, nil, preparationError);
+                            completionHandler(RadarStatusErrorBadRequest, nil, preparationError);
                         }
                     });
                     if (sleep) {

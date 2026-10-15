@@ -171,7 +171,9 @@ extension RadarSerializedTests.RadarRevealRiskTests {
                 useSecondaryVerifiedHost: secondary
             )
         } throws: { error in
-            (error as? RadarError)?.status == .errorUnknown
+            let radarError = error as? RadarError
+            return radarError?.status == .errorBadRequest
+                && radarError?.message == "Failed to encrypt request body"
         }
 
         #expect(instance.recordedOptions().count == 1)

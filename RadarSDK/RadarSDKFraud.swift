@@ -79,7 +79,10 @@ final class RadarSDKFraud: @unchecked Sendable {
                     let prepared = RadarPreparedFraudPayload(instance: instance)
                 else {
                     continuation.resume(
-                        throwing: RadarError(status: .errorUnknown)
+                        throwing: RadarError(
+                            status: .errorBadRequest,
+                            message: "Failed to prepare fraud payload"
+                        )
                     )
                     return
                 }
@@ -126,7 +129,10 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
             let payload = result?["payload"] as? String,
             !payload.isEmpty
         else {
-            throw RadarError(status: .errorUnknown)
+            throw RadarError(
+                status: .errorBadRequest,
+                message: "Failed to encrypt request body"
+            )
         }
 
         return payload
@@ -163,7 +169,10 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
             let route = request.url?.path,
             let coreBody = request.httpBody
         else {
-            throw RadarError(status: .errorUnknown)
+            throw RadarError(
+                status: .errorBadRequest,
+                message: "Request encryption requires a POST request with a URL and body"
+            )
         }
 
         let encryptedPayload = try getEncryptedPayload(
@@ -199,7 +208,7 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
 
         guard status == errSecSuccess else {
             throw RadarError(
-                status: .errorUnknown,
+                status: .errorBadRequest,
                 message: "Failed to generate encryption attempt ID"
             )
         }

@@ -731,7 +731,7 @@
                                    return [preparedFraudPayload prepareRequest:request error:error];
                                }
                     preparationFailureHandler:^(NSError *error) {
-                        completionHandler(RadarStatusErrorUnknown, nil, nil, nil, nil, nil, nil);
+                        completionHandler(RadarStatusErrorBadRequest, nil, nil, nil, nil, nil, nil);
                     }
                             completionHandler:handleResponse];
         } else {

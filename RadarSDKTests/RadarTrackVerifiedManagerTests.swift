@@ -69,14 +69,15 @@ extension RadarVerifiedHostOverrideTests {
         delegateHolder.delegate = delegate
         defer { delegateHolder.delegate = originalDelegate }
 
-        runVerificationManager(manager, expectedStatus: .errorUnknown)
+        let expectedStatus: RadarStatus = anonymous ? .errorUnknown : .errorBadRequest
+        runVerificationManager(manager, expectedStatus: expectedStatus)
 
         let options = instance.recordedOptions()
         XCTAssertEqual(options.count, 1)
         XCTAssertEqual(options.first?["nonce"] as? String, "manager-test-nonce")
         XCTAssertNil(options.first?["canonicalRoute"])
 
-        XCTAssertEqual(delegate.recordedStatuses, [.errorUnknown])
+        XCTAssertEqual(delegate.recordedStatuses, [expectedStatus])
         XCTAssertEqual(helper.lastMethod, "GET")
         XCTAssertTrue(helper.lastUrl?.contains("/v1/config?") == true)
         XCTAssertEqual(RadarReplayBuffer.sharedInstance.mutableReplayBuffer.count, originalReplayCount)

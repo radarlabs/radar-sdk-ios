@@ -75,7 +75,7 @@ extension RadarSerializedTests {
                 )
                 let validatedSDK: RadarSDKFraud = try #require(candidate)
                 fraudSDK = validatedSDK
-                expectedStatus = scenario == "success" ? .success : .errorUnknown
+                expectedStatus = scenario == "success" ? .success : .errorBadRequest
             }
 
             return (fraudSDK, expectedStatus)

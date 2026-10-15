@@ -208,8 +208,12 @@ extension RadarSerializedTests {
 
             let manager = makeManager(sealResult: ["error": "Encryption failed"], session: session)
 
-            await #expect(throws: RadarError.self) {
+            await #expect {
                 _ = try await manager.revealRisk(useSecondaryVerifiedHost: false)
+            } throws: { error in
+                let radarError = error as? RadarError
+                return radarError?.status == .errorBadRequest
+                    && radarError?.message == "Failed to encrypt request body"
             }
         }
 
@@ -263,7 +267,9 @@ extension RadarSerializedTests {
             await #expect {
                 try await manager.revealRisk(useSecondaryVerifiedHost: false)
             } throws: { error in
-                (error as? RadarError)?.status == .errorUnknown
+                let radarError = error as? RadarError
+                return radarError?.status == .errorBadRequest
+                    && radarError?.message == "Failed to prepare fraud payload"
             }
 
             #expect(instance.recordedOptions().count == 1)
