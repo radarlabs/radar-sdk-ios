@@ -38,12 +38,53 @@ extension RadarVerifiedHostOverrideTests {
             for failingSeal in [1, 2] {
                 try assertTrackTransport(
                     failures: [.networkConnectionLost],
-                    expectedStatus: .errorUnknown,
+                    expectedStatus: .errorBadRequest,
                     expectedRequests: failingSeal - 1,
                     secondary: secondary,
                     failingSeal: failingSeal
                 )
             }
+        }
+    }
+
+    func test_requestPreparationFailure_withoutCustomHandler_returnsBadRequest() {
+        for suppliesError in [false, true] {
+            TrackRetryProtocol.state.reset(failures: [])
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.protocolClasses = [TrackRetryProtocol.self]
+            let session = URLSession(configuration: configuration)
+            let helper = RadarAPIHelper()
+            helper.setValue(session, forKey: "standardSession")
+            defer {
+                session.invalidateAndCancel()
+                TrackRetryProtocol.state.reset(failures: [])
+            }
+
+            let originalError = NSError(domain: "TestRequestPreparation", code: 1)
+            let finished = expectation(description: "Preparation failure reaches completion")
+            finished.assertForOverFulfill = true
+            helper.request(
+                withMethod: "POST", url: "https://example.test/v1/track",
+                headers: nil, params: [:], sleep: false, logPayload: false, extendedTimeout: false,
+                prepareRequest: { _, error in
+                    if suppliesError { error?.pointee = originalError }
+                    return nil
+                },
+                preparationFailureHandler: nil,
+                completionHandler: { status, response, error in
+                    XCTAssertTrue(Thread.isMainThread)
+                    XCTAssertEqual(status, .errorBadRequest)
+                    XCTAssertNil(response)
+                    if suppliesError {
+                        XCTAssertEqual(error as NSError?, originalError)
+                    } else {
+                        XCTAssertEqual((error as NSError?)?.domain, "RadarRequestPreparation")
+                    }
+                    finished.fulfill()
+                }
+            )
+            wait(for: [finished], timeout: 5)
+            XCTAssertTrue(TrackRetryProtocol.state.recordedRequests().isEmpty)
         }
     }
 

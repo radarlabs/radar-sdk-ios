@@ -13,6 +13,10 @@ final class RadarSDKFraud: @unchecked Sendable {
 
     let instance: NSObject
 
+    private static let requiredCoreCompatibilityVersion = 1
+    private static let coreCompatibilityVersionSelector =
+        NSSelectorFromString("coreCompatibilityVersion")
+
     init?(instance: NSObject) {
         guard instance.responds(to: Self.initializeSelector),
             instance.responds(to: Self.prepareFraudPayloadSelector),
@@ -23,6 +27,27 @@ final class RadarSDKFraud: @unchecked Sendable {
                 "RadarSDKFraud is incompatible with this Core SDK; update the fraud SDK to a compatible version."
             )
             return nil
+        }
+
+        if instance.responds(to: Self.coreCompatibilityVersionSelector) {
+            guard
+                let version = instance.perform(
+                    Self.coreCompatibilityVersionSelector
+                )?.takeUnretainedValue() as? NSNumber,
+                version == NSNumber(value: Self.requiredCoreCompatibilityVersion)
+            else {
+                RadarLogger.shared.warning(
+                    "Installed Radar Fraud SDK is incompatible with this Radar SDK. "
+                        + "Update to compatible Radar SDK and Radar Fraud SDK versions."
+                )
+                return nil
+            }
+        } else {
+            // Older encryption-capable Fraud SDKs predate the compatibility marker.
+            RadarLogger.shared.warning(
+                "Installed Radar Fraud SDK does not report compatibility with this Radar SDK. "
+                    + "Continuing with the available Fraud SDK methods."
+            )
         }
 
         self.instance = instance
@@ -79,7 +104,10 @@ final class RadarSDKFraud: @unchecked Sendable {
                     let prepared = RadarPreparedFraudPayload(instance: instance)
                 else {
                     continuation.resume(
-                        throwing: RadarError(status: .errorUnknown)
+                        throwing: RadarError(
+                            status: .errorBadRequest,
+                            message: "Failed to prepare fraud payload"
+                        )
                     )
                     return
                 }
@@ -126,7 +154,10 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
             let payload = result?["payload"] as? String,
             !payload.isEmpty
         else {
-            throw RadarError(status: .errorUnknown)
+            throw RadarError(
+                status: .errorBadRequest,
+                message: "Failed to encrypt request body"
+            )
         }
 
         return payload
@@ -163,7 +194,10 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
             let route = request.url?.path,
             let coreBody = request.httpBody
         else {
-            throw RadarError(status: .errorUnknown)
+            throw RadarError(
+                status: .errorBadRequest,
+                message: "Request encryption requires a POST request with a URL and body"
+            )
         }
 
         let encryptedPayload = try getEncryptedPayload(
@@ -199,7 +233,7 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
 
         guard status == errSecSuccess else {
             throw RadarError(
-                status: .errorUnknown,
+                status: .errorBadRequest,
                 message: "Failed to generate encryption attempt ID"
             )
         }

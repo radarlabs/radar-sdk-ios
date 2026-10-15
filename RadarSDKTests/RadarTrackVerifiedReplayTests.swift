@@ -103,7 +103,7 @@ extension RadarVerifiedHostOverrideTests {
 
         trackForEncryptionTest(preparer) { status, _, _, _, _, config, _ in
             XCTAssertTrue(Thread.isMainThread)
-            let expectedStatus: RadarStatus = preparationFails ? .errorUnknown : .errorNetwork
+            let expectedStatus: RadarStatus = preparationFails ? .errorBadRequest : .errorNetwork
             XCTAssertEqual(status, expectedStatus)
             if preparationFails {
                 XCTAssertNil(config)

@@ -146,8 +146,12 @@ extension RadarSerializedTests {
                     )
                 )
 
-                #expect(throws: RadarError.self) {
+                #expect {
                     try prepared.seal(options: [:])
+                } throws: { error in
+                    let radarError = error as? RadarError
+                    return radarError?.status == .errorBadRequest
+                        && radarError?.message == "Failed to encrypt request body"
                 }
             }
         }
@@ -207,8 +211,12 @@ extension RadarSerializedTests {
                 let instance = MockCollectingFraudInstance(result: result)
                 let fraudSDK = try #require(RadarSDKFraud(instance: instance))
 
-                await #expect(throws: RadarError.self) {
+                await #expect {
                     try await fraudSDK.prepareFraudPayload(options: [:])
+                } throws: { error in
+                    let radarError = error as? RadarError
+                    return radarError?.status == .errorBadRequest
+                        && radarError?.message == "Failed to prepare fraud payload"
                 }
 
                 #expect(instance.recordedOptions().count == 1)
@@ -342,8 +350,12 @@ extension RadarSerializedTests.RadarFraudBridgeTests {
         get.httpMethod = "GET"
 
         for invalid in [noURL, noBody, get] {
-            #expect(throws: RadarError.self) {
+            #expect {
                 try prepared.prepareRequest(invalid)
+            } throws: { error in
+                let radarError = error as? RadarError
+                return radarError?.status == .errorBadRequest
+                    && radarError?.message == "Request encryption requires a POST request with a URL and body"
             }
         }
         #expect(instance.capturedOptions.isEmpty)
@@ -358,8 +370,12 @@ extension RadarSerializedTests.RadarFraudBridgeTests {
         for result in results {
             let instance = MockPreparedFraudPayloadInstance(result: result)
             let prepared = try #require(RadarPreparedFraudPayload(instance: instance))
-            #expect(throws: RadarError.self) {
+            #expect {
                 try prepared.prepareRequest(request)
+            } throws: { error in
+                let radarError = error as? RadarError
+                return radarError?.status == .errorBadRequest
+                    && radarError?.message == "Failed to encrypt request body"
             }
             #expect(instance.capturedOptions.count == 1)
             #expect(instance.capturedOptions.first?["body"] as? Data == request.httpBody)
