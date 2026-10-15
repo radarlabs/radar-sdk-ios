@@ -38,9 +38,10 @@ extension RadarSerializedTests {
             fraudSDK.clearSharing()
             #expect(instance.recordedOptions().isEmpty)
             await logger.awaitPendingLogs()
-            #expect(delegate.messages.contains {
-                $0.contains("Installed Radar Fraud SDK does not report compatibility with this Radar SDK.")
-            })
+            #expect(
+                delegate.messages.contains {
+                    $0.contains("Installed Radar Fraud SDK does not report compatibility with this Radar SDK.")
+                })
         }
 
         @Test("Core rejects unsupported or malformed Fraud compatibility versions")
