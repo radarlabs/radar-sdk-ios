@@ -41,7 +41,6 @@ extension RadarSerializedTests {
                 "prepareFraudPayloadWithOptions:completionHandler:",
                 "isSharing",
                 "clearSharing",
-                "coreCompatibilityVersion",
             ]
         )
         func initializationRejectsMissingSelector(missingSelector: String) {

@@ -14,6 +14,35 @@ extension RadarSerializedTests {
             #expect(instance.recordedOptions().isEmpty)
         }
 
+        @Test("Core warns and accepts an encryption-capable Fraud SDK without a compatibility marker")
+        @MainActor
+        func initializationAcceptsMissingCompatibilityMarker() async throws {
+            let logger = RadarLogger.shared
+            let originalDelegate = logger.delegate
+            let originalLogLevel = logger.logLevelOverride
+            defer {
+                logger.setDelegate(originalDelegate)
+                logger.logLevelOverride = originalLogLevel
+            }
+            let delegate = MockRadarDelegate()
+            logger.setDelegate(delegate)
+            logger.logLevelOverride = .warning
+            let instance = MockCollectingFraudInstance(
+                result: nil,
+                missingSelectors: ["coreCompatibilityVersion"]
+            )
+
+            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
+            fraudSDK.initialize(options: [:])
+            #expect(!fraudSDK.isSharing())
+            fraudSDK.clearSharing()
+            #expect(instance.recordedOptions().isEmpty)
+            await logger.awaitPendingLogs()
+            #expect(delegate.messages.contains {
+                $0.contains("Installed Radar Fraud SDK does not report compatibility with this Radar SDK.")
+            })
+        }
+
         @Test("Core rejects unsupported or malformed Fraud compatibility versions")
         func initializationRejectsInvalidCompatibilityVersions() {
             let versions: [NSObject?] = [
@@ -43,6 +72,7 @@ extension RadarSerializedTests {
                 "missing-module",
                 "legacy-module",
                 "missing-compatibility",
+                "missing-compatibility-payload-error",
                 "older-compatibility",
                 "newer-compatibility",
                 "payload-error",
@@ -90,7 +120,7 @@ extension RadarSerializedTests {
             }
             #expect(pluginMessages.count == (expectedStatus == .errorPlugin ? 1 : 0))
 
-            if scenario == "success" {
+            if expectedStatus == .success {
                 #expect(error == nil)
                 #expect(payload != nil)
             } else {
@@ -118,10 +148,19 @@ extension RadarSerializedTests {
                 )
                 #expect(fraudSDK == nil)
                 expectedStatus = .errorPlugin
-            case "missing-compatibility", "older-compatibility", "newer-compatibility":
+            case "missing-compatibility", "missing-compatibility-payload-error":
+                let result = fraudResult(scenario: scenario == "missing-compatibility" ? "success" : "payload-error")
+                fraudSDK = RadarSDKFraud(
+                    instance: MockCollectingFraudInstance(
+                        result: result,
+                        missingSelectors: ["coreCompatibilityVersion"]
+                    )
+                )
+                #expect(fraudSDK != nil)
+                expectedStatus = scenario == "missing-compatibility" ? .success : .errorBadRequest
+            case "older-compatibility", "newer-compatibility":
                 let instance = MockCollectingFraudInstance(
                     result: nil,
-                    missingSelectors: scenario == "missing-compatibility" ? ["coreCompatibilityVersion"] : [],
                     compatibilityVersion: NSNumber(value: scenario == "older-compatibility" ? 0 : 2)
                 )
                 fraudSDK = RadarSDKFraud(instance: instance)

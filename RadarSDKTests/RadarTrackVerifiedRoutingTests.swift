@@ -68,12 +68,15 @@ extension RadarVerifiedHostOverrideTests {
         let originalHelper = client.apiHelper
         defer { client.apiHelper = originalHelper }
 
-        for secondary in [false, true] {
+        for (secondary, hasCompatibilityMarker) in [(false, true), (true, true), (false, false), (true, false)] {
             let helper = MainQueueAPIHelperMock()
             helper.mockStatus = .errorServer
             helper.mockResponse = ["meta": ["config": [:]]]
             client.apiHelper = helper
-            let instance = makeCollectedFraudInstance(result: ["payload": MockFraudEnvelope.payload])
+            let instance = MockCollectingFraudInstance(
+                result: ["preparedPayload": MockPreparedFraudPayloadInstance(result: ["payload": MockFraudEnvelope.payload])],
+                missingSelectors: hasCompatibilityMarker ? [] : ["coreCompatibilityVersion"]
+            )
             let preparer = try makeTrackPreparer(instance: instance, options: ["nonce": "test-nonce"])
             let finished = expectation(description: "Verified track completes")
             finished.assertForOverFulfill = true
@@ -118,7 +121,7 @@ extension RadarVerifiedHostOverrideTests {
         let scenarios: [(NSObject?, RadarStatus)] = [
             (nil, .errorPlugin),
             (MockLegacyFraudInstance(), .errorPlugin),
-            (MockCollectingFraudInstance(result: nil, missingSelectors: ["coreCompatibilityVersion"]), .errorPlugin),
+            (MockCollectingFraudInstance(result: nil, missingSelectors: ["coreCompatibilityVersion"]), .errorBadRequest),
             (MockCollectingFraudInstance(result: nil, compatibilityVersion: NSNumber(value: 0)), .errorPlugin),
             (MockCollectingFraudInstance(result: nil, compatibilityVersion: NSNumber(value: 2)), .errorPlugin),
             (MockCollectingFraudInstance(result: nil), .errorBadRequest),

@@ -29,18 +29,25 @@ final class RadarSDKFraud: @unchecked Sendable {
             return nil
         }
 
-        guard
-            instance.responds(to: Self.coreCompatibilityVersionSelector),
-            let version = instance.perform(
-                Self.coreCompatibilityVersionSelector
-            )?.takeUnretainedValue() as? NSNumber,
-            version == NSNumber(value: Self.requiredCoreCompatibilityVersion)
-        else {
+        if instance.responds(to: Self.coreCompatibilityVersionSelector) {
+            guard
+                let version = instance.perform(
+                    Self.coreCompatibilityVersionSelector
+                )?.takeUnretainedValue() as? NSNumber,
+                version == NSNumber(value: Self.requiredCoreCompatibilityVersion)
+            else {
+                RadarLogger.shared.warning(
+                    "Installed Radar Fraud SDK is incompatible with this Radar SDK. "
+                        + "Update to compatible Radar SDK and Radar Fraud SDK versions."
+                )
+                return nil
+            }
+        } else {
+            // Older encryption-capable Fraud SDKs predate the compatibility marker.
             RadarLogger.shared.warning(
-                "Installed Radar Fraud SDK is incompatible with this Radar SDK. "
-                    + "Update to compatible Radar SDK and Radar Fraud SDK versions."
+                "Installed Radar Fraud SDK does not report compatibility with this Radar SDK. "
+                    + "Continuing with the available Fraud SDK methods."
             )
-            return nil
         }
 
         self.instance = instance
