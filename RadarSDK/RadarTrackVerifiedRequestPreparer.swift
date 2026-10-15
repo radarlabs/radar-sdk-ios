@@ -30,7 +30,12 @@ final class RadarTrackVerifiedRequestPreparer: NSObject, @unchecked Sendable {
     @objc(preparePayloadWithCompletionHandler:)
     // swiftlint:disable:next large_tuple
     func preparePayload() async -> (RadarStatus, RadarPreparedFraudPayload?, NSError?) {
-        guard let fraudSDK else { return (.errorPlugin, nil, nil) }
+        guard let fraudSDK else {
+            RadarLogger.shared.error(
+                "A compatible Radar Fraud SDK is required for verified requests."
+            )
+            return (.errorPlugin, nil, nil)
+        }
         do {
             return (.success, try await fraudSDK.prepareFraudPayload(options: options), nil)
         } catch {

@@ -5,6 +5,53 @@ import Testing
 
 // Keep retry tests in the same serialized suite as the other revealRisk tests.
 extension RadarSerializedTests.RadarRevealRiskTests {
+    @Test("Reveal callback logs the error message or falls back to its status", arguments: [false, true])
+    @MainActor
+    func revealCallbackLogsFailureMessage(missingSDK: Bool) async throws {
+        let logger = RadarLogger.shared
+        let originalDelegate = logger.delegate
+        let originalLogLevel = logger.logLevelOverride
+        let originalKey = RadarSettings.publishableKey
+        defer {
+            logger.setDelegate(originalDelegate)
+            logger.logLevelOverride = originalLogLevel
+            RadarSettings.publishableKey = originalKey
+        }
+        let delegate = MockRadarDelegate()
+        logger.setDelegate(delegate)
+        logger.logLevelOverride = .error
+        RadarSettings.publishableKey = nil
+
+        let session = RetryTestSession(failures: [])
+        let instance = MockCollectingFraudInstance(result: nil)
+        let fraudSDK = try #require(RadarSDKFraud(instance: instance))
+        let manager = RadarRevealRiskManager(
+            apiClient: RadarAPIClient(apiHelper: RadarAPIHelper(session: session)),
+            fraudSDK: missingSDK ? nil : fraudSDK
+        )
+        let status: RadarStatus = await withCheckedContinuation { continuation in
+            manager.revealRisk(useSecondaryVerifiedHost: false) { status, token in
+                #expect(token == nil)
+                continuation.resume(returning: status)
+            }
+        }
+
+        #expect(status == (missingSDK ? .errorPlugin : .errorPublishableKey))
+        await logger.awaitPendingLogs()
+        let expectedMessage =
+            missingSDK
+            ? "A compatible Radar Fraud SDK is required for verified requests."
+            : Radar.stringForStatus(.errorPublishableKey)
+        #expect(
+            delegate.messages.contains {
+                $0.contains("RadarRevealRiskManager: revealRisk() failed \(expectedMessage)")
+            }
+        )
+        #expect(instance.recordedOptions().isEmpty)
+        let requests = await session.recordedRequests()
+        #expect(requests.isEmpty)
+    }
+
     @Test("Reveal retry reseals the collected payload and authenticated context")
     func revealRetryResealsCollectedPayload() async throws {
         Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")

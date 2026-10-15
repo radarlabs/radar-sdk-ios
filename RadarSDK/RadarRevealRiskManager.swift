@@ -50,7 +50,10 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
         useSecondaryVerifiedHost: Bool
     ) async throws -> RadarRevealRiskToken {
         guard let fraudSDK else {
-            throw RadarError(status: .errorPlugin)
+            throw RadarError(
+                status: .errorPlugin,
+                message: "A compatible Radar Fraud SDK is required for verified requests."
+            )
         }
         guard RadarSettings.publishableKey != nil else {
             throw RadarError(status: .errorPublishableKey)
@@ -80,7 +83,10 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
                 completionHandler(.success, token)
             } catch {
                 if let radarError = error as? RadarError {
-                    RadarLogger.shared.error("RadarRevealRiskManager: revealRisk() failed \(Radar.stringForStatus(radarError.status))")
+                    let message = radarError.message ?? Radar.stringForStatus(radarError.status)
+                    RadarLogger.shared.error(
+                        "RadarRevealRiskManager: revealRisk() failed \(message)"
+                    )
                     completionHandler(radarError.status, nil)
                 } else if let apiError = error as? RadarAPIClient.APIError {
                     RadarLogger.shared.error("RadarRevealRiskManager: revealRisk() failed due to API error: \(apiError.message)")

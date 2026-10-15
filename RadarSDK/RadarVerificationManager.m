@@ -168,6 +168,9 @@
             
             Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
             if (!RadarSDKFraud && !self.trackVerifiedPayloadFactory) {
+                [[RadarLogger sharedInstance]
+                    logWithLevel:RadarLogLevelError
+                         message:@"A compatible Radar Fraud SDK is required for verified requests."];
                 [RadarUtilsDeprecated runOnMainThread:^{
                     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
                     

@@ -236,8 +236,41 @@ extension RadarSerializedTests {
             await #expect {
                 _ = try await manager.revealRisk(useSecondaryVerifiedHost: false)
             } throws: { error in
-                (error as? RadarError)?.status == .errorPlugin
+                let radarError = error as? RadarError
+                return radarError?.status == .errorPlugin
+                    && radarError?.message == "A compatible Radar Fraud SDK is required for verified requests."
             }
+        }
+
+        @Test(
+            "revealRisk rejects missing or unsupported Fraud compatibility versions before collection",
+            arguments: [nil, 0, 2] as [Int?]
+        )
+        func revealRiskRejectsIncompatibleFraudSDK(version: Int?) async throws {
+            let session = RetryTestSession(failures: [])
+            let instance = MockCollectingFraudInstance(
+                result: nil,
+                missingSelectors: version == nil ? ["coreCompatibilityVersion"] : [],
+                compatibilityVersion: version.map { NSNumber(value: $0) }
+            )
+            let fraudSDK = RadarSDKFraud(instance: instance)
+            #expect(fraudSDK == nil)
+            let manager = RadarRevealRiskManager(
+                apiClient: RadarAPIClient(apiHelper: RadarAPIHelper(session: session)),
+                fraudSDK: fraudSDK
+            )
+
+            await #expect {
+                try await manager.revealRisk(useSecondaryVerifiedHost: false)
+            } throws: { error in
+                let radarError = error as? RadarError
+                return radarError?.status == .errorPlugin
+                    && radarError?.message == "A compatible Radar Fraud SDK is required for verified requests."
+            }
+
+            #expect(instance.recordedOptions().isEmpty)
+            let requests = await session.recordedRequests()
+            #expect(requests.isEmpty)
         }
 
         @Test("revealRisk does not call the API when collection fails")

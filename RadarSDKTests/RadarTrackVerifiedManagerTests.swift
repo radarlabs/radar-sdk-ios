@@ -26,6 +26,51 @@ private final class TrackVerifiedLocationManagerMock: RadarLocationManager {
 }
 
 extension RadarVerifiedHostOverrideTests {
+    @MainActor
+    func test_trackVerifiedManager_missingFraudSDKLogsPluginError() async throws {
+        XCTAssertNil(NSClassFromString("RadarSDKFraud"))
+        let client = RadarAPIClient.sharedInstance()
+        let originalHelper = client.apiHelper
+        let logger = RadarLogger.shared
+        let originalDelegate = logger.delegate
+        let originalLogLevel = logger.logLevelOverride
+        defer {
+            client.apiHelper = originalHelper
+            logger.setDelegate(originalDelegate)
+            logger.logLevelOverride = originalLogLevel
+        }
+        let delegate = MockRadarDelegate()
+        logger.setDelegate(delegate)
+        logger.logLevelOverride = .error
+        let helper = MainQueueAPIHelperMock()
+        helper.mockStatus = .success
+        helper.mockResponse = ["meta": ["config": [:]]]
+        client.apiHelper = helper
+        let manager = try XCTUnwrap(ObjCVerificationManager.makeFresh())
+        manager.instance.setValue(TrackVerifiedLocationManagerMock(), forKey: "trackVerifiedLocationManager")
+
+        let status: RadarStatus = await withCheckedContinuation { continuation in
+            let completion: @convention(block) (RadarStatus, RadarVerifiedLocationToken?) -> Void = { status, token in
+                XCTAssertTrue(Thread.isMainThread)
+                XCTAssertNil(token)
+                continuation.resume(returning: status)
+            }
+            manager.instance.perform(
+                NSSelectorFromString("trackVerifiedWithCompletionHandler:"),
+                with: completion as AnyObject
+            )
+        }
+        XCTAssertEqual(status, .errorPlugin)
+        await logger.awaitPendingLogs()
+        XCTAssertTrue(
+            delegate.messages.contains {
+                $0.contains("A compatible Radar Fraud SDK is required for verified requests.")
+            }
+        )
+        XCTAssertEqual(helper.lastMethod, "GET")
+        XCTAssertTrue(helper.lastUrl?.contains("/v1/config?") == true)
+    }
+
     func test_trackVerifiedManager_collectionFailureReportsErrorWithoutSendingTrack() throws {
         try assertManagerRejectsPayload(result: ["error": "encryption failed"])
     }

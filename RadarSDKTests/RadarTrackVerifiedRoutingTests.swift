@@ -118,6 +118,9 @@ extension RadarVerifiedHostOverrideTests {
         let scenarios: [(NSObject?, RadarStatus)] = [
             (nil, .errorPlugin),
             (MockLegacyFraudInstance(), .errorPlugin),
+            (MockCollectingFraudInstance(result: nil, missingSelectors: ["coreCompatibilityVersion"]), .errorPlugin),
+            (MockCollectingFraudInstance(result: nil, compatibilityVersion: NSNumber(value: 0)), .errorPlugin),
+            (MockCollectingFraudInstance(result: nil, compatibilityVersion: NSNumber(value: 2)), .errorPlugin),
             (MockCollectingFraudInstance(result: nil), .errorBadRequest),
             (MockCollectingFraudInstance(result: ["payload": ""]), .errorBadRequest),
             (MockCollectingFraudInstance(result: ["error": "failed", "payload": "must-not-send"]), .errorBadRequest),

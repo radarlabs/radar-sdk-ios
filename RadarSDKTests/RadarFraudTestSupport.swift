@@ -77,18 +77,26 @@ final class MockCollectingFraudInstance: NSObject, @unchecked Sendable {
 
     let result: [String: Any]?
     private let missingSelectors: Set<String>
+    private let compatibilityVersion: NSObject?
 
     init(
         result: [String: Any]?,
-        missingSelectors: Set<String> = []
+        missingSelectors: Set<String> = [],
+        compatibilityVersion: NSObject? = NSNumber(value: 1)
     ) {
         self.result = result
         self.missingSelectors = missingSelectors
+        self.compatibilityVersion = compatibilityVersion
     }
 
     override func responds(to selector: Selector!) -> Bool {
         !missingSelectors.contains(NSStringFromSelector(selector))
             && super.responds(to: selector)
+    }
+
+    @objc(coreCompatibilityVersion)
+    func coreCompatibilityVersion() -> NSObject? {
+        compatibilityVersion
     }
 
     @objc(initializeWithOptions:)

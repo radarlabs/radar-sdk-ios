@@ -13,6 +13,10 @@ final class RadarSDKFraud: @unchecked Sendable {
 
     let instance: NSObject
 
+    private static let requiredCoreCompatibilityVersion = 1
+    private static let coreCompatibilityVersionSelector =
+        NSSelectorFromString("coreCompatibilityVersion")
+
     init?(instance: NSObject) {
         guard instance.responds(to: Self.initializeSelector),
             instance.responds(to: Self.prepareFraudPayloadSelector),
@@ -21,6 +25,20 @@ final class RadarSDKFraud: @unchecked Sendable {
         else {
             RadarLogger.shared.warning(
                 "RadarSDKFraud is incompatible with this Core SDK; update the fraud SDK to a compatible version."
+            )
+            return nil
+        }
+
+        guard
+            instance.responds(to: Self.coreCompatibilityVersionSelector),
+            let version = instance.perform(
+                Self.coreCompatibilityVersionSelector
+            )?.takeUnretainedValue() as? NSNumber,
+            version == NSNumber(value: Self.requiredCoreCompatibilityVersion)
+        else {
+            RadarLogger.shared.warning(
+                "Installed Radar Fraud SDK is incompatible with this Radar SDK. "
+                + "Update to compatible Radar SDK and Radar Fraud SDK versions."
             )
             return nil
         }
