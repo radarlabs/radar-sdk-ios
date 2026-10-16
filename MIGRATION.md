@@ -1,5 +1,11 @@
 # Migration guides
 
+## 3.43.x to 3.44.0
+
+- Verified tracking and reveal-risk requests now encrypt the complete request body. Apps using these features must update `RadarSDKFraud` alongside `RadarSDK` to a compatible version that supports encrypted requests. Regular tracking does not require the Fraud SDK.
+- A missing or incompatible Fraud SDK returns `RadarStatusErrorPlugin` (`.errorPlugin` in Swift), with additional diagnostic logging.
+- If payload preparation or encryption fails, the request stops without sending a plaintext fallback.
+
 ## 3.41.0 to 3.42.0
 
 These models are now declared in Swift: `RadarChain`, `RadarCoordinate`, `RadarCircleGeometry`, `RadarPolygonGeometry`, `RadarFraud`, `RadarInitializeOptions`, `RadarOperatingHours`, `RadarRevealRiskToken` (and its nested types), `RadarRoute`, `RadarRouteDistance`, `RadarRouteDuration`, `RadarRouteGeometry`, `RadarRouteModeUtils`, `RadarTimeZone`, `RadarTrip`, `RadarTripLeg`, `RadarTripOptions`, and `RadarTripOrder`. Their properties and methods keep the same names and types in Swift and Objective-C.

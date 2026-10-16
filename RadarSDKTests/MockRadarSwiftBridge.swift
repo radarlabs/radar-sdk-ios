@@ -43,9 +43,13 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
         callOrder.append("updateTracking")
     }
 
+    // Called from `updateTrackingFromInitialize()`, so a test can route it to a specific manager.
+    var onUpdateTrackingFromInitialize: (() -> Void)?
+
     func updateTrackingFromInitialize() {
         updateTrackingFromInitializeCallCount += 1
         callOrder.append("updateTrackingFromInitialize")
+        onUpdateTrackingFromInitialize?()
     }
 
     func logOpenedAppConversion() {}
