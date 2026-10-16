@@ -31,6 +31,16 @@ enum MockFraudEnvelope {
     }
 }
 
+/// Stands in for the fraud SDK's class, whose `sharedInstance` returns an unowned singleton.
+final class MockLegacyFraudSDKClass: NSObject {
+    nonisolated(unsafe) static var instance: NSObject = MockLegacyFraudInstance()
+
+    @objc(sharedInstance)
+    static func sharedInstance() -> NSObject {
+        instance
+    }
+}
+
 final class MockLegacyFraudInstance: NSObject, @unchecked Sendable {
     private let lock = NSLock()
     private var sharing = true
