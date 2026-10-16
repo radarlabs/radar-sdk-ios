@@ -31,6 +31,17 @@
 - (NSString * _Nullable)placeId;
 - (CLLocation * _Nullable)lastLocation;
 - (BOOL)isStopped;
+- (void)setStopped:(BOOL)stopped;
+- (void)setLastLocation:(CLLocation * _Nullable)location;
+- (CLLocation * _Nullable)lastMovedLocation;
+- (void)setLastMovedLocation:(CLLocation * _Nullable)location;
+- (NSDate * _Nullable)lastMovedAt;
+- (void)setLastMovedAt:(NSDate * _Nonnull)date;
+- (CLLocation * _Nullable)lastFailedStoppedLocation;
+- (void)setLastFailedStoppedLocation:(CLLocation * _Nullable)location;
+- (NSDate * _Nullable)lastSentAt;
+- (void)updateLastSentAt;
+- (BOOL)canExit;
 - (RadarEvent * _Nullable)createEventWithDict:(NSDictionary * _Nonnull)dict;
 - (RadarUser * _Nullable)createUserWithDict:(NSDictionary * _Nonnull)dict;
 - (RadarGeofence * _Nullable)createGeofenceWithDict:(NSDictionary * _Nonnull)dict;

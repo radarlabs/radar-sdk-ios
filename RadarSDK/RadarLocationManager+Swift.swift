@@ -41,6 +41,24 @@ import Foundation
 
     // Keep completion storage in Objective-C until the location callback and timeout paths move together.
     func addCompletionHandler(_ completionHandler: RadarLocationCompletionHandler?)
+    func cancelTimeouts()
+    @objc(callCompletionHandlersWithStatus:location:)
+    func callCompletionHandlers(status: RadarStatus, location: CLLocation?)
+    func completionHandlerCount() -> Int
+
+    @objc(updateTracking:)
+    func updateTracking(_ location: CLLocation?)
+
+    // Keep sending in Objective-C until `sendLocation:stopped:source:replayed:beacons:forceTrack:` is ported.
+    @objc(sendLocation:stopped:source:replayed:beacons:forceTrack:)
+    func sendLocation(  // swiftlint:disable:this function_parameter_count
+        _ location: CLLocation,
+        stopped: Bool,
+        source: RadarLocationSource,
+        replayed: Bool,
+        beacons: [RadarBeacon]?,
+        forceTrack: Bool
+    )
 
     var locationManager: CLLocationManager { get }
     var lowPowerLocationManager: CLLocationManager { get }
