@@ -14,6 +14,18 @@ extension RadarSerializedTests {
             #expect(instance.recordedPlaintextCalls() == 0)
         }
 
+        @Test("Looking up an incompatible fraud SDK leaves its singleton's retain count unchanged")
+        func sharedInstanceLookupDoesNotOverReleaseRejectedSingleton() {
+            let singleton = MockLegacyFraudSDKClass.instance
+            let retainCountBefore = CFGetRetainCount(singleton)
+
+            autoreleasepool {
+                #expect(RadarSDKFraud.fromSharedInstance(of: MockLegacyFraudSDKClass.self) == nil)
+            }
+
+            #expect(CFGetRetainCount(singleton) == retainCountBefore)
+        }
+
         @Test("Swift verification safely handles a rejected fraud SDK")
         func verificationHandlesRejectedFraudSDK() {
             let instance = MockLegacyFraudInstance()
