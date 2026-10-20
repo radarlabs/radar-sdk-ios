@@ -38,6 +38,28 @@ protocol RadarSwiftBridgeProtocol {
     func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon
     func createBeacon(fromRegion region: CLBeaconRegion) -> RadarBeacon
     func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon)
+
+    // track request state
+    func regionIds() -> [String]?
+    func setGeofenceIds(_ geofenceIds: [String]?)
+    func setPlaceId(_ placeId: String?)
+    func setRegionIds(_ regionIds: [String]?)
+    func setBeaconIds(_ beaconIds: [String]?)
+    func setCanExit(_ canExit: Bool)
+    func setRadarUser(_ user: RadarUser?)
+    func setLastFailedStoppedLocation(_ location: CLLocation?)
+    func setRegisteredNotifications(_ registeredNotifications: [[AnyHashable: Any]]?)
+    func lastMotionActivityData() -> [AnyHashable: Any]?
+    func lastRelativeAltitudeData() -> [AnyHashable: Any]?
+    func motionAuthorizationString() -> String?
+    func altitudeAdjustments() -> [[AnyHashable: Any]]?
+    func setAltitudeAdjustments(_ altitudeAdjustments: [[AnyHashable: Any]]?)
+    func restartPreviousTrackingOptions()
+    func events(fromObject object: Any) -> [RadarEvent]?
+    func geofences(fromObject object: Any) -> [RadarGeofence]?
+    func createVerifiedLocationToken(dict: [String: Any]) -> RadarVerifiedLocationToken?
+    func didUpdateLocation(_ location: CLLocation, user: RadarUser)
+    func didUpdateToken(_ token: RadarVerifiedLocationToken)
 }
 
 @objc(RadarSwift) @objcMembers

@@ -13,6 +13,7 @@
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarUser+Internal.h"
+#import "RadarVerifiedLocationToken+Internal.h"
 #import "RadarReplayBuffer.h"
 #import "Radar+Internal.h"
 #import "RadarState.h"
@@ -141,6 +142,86 @@
 
 - (void)setRssi:(NSInteger)rssi onBeacon:(RadarBeacon *)beacon {
     [beacon setRssi:rssi];
+}
+
+- (NSArray<NSString *> * _Nullable)regionIds {
+    return [RadarState regionIds];
+}
+
+- (void)setGeofenceIds:(NSArray<NSString *> * _Nullable)geofenceIds {
+    [RadarState setGeofenceIds:geofenceIds];
+}
+
+- (void)setPlaceId:(NSString * _Nullable)placeId {
+    [RadarState setPlaceId:placeId];
+}
+
+- (void)setRegionIds:(NSArray<NSString *> * _Nullable)regionIds {
+    [RadarState setRegionIds:regionIds];
+}
+
+- (void)setBeaconIds:(NSArray<NSString *> * _Nullable)beaconIds {
+    [RadarState setBeaconIds:beaconIds];
+}
+
+- (void)setCanExit:(BOOL)canExit {
+    [RadarState setCanExit:canExit];
+}
+
+- (void)setRadarUser:(RadarUser * _Nullable)user {
+    [RadarState setRadarUser:user];
+}
+
+- (void)setLastFailedStoppedLocation:(CLLocation * _Nullable)location {
+    [RadarState setLastFailedStoppedLocation:location];
+}
+
+- (void)setRegisteredNotifications:(NSArray<NSDictionary *> * _Nullable)registeredNotifications {
+    [RadarState setRegisteredNotifications:registeredNotifications];
+}
+
+- (NSDictionary * _Nullable)lastMotionActivityData {
+    return [RadarState lastMotionActivityData];
+}
+
+- (NSDictionary * _Nullable)lastRelativeAltitudeData {
+    return [RadarState lastRelativeAltitudeData];
+}
+
+- (NSString * _Nullable)motionAuthorizationString {
+    return [RadarState motionAuthorizationString];
+}
+
+- (NSArray<NSDictionary *> * _Nullable)altitudeAdjustments {
+    return [RadarState altitudeAdjustments];
+}
+
+- (void)setAltitudeAdjustments:(NSArray<NSDictionary *> * _Nullable)altitudeAdjustments {
+    [RadarState setAltitudeAdjustments:altitudeAdjustments];
+}
+
+- (void)restartPreviousTrackingOptions {
+    [[RadarLocationManager sharedInstance] restartPreviousTrackingOptions];
+}
+
+- (NSArray<RadarEvent *> * _Nullable)eventsFromObject:(id)object {
+    return [RadarEvent eventsFromObject:object];
+}
+
+- (NSArray<RadarGeofence *> * _Nullable)geofencesFromObject:(id)object {
+    return [RadarGeofence geofencesFromObject:object];
+}
+
+- (RadarVerifiedLocationToken * _Nullable)createVerifiedLocationTokenWithDict:(NSDictionary *)dict {
+    return [[RadarVerifiedLocationToken alloc] initWithObject:dict];
+}
+
+- (void)didUpdateLocation:(CLLocation *)location user:(RadarUser *)user {
+    [[RadarDelegateHolder sharedInstance] didUpdateLocation:location user:user];
+}
+
+- (void)didUpdateToken:(RadarVerifiedLocationToken *)token {
+    [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
 }
 
 @end

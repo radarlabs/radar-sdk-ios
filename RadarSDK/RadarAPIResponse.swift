@@ -24,11 +24,19 @@ struct SearchBeaconResponse: Codable {
     let beacons: [RadarBeaconSwift]
 }
 
-
 struct RadarResponse<T: Codable>: Codable {
     let meta: Meta
     struct Meta: Codable {
         let code: Int
     }
     let data: T
+}
+
+struct RadarTrackResponse {
+    let res: [String: Any]
+    let events: [RadarEvent]
+    let user: RadarUser
+    let nearbyGeofences: [RadarGeofence]?
+    let config: RadarConfig?
+    let token: RadarVerifiedLocationToken?
 }

@@ -12,6 +12,8 @@
 #import "RadarState.h"
 #import "RadarBeacon.h"
 #import "RadarPlace.h"
+#import "RadarUser.h"
+#import "RadarVerifiedLocationToken.h"
 #import <CoreLocation/CoreLocation.h>
 #import "Radar.h"
 
@@ -48,6 +50,28 @@
 - (RadarBeacon * _Nonnull)createBeaconWithUuid:(NSString * _Nonnull)uuid major:(NSString * _Nonnull)major minor:(NSString * _Nonnull)minor rssi:(NSInteger)rssi;
 - (RadarBeacon * _Nonnull)createBeaconFromRegion:(CLBeaconRegion * _Nonnull)region;
 - (void)setRssi:(NSInteger)rssi onBeacon:(RadarBeacon * _Nonnull)beacon;
+
+// track request state
+- (NSArray<NSString *> * _Nullable)regionIds;
+- (void)setGeofenceIds:(NSArray<NSString *> * _Nullable)geofenceIds;
+- (void)setPlaceId:(NSString * _Nullable)placeId;
+- (void)setRegionIds:(NSArray<NSString *> * _Nullable)regionIds;
+- (void)setBeaconIds:(NSArray<NSString *> * _Nullable)beaconIds;
+- (void)setCanExit:(BOOL)canExit;
+- (void)setRadarUser:(RadarUser * _Nullable)user;
+- (void)setLastFailedStoppedLocation:(CLLocation * _Nullable)location;
+- (void)setRegisteredNotifications:(NSArray<NSDictionary *> * _Nullable)registeredNotifications;
+- (NSDictionary * _Nullable)lastMotionActivityData;
+- (NSDictionary * _Nullable)lastRelativeAltitudeData;
+- (NSString * _Nullable)motionAuthorizationString;
+- (NSArray<NSDictionary *> * _Nullable)altitudeAdjustments;
+- (void)setAltitudeAdjustments:(NSArray<NSDictionary *> * _Nullable)altitudeAdjustments;
+- (void)restartPreviousTrackingOptions;
+- (NSArray<RadarEvent *> * _Nullable)eventsFromObject:(id _Nonnull)object;
+- (NSArray<RadarGeofence *> * _Nullable)geofencesFromObject:(id _Nonnull)object;
+- (RadarVerifiedLocationToken * _Nullable)createVerifiedLocationTokenWithDict:(NSDictionary * _Nonnull)dict;
+- (void)didUpdateLocation:(CLLocation * _Nonnull)location user:(RadarUser * _Nonnull)user;
+- (void)didUpdateToken:(RadarVerifiedLocationToken * _Nonnull)token;
 @end
 
 @interface RadarSwiftBridge: NSObject<RadarSwiftBridgeProtocol>
