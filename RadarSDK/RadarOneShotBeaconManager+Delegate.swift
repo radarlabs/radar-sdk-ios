@@ -1,5 +1,5 @@
 //
-//  RadarBeaconManager+Delegate.swift
+//  RadarOneShotBeaconManager+Delegate.swift
 //  RadarSDK
 //
 //  Created by Alan Charles on 7/13/26.
@@ -12,7 +12,7 @@ import UserNotifications
 
 // MARK: - CLLocationManagerDelegate
 
-extension RadarBeaconManagerSwift {
+extension RadarOneShotBeaconManager {
 
     nonisolated func locationManager(
         _ manager: CLLocationManager,
@@ -111,7 +111,7 @@ extension RadarBeaconManagerSwift {
 
 // MARK: - Entry/Exit Handlers
 
-extension RadarBeaconManagerSwift {
+extension RadarOneShotBeaconManager {
 
     @objc(handleBeaconEntryForRegion:completionHandler:)
     func handleBeaconEntry(
@@ -183,7 +183,7 @@ extension RadarBeaconManagerSwift {
 
 // MARK: - Beacon Region Notifications
 
-extension RadarBeaconManagerSwift {
+extension RadarOneShotBeaconManager {
 
     @objc(registerBeaconRegionNotificationsFromArray:)
     func registerBeaconRegionNotifications(

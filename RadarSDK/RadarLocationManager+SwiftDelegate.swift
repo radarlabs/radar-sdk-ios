@@ -130,7 +130,7 @@ extension RadarLocationManagerSwift {
         let beaconMinor = region.minor?.uint16Value
 
         Task { @MainActor in
-            let beaconManager = RadarBeaconManagerSwift.shared
+            let beaconManager = RadarOneShotBeaconManager.shared
             let completionHandler: RadarBeaconCompletionHandler = { _, nearbyBeacons in
                 RadarSwift.bridge?.handleLocation(
                     location,
@@ -171,7 +171,7 @@ extension RadarLocationManagerSwift {
         isEntry: Bool,
         completionHandler: @escaping RadarBeaconCompletionHandler
     ) {
-        let beaconManager = RadarBeaconManagerSwift.shared
+        let beaconManager = RadarOneShotBeaconManager.shared
         if region.identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
             if isEntry {
                 beaconManager.handleBeaconUUIDEntry(for: region, completionHandler: completionHandler)
@@ -211,7 +211,7 @@ extension RadarLocationManagerSwift {
 
     @objc(didUpdateHeading:)
     static func didUpdateHeading(_ heading: CLHeading) {
-        RadarState().lastHeadingData = [
+        RadarState.shared.lastHeadingData = [
             "magneticHeading": heading.magneticHeading,
             "trueHeading": heading.trueHeading,
             "headingAccuracy": heading.headingAccuracy,
@@ -224,12 +224,19 @@ extension RadarLocationManagerSwift {
 
     @objc(didChangeAuthorizationStatus:)
     static func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
-        let state = RadarState()
+        let state = RadarState.shared
         let previousStatus = state.locationAuthorizationStatus
         state.locationAuthorizationStatus = status
 
         if status == previousStatus {
             return
+        }
+
+        // The permissions helper reads the cached status, so `updateTracking` may have run with the status
+        // from before the permission changed, for example while the app wasn't running. Apply tracking
+        // again with the new one.
+        if RadarSettings.tracking {
+            RadarSwift.bridge?.updateTracking()
         }
 
         guard let config = RadarSettings.sdkConfiguration else {

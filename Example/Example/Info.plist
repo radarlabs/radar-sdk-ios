@@ -113,6 +113,18 @@
 					</dict>
 				</array>
 			</dict>
+			<key>api-verified-cf.radar-staging.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSPinnedLeafIdentities</key>
+				<array>
+					<dict>
+						<key>SPKI-SHA256-BASE64</key>
+						<string>ZWl2+twNVF7q/6JBzqOIlApF0SsjhVY0FB/GMLslduY=</string>
+					</dict>
+				</array>
+			</dict>
 			<key>api-verified-ga.radar-staging.com</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>

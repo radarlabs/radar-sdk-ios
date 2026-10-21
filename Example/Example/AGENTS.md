@@ -16,7 +16,7 @@ Example/Example/
 │   └── ActiveTripBarView.swift  # Active-trip header + advance/reorder + complete/cancel
 │
 ├── Tests/                       # Tests tab
-│   ├── TestsView.swift          # Tab body — gear + recent activity + 6 panels
+│   ├── TestsView.swift          # Tab body — gear + recent activity + 7 panels
 │   └── RecentActivitySection.swift # Last-5 LogStream preview
 │
 ├── TestsSettings/               # Settings sheet behind the Tests-tab gear
@@ -45,6 +45,7 @@ Example/Example/
 │   ├── TripsPanel.swift
 │   ├── VerifiedPanel.swift
 │   ├── SearchPanel.swift
+│   ├── RoutingPanel.swift
 │   ├── NotificationsPanel.swift
 │   └── MessagingPanel.swift
 │

@@ -15,14 +15,18 @@
 #import "RadarContext.h"
 #import "RadarEvent.h"
 #import "RadarRegion.h"
-#import "RadarRouteMatrix.h"
-#import "RadarRoutes.h"
 #import "RadarUser.h"
-#import "RadarVerifiedLocationToken.h"
 
 @class RadarTripLeg;
+@class RadarRouteMatrix;
+@class RadarRoutes;
+@class RadarVerifiedLocationToken;
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface RadarPreparedFraudPayloadWrapper : NSObject
+- (NSURLRequest *_Nullable)prepareRequest:(NSURLRequest *)request error:(NSError *_Nullable *_Nullable)error;
+@end
 
 typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
                                                         NSDictionary *_Nullable res,
@@ -97,7 +101,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
            indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
-             fraudPayload:(NSString *_Nullable)fraudPayload
+             preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
         expectedStateCode:(NSString *_Nullable)expectedStateCode
           expectedAddress:(NSString *_Nullable)expectedAddress

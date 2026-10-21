@@ -14,7 +14,7 @@ extension RadarSerializedTests {
     @Suite(.serialized)
     @MainActor
     struct RadarLocationManagerBeaconStateTests {
-        private let beaconManager = RadarBeaconManagerSwift.shared
+        private let beaconManager = RadarOneShotBeaconManager.shared
 
         private func withBeaconDependencies(_ body: () -> Void) {
             let originalBridge = RadarSwift.bridge

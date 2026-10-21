@@ -46,21 +46,27 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
         }
     }
 
-    func revealRisk(useSecondaryVerifiedHost: Bool) async throws -> RadarRevealRiskToken {
+    func revealRisk(
+        useSecondaryVerifiedHost: Bool
+    ) async throws -> RadarRevealRiskToken {
         guard let fraudSDK else {
-            throw RadarError(status: .errorPlugin)
+            throw RadarError(
+                status: .errorPlugin,
+                message: "A compatible Radar Fraud SDK is required for verified requests."
+            )
+        }
+        guard RadarSettings.publishableKey != nil else {
+            throw RadarError(status: .errorPublishableKey)
         }
 
-        let (status, payload) = await fraudSDK.getFraudPayload(options: [:])
-        guard let payload, status == .success else {
-            throw RadarError(status: status)
-        }
+        let preparedPayload = try await fraudSDK.prepareFraudPayload(
+            options: RadarSettings.sdkConfiguration?.dictionaryValue() ?? [:]
+        )
 
-        let revealRisk = try await apiClient.revealRisk(
-            fraudPayload: payload,
+        return try await apiClient.revealRisk(
+            preparedPayload: preparedPayload,
             useSecondaryVerifiedHost: useSecondaryVerifiedHost
         )
-        return revealRisk
     }
 
     @objc
@@ -77,7 +83,10 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
                 completionHandler(.success, token)
             } catch {
                 if let radarError = error as? RadarError {
-                    RadarLogger.shared.error("RadarRevealRiskManager: revealRisk() failed \(Radar.stringForStatus(radarError.status))")
+                    let message = radarError.message ?? Radar.stringForStatus(radarError.status)
+                    RadarLogger.shared.error(
+                        "RadarRevealRiskManager: revealRisk() failed \(message)"
+                    )
                     completionHandler(radarError.status, nil)
                 } else if let apiError = error as? RadarAPIClient.APIError {
                     RadarLogger.shared.error("RadarRevealRiskManager: revealRisk() failed due to API error: \(apiError.message)")

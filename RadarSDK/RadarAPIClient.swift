@@ -7,6 +7,7 @@
 
 // swiftlint:disable file_length
 
+import CoreLocation
 import Foundation
 import UIKit
 
@@ -31,7 +32,9 @@ public final class RadarAPIClient: Sendable {
     }
 
     private func assertResponseCode(_ code: Int) throws {
-        if code == 401 {
+        if code == 400 {
+            throw RadarError(status: .errorBadRequest, message: "Bad request")
+        } else if code == 401 {
             throw RadarError(status: .errorUnauthorized, message: "Unauthorized")
         } else if code == 402 {
             throw RadarError(status: .errorPaymentRequired, message: "Payment required")
@@ -139,11 +142,13 @@ public final class RadarAPIClient: Sendable {
     }
 
     func revealRisk(
-        fraudPayload: String,
-        useSecondaryVerifiedHost: Bool,
+        preparedPayload: RadarPreparedFraudPayload,
+        useSecondaryVerifiedHost: Bool
     ) async throws -> RadarRevealRiskToken {
+        let installId = RadarSettings.installId
+
         let params: [String: Any?] = [
-            "installId": RadarSettings.installId,
+            "installId": installId,
             "userId": RadarSettings.userId,
             "deviceId": await RadarUtils.deviceId,
             "description": RadarSettings.description,
@@ -157,7 +162,6 @@ public final class RadarAPIClient: Sendable {
             "country": RadarUtils.country,
             "timeZoneOffset": RadarUtils.timeZoneOffset,
             "lang": RadarSettings.userLanguage,
-            "fraudPayload": fraudPayload,
             "appId": Bundle.main.bundleIdentifier,
             "appName": Bundle.main.object(forInfoDictionaryKey: "CFBundleName"),
             "appVersion": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString"),
@@ -166,7 +170,15 @@ public final class RadarAPIClient: Sendable {
             "xPlatformSDKVersion": RadarSettings.xPlatform ? RadarSettings.xPlatformSDKVersion : nil,
         ]
 
-        let (data, response) = try await apiHelper.radarRequest(host: .verifiedHost, method: "POST", url: "reveal/risk", body: params)
+        let (data, response) = try await apiHelper.radarRequest(
+            host: useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost,
+            method: "POST",
+            url: "reveal/risk",
+            body: params,
+            prepareRequest: { request in
+                try preparedPayload.prepareRequest(request)
+            }
+        )
 
         try assertResponseCode(response.statusCode)
 
@@ -183,7 +195,7 @@ public final class RadarAPIClient: Sendable {
             "id": RadarSettings.id,
             "locationAuthorization": RadarUtils.locationAuthorization,
             "locationAccuracyAuthorization": RadarUtils.locationAccuracyAuthorization,
-            "notificationAuthorization": String(RadarState().notificationPermissionGranted),
+            "notificationAuthorization": String(RadarState.shared.notificationPermissionGranted),
             "usage": usage,
             "verified": String(host == .verifiedHost || host == .verifiedSecondaryHost),
             "clientSdkConfiguration": RadarUtils.dictionaryToJson(RadarSettings.clientSdkConfiguration),
@@ -199,23 +211,53 @@ public final class RadarAPIClient: Sendable {
         return RadarConfig.from(dictionary: json)
     }
 
-    func searchBeacons(near: CLLocation, radius: Int, limit: Int) async throws -> ([RadarBeaconSwift], [String]) {
-        let sixDecimal = FloatingPointFormatStyle<Double>.number.precision(.fractionLength(6))
-        let params: [URLQueryItem] = [
-            "near": "\(near.coordinate.latitude.formatted(sixDecimal)),\(near.coordinate.longitude.formatted(sixDecimal))",
-            "radius": String(radius),
-            "limit": String(min(limit, 100)),
-        ].compactMap { key, value in
-            value != nil ? URLQueryItem(name: key, value: value) : nil
-        }
+    // Swift port of -[RadarAPIClient searchBeaconsNear:radius:limit:completionHandler:] in
+    // RadarAPIClient.m, used by RadarNearbyBeaconSearch. The Objective-C version is still used by
+    // trackVerified, trackOnce, and background tracking. Keep the request and the beaconUUIDs side
+    // effect in sync with it until those callers move to Swift, then delete the Objective-C version.
+    struct SearchBeaconsResponse {
+        let beacons: [RadarBeaconSwift]
+        let uuids: [String]
+    }
 
-        let (data, response) = try await apiHelper.radarRequest(method: "GET", url: "search/beacons", query: params)
+    func searchBeacons(near location: CLLocation, radius: Int, limit: Int) async throws -> SearchBeaconsResponse {
+        let query = [
+            URLQueryItem(
+                name: "near",
+                value: String(format: "%.06f,%.06f", location.coordinate.latitude, location.coordinate.longitude)
+            ),
+            URLQueryItem(name: "radius", value: "\(radius)"),
+            URLQueryItem(name: "limit", value: "\(min(limit, 100))"),
+            // Only iBeacons. CoreLocation can only range iBeacons, and Eddystone and Radar UWB
+            // beacons have no uuid/major/minor, so they can't be decoded as RadarBeaconSwift. The
+            // server filters by type before applying `limit`, so the limit counts only iBeacons.
+            URLQueryItem(name: "type", value: "ibeacon"),
+        ]
+
+        let (data, response) = try await apiHelper.radarRequest(method: "GET", url: "search/beacons", query: query)
 
         try assertResponseCode(response.statusCode)
 
-        let json = try JSONDecoder().decode(SearchBeaconResponse.self, from: data)
+        guard let res = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw APIError(data: data, response: response, message: "Failed to parse search beacons response")
+        }
 
-        return (json.beacons, json.meta.settings.beacons.uuids)
+        // Decode each beacon on its own, so one that can't be decoded doesn't drop the rest.
+        let beacons = (res["beacons"] as? [[String: Any]] ?? []).compactMap { dict -> RadarBeaconSwift? in
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: dict) else { return nil }
+            return try? JSONDecoder().decode(RadarBeaconSwift.self, from: jsonData)
+        }
+
+        var uuids: [String] = []
+        if let meta = res["meta"] as? [String: Any],
+            let settings = meta["settings"] as? [String: Any],
+            let beaconSettings = settings["beacons"] as? [String: Any]
+        {
+            uuids = (beaconSettings["uuids"] as? [String] ?? []).filter { !$0.isEmpty }
+            RadarSettings.beaconUUIDs = uuids
+        }
+
+        return SearchBeaconsResponse(beacons: beacons, uuids: uuids)
     }
 
     // TODO: implement rest of RadarAPIClient

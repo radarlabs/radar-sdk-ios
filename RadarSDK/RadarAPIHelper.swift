@@ -27,23 +27,34 @@ final class RadarAPIHelper: Sendable {
         }
     }
 
-    func retryingRequest(for request: URLRequest) async throws -> (Data, URLResponse) {
+    func retryingRequest(
+        for request: URLRequest,
+        prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
+    ) async throws -> (Data, URLResponse) {
+        let firstRequest = try prepareRequest?(request) ?? request
+
         do {
-            let (data, response) = try await session.data(for: request)
-            return (data, response)
+            return try await session.data(for: firstRequest)
         } catch {
-            if let error = error as? URLError,
+            guard let error = error as? URLError,
                 error.code == .networkConnectionLost
-            {
-                let (data, response) = try await session.data(for: request)
-                return (data, response)
+            else {
+                throw error
             }
 
-            throw error
+            let retryRequest = try prepareRequest?(request) ?? request
+            return try await session.data(for: retryRequest)
         }
     }
 
-    func request(method: String, url: String, query: [URLQueryItem] = [], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
+    func request(
+        method: String,
+        url: String,
+        query: [URLQueryItem] = [],
+        headers: [String: String] = [:],
+        body: [String: Any?] = [:],
+        prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
+    ) async throws -> (Data, HTTPURLResponse) {
         guard var urlComponents = URLComponents(string: url) else {
             throw URLError(.badURL)
         }
@@ -69,7 +80,10 @@ final class RadarAPIHelper: Sendable {
         let data: Data
         let response: URLResponse
         do {
-            (data, response) = try await retryingRequest(for: request)
+            (data, response) = try await retryingRequest(
+                for: request,
+                prepareRequest: prepareRequest
+            )
         } catch {
             let elapsedMs = Int(Date().timeIntervalSince(startTime) * 1000)
             RadarLogger.shared.log(
@@ -116,7 +130,15 @@ final class RadarAPIHelper: Sendable {
         case verifiedHost
         case verifiedSecondaryHost
     }
-    func radarRequest(host: RadarHost, method: String, url: String, query: [URLQueryItem] = [], headers: [String: String] = [:], body: [String: Any?] = [:]) async throws -> (Data, HTTPURLResponse) {
+    func radarRequest(
+        host: RadarHost,
+        method: String,
+        url: String,
+        query: [URLQueryItem] = [],
+        headers: [String: String] = [:],
+        body: [String: Any?] = [:],
+        prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
+    ) async throws -> (Data, HTTPURLResponse) {
         let hostUrl =
             switch host {
             case .defaultHost:
@@ -130,7 +152,14 @@ final class RadarAPIHelper: Sendable {
         let headers = try await addRadarHeaders(headers)
         let url = "\(hostUrl)/v1/\(url)"
 
-        let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
+        let (data, response) = try await request(
+            method: method,
+            url: url,
+            query: query,
+            headers: headers,
+            body: body,
+            prepareRequest: prepareRequest
+        )
 
         return (data, response)
     }

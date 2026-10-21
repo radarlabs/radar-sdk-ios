@@ -29,6 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions;
 
++ (void)updateTrackingWithHost:(id<RadarLocationManagerSwiftHost>)host
+                      location:(nullable CLLocation *)location
+                fromInitialize:(BOOL)fromInitialize;
+
 + (void)restartPreviousTrackingOptions;
 + (void)stopTrackingOnLocationManager:(CLLocationManager *)locationManager
                       activityManager:(nullable id)activityManager;

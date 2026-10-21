@@ -1,5 +1,5 @@
 //
-//  RadarBeaconManagerTests.swift
+//  RadarOneShotBeaconManagerTests.swift
 //  RadarSDK
 //
 //  Created by Alan Charles on 7/13/26.
@@ -13,13 +13,13 @@ import Testing
 
 extension RadarSerializedTests {
 
-    @Suite("RadarBeaconManagerSwift")
+    @Suite("RadarOneShotBeaconManager")
     @MainActor
     struct BeaconManagerTests {
 
         private static let testUUID = "2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6"
 
-        let beaconManager = RadarBeaconManagerSwift.shared
+        let beaconManager = RadarOneShotBeaconManager.shared
         let mockPermissions = MockRadarPermissionsHelper()
 
         init() {

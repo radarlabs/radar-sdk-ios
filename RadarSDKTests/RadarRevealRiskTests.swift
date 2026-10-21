@@ -18,7 +18,7 @@ extension RadarSerializedTests {
         private static let revealRiskURL = "\(RadarSettings.verifiedHost)/v1/reveal/risk"
 
         /// A fully-populated reveal/risk response mirroring the server's `RevealRiskResponse` shape.
-        private static var revealRiskResponse: [String: Any] {
+        static var revealRiskResponse: [String: Any] {
             [
                 "_id": "risk-token-123",
                 "token": "signed-jwt-token",
@@ -74,22 +74,37 @@ extension RadarSerializedTests {
             ]
         }
 
-        private func makeManager(fraudResult: [String: Any]?, session: MockURLSession) -> RadarRevealRiskManager {
+        private func makeManager(
+            sealResult: [String: Any]?,
+            session: MockURLSession,
+            hasCompatibilityMarker: Bool = true
+        ) -> RadarRevealRiskManager {
             Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
-            let apiClient = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
-            let fraudSDK = RadarSDKFraud(instance: MockFraudSDK(result: fraudResult, sharing: false))
-            return RadarRevealRiskManager(apiClient: apiClient, fraudSDK: fraudSDK)
+
+            let preparedInstance = MockPreparedFraudPayloadInstance(
+                result: sealResult
+            )
+            let instance = MockCollectingFraudInstance(
+                result: ["preparedPayload": preparedInstance],
+                missingSelectors: hasCompatibilityMarker ? [] : ["coreCompatibilityVersion"]
+            )
+            let fraudSDK = RadarSDKFraud(instance: instance)
+            let apiClient = RadarAPIClient(
+                apiHelper: RadarAPIHelper(session: session)
+            )
+
+            return RadarRevealRiskManager(
+                apiClient: apiClient,
+                fraudSDK: fraudSDK
+            )
         }
 
-        @Test("revealRisk gets a payload from the fraud SDK then reveals risk through the API")
-        func revealRiskCallsFraudSDKThenAPI() async throws {
+        @Test("revealRisk sends an encrypted body with or without a compatibility marker", arguments: [false, true])
+        func revealRiskCallsFraudSDKThenAPI(hasCompatibilityMarker: Bool) async throws {
             let responseData = try #require(try? JSONSerialization.data(withJSONObject: RadarRevealRiskTests.revealRiskResponse))
             let session = MockURLSession()
 
-            // The handler both matches the reveal/risk endpoint and verifies the params the manager sent,
-            // proving the fraud SDK's payload was forwarded to the API. It only returns the response
-            // (letting the call succeed) when the request looks right; otherwise the call fails and the
-            // token is never produced.
+            // Return a response only when the complete envelope is sent as the request body.
             session.on(
                 { request in
                     guard request.url?.absoluteString == RadarRevealRiskTests.revealRiskURL,
@@ -99,10 +114,11 @@ extension RadarSerializedTests {
                     else {
                         return false
                     }
-                    return json["fraudPayload"] as? String == "mock-fraud-payload"
+                    return body == Data(MockFraudEnvelope.payload.utf8)
+                        && Set(json.keys) == MockFraudEnvelope.fieldNames
                 }, responseData)
 
-            let manager = makeManager(fraudResult: ["payload": "mock-fraud-payload"], session: session)
+            let manager = makeManager(sealResult: ["payload": MockFraudEnvelope.payload], session: session, hasCompatibilityMarker: hasCompatibilityMarker)
             let token = try await manager.revealRisk(useSecondaryVerifiedHost: false)
 
             // The API response was parsed into a fully-populated token.
@@ -125,7 +141,7 @@ extension RadarSerializedTests {
             let session = MockURLSession()
             session.on(RadarRevealRiskTests.revealRiskURL, RadarRevealRiskTests.revealRiskResponse)
 
-            let manager = makeManager(fraudResult: ["payload": "mock-fraud-payload"], session: session)
+            let manager = makeManager(sealResult: ["payload": MockFraudEnvelope.payload], session: session)
 
             let (status, token) = await withCheckedContinuation { continuation in
                 manager.revealRisk(useSecondaryVerifiedHost: false) { status, token in
@@ -140,8 +156,9 @@ extension RadarSerializedTests {
 
         @Test("revealRisk passes the product up in the X-Radar-Product header when it is set")
         func revealRiskSendsProductHeader() async throws {
+            let originalProduct = RadarSettings.product
             RadarSettings.product = "trip-tracking"
-            defer { RadarSettings.product = nil }
+            defer { RadarSettings.product = originalProduct }
 
             let responseData = try #require(try? JSONSerialization.data(withJSONObject: RadarRevealRiskTests.revealRiskResponse))
             let session = MockURLSession()
@@ -154,7 +171,7 @@ extension RadarSerializedTests {
                         && request.value(forHTTPHeaderField: "X-Radar-Product") == "trip-tracking"
                 }, responseData)
 
-            let manager = makeManager(fraudResult: ["payload": "mock-fraud-payload"], session: session)
+            let manager = makeManager(sealResult: ["payload": MockFraudEnvelope.payload], session: session)
             let token = try await manager.revealRisk(useSecondaryVerifiedHost: false)
 
             #expect(token.id == "risk-token-123")
@@ -162,7 +179,9 @@ extension RadarSerializedTests {
 
         @Test("revealRisk does not send the X-Radar-Product header when the product is not set")
         func revealRiskOmitsProductHeaderWhenUnset() async throws {
+            let originalProduct = RadarSettings.product
             RadarSettings.product = nil
+            defer { RadarSettings.product = originalProduct }
 
             let responseData = try #require(try? JSONSerialization.data(withJSONObject: RadarRevealRiskTests.revealRiskResponse))
             let session = MockURLSession()
@@ -173,14 +192,14 @@ extension RadarSerializedTests {
                         && request.value(forHTTPHeaderField: "X-Radar-Product") == nil
                 }, responseData)
 
-            let manager = makeManager(fraudResult: ["payload": "mock-fraud-payload"], session: session)
+            let manager = makeManager(sealResult: ["payload": MockFraudEnvelope.payload], session: session)
             let token = try await manager.revealRisk(useSecondaryVerifiedHost: false)
 
             #expect(token.id == "risk-token-123")
         }
 
-        @Test("revealRisk does not call the API when the fraud SDK returns an error")
-        func revealRiskSkipsAPIWhenFraudFails() async throws {
+        @Test("revealRisk does not call the API when sealing fails", arguments: [false, true])
+        func revealRiskSkipsAPIWhenFraudFails(hasCompatibilityMarker: Bool) async throws {
             let session = MockURLSession()
             // If the manager reaches the API despite the fraud SDK failing, the handler records an issue.
             session.on(
@@ -189,32 +208,106 @@ extension RadarSerializedTests {
                     return false
                 }, Data())
 
-            let manager = makeManager(fraudResult: ["error": "no-payload"], session: session)
+            let manager = makeManager(sealResult: ["error": "Encryption failed"], session: session, hasCompatibilityMarker: hasCompatibilityMarker)
 
-            await #expect(throws: RadarError.self) {
+            await #expect {
                 _ = try await manager.revealRisk(useSecondaryVerifiedHost: false)
+            } throws: { error in
+                let radarError = error as? RadarError
+                return radarError?.status == .errorBadRequest
+                    && radarError?.message == "Failed to encrypt request body"
             }
         }
 
-        @Test("revealRisk throws .errorPlugin when the fraud SDK is not available")
-        func revealRiskThrowsPluginErrorWhenFraudSDKIsNil() async throws {
+        @Test("revealRisk rejects missing or legacy fraud SDKs", arguments: [false, true])
+        func revealRiskThrowsPluginErrorWhenFraudSDKIsUnavailable(legacy: Bool) async throws {
             let session = MockURLSession()
-            // Without a fraud SDK the manager should short-circuit before ever reaching the API.
+            // Missing encryption support must short-circuit before reaching the API.
             session.on(
                 { _ in
-                    Issue.record("reveal/risk API should not be called when the fraud SDK is nil")
+                    Issue.record("reveal/risk API should not be called without encryption support")
                     return false
                 }, Data())
 
             Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
             let apiClient = RadarAPIClient(apiHelper: RadarAPIHelper(session: session))
-            let manager = RadarRevealRiskManager(apiClient: apiClient, fraudSDK: nil)
+            let fraudSDK = legacy ? RadarSDKFraud(instance: MockLegacyFraudInstance()) : nil
+            #expect(fraudSDK == nil)
+            let manager = RadarRevealRiskManager(apiClient: apiClient, fraudSDK: fraudSDK)
 
             await #expect {
                 _ = try await manager.revealRisk(useSecondaryVerifiedHost: false)
             } throws: { error in
-                (error as? RadarError)?.status == .errorPlugin
+                let radarError = error as? RadarError
+                return radarError?.status == .errorPlugin
+                    && radarError?.message == "A compatible Radar Fraud SDK is required for verified requests."
             }
         }
+
+        @Test(
+            "revealRisk rejects unsupported Fraud compatibility versions before collection",
+            arguments: [0, 2]
+        )
+        func revealRiskRejectsIncompatibleFraudSDK(version: Int) async throws {
+            let session = RetryTestSession(failures: [])
+            let instance = MockCollectingFraudInstance(
+                result: nil,
+                compatibilityVersion: NSNumber(value: version)
+            )
+            let fraudSDK = RadarSDKFraud(instance: instance)
+            #expect(fraudSDK == nil)
+            let manager = RadarRevealRiskManager(
+                apiClient: RadarAPIClient(apiHelper: RadarAPIHelper(session: session)),
+                fraudSDK: fraudSDK
+            )
+
+            await #expect {
+                try await manager.revealRisk(useSecondaryVerifiedHost: false)
+            } throws: { error in
+                let radarError = error as? RadarError
+                return radarError?.status == .errorPlugin
+                    && radarError?.message == "A compatible Radar Fraud SDK is required for verified requests."
+            }
+
+            #expect(instance.recordedOptions().isEmpty)
+            let requests = await session.recordedRequests()
+            #expect(requests.isEmpty)
+        }
+
+        @Test("revealRisk does not call the API when collection fails")
+        func revealRiskSkipsAPIWhenCollectionFails() async throws {
+            Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
+
+            let session = MockURLSession()
+            session.on(
+                { _ in
+                    Issue.record("Collection failure must not dispatch a request")
+                    return false
+                },
+                Data()
+            )
+
+            let instance = MockCollectingFraudInstance(
+                result: ["error": "Collection failed"]
+            )
+            let fraudSDK = try #require(RadarSDKFraud(instance: instance))
+            let manager = RadarRevealRiskManager(
+                apiClient: RadarAPIClient(
+                    apiHelper: RadarAPIHelper(session: session)
+                ),
+                fraudSDK: fraudSDK
+            )
+
+            await #expect {
+                try await manager.revealRisk(useSecondaryVerifiedHost: false)
+            } throws: { error in
+                let radarError = error as? RadarError
+                return radarError?.status == .errorBadRequest
+                    && radarError?.message == "Failed to prepare fraud payload"
+            }
+
+            #expect(instance.recordedOptions().count == 1)
+        }
+
     }
 }

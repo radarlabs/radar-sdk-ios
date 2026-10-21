@@ -8,7 +8,8 @@
 #import "Radar.h"
 #include "RadarSdkConfiguration.h"
 #import "RadarAPIClient.h"
-#import "RadarBeaconManagerSwift.h"
+#import "RadarOneShotBeaconManager+Internal.h"
+#import "RadarNearbyBeaconSearch+Internal.h"
 #import "RadarConfig.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
@@ -123,12 +124,12 @@ BOOL _initialized = NO;
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
 
         NSString *authStatus = [Radar stringForMotionAuthorizationStatus];
-        [RadarState setMotionAuthorizationString:authStatus];
+        [RadarState.shared setMotionAuthorizationString:authStatus];
         
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available, auth status: %@", authStatus]];
     } else {
-        [RadarState setMotionAuthorizationString:@"NOT_AVAILABLE"];
+        [RadarState.shared setMotionAuthorizationString:@"NOT_AVAILABLE"];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
     }
 
@@ -370,15 +371,15 @@ BOOL _initialized = NO;
                          if (beacons) {
                              [[RadarAPIClient sharedInstance]
                                  searchBeaconsNear:location
-                                            radius:1000
-                                             limit:10
+                                            radius:RadarNearbyBeaconSearch.radius
+                                             limit:RadarNearbyBeaconSearch.limit
                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                                      NSArray<NSString *> *_Nullable beaconUUIDs) {
                                      if (beaconUUIDs && beaconUUIDs.count) {
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeaconUUIDs:beaconUUIDs];
 
                                          [RadarUtilsDeprecated runOnMainThread:^{
-                                             [[RadarBeaconManagerSwift shared] rangeBeaconUUIDs:beaconUUIDs
+                                             [[RadarOneShotBeaconManager shared] rangeBeaconUUIDs:beaconUUIDs
                                                                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                      if (status != RadarStatusSuccess || !beacons) {
                                                                                          performIndoorScanThenTrack(nil);
@@ -393,7 +394,7 @@ BOOL _initialized = NO;
                                          [[RadarLocationManager sharedInstance] replaceSyncedBeacons:beacons];
 
                                          [RadarUtilsDeprecated runOnMainThread:^{
-                                             [[RadarBeaconManagerSwift shared] rangeBeacons:beacons
+                                             [[RadarOneShotBeaconManager shared] rangeBeacons:beacons
                                                                              completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                                                                  if (status != RadarStatusSuccess || !beacons) {
                                                                                      performIndoorScanThenTrack(nil);

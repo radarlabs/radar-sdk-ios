@@ -43,6 +43,12 @@ import Foundation
     func addCompletionHandler(_ completionHandler: RadarLocationCompletionHandler?)
 
     var locationManager: CLLocationManager { get }
+    var lowPowerLocationManager: CLLocationManager { get }
+
+    // Keep motion and pressure setup in Objective-C until RadarActivityManager and the RadarState
+    // motion storage are reachable from Swift.
+    @objc(startMotionUpdatesWithOptions:)
+    func startMotionUpdates(options: RadarTrackingOptions)
 }
 
 private final class RadarLocationManagerSwiftHostBox: @unchecked Sendable {
@@ -66,6 +72,14 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     private static let trackingShutdownDelay: TimeInterval = 10
     private static let immediateShutdownDelay: TimeInterval = 0
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
+    nonisolated(unsafe) static var bootstrapIndoorTracking: () -> Void = { RadarIndoors.bootstrapTrackingIfNeeded() }
+    // The region the last `replaceBubbleGeofence(locationManager:location:radius:)` registered.
+    // `removeBubbleGeofence(locationManager:)` stops it directly instead of relying only on its
+    // `monitoredRegions` scan, because Core Location updates `monitoredRegions` asynchronously and
+    // may not list a region added a moment ago. That happens when locations arrive together:
+    // `handleLocation:source:beacons:` in RadarLocationManager.m calls `updateTracking:` for each
+    // one, so `updateTracking(host:location:fromInitialize:)` replaces the bubble back to back.
+    nonisolated(unsafe) static var bubbleGeofenceRegion: CLRegion?
 
     @objc(startTrackingWithOptions:)
     static func startTracking(options: RadarTrackingOptions) {
@@ -78,6 +92,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
         RadarSettings.tracking = true
         RadarSettings.trackingOptions = options
         RadarSwift.bridge?.updateTracking()
+        bootstrapIndoorTracking()
     }
 
     @objc(shouldBypassDeviceLocationStateForSource:)
@@ -386,6 +401,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
             identifier: identifier
         )
         locationManager.startMonitoring(for: region)
+        bubbleGeofenceRegion = region
 
         RadarLogger.shared.debug(
             "🦅 Successfully added bubble geofence | latitude = \(location.coordinate.latitude); longitude = \(location.coordinate.longitude); radius = \(radius); identifier = \(identifier)"
@@ -394,6 +410,12 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
     @objc(removeBubbleGeofenceOnLocationManager:)
     static func removeBubbleGeofence(locationManager: CLLocationManager) {
+        // Stop the last registered bubble first; the scan below can miss it (see `bubbleGeofenceRegion`).
+        if let bubbleGeofenceRegion {
+            locationManager.stopMonitoring(for: bubbleGeofenceRegion)
+            Self.bubbleGeofenceRegion = nil
+        }
+
         for region in locationManager.monitoredRegions
         where region.identifier.hasPrefix(bubbleGeofenceIdentifierPrefix) {
             locationManager.stopMonitoring(for: region)

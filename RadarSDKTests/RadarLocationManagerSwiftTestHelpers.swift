@@ -37,6 +37,10 @@ enum RadarLocationManagerSwiftTestHelpers {
         RadarLocationManagerSwift.permissionsHelper = permissionsHelper
         defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
 
+        let originalBootstrapIndoorTracking = RadarLocationManagerSwift.bootstrapIndoorTracking
+        RadarLocationManagerSwift.bootstrapIndoorTracking = {}
+        defer { RadarLocationManagerSwift.bootstrapIndoorTracking = originalBootstrapIndoorTracking }
+
         body(bridge)
     }
 
@@ -50,6 +54,8 @@ enum RadarLocationManagerSwiftTestHelpers {
         RadarSettings.tracking = false
         RadarSettings.trackingOptions = nil
         RadarSettings.remoteTrackingOptions = nil
+        RadarLocationManagerSwift.bubbleGeofenceRegion = nil
+        RadarLocationManager.sharedInstance().setValue(nil, forKey: "bubbleGeofenceRegion")
         RadarLocationManager.sharedInstance().permissionsHelper = RadarPermissionsHelper()
     }
 

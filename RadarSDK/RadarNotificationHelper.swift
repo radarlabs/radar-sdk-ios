@@ -40,7 +40,7 @@ actor RadarNotificationHelper: NSObject {
 
     init(
         notificationCenter: NotificationCenterProtocol = UNUserNotificationCenter.current(),
-        radarState: RadarState = RadarState(),
+        radarState: RadarState = RadarState.shared,
         geofenceStore: RadarFileStorageObject<[RadarGeofenceSwift]> = RadarFileStorageObject(fileName: "radar_notification_geofences.json")
     ) {
         self.notificationCenter = notificationCenter
