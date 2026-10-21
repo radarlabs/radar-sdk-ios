@@ -149,7 +149,7 @@ extension RadarSerializedTests {
         @Test("A changed authorization status applies tracking again while tracking", arguments: [false, true])
         func changedAuthorizationAppliesTrackingAgain(useSwiftLocationManager: Bool) async {
             await withMockedLocationManagers(useSwiftLocationManager: useSwiftLocationManager) { manager, locationManager, _ in
-                let state = RadarState()
+                let state = RadarState.self
                 let originalStatus = state.locationAuthorizationStatus
                 let originalBridge = RadarSwift.bridge
                 let bridge = MockRadarSwiftBridge()
@@ -184,7 +184,7 @@ extension RadarSerializedTests {
         )
         func authorizationCallbackSetsBackgroundUpdates(status: CLAuthorizationStatus) async {
             await withMockedLocationManagers { manager, locationManager, _ in
-                let state = RadarState()
+                let state = RadarState.self
                 let originalStatus = state.locationAuthorizationStatus
                 defer { state.locationAuthorizationStatus = originalStatus }
                 state.locationAuthorizationStatus = .notDetermined
@@ -204,7 +204,7 @@ extension RadarSerializedTests {
         )
         func authorizationCallbackSetsBackgroundUpdatesWhenUnchanged(useSwiftLocationManager: Bool) async {
             await withMockedLocationManagers(useSwiftLocationManager: useSwiftLocationManager) { manager, locationManager, _ in
-                let state = RadarState()
+                let state = RadarState.self
                 let originalStatus = state.locationAuthorizationStatus
                 defer { state.locationAuthorizationStatus = originalStatus }
                 state.locationAuthorizationStatus = .authorizedAlways

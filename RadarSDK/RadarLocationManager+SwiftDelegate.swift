@@ -211,7 +211,7 @@ extension RadarLocationManagerSwift {
 
     @objc(didUpdateHeading:)
     static func didUpdateHeading(_ heading: CLHeading) {
-        RadarState().lastHeadingData = [
+        RadarState.lastHeadingData = [
             "magneticHeading": heading.magneticHeading,
             "trueHeading": heading.trueHeading,
             "headingAccuracy": heading.headingAccuracy,
@@ -224,7 +224,7 @@ extension RadarLocationManagerSwift {
 
     @objc(didChangeAuthorizationStatus:)
     static func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
-        let state = RadarState()
+        let state = RadarState.self
         let previousStatus = state.locationAuthorizationStatus
         state.locationAuthorizationStatus = status
 

@@ -21,7 +21,7 @@ struct RadarStateTests {
         defer { RadarUserDefaults.set(nil, forKey: .registeredNotifications) }
 
         // Must not crash; returns nil because the snapshot isn't valid JSON.
-        #expect(RadarState().registeredNotifications == nil)
+        #expect(RadarState.registeredNotifications == nil)
     }
 
     @Test func registeredNotificationsReadsValidSnapshot() {
@@ -31,7 +31,7 @@ struct RadarStateTests {
         RadarUserDefaults.set(valid, forKey: .registeredNotifications)
         defer { RadarUserDefaults.set(nil, forKey: .registeredNotifications) }
 
-        let result = RadarState().registeredNotifications
+        let result = RadarState.registeredNotifications
         #expect(result?.count == 1)
         #expect(result?.first?.identifier == "radar_x")
         #expect(result?.first?.registeredAt == 123.0)

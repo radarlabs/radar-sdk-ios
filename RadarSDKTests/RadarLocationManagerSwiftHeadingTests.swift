@@ -37,7 +37,7 @@ extension RadarSerializedTests {
 
             RadarLocationManagerSwift.didUpdateHeading(stub)
 
-            let stored = RadarState().lastHeadingData
+            let stored = RadarState.lastHeadingData
             #expect(stored?["magneticHeading"] == 12.5)
             #expect(stored?["trueHeading"] == 34.5)
             #expect(stored?["headingAccuracy"] == 5)
@@ -78,7 +78,7 @@ extension RadarSerializedTests {
                 )
             )
 
-            let stored = RadarState().lastHeadingData
+            let stored = RadarState.lastHeadingData
             #expect(stored?["magneticHeading"] == 99)
             #expect(stored?["trueHeading"] == 88)
             #expect(stored?["headingAccuracy"] == 7)

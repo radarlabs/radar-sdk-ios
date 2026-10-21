@@ -47,7 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (CLAuthorizationStatus)locationAuthorizationStatus;
 + (NSArray<NSDictionary *> *_Nullable)registeredNotifications;
 + (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications;
-+ (void)addRegisteredNotification:(NSDictionary *)registeredNotification;
 + (NSDictionary *)lastRelativeAltitudeData;
 + (void)setLastRelativeAltitudeData:(NSDictionary *_Nullable)lastRelativeAltitudeData;
 + (NSArray<NSDictionary *> *_Nullable)altitudeAdjustments;

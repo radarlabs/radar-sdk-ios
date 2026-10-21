@@ -78,7 +78,7 @@ import Foundation
             }
 
             RadarLogger.shared.log(level: .debug, message: "Found \(identifiersToRemove.count) pending notifications to remove")
-            RadarState().registeredNotifications = notificationsToKeep
+            RadarState.registeredNotifications = notificationsToKeep
 
             if !identifiersToRemove.isEmpty {
                 center.removePendingNotificationRequests(withIdentifiers: identifiersToRemove)
@@ -121,7 +121,7 @@ import Foundation
 
             group.notify(queue: .global()) {
                 if !added.isEmpty {
-                    let state = RadarState()
+                    let state = RadarState.self
                     var registered = state.registeredNotifications ?? []
                     registered.append(contentsOf: added)
                     state.registeredNotifications = registered
