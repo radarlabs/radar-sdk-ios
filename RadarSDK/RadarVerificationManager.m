@@ -226,7 +226,7 @@
 
                                                     [[RadarAPIClient sharedInstance]
                                                                trackWithLocation:location
-                                                                         stopped:RadarState.stopped
+                                                                         stopped:RadarState.shared.stopped
                                                                       foreground:foreground
                                                                           source:RadarLocationSourceForegroundLocation
                                                                         replayed:NO

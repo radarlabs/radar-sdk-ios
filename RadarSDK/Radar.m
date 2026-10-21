@@ -124,12 +124,12 @@ BOOL _initialized = NO;
         id radarSDKMotion = [[RadarSDKMotion alloc] init];
 
         NSString *authStatus = [Radar stringForMotionAuthorizationStatus];
-        [RadarState setMotionAuthorizationString:authStatus];
+        [RadarState.shared setMotionAuthorizationString:authStatus];
         
         [RadarActivityManager sharedInstance].radarSDKMotion = radarSDKMotion;
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"RadarSDKMotion detected and initialized; Motion & Altimeter services available, auth status: %@", authStatus]];
     } else {
-        [RadarState setMotionAuthorizationString:@"NOT_AVAILABLE"];
+        [RadarState.shared setMotionAuthorizationString:@"NOT_AVAILABLE"];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"RadarSDKMotion class not found; Motion/Pressure features disabled"];
     }
 

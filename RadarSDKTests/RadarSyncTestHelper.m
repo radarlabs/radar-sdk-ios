@@ -10,8 +10,8 @@
 #import "RadarState.h"
 
 @implementation RadarSyncTestHelper
-+ (void)setStopped:(BOOL)stopped { [RadarState setStopped:stopped]; }
-+ (void)setRadarUser:(RadarUser *)user { [RadarState setRadarUser:user]; }
++ (void)setStopped:(BOOL)stopped { [RadarState.shared setStopped:stopped]; }
++ (void)setRadarUser:(RadarUser *)user { [RadarState.shared setRadarUser:user]; }
 @end
 
 @implementation RadarTrackTestBridge
