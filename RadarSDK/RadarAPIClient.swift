@@ -192,7 +192,7 @@ public final class RadarAPIClient: Sendable {
             "id": RadarSettings.id,
             "locationAuthorization": RadarUtils.locationAuthorization,
             "locationAccuracyAuthorization": RadarUtils.locationAccuracyAuthorization,
-            "notificationAuthorization": String(RadarState.notificationPermissionGranted),
+            "notificationAuthorization": String(RadarState.shared.notificationPermissionGranted),
             "usage": usage,
             "verified": String(host == .verifiedHost || host == .verifiedSecondaryHost),
             "clientSdkConfiguration": RadarUtils.dictionaryToJson(RadarSettings.clientSdkConfiguration),

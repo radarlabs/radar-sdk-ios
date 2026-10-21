@@ -126,7 +126,7 @@
     if (locationAccuracyAuthorization) {
         [queryString appendFormat:@"&locationAccuracyAuthorization=%@", locationAccuracyAuthorization];
     }
-    NSString *notificationAuthorization = [RadarState notificationPermissionGranted] ? @"true" : @"false";
+    NSString *notificationAuthorization = RadarState.shared.notificationPermissionGranted ? @"true" : @"false";
     [queryString appendFormat:@"&notificationAuthorization=%@", notificationAuthorization];
     if (usage) {
         [queryString appendFormat:@"&usage=%@", usage];
@@ -252,10 +252,10 @@
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
         params[@"deviceId"] = @"anonymous";
-        params[@"geofenceIds"] = [RadarState geofenceIds];
-        params[@"placeId"] = [RadarState placeId];
-        params[@"regionIds"] = [RadarState regionIds];
-        params[@"beaconIds"] = [RadarState beaconIds];
+        params[@"geofenceIds"] = RadarState.shared.geofenceIds;
+        params[@"placeId"] = RadarState.shared.placeId;
+        params[@"regionIds"] = RadarState.shared.regionIds;
+        params[@"beaconIds"] = RadarState.shared.beaconIds;
     } else {
         params[@"id"] = [RadarSettings _id];
         params[@"installId"] = [RadarSettings installId];
@@ -346,7 +346,7 @@
     if (locationAccuracyAuthorization) {
         params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
     }
-    params[@"notificationAuthorization"] = @([RadarState notificationPermissionGranted]);
+    params[@"notificationAuthorization"] = @(RadarState.shared.notificationPermissionGranted);
 
     params[@"trackingOptions"] = [options dictionaryValue];
 
@@ -391,8 +391,8 @@
     
     NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
     if (options.useMotion) {
-        locationMetadata[@"motionActivityData"] = [RadarState lastMotionActivityData];
-        locationMetadata[@"heading"] = [RadarState lastHeadingData];
+        locationMetadata[@"motionActivityData"] = RadarState.shared.lastMotionActivityData;
+        locationMetadata[@"heading"] = RadarState.shared.lastHeadingData;
         locationMetadata[@"speed"] = @(location.speed);
         locationMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
         locationMetadata[@"course"] = @(location.course);
@@ -414,12 +414,12 @@
     if (options.usePressure) {
         locationMetadata[@"altitude"] = @(location.altitude);
         locationMetadata[@"floor"] = @([location.floor level]);
-        locationMetadata[@"pressureHPa"] = [RadarState lastRelativeAltitudeData];
-        NSString *motionAuth = [RadarState motionAuthorizationString];
+        locationMetadata[@"pressureHPa"] = RadarState.shared.lastRelativeAltitudeData;
+        NSString *motionAuth = RadarState.shared.motionAuthorizationString;
         if (motionAuth) {
             params[@"motionAuthorization"] = motionAuth;
         }
-        NSDictionary *pressureDict = [RadarState lastRelativeAltitudeData];
+        NSDictionary *pressureDict = RadarState.shared.lastRelativeAltitudeData;
         if (pressureDict) {
             NSNumber *pressure = pressureDict[@"pressure"];
             NSNumber *relAlt = pressureDict[@"relativeAltitude"];
@@ -446,7 +446,7 @@
     }
 
     // Include stored altitudeAdjustments from previous track responses
-    NSArray<NSDictionary *> *altitudeAdjustments = [RadarState altitudeAdjustments];
+    NSArray<NSDictionary *> *altitudeAdjustments = RadarState.shared.altitudeAdjustments;
     if (altitudeAdjustments && altitudeAdjustments.count > 0) {
         params[@"altitudeAdjustments"] = altitudeAdjustments;
     }
@@ -544,7 +544,7 @@
                 completionHandler(status, nil, nil, nil, nil, offlineConfig, nil);
             } else {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Successfully flushed replays"]];
-                [RadarState setLastFailedStoppedLocation:nil];
+                [RadarState.shared setLastFailedStoppedLocation:nil];
                 [RadarSettings updateLastTrackedTime];
                 completionHandler(status, nil, nil, nil, nil, nil, nil);
             }
@@ -578,7 +578,7 @@
                                     [[RadarReplayBuffer sharedInstance] writeNewReplayToBuffer:bufferParams];
                                 } else if (options.replay == RadarTrackingOptionsReplayStops && stopped &&
                                         !(source == RadarLocationSourceForegroundLocation || source == RadarLocationSourceManualLocation)) {
-                                    [RadarState setLastFailedStoppedLocation:location];
+                                    [RadarState.shared setLastFailedStoppedLocation:location];
                                 }
 
                                 [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
@@ -599,7 +599,7 @@
                             }
             
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
-                            [RadarState setLastFailedStoppedLocation:nil];
+                            [RadarState.shared setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
                             [RadarSettings updateLastTrackedTime];
 
@@ -615,10 +615,10 @@
                                 // Extract and store altitudeAdjustments from user object
                                 id altitudeAdjustmentsObj = mutableUserObj[@"altitudeAdjustments"];
                                 if ([altitudeAdjustmentsObj isKindOfClass:[NSArray class]]) {
-                                    [RadarState setAltitudeAdjustments:(NSArray *)altitudeAdjustmentsObj];
+                                    [RadarState.shared setAltitudeAdjustments:(NSArray *)altitudeAdjustmentsObj];
                                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Stored %lu altitude adjustments from track response", (unsigned long)[(NSArray *)altitudeAdjustmentsObj count]]];
                                 } else {
-                                    [RadarState setAltitudeAdjustments:nil];
+                                    [RadarState.shared setAltitudeAdjustments:nil];
                                 }
                             }
                             id nearbyGeofencesObj = res[@"nearbyGeofences"];
@@ -637,7 +637,7 @@
                                 BOOL inGeofences = user.geofences && user.geofences.count;
                                 BOOL atPlace = user.place != nil;
                                 BOOL canExit = inGeofences || atPlace;
-                                [RadarState setCanExit:canExit];
+                                [RadarState.shared setCanExit:canExit];
 
                                 NSMutableArray *geofenceIds = [NSMutableArray new];
                                 if (user.geofences) {
@@ -645,13 +645,13 @@
                                         [geofenceIds addObject:geofence._id];
                                     }
                                 }
-                                [RadarState setGeofenceIds:geofenceIds];
+                                [RadarState.shared setGeofenceIds:geofenceIds];
 
                                 NSString *placeId = nil;
                                 if (user.place) {
                                     placeId = user.place._id;
                                 }
-                                [RadarState setPlaceId:placeId];
+                                [RadarState.shared setPlaceId:placeId];
 
                                 NSMutableArray *regionIds = [NSMutableArray new];
                                 if (user.country) {
@@ -666,7 +666,7 @@
                                 if (user.postalCode) {
                                     [regionIds addObject:user.postalCode._id];
                                 }
-                                [RadarState setRegionIds:regionIds];
+                                [RadarState.shared setRegionIds:regionIds];
 
                                 NSMutableArray *beaconIds = [NSMutableArray new];
                                 if (user.beacons) {
@@ -674,14 +674,14 @@
                                         [beaconIds addObject:beacon._id];
                                     }
                                 }
-                                [RadarState setBeaconIds:beaconIds];
+                                [RadarState.shared setBeaconIds:beaconIds];
                             }
             
                             [RadarOfflineEventManager reset];
 
                             if (events && user) {
                                 [RadarSettings setId:user._id];
-                                [RadarState setRadarUser:user];
+                                [RadarState.shared setRadarUser:user];
 
                                 // Update local trip state from server response
                                 if (user.trip) {
@@ -717,7 +717,7 @@
                                 return completionHandler(RadarStatusSuccess, res, events, user, nearbyGeofences, config, token);
                             } else {
                                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:[NSString stringWithFormat:@"Setting %lu notifications remaining", (unsigned long)notificationsRemaining.count]];
-                                [RadarState setRegisteredNotifications:notificationsRemaining];
+                                [RadarState.shared setRegisteredNotifications:notificationsRemaining];
                             }
 
                             [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];

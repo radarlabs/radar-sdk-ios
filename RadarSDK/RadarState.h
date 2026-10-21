@@ -13,46 +13,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarState : NSObject
 
-+ (CLLocation *)lastLocation;
-+ (void)setLastLocation:(CLLocation *_Nullable)lastLocation;
-+ (CLLocation *)lastMovedLocation;
-+ (void)setLastMovedLocation:(CLLocation *_Nullable)lastMovedLocation;
-+ (NSDate *)lastMovedAt;
-+ (void)setLastMovedAt:(NSDate *)lastMovedAt;
-+ (BOOL)stopped;
-+ (void)setStopped:(BOOL)stopped;
-+ (void)updateLastSentAt;
-+ (NSDate *)lastSentAt;
-+ (BOOL)canExit;
-+ (void)setCanExit:(BOOL)canExit;
-+ (CLLocation *)lastFailedStoppedLocation;
-+ (void)setLastFailedStoppedLocation:(CLLocation *_Nullable)lastFailedStoppedLocation;
-+ (NSArray<NSString *> *)geofenceIds;
-+ (void)setGeofenceIds:(NSArray<NSString *> *_Nullable)geofenceIds;
-+ (NSString *_Nullable)placeId;
-+ (void)setPlaceId:(NSString *_Nullable)placeId;
-+ (NSArray<NSString *> *)regionIds;
-+ (void)setRegionIds:(NSArray<NSString *> *_Nullable)regionIds;
-+ (NSArray<NSString *> *)beaconIds;
-+ (void)setBeaconIds:(NSArray<NSString *> *_Nullable)beaconIds;
-+ (NSDictionary *)lastHeadingData;
-+ (void)setLastHeadingData:(NSDictionary *_Nullable)lastHeadingData;
-+ (NSDictionary *)lastMotionActivityData;
-+ (void)setLastMotionActivityData:(NSDictionary *_Nullable)lastMotionActivityData;
-+ (void)setNotificationPermissionGranted:(BOOL)granted;
-+ (BOOL)notificationPermissionGranted;
-+ (void)setMotionAuthorizationString:(NSString *_Nullable)status;
-+ (NSString *_Nullable)motionAuthorizationString;
-+ (void)setLocationAuthorizationStatus:(CLAuthorizationStatus)status;
-+ (CLAuthorizationStatus)locationAuthorizationStatus;
-+ (NSArray<NSDictionary *> *_Nullable)registeredNotifications;
-+ (void)setRegisteredNotifications:(NSArray<NSDictionary *> *_Nullable)registeredNotifications;
-+ (NSDictionary *)lastRelativeAltitudeData;
-+ (void)setLastRelativeAltitudeData:(NSDictionary *_Nullable)lastRelativeAltitudeData;
-+ (NSArray<NSDictionary *> *_Nullable)altitudeAdjustments;
-+ (void)setAltitudeAdjustments:(NSArray<NSDictionary *> *_Nullable)altitudeAdjustments;
-+ (void)setRadarUser:(RadarUser *_Nullable)radarUser NS_SWIFT_NAME(setRadarUser(_:));
-+ (RadarUser *_Nullable)radarUser NS_SWIFT_NAME(radarUser());
+@property (class, nonatomic, readonly) RadarState *shared;
+
+@property (nonatomic, strong, nullable) CLLocation *lastLocation;
+@property (nonatomic, strong, nullable) CLLocation *lastMovedLocation;
+@property (nonatomic, strong, nullable) NSDate *lastMovedAt;
+@property (nonatomic, assign) BOOL stopped;
+@property (nonatomic, strong, readonly, nullable) NSDate *lastSentAt;
+@property (nonatomic, assign) BOOL canExit;
+@property (nonatomic, strong, nullable) CLLocation *lastFailedStoppedLocation;
+@property (nonatomic, copy, nullable) NSArray<NSString *> *geofenceIds;
+@property (nonatomic, copy, nullable) NSString *placeId;
+@property (nonatomic, copy, nullable) NSArray<NSString *> *regionIds;
+@property (nonatomic, copy, nullable) NSArray<NSString *> *beaconIds;
+@property (nonatomic, copy, nullable) NSDictionary<NSString *, NSNumber *> *lastHeadingData;
+@property (nonatomic, copy, nullable) NSDictionary *lastMotionActivityData;
+@property (nonatomic, copy, nullable) NSDictionary *lastRelativeAltitudeData;
+@property (nonatomic, assign) BOOL notificationPermissionGranted;
+@property (nonatomic, copy, nullable) NSString *motionAuthorizationString;
+@property (nonatomic, assign) CLAuthorizationStatus locationAuthorizationStatus;
+@property (nonatomic, copy, nullable) NSArray<NSDictionary *> *registeredNotifications;
+@property (nonatomic, copy, nullable) NSArray<NSDictionary *> *altitudeAdjustments;
+@property (nonatomic, strong, nullable) RadarUser *radarUser;
+
+- (void)updateLastSentAt;
 
 @end
 

@@ -26,19 +26,6 @@ extension UNUserNotificationCenter: NotificationCenterProtocol {
 
 }
 
-/// Where `RadarNotificationHelper` keeps its registered notifications, so tests can substitute
-/// in-memory storage for `RadarState`.
-protocol RegisteredNotificationStore: AnyObject, Sendable {
-    var registeredNotifications: [NotificationValue]? { get set }
-}
-
-final class RadarStateRegisteredNotificationStore: RegisteredNotificationStore {
-    var registeredNotifications: [NotificationValue]? {
-        get { RadarState.registeredNotifications }
-        set { RadarState.registeredNotifications = newValue }
-    }
-}
-
 @objc(RadarNotificationHelper_Swift) @objcMembers
 actor RadarNotificationHelper: NSObject {
 
@@ -49,11 +36,11 @@ actor RadarNotificationHelper: NSObject {
     public static let shared = RadarNotificationHelper()
 
     private let notificationCenter: NotificationCenterProtocol
-    private let radarState: RegisteredNotificationStore
+    private let radarState: RadarState
 
     init(
         notificationCenter: NotificationCenterProtocol = UNUserNotificationCenter.current(),
-        radarState: RegisteredNotificationStore = RadarStateRegisteredNotificationStore(),
+        radarState: RadarState = RadarState.shared,
         geofenceStore: RadarFileStorageObject<[RadarGeofenceSwift]> = RadarFileStorageObject(fileName: "radar_notification_geofences.json")
     ) {
         self.notificationCenter = notificationCenter

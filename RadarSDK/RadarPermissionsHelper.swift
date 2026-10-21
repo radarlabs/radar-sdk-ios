@@ -20,7 +20,7 @@ final class RadarPermissionsHelperSwift: RadarPermissionsHelping {
     // the main thread. Core Location reports the status when the manager is created on every launch and
     // whenever it changes. Until it has reported one, the cache is `.notDetermined`, so ask directly.
     func locationAuthorizationStatus() -> CLAuthorizationStatus {
-        let cachedStatus = RadarState.locationAuthorizationStatus
+        let cachedStatus = RadarState.shared.locationAuthorizationStatus
         return cachedStatus != .notDetermined ? cachedStatus : CLLocationManager.authorizationStatus()
     }
 

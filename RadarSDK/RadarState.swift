@@ -7,10 +7,15 @@
 
 import CoreLocation
 
-/// SDK tracking state persisted through `RadarUserDefaults`. Objective-C uses the class
-/// interface declared in `RadarState.h`.
+// Unchecked Sendable: instances hold no state. Every property reads and writes
+// `RadarUserDefaults`, and the altitude cache is guarded by `relativeAltitudeLock`.
+
+/// SDK tracking state persisted through `RadarUserDefaults`. Objective-C uses the interface
+/// declared in `RadarState.h`.
 @objc(RadarState) @objcMembers
-class RadarState: NSObject {
+class RadarState: NSObject, @unchecked Sendable {
+
+    static let shared = RadarState()
 
     private static let relativeAltitudeMaxAge: TimeInterval = 60
     private static let relativeAltitudeBackupInterval: TimeInterval = 2
@@ -21,8 +26,8 @@ class RadarState: NSObject {
     nonisolated(unsafe) private static var lastRelativeAltitudeDataInMemory: [String: Any]?
     nonisolated(unsafe) private static var lastRelativeAltitudeBackupTime: Date?
 
-    static var lastLocation: CLLocation? {
-        get { location(forKey: .lastLocation) }
+    var lastLocation: CLLocation? {
+        get { Self.location(forKey: .lastLocation) }
         set {
             // An invalid or nil location leaves the stored value unchanged.
             guard let newValue, newValue.isValid else { return }
@@ -30,39 +35,39 @@ class RadarState: NSObject {
         }
     }
 
-    static var lastMovedLocation: CLLocation? {
-        get { location(forKey: .lastMovedLocation) }
+    var lastMovedLocation: CLLocation? {
+        get { Self.location(forKey: .lastMovedLocation) }
         set {
             guard let newValue, newValue.isValid else { return }
             RadarUserDefaults.set(RadarUtils.dictionaryForLocation(newValue), forKey: .lastMovedLocation)
         }
     }
 
-    static var lastMovedAt: Date? {
+    var lastMovedAt: Date? {
         get { RadarUserDefaults.object(forKey: .lastMovedAt) as? Date }
         set { RadarUserDefaults.set(newValue, forKey: .lastMovedAt) }
     }
 
-    static var stopped: Bool {
+    var stopped: Bool {
         get { RadarUserDefaults.bool(forKey: .stopped) }
         set { RadarUserDefaults.set(newValue, forKey: .stopped) }
     }
 
-    static var lastSentAt: Date? {
+    var lastSentAt: Date? {
         RadarUserDefaults.object(forKey: .lastSentAt) as? Date
     }
 
-    static func updateLastSentAt() {
+    func updateLastSentAt() {
         RadarUserDefaults.set(Date(), forKey: .lastSentAt)
     }
 
-    static var canExit: Bool {
+    var canExit: Bool {
         get { RadarUserDefaults.bool(forKey: .canExit) }
         set { RadarUserDefaults.set(newValue, forKey: .canExit) }
     }
 
-    static var lastFailedStoppedLocation: CLLocation? {
-        get { location(forKey: .lastFailedStoppedLocation) }
+    var lastFailedStoppedLocation: CLLocation? {
+        get { Self.location(forKey: .lastFailedStoppedLocation) }
         set {
             // Unlike the other locations, an invalid or nil location clears the stored value.
             guard let newValue, newValue.isValid else {
@@ -73,27 +78,27 @@ class RadarState: NSObject {
         }
     }
 
-    static var geofenceIds: [String]? {
+    var geofenceIds: [String]? {
         get { RadarUserDefaults.object(forKey: .geofenceIds) as? [String] }
         set { RadarUserDefaults.set(newValue, forKey: .geofenceIds) }
     }
 
-    static var placeId: String? {
+    var placeId: String? {
         get { RadarUserDefaults.string(forKey: .placeId) }
         set { RadarUserDefaults.set(newValue, forKey: .placeId) }
     }
 
-    static var regionIds: [String]? {
+    var regionIds: [String]? {
         get { RadarUserDefaults.object(forKey: .regionIds) as? [String] }
         set { RadarUserDefaults.set(newValue, forKey: .regionIds) }
     }
 
-    static var beaconIds: [String]? {
+    var beaconIds: [String]? {
         get { RadarUserDefaults.object(forKey: .beaconIds) as? [String] }
         set { RadarUserDefaults.set(newValue, forKey: .beaconIds) }
     }
 
-    static var lastHeadingData: [String: Double]? {
+    var lastHeadingData: [String: Double]? {
         get {
             guard let dict = RadarUserDefaults.dictionary(forKey: .lastHeadingData) else {
                 return nil
@@ -105,13 +110,13 @@ class RadarState: NSObject {
         }
     }
 
-    static var lastMotionActivityData: [String: Any]? {
+    var lastMotionActivityData: [String: Any]? {
         get { RadarUserDefaults.dictionary(forKey: .lastMotionActivityData) }
         set { RadarUserDefaults.set(newValue, forKey: .lastMotionActivityData) }
     }
 
     /// The latest relative altitude reading, or `nil` when no reading is newer than 60 seconds.
-    static var lastRelativeAltitudeData: [String: Any]? {
+    var lastRelativeAltitudeData: [String: Any]? {
         get {
             Self.relativeAltitudeLock.lock()
             defer { Self.relativeAltitudeLock.unlock() }
@@ -177,17 +182,17 @@ class RadarState: NSObject {
         }
     }
 
-    static var notificationPermissionGranted: Bool {
+    var notificationPermissionGranted: Bool {
         get { RadarUserDefaults.bool(forKey: .notificationPermissionGranted) }
         set { RadarUserDefaults.set(newValue, forKey: .notificationPermissionGranted) }
     }
 
-    static var motionAuthorizationString: String? {
+    var motionAuthorizationString: String? {
         get { RadarUserDefaults.string(forKey: .motionAuthorization) }
         set { RadarUserDefaults.set(newValue, forKey: .motionAuthorization) }
     }
 
-    static var locationAuthorizationStatus: CLAuthorizationStatus {
+    var locationAuthorizationStatus: CLAuthorizationStatus {
         get {
             CLAuthorizationStatus(rawValue: Int32(RadarUserDefaults.integer(forKey: .locationAuthorizationStatus))) ?? .notDetermined
         }
@@ -197,14 +202,14 @@ class RadarState: NSObject {
     }
 
     // Objective-C stores the server's notification dictionaries as-is through
-    // `+registeredNotifications`; Swift reads and writes them as `NotificationValue`s.
+    // `-registeredNotifications`; Swift reads and writes them as `NotificationValue`s.
     @objc(registeredNotifications)
-    static var registeredNotificationDictionaries: [[String: Any]]? {
+    var registeredNotificationDictionaries: [[String: Any]]? {
         get { RadarUserDefaults.object(forKey: .registeredNotifications) as? [[String: Any]] }
         set { RadarUserDefaults.set(newValue, forKey: .registeredNotifications) }
     }
 
-    static var registeredNotifications: [NotificationValue]? {
+    var registeredNotifications: [NotificationValue]? {
         get {
             if let obj = RadarUserDefaults.object(forKey: .registeredNotifications),
                 JSONSerialization.isValidJSONObject(obj),
@@ -224,12 +229,12 @@ class RadarState: NSObject {
         }
     }
 
-    static var altitudeAdjustments: [[String: Any]]? {
+    var altitudeAdjustments: [[String: Any]]? {
         get { RadarUserDefaults.object(forKey: .altitudeAdjustments) as? [[String: Any]] }
         set { RadarUserDefaults.set(newValue, forKey: .altitudeAdjustments) }
     }
 
-    static var radarUser: RadarUser? {
+    var radarUser: RadarUser? {
         get {
             guard let dict = RadarUserDefaults.dictionary(forKey: .radarUser) else {
                 return nil

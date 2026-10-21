@@ -52,15 +52,15 @@
 }
 
 - (NSArray<NSString *> * _Nullable)geofenceIds {
-    return [RadarState geofenceIds];
+    return RadarState.shared.geofenceIds;
 }
 
 - (NSArray<NSString *> * _Nullable)beaconIds {
-    return [RadarState beaconIds];
+    return RadarState.shared.beaconIds;
 }
 
 - (NSString * _Nullable)placeId {
-    return [RadarState placeId];
+    return RadarState.shared.placeId;
 }
 
 - (RadarTripOptions * _Nullable)getTripOptions {
@@ -68,11 +68,11 @@
 }
 
 - (CLLocation * _Nullable)lastLocation {
-    return [RadarState lastLocation];
+    return RadarState.shared.lastLocation;
 }
 
 - (BOOL)isStopped {
-    return [RadarState stopped];
+    return RadarState.shared.stopped;
 }
 
 - (void)logCampaignConversionWithName:(NSString *)name metadata:(NSDictionary<NSString *, id> * _Nonnull)metadata campaign:(NSString * _Nullable)campaign {
@@ -115,7 +115,7 @@
 }
 
 - (RadarUser * _Nullable)radarUser {
-    return [RadarState radarUser];
+    return RadarState.shared.radarUser;
 }
 
 - (void)flushReplaysRequest:(NSArray<NSDictionary *> *)replays

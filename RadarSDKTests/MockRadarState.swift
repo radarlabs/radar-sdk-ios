@@ -8,9 +8,9 @@
 
 @testable import RadarSDK
 
-class MockRadarState: RegisteredNotificationStore, @unchecked Sendable {
+class MockRadarState: RadarState, @unchecked Sendable {
     private var _registeredNotifications: [NotificationValue]? = nil
-    var registeredNotifications: [NotificationValue]? {
+    override public var registeredNotifications: [NotificationValue]? {
         get { return _registeredNotifications }
         set { _registeredNotifications = newValue }
     }
