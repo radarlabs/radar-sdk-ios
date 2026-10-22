@@ -310,7 +310,7 @@ extension RadarAPIClient {
         }
 
         // Include stored altitudeAdjustments from previous track responses
-        if let altitudeAdjustments = RadarSwift.bridge?.altitudeAdjustments(), !altitudeAdjustments.isEmpty {
+        if let altitudeAdjustments = RadarState().altitudeAdjustments, !altitudeAdjustments.isEmpty {
             params["altitudeAdjustments"] = altitudeAdjustments
         }
 
@@ -442,10 +442,10 @@ extension RadarAPIClient {
         params["anonymous"] = anonymous
         if anonymous {
             params["deviceId"] = "anonymous"
-            params["geofenceIds"] = RadarSwift.bridge?.geofenceIds()
-            params["placeId"] = RadarSwift.bridge?.placeId()
-            params["regionIds"] = RadarSwift.bridge?.regionIds()
-            params["beaconIds"] = RadarSwift.bridge?.beaconIds()
+            params["geofenceIds"] = RadarState().geofenceIds
+            params["placeId"] = RadarState().placeId
+            params["regionIds"] = RadarState().regionIds
+            params["beaconIds"] = RadarState().beaconIds
         } else {
             params["id"] = RadarSettings.id
             params["installId"] = RadarSettings.installId
@@ -482,7 +482,7 @@ extension RadarAPIClient {
     ) async -> [String: Any] {
         var locationMetadata: [String: Any] = [:]
         if options.useMotion {
-            locationMetadata["motionActivityData"] = RadarSwift.bridge?.lastMotionActivityData()
+            locationMetadata["motionActivityData"] = RadarState().lastMotionActivityData
             locationMetadata["heading"] = RadarState().lastHeadingData
             locationMetadata["speed"] = location.speed
             locationMetadata["speedAccuracy"] = location.speedAccuracy
@@ -496,11 +496,11 @@ extension RadarAPIClient {
         }
 
         if options.usePressure {
-            let pressureDict = RadarSwift.bridge?.lastRelativeAltitudeData()
+            let pressureDict = RadarState().lastRelativeAltitudeData
             locationMetadata["altitude"] = location.altitude
             locationMetadata["floor"] = location.floor?.level ?? 0
             locationMetadata["pressureHPa"] = pressureDict
-            params["motionAuthorization"] = RadarSwift.bridge?.motionAuthorizationString()
+            params["motionAuthorization"] = RadarState().motionAuthorizationString
             if let pressureDict {
                 let pressure = pressureDict["pressure"] ?? "nil"
                 let relAlt = pressureDict["relativeAltitude"] ?? "nil"
@@ -524,7 +524,7 @@ extension RadarAPIClient {
             nearbyGeofences: res["nearbyGeofences"].flatMap { RadarSwift.bridge?.geofences(fromObject: $0) },
             config: RadarConfig.from(dictionary: res),
             token: RadarSwift.bridge?.createVerifiedLocationToken(dict: res),
-            altitudeAdjustments: userObj?["altitudeAdjustments"] as? [[AnyHashable: Any]],
+            altitudeAdjustments: userObj?["altitudeAdjustments"] as? [[String: Any]],
             inAppMessages: res["inAppMessages"].map { RadarInAppMessage_Swift.fromArray($0) } ?? [],
             nearbyBeaconRegions: res["nearbyBeaconRegions"] as? [[String: Any]]
         )

@@ -52,7 +52,7 @@ struct RadarTrackResponse {
     let nearbyGeofences: [RadarGeofence]?
     let config: RadarConfig?
     let token: RadarVerifiedLocationToken?
-    let altitudeAdjustments: [[AnyHashable: Any]]?
+    let altitudeAdjustments: [[String: Any]]?
     let inAppMessages: [RadarInAppMessage]
     let nearbyBeaconRegions: [[String: Any]]?
 }

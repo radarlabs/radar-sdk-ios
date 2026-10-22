@@ -75,7 +75,7 @@ enum RadarTrackHandler {
         } else if options.replay == .stops && request.stopped
             && !(request.source == .foregroundLocation || request.source == .manualLocation)
         {
-            RadarSwift.bridge?.setLastFailedStoppedLocation(request.location)
+            RadarState().lastFailedStoppedLocation = request.location
         }
 
         RadarSwift.bridge?.didFail(status: status)
@@ -87,18 +87,20 @@ enum RadarTrackHandler {
     /// Applies a successful response to SDK state. Throws `.errorServer` when the response is
     /// missing `events` or `user`.
     static func handleTrackResponse(_ response: RadarTrackResponse, request: RadarTrackRequest) async throws -> RadarTrackResponse {
+        let state = RadarState()
+
         RadarReplayBuffer.sharedInstance.clearBuffer()
-        RadarSwift.bridge?.setLastFailedStoppedLocation(nil)
+        state.lastFailedStoppedLocation = nil
         RadarLogger.flushLogs()
         RadarSettings.updateLastTrackedTime()
 
         if response.res["user"] is [String: Any] {
             // Extract and store altitudeAdjustments from user object
             if let altitudeAdjustments = response.altitudeAdjustments {
-                RadarSwift.bridge?.setAltitudeAdjustments(altitudeAdjustments)
+                state.altitudeAdjustments = altitudeAdjustments
                 RadarLogger.shared.debug("Stored \(altitudeAdjustments.count) altitude adjustments from track response")
             } else {
-                RadarSwift.bridge?.setAltitudeAdjustments(nil)
+                state.altitudeAdjustments = nil
             }
         }
 
@@ -108,7 +110,7 @@ enum RadarTrackHandler {
         }
 
         if let user = response.user {
-            updateTrackState(from: user)
+            updateTrackState(from: user, state: state)
         }
 
         RadarOfflineEventManager.reset()
@@ -116,13 +118,13 @@ enum RadarTrackHandler {
         guard response.events != nil, let user = response.user else {
             // getNotificationDiff never reports remaining notifications, so this always clears them.
             RadarLogger.shared.info("Setting 0 notifications remaining")
-            RadarSwift.bridge?.setRegisteredNotifications([])
+            state.registeredNotifications = []
             RadarSwift.bridge?.didFail(status: .errorServer)
             throw RadarError(status: .errorServer)
         }
 
         RadarSettings.id = user._id
-        RadarSwift.bridge?.setRadarUser(user)
+        state.radarUser = user
 
         updateTrip(from: user)
 
@@ -161,14 +163,14 @@ enum RadarTrackHandler {
         }
     }
 
-    private static func updateTrackState(from user: RadarUser) {
+    private static func updateTrackState(from user: RadarUser, state: RadarState) {
         let inGeofences = !(user.geofences?.isEmpty ?? true)
         let atPlace = user.place != nil
-        RadarSwift.bridge?.setCanExit(inGeofences || atPlace)
+        state.canExit = inGeofences || atPlace
 
-        RadarSwift.bridge?.setGeofenceIds(user.geofences?.map(\._id) ?? [])
-        RadarSwift.bridge?.setPlaceId(user.place?._id)
-        RadarSwift.bridge?.setRegionIds([user.country, user.state, user.dma, user.postalCode].compactMap { $0?._id })
-        RadarSwift.bridge?.setBeaconIds(user.beacons?.compactMap(\._id) ?? [])
+        state.geofenceIds = user.geofences?.map(\._id) ?? []
+        state.placeId = user.place?._id
+        state.regionIds = [user.country, user.state, user.dma, user.postalCode].compactMap { $0?._id }
+        state.beaconIds = user.beacons?.compactMap(\._id) ?? []
     }
 }
