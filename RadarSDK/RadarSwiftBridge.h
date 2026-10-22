@@ -12,6 +12,7 @@
 #import "RadarState.h"
 #import "RadarBeacon.h"
 #import "RadarPlace.h"
+#import "RadarRegion.h"
 #import <CoreLocation/CoreLocation.h>
 #import "Radar.h"
 
@@ -34,6 +35,8 @@
 - (RadarEvent * _Nullable)createEventWithDict:(NSDictionary * _Nonnull)dict;
 - (RadarUser * _Nullable)createUserWithDict:(NSDictionary * _Nonnull)dict;
 - (RadarGeofence * _Nullable)createGeofenceWithDict:(NSDictionary * _Nonnull)dict;
+- (RadarPlace * _Nullable)createPlaceWithDict:(NSDictionary * _Nonnull)dict;
+- (RadarRegion * _Nullable)createRegionWithDict:(NSDictionary * _Nonnull)dict;
 - (BOOL)isForeground;
 - (RadarTripOptions * _Nullable)getTripOptions;
 - (RadarUser * _Nullable)radarUser;
