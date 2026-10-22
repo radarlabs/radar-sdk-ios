@@ -21,6 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		10AE1AC06DA96C0500AE4F02 /* RadarTrackHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF05C51CFA8812C9C1D3E482 /* RadarTrackHandler.swift */; };
+		F679C0AB306EAFEE00588CF0 /* RadarAPIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F679C0AA306EAFEE00588CF0 /* RadarAPIResponse.swift */; };
 		0107A9FF26220037008AB52F /* RadarSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C782308797B00EB88F9 /* RadarSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0107AA0726220040008AB52F /* RadarAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C9823087F9200EB88F9 /* RadarAPIClient.h */; };
 		0107AA0C26220045008AB52F /* RadarAPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC1237C5B800026C91A /* RadarAPIHelper.h */; };
@@ -333,6 +335,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BF05C51CFA8812C9C1D3E482 /* RadarTrackHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackHandler.swift; sourceTree = "<group>"; };
+		F679C0AA306EAFEE00588CF0 /* RadarAPIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIResponse.swift; sourceTree = "<group>"; };
 		0107A9E82621FFB9008AB52F /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0113020E2AE1467800EFC377 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk/System/Library/PrivateFrameworks/Network.framework; sourceTree = DEVELOPER_DIR; };
 		0114F057284EFDB700ADA4E4 /* RadarRouteMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRouteMode.h; sourceTree = "<group>"; };
@@ -807,6 +811,7 @@
 				DD236C9923087F9200EB88F9 /* RadarAPIClient.m */,
 				F6513DDB2E54F63100523472 /* RadarAPIClient.swift */,
 				F679C0AA306EAFEE00588CF0 /* RadarAPIResponse.swift */,
+				BF05C51CFA8812C9C1D3E482 /* RadarTrackHandler.swift */,
 				DD633EC1237C5B800026C91A /* RadarAPIHelper.h */,
 				DD633EC2237C5B800026C91A /* RadarAPIHelper.m */,
 				F686B7362E4D2AFC00D3D614 /* RadarAPIHelper.swift */,
@@ -1434,6 +1439,7 @@
 				0107AAF2262201B2008AB52F /* RadarUser.m in Sources */,
 				82F7FAEF2A65FE030055AA4B /* RadarVerificationManager.m in Sources */,
 				F679C0AB306EAFEE00588CF0 /* RadarAPIResponse.swift in Sources */,
+				10AE1AC06DA96C0500AE4F02 /* RadarTrackHandler.swift in Sources */,
 				0107AA832622013A008AB52F /* RadarBeacon.m in Sources */,
 				F66D6297304620CB00B95B82 /* RadarRoute.swift in Sources */,
 				BA8D14CD3005A30C00022EB3 /* RadarOneShotBeaconManager+Delegate.swift in Sources */,

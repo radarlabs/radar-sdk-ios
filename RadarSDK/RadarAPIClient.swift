@@ -267,10 +267,10 @@ public final class RadarAPIClient: Sendable {
 
 extension RadarAPIClient {
 
-    // Swift port of the verified path of `trackWithLocation:` in RadarAPIClient.m. Verified tracks
-    // are never batched or replayed, so the request is always sent directly.
+    // Builds the verified track request from `trackWithLocation:` in RadarAPIClient.m. Verified
+    // tracks are never batched or replayed, so the request is always sent directly with `track(_:)`.
     // swiftlint:disable:next function_parameter_count
-    func trackVerified(
+    func verifiedTrackRequest(
         location: CLLocation,
         stopped: Bool,
         foreground: Bool,
@@ -284,7 +284,7 @@ extension RadarAPIClient {
         transactionId: String?,
         revealRiskId: String?,
         useSecondaryVerifiedHost: Bool,
-    ) async throws -> RadarTrackResponse {
+    ) async throws -> RadarTrackRequest {
         guard RadarSettings.publishableKey != nil else {
             throw RadarError(status: .errorPublishableKey)
         }
@@ -327,24 +327,23 @@ extension RadarAPIClient {
             params["notificationDiff"] = notificationsDelivered
         }
 
-        let host: RadarAPIHelper.RadarHost = useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost
+        return RadarTrackRequest(
+            host: useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost,
+            params: params,
+            location: location,
+            stopped: stopped,
+            source: source,
+            options: options,
+            locationMetadata: locationMetadata,
+            notificationsDelivered: notificationsDelivered
+        )
+    }
 
-        let res: [String: Any]
-        do {
-            res = try await sendTrackRequest(host: host, params: params)
-        } catch {
-            handleTrackFailure(
-                status: error.status,
-                params: params,
-                notificationsDelivered: notificationsDelivered,
-                options: options,
-                location: location,
-                storeFailedStoppedLocation: stopped && !(source == .foregroundLocation || source == .manualLocation)
-            )
-            throw error
-        }
-
-        return try await handleTrackResponse(res, location: location, locationMetadata: locationMetadata)
+    /// Sends a track request and parses the response. State updates for the result are done by
+    /// `RadarTrackHandler`.
+    func track(_ request: RadarTrackRequest) async throws(RadarError) -> RadarTrackResponse {
+        let res = try await sendTrackRequest(host: request.host, params: request.params)
+        return trackResponse(from: res, locationMetadata: request.locationMetadata)
     }
 
     private func sendTrackRequest(host: RadarAPIHelper.RadarHost, params: [String: Any]) async throws(RadarError) -> [String: Any] {
@@ -514,142 +513,20 @@ extension RadarAPIClient {
         return locationMetadata
     }
 
-    // swiftlint:disable:next function_parameter_count
-    private func handleTrackFailure(
-        status: RadarStatus,
-        params: [String: Any],
-        notificationsDelivered: [[String: Sendable]],
-        options: RadarTrackingOptions,
-        location: CLLocation,
-        storeFailedStoppedLocation: Bool
-    ) {
-        if options.replay == .all {
-            // create a copy of params that we can use to write to the buffer in case of request failure
-            var bufferParams = params
-            bufferParams["replayed"] = true
+    private func trackResponse(from res: [String: Any], locationMetadata: [String: Any]) -> RadarTrackResponse {
+        var userObj = res["user"] as? [String: Any]
+        userObj?["metadata"] = locationMetadata
 
-            // Skip notification removal under XCTest, matching RadarAPIClient.m.
-            if NSClassFromString("XCTestCase") == nil {
-                let notificationDiff = notificationsDelivered.isEmpty ? nil : notificationsDelivered
-                Task {
-                    await RadarNotificationHelper.shared.removeRegisteredNotifications(notifications: notificationDiff)
-                }
-            }
-
-            RadarReplayBuffer.sharedInstance.writeNewReplayToBuffer(bufferParams)
-        } else if options.replay == .stops && storeFailedStoppedLocation {
-            RadarSwift.bridge?.setLastFailedStoppedLocation(location)
-        }
-
-        RadarSwift.bridge?.didFail(status: status)
-
-        // Generate offline events on track failure (gated internally by offlineEventGenerationEnabled)
-        RadarOfflineEventManager.handleTrackFailure(location)
-    }
-
-    private func handleTrackResponse(
-        _ res: [String: Any],
-        location: CLLocation,
-        locationMetadata: [String: Any]
-    ) async throws -> RadarTrackResponse {
-        RadarReplayBuffer.sharedInstance.clearBuffer()
-        RadarSwift.bridge?.setLastFailedStoppedLocation(nil)
-        RadarLogger.flushLogs()
-        RadarSettings.updateLastTrackedTime()
-
-        let config = RadarConfig.from(dictionary: res)
-
-        let events = res["events"].flatMap { RadarSwift.bridge?.events(fromObject: $0) }
-        let user = trackUser(from: res["user"], locationMetadata: locationMetadata)
-        let nearbyGeofences = res["nearbyGeofences"].flatMap { RadarSwift.bridge?.geofences(fromObject: $0) }
-        let token = RadarSwift.bridge?.createVerifiedLocationToken(dict: res)
-
-        if let inAppMessagesObj = res["inAppMessages"] {
-            nonisolated(unsafe) let inAppMessages = RadarInAppMessage_Swift.fromArray(inAppMessagesObj)
-            if !inAppMessages.isEmpty {
-                await RadarInAppMessageManager.shared.onInAppMessageReceived(messages: inAppMessages)
-            }
-        }
-
-        if let user {
-            updateTrackState(from: user)
-        }
-
-        RadarOfflineEventManager.reset()
-
-        guard let events, let user else {
-            // getNotificationDiff never reports remaining notifications, so this always clears them.
-            RadarLogger.shared.info("Setting 0 notifications remaining")
-            RadarSwift.bridge?.setRegisteredNotifications([])
-            RadarSwift.bridge?.didFail(status: .errorServer)
-            throw RadarError(status: .errorServer)
-        }
-
-        RadarSettings.id = user._id
-        RadarSwift.bridge?.setRadarUser(user)
-
-        updateTrip(from: user)
-
-        RadarSettings.userDebug = user.debug
-
-        RadarSwift.bridge?.didUpdateLocation(location, user: user)
-
-        if !events.isEmpty {
-            RadarSwift.bridge?.didReceiveEvents(events, user: user)
-        }
-
-        if let token {
-            RadarSwift.bridge?.didUpdateToken(token)
-        }
-
-        if let regions = res["nearbyBeaconRegions"] as? [[String: Any]] {
-            nonisolated(unsafe) let beaconRegions = regions
-            Task { @MainActor in
-                RadarBeaconManagerSwift.shared.registerBeaconRegionNotifications(from: beaconRegions)
-            }
-        }
-
-        return RadarTrackResponse(res: res, events: events, user: user, nearbyGeofences: nearbyGeofences, config: config, token: token)
-    }
-
-    private func trackUser(from userObj: Any?, locationMetadata: [String: Any]) -> RadarUser? {
-        guard var mutableUserObj = userObj as? [String: Any] else {
-            return nil
-        }
-        mutableUserObj["metadata"] = locationMetadata
-
-        // Extract and store altitudeAdjustments from user object
-        if let altitudeAdjustments = mutableUserObj["altitudeAdjustments"] as? [[AnyHashable: Any]] {
-            RadarSwift.bridge?.setAltitudeAdjustments(altitudeAdjustments)
-            RadarLogger.shared.debug("Stored \(altitudeAdjustments.count) altitude adjustments from track response")
-        } else {
-            RadarSwift.bridge?.setAltitudeAdjustments(nil)
-        }
-
-        return RadarSwift.bridge?.createUser(dict: mutableUserObj)
-    }
-
-    private func updateTrip(from user: RadarUser) {
-        // Update local trip state from server response
-        if let trip = user.trip {
-            // Update local trip with latest state (ETAs, leg statuses, etc.)
-            RadarSettings.trip = trip
-        } else if RadarSettings.tripOptions != nil {
-            // Trip ended server-side - restore previous tracking options
-            RadarSwift.bridge?.restartPreviousTrackingOptions()
-            RadarSettings.tripOptions = nil
-            RadarSettings.trip = nil
-        }
-    }
-
-    private func updateTrackState(from user: RadarUser) {
-        let inGeofences = !(user.geofences?.isEmpty ?? true)
-        let atPlace = user.place != nil
-        RadarSwift.bridge?.setCanExit(inGeofences || atPlace)
-
-        RadarSwift.bridge?.setGeofenceIds(user.geofences?.map(\._id) ?? [])
-        RadarSwift.bridge?.setPlaceId(user.place?._id)
-        RadarSwift.bridge?.setRegionIds([user.country, user.state, user.dma, user.postalCode].compactMap { $0?._id })
-        RadarSwift.bridge?.setBeaconIds(user.beacons?.compactMap(\._id) ?? [])
+        return RadarTrackResponse(
+            res: res,
+            events: res["events"].flatMap { RadarSwift.bridge?.events(fromObject: $0) },
+            user: userObj.flatMap { RadarSwift.bridge?.createUser(dict: $0) },
+            nearbyGeofences: res["nearbyGeofences"].flatMap { RadarSwift.bridge?.geofences(fromObject: $0) },
+            config: RadarConfig.from(dictionary: res),
+            token: RadarSwift.bridge?.createVerifiedLocationToken(dict: res),
+            altitudeAdjustments: userObj?["altitudeAdjustments"] as? [[AnyHashable: Any]],
+            inAppMessages: res["inAppMessages"].map { RadarInAppMessage_Swift.fromArray($0) } ?? [],
+            nearbyBeaconRegions: res["nearbyBeaconRegions"] as? [[String: Any]]
+        )
     }
 }
