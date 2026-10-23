@@ -21,3 +21,5 @@
 #import "../RadarSDK/RadarVerifiedLocationToken+Internal.h"
 #import "../RadarSDK/RadarRoute+Internal.h"
 #import "../RadarSDK/RadarRoutes+Internal.h"
+#import "../RadarSDK/RadarPlace+Internal.h"
+#import "../RadarSDK/RadarRegion+Internal.h"
