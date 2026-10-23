@@ -77,6 +77,50 @@
     return RadarState.shared.stopped;
 }
 
+- (void)setStopped:(BOOL)stopped {
+    [RadarState setStopped:stopped];
+}
+
+- (void)setLastLocation:(CLLocation * _Nullable)location {
+    [RadarState setLastLocation:location];
+}
+
+- (CLLocation * _Nullable)lastMovedLocation {
+    return [RadarState lastMovedLocation];
+}
+
+- (void)setLastMovedLocation:(CLLocation * _Nullable)location {
+    [RadarState setLastMovedLocation:location];
+}
+
+- (NSDate * _Nullable)lastMovedAt {
+    return [RadarState lastMovedAt];
+}
+
+- (void)setLastMovedAt:(NSDate *)date {
+    [RadarState setLastMovedAt:date];
+}
+
+- (CLLocation * _Nullable)lastFailedStoppedLocation {
+    return [RadarState lastFailedStoppedLocation];
+}
+
+- (void)setLastFailedStoppedLocation:(CLLocation * _Nullable)location {
+    [RadarState setLastFailedStoppedLocation:location];
+}
+
+- (NSDate * _Nullable)lastSentAt {
+    return [RadarState lastSentAt];
+}
+
+- (void)updateLastSentAt {
+    [RadarState updateLastSentAt];
+}
+
+- (BOOL)canExit {
+    return [RadarState canExit];
+}
+
 - (void)logCampaignConversionWithName:(NSString *)name metadata:(NSDictionary<NSString *, id> * _Nonnull)metadata campaign:(NSString * _Nullable)campaign {
     [Radar sendLogConversionRequestWithName:name metadata:metadata campaign:campaign completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
         NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];

@@ -22,6 +22,17 @@ protocol RadarSwiftBridgeProtocol {
     func placeId() -> String?
     func lastLocation() -> CLLocation?
     func isStopped() -> Bool
+    func setStopped(_ stopped: Bool)
+    func setLastLocation(_ location: CLLocation?)
+    func lastMovedLocation() -> CLLocation?
+    func setLastMovedLocation(_ location: CLLocation?)
+    func lastMovedAt() -> Date?
+    func setLastMovedAt(_ date: Date)
+    func lastFailedStoppedLocation() -> CLLocation?
+    func setLastFailedStoppedLocation(_ location: CLLocation?)
+    func lastSentAt() -> Date?
+    func updateLastSentAt()
+    func canExit() -> Bool
     func getTripOptions() -> RadarTripOptions?
     func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?)
     func createEvent(dict: [String: Any]) -> RadarEvent?
