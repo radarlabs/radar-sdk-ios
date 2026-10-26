@@ -130,7 +130,9 @@
         });
     }
     
-    BOOL autoFailover = [RadarSettings initializeOptions].trackVerifiedAutoFailover;
+    // Initializing without options never persists any, so fall back to the default (on).
+    RadarInitializeOptions *initializeOptions = [RadarSettings initializeOptions];
+    BOOL autoFailover = initializeOptions ? initializeOptions.trackVerifiedAutoFailover : YES;
 
     void (^continueWithConfig)(RadarStatus, RadarConfig * _Nullable, BOOL) =
     ^(RadarStatus status, RadarConfig * _Nullable config, BOOL useSecondaryVerifiedHost) {
