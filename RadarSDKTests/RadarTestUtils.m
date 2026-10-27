@@ -43,10 +43,10 @@
     params[@"anonymous"] = @(anonymous);
     if (anonymous) {
         params[@"deviceId"] = @"anonymous";
-        params[@"geofenceIds"] = [RadarState geofenceIds];
-        params[@"placeId"] = [RadarState placeId];
-        params[@"regionIds"] = [RadarState regionIds];
-        params[@"beaconIds"] = [RadarState beaconIds];
+        params[@"geofenceIds"] = RadarState.shared.geofenceIds;
+        params[@"placeId"] = RadarState.shared.placeId;
+        params[@"regionIds"] = RadarState.shared.regionIds;
+        params[@"beaconIds"] = RadarState.shared.beaconIds;
     } else {
         params[@"id"] = [RadarSettings _id];
         params[@"installId"] = [RadarSettings installId];
@@ -141,7 +141,7 @@
     if (locationAccuracyAuthorization) {
         params[@"locationAccuracyAuthorization"] = locationAccuracyAuthorization;
     }
-    params[@"notificationAuthorization"] = [RadarState notificationPermissionGranted] ? @"true" : @"false";
+    params[@"notificationAuthorization"] = RadarState.shared.notificationPermissionGranted ? @"true" : @"false";
     
     params[@"trackingOptions"] = [options dictionaryValue];
     

@@ -34,7 +34,7 @@ extension RadarSerializedTests {
 
             RadarLocationManagerSwift.didChangeAuthorizationStatus(.authorizedWhenInUse)
 
-            #expect(RadarState().locationAuthorizationStatus == .authorizedWhenInUse)
+            #expect(RadarState.shared.locationAuthorizationStatus == .authorizedWhenInUse)
         }
 
         @Test("didChangeAuthorizationStatus is a no-op when status is unchanged")
@@ -46,7 +46,7 @@ extension RadarSerializedTests {
             }
 
             // Seed the persisted status so the incoming status matches it.
-            RadarState().locationAuthorizationStatus = .authorizedAlways
+            RadarState.shared.locationAuthorizationStatus = .authorizedAlways
 
             // Flags on + authorized permissions: if the guard didn't early-return on the
             // unchanged status, this would start tracking.
@@ -77,7 +77,7 @@ extension RadarSerializedTests {
 
             RadarLocationManagerSwift.didChangeAuthorizationStatus(.authorizedAlways)
 
-            #expect(RadarState().locationAuthorizationStatus == .authorizedAlways)
+            #expect(RadarState.shared.locationAuthorizationStatus == .authorizedAlways)
             #expect(RadarSettings.tracking == false)
         }
 

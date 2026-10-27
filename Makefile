@@ -166,9 +166,15 @@ ci-build-example:
 	  sed 's|^@import RadarSDK;$$|#import <RadarSDK/RadarSDK.h>|' "$$consumer_source" > "$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage.mm"; \
 	  xcrun --sdk iphonesimulator clang++ -fsyntax-only -arch "$$(uname -m)" -mios-simulator-version-min="$$(xcrun --sdk iphonesimulator --show-sdk-version)" -fobjc-arc -fno-modules -F "$$(dirname "$$framework")" "$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage.mm"
 
+# Fails if the SDK's compiled code contains Swift async-import thunks, which can crash apps that
+# link other Swift libraries. check-async-thunks.sh explains the bug and how to fix a failure.
+# Reads the objects built by ci-build-example.
+check-async-thunks:
+	./check-async-thunks.sh "$(CI_EXAMPLE_DERIVED_DATA)"
+
 docs:
 	jazzy
 
 dist: clean-pretty test-pretty build-pretty lint docs
 
-.PHONY: bootstrap clean test build lint lint-swift format format-check ci-build-analyze ci-build-example ci-test-pretty ci-test-swift docs dist
+.PHONY: bootstrap clean test build lint lint-swift format format-check ci-build-analyze ci-build-example check-async-thunks ci-test-pretty ci-test-swift docs dist

@@ -176,20 +176,20 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
 
     // MARK: - RadarInitializeOptions roundtrip
 
-    func test_initializeOptions_trackVerifiedAutoFailover_defaultsFalse() {
+    func test_initializeOptions_trackVerifiedAutoFailover_defaultsTrue() {
         let options = RadarInitializeOptions()
-        XCTAssertFalse(options.trackVerifiedAutoFailover)
+        XCTAssertTrue(options.trackVerifiedAutoFailover)
     }
 
     func test_initializeOptions_trackVerifiedAutoFailover_roundtripsThroughDictionary() {
         let options = RadarInitializeOptions()
-        options.trackVerifiedAutoFailover = true
+        options.trackVerifiedAutoFailover = false
 
         let dict = options.dictionaryValue()
-        XCTAssertEqual(dict["trackVerifiedAutoFailover"] as? NSNumber, NSNumber(value: true))
+        XCTAssertEqual(dict["trackVerifiedAutoFailover"] as? NSNumber, NSNumber(value: false))
 
         let restored = RadarInitializeOptions(dict: dict)
-        XCTAssertTrue(restored.trackVerifiedAutoFailover)
+        XCTAssertFalse(restored.trackVerifiedAutoFailover)
     }
 
     func test_initializeOptions_networkTimeoutInterval_defaultsToTen() {

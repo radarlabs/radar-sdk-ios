@@ -308,7 +308,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         [Radar removeTags:existingTags];
     }
     
-    [RadarState setAltitudeAdjustments:nil];
+    [RadarState.shared setAltitudeAdjustments:nil];
 }
 
 - (void)tearDown {
@@ -521,7 +521,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
         XCTAssertEqual(status, RadarStatusSuccess);
 
-        NSArray<NSDictionary *> *stored = [RadarState altitudeAdjustments];
+        NSArray<NSDictionary *> *stored = RadarState.shared.altitudeAdjustments;
         XCTAssertNotNil(stored);
         XCTAssertEqual(stored.count, 2);
         XCTAssertEqualObjects(stored[0][@"geofenceId"], @"abc123");
@@ -545,7 +545,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         @{@"geofenceId": @"abc123", @"altitude": @(100.5), @"confidence": @(3)},
         @{@"geofenceId": @"def456", @"altitude": @(200.0), @"confidence": @(2)}
     ];
-    [RadarState setAltitudeAdjustments:adjustments];
+    [RadarState.shared setAltitudeAdjustments:adjustments];
 
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
@@ -587,9 +587,9 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
         @{@"geofenceId": @"def456", @"altitude": @(200.0), @"confidence": @(2)}
     ];
 
-    [RadarState setAltitudeAdjustments:adjustments];
+    [RadarState.shared setAltitudeAdjustments:adjustments];
 
-    NSArray<NSDictionary *> *stored = [RadarState altitudeAdjustments];
+    NSArray<NSDictionary *> *stored = RadarState.shared.altitudeAdjustments;
     XCTAssertNotNil(stored);
     XCTAssertEqual(stored.count, 2);
     XCTAssertEqualObjects(stored[0][@"geofenceId"], @"abc123");
@@ -599,13 +599,13 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
     XCTAssertEqualObjects(stored[1][@"altitude"], @(200.0));
     XCTAssertEqualObjects(stored[1][@"confidence"], @(2));
 
-    [RadarState setAltitudeAdjustments:nil];
-    XCTAssertNil([RadarState altitudeAdjustments]);
+    [RadarState.shared setAltitudeAdjustments:nil];
+    XCTAssertNil(RadarState.shared.altitudeAdjustments);
 }
 
 - (void)test_Radar_altitudeAdjustments_cleared_when_not_in_track_response {
-    [RadarState setAltitudeAdjustments:@[@{@"geofenceId": @"stale", @"altitude": @(50.0)}]];
-    XCTAssertNotNil([RadarState altitudeAdjustments]);
+    [RadarState.shared setAltitudeAdjustments:@[@{@"geofenceId": @"stale", @"altitude": @(50.0)}]];
+    XCTAssertNotNil(RadarState.shared.altitudeAdjustments);
 
     self.permissionsHelperMock.mockLocationAuthorizationStatus = kCLAuthorizationStatusAuthorizedWhenInUse;
     self.locationManagerMock.mockLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.78382, -73.97536)
@@ -620,7 +620,7 @@ static NSString *const kPublishableKey = @"prj_test_pk_0000000000000000000000000
 
     [Radar trackOnceWithCompletionHandler:^(RadarStatus status, CLLocation *_Nullable location, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user) {
         XCTAssertEqual(status, RadarStatusSuccess);
-        XCTAssertNil([RadarState altitudeAdjustments]);
+        XCTAssertNil(RadarState.shared.altitudeAdjustments);
 
         [expectation fulfill];
     }];

@@ -57,15 +57,21 @@ final class RadarSDKFraud: @unchecked Sendable {
         guard let radarSDKFraudClass = NSClassFromString("RadarSDKFraud") as? NSObject.Type else {
             return nil
         }
+        return fromSharedInstance(of: radarSDKFraudClass)
+    }()
+
+    static func fromSharedInstance(of radarSDKFraudClass: NSObject.Type) -> RadarSDKFraud? {
         let sharedInstanceSelector = NSSelectorFromString("sharedInstance")
+        // `sharedInstance` returns an unowned (+0) reference. Taking it as retained over-releases the
+        // fraud SDK's singleton, which frees it when this wrapper rejects an incompatible SDK.
         guard radarSDKFraudClass.responds(to: sharedInstanceSelector),
             let result = radarSDKFraudClass.perform(sharedInstanceSelector),
-            let instance = result.takeRetainedValue() as? NSObject
+            let instance = result.takeUnretainedValue() as? NSObject
         else {
             return nil
         }
         return RadarSDKFraud(instance: instance)
-    }()
+    }
 
     static let initializeSelector = NSSelectorFromString("initializeWithOptions:")
     public func initialize(options: [String: Any]) {

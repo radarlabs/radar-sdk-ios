@@ -16,6 +16,9 @@ public class RadarInitializeOptions: NSObject {
     public var autoLogNotificationConversions: Bool
     public var autoHandleNotificationDeepLinks: Bool
     public var silentPush: Bool
+
+    /// Whether `trackVerified()` retries against a secondary verified host when the primary
+    /// verified host returns a non-Radar response. Default `true`.
     public var trackVerifiedAutoFailover: Bool
 
     /// Request and resource timeout in seconds for standard API calls. Default 10 seconds.
@@ -32,7 +35,7 @@ public class RadarInitializeOptions: NSObject {
         autoLogNotificationConversions = false
         autoHandleNotificationDeepLinks = false
         silentPush = false
-        trackVerifiedAutoFailover = false
+        trackVerifiedAutoFailover = true
         networkTimeoutInterval = RadarInitializeOptions.defaultNetworkTimeoutInterval
         ipChangeDebounceInterval = RadarInitializeOptions.defaultIPChangeDebounceInterval
         super.init()
@@ -42,7 +45,8 @@ public class RadarInitializeOptions: NSObject {
         autoLogNotificationConversions = RadarInitializeOptions.parseBool(dict?["autoLogNotificationConversions"])
         autoHandleNotificationDeepLinks = RadarInitializeOptions.parseBool(dict?["autoHandleNotificationDeepLinks"])
         silentPush = RadarInitializeOptions.parseBool(dict?["silentPush"])
-        trackVerifiedAutoFailover = RadarInitializeOptions.parseBool(dict?["trackVerifiedAutoFailover"])
+        trackVerifiedAutoFailover = RadarInitializeOptions.parseBool(
+            dict?["trackVerifiedAutoFailover"], defaultValue: true)
         networkTimeoutInterval = RadarInitializeOptions.safeParseTimeInterval(
             dict?["networkTimeoutInterval"],
             allowsZero: false,
@@ -66,14 +70,15 @@ public class RadarInitializeOptions: NSObject {
 
     /// Accepts both the numbers a property list round trip produces and the strings a
     /// cross-platform wrapper may pass, matching what `-[NSObject boolValue]` did here.
-    private static func parseBool(_ value: Any?) -> Bool {
+    /// A missing or unsupported value falls back to `defaultValue`.
+    private static func parseBool(_ value: Any?, defaultValue: Bool = false) -> Bool {
         if let number = value as? NSNumber {
             return number.boolValue
         }
         if let string = value as? String {
             return (string as NSString).boolValue
         }
-        return false
+        return defaultValue
     }
 
     /// Missing, unparseable, non-finite, and disallowed non-positive values fall back to the default.

@@ -78,9 +78,15 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func canExit() -> Bool { mockCanExit }
     func getTripOptions() -> RadarTripOptions? { nil }
     func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?) {}
-    func createEvent(dict: [String: Any]) -> RadarEvent? { nil }
+    var createEventHandler: (([String: Any]) -> RadarEvent?)?
+    func createEvent(dict: [String: Any]) -> RadarEvent? { createEventHandler?(dict) }
     func createUser(dict: [String: Any]) -> RadarUser? { nil }
-    func createGeofence(dict: [String: Any]) -> RadarGeofence? { nil }
+    var createGeofenceHandler: (([String: Any]) -> RadarGeofence?)?
+    func createGeofence(dict: [String: Any]) -> RadarGeofence? { createGeofenceHandler?(dict) }
+    var createPlaceHandler: (([String: Any]) -> RadarPlace?)?
+    func createPlace(dict: [String: Any]) -> RadarPlace? { createPlaceHandler?(dict) }
+    var createRegionHandler: (([String: Any]) -> RadarRegion?)?
+    func createRegion(dict: [String: Any]) -> RadarRegion? { createRegionHandler?(dict) }
     var mockIsForeground = false
     func isForeground() -> Bool { mockIsForeground }
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {}

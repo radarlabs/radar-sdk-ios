@@ -12,6 +12,8 @@
 #import "RadarBeacon+Internal.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
+#import "RadarPlace+Internal.h"
+#import "RadarRegion+Internal.h"
 #import "RadarUser+Internal.h"
 #import "RadarReplayBuffer.h"
 #import "Radar+Internal.h"
@@ -52,15 +54,15 @@
 }
 
 - (NSArray<NSString *> * _Nullable)geofenceIds {
-    return [RadarState geofenceIds];
+    return RadarState.shared.geofenceIds;
 }
 
 - (NSArray<NSString *> * _Nullable)beaconIds {
-    return [RadarState beaconIds];
+    return RadarState.shared.beaconIds;
 }
 
 - (NSString * _Nullable)placeId {
-    return [RadarState placeId];
+    return RadarState.shared.placeId;
 }
 
 - (RadarTripOptions * _Nullable)getTripOptions {
@@ -68,11 +70,11 @@
 }
 
 - (CLLocation * _Nullable)lastLocation {
-    return [RadarState lastLocation];
+    return RadarState.shared.lastLocation;
 }
 
 - (BOOL)isStopped {
-    return [RadarState stopped];
+    return RadarState.shared.stopped;
 }
 
 - (void)setStopped:(BOOL)stopped {
@@ -138,6 +140,14 @@
     return [[RadarGeofence alloc] initWithObject:dict];
 }
 
+- (RadarPlace * _Nullable)createPlaceWithDict:(NSDictionary *)dict {
+    return [[RadarPlace alloc] initWithObject:dict];
+}
+
+- (RadarRegion * _Nullable)createRegionWithDict:(NSDictionary *)dict {
+    return [[RadarRegion alloc] initWithObject:dict];
+}
+
 - (BOOL)isForeground {
     return [RadarUtilsDeprecated foreground];
 }
@@ -159,7 +169,7 @@
 }
 
 - (RadarUser * _Nullable)radarUser {
-    return [RadarState radarUser];
+    return RadarState.shared.radarUser;
 }
 
 - (void)flushReplaysRequest:(NSArray<NSDictionary *> *)replays

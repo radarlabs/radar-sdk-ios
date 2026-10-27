@@ -18,7 +18,7 @@ extension RadarSerializedTests {
     struct RadarPermissionsHelperTests {
 
         private func withCachedStatus(_ status: CLAuthorizationStatus, _ body: () -> Void) {
-            let state = RadarState()
+            let state = RadarState.shared
             let originalStatus = state.locationAuthorizationStatus
             defer { state.locationAuthorizationStatus = originalStatus }
             state.locationAuthorizationStatus = status
