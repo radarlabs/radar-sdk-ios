@@ -44,9 +44,8 @@ set -euo pipefail
 
 derived_data="${1:?usage: $0 <DerivedData path>}"
 intermediates="$derived_data/Build/Intermediates.noindex"
-# RadarSDKFraud isn't checked yet: it still awaits App Attest and NEHotspotNetwork APIs until
-# https://github.com/radarlabs/radar-sdk-ios-fraud/pull/38 lands. Add it here after bumping the
-# submodule past that fix.
+# RadarSDKFraud isn't checked: it still awaits App Attest and NEHotspotNetwork APIs. Add it here
+# once those use completion handlers and the submodule is bumped.
 modules=(RadarSDK RadarSDKMotion)
 # Single quotes on purpose: `\$s` is the literal `$s` that starts every Swift symbol.
 # shellcheck disable=SC2016
