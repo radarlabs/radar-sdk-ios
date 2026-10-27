@@ -116,5 +116,8 @@ jobs:
         run: |
           make ci-build-example CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
 
+      - name: Check for async-import completion-handler thunks
+        run: make check-async-thunks
+
       - name: Lint podspecs
         run: make lint
