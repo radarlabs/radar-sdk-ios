@@ -78,47 +78,47 @@
 }
 
 - (void)setStopped:(BOOL)stopped {
-    [RadarState setStopped:stopped];
+    RadarState.shared.stopped = stopped;
 }
 
 - (void)setLastLocation:(CLLocation * _Nullable)location {
-    [RadarState setLastLocation:location];
+    RadarState.shared.lastLocation = location;
 }
 
 - (CLLocation * _Nullable)lastMovedLocation {
-    return [RadarState lastMovedLocation];
+    return RadarState.shared.lastMovedLocation;
 }
 
 - (void)setLastMovedLocation:(CLLocation * _Nullable)location {
-    [RadarState setLastMovedLocation:location];
+    RadarState.shared.lastMovedLocation = location;
 }
 
 - (NSDate * _Nullable)lastMovedAt {
-    return [RadarState lastMovedAt];
+    return RadarState.shared.lastMovedAt;
 }
 
 - (void)setLastMovedAt:(NSDate *)date {
-    [RadarState setLastMovedAt:date];
+    RadarState.shared.lastMovedAt = date;
 }
 
 - (CLLocation * _Nullable)lastFailedStoppedLocation {
-    return [RadarState lastFailedStoppedLocation];
+    return RadarState.shared.lastFailedStoppedLocation;
 }
 
 - (void)setLastFailedStoppedLocation:(CLLocation * _Nullable)location {
-    [RadarState setLastFailedStoppedLocation:location];
+    RadarState.shared.lastFailedStoppedLocation = location;
 }
 
 - (NSDate * _Nullable)lastSentAt {
-    return [RadarState lastSentAt];
+    return RadarState.shared.lastSentAt;
 }
 
 - (void)updateLastSentAt {
-    [RadarState updateLastSentAt];
+    [RadarState.shared updateLastSentAt];
 }
 
 - (BOOL)canExit {
-    return [RadarState canExit];
+    return RadarState.shared.canExit;
 }
 
 - (void)logCampaignConversionWithName:(NSString *)name metadata:(NSDictionary<NSString *, id> * _Nonnull)metadata campaign:(NSString * _Nullable)campaign {
