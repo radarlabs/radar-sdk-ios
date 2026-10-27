@@ -111,6 +111,7 @@ jobs:
           echo "MIGRATION_DESTINATION=platform=iOS Simulator,id=$SIMULATOR_ID" >> "$GITHUB_ENV"
 
       - name: Run the migration agent
+        id: migrate
         if: steps.guard.outputs.open == '0'
         uses: anthropics/claude-code-action@v1
         env:
@@ -141,3 +142,29 @@ jobs:
             before opening the PR. The workflow provides GH_TOKEN and
             MIGRATION_DESTINATION.
           claude_args: '--allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 80'
+
+      # The agent stops without publishing when it finds no eligible file, hits a
+      # compatibility blocker, or fails validation, and the action still reports success.
+      # Surface its final report (not the full transcript, since this repo's logs are
+      # public) and fail the job when no PR was opened, so a stalled night is visible.
+      - name: Report the agent's result
+        if: always() && steps.guard.outputs.open == '0'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          EXECUTION_FILE: ${{ steps.migrate.outputs.execution_file }}
+        run: |
+          {
+            echo "## Migration agent report"
+            echo
+            if [ -n "$EXECUTION_FILE" ] && [ -f "$EXECUTION_FILE" ]; then
+              jq -r '[.[] | select(.type == "result")] | last | .result // "(no final report)"' "$EXECUTION_FILE"
+            else
+              echo "(no execution file; the agent step did not complete)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          OPEN=$(gh pr list --repo "$GITHUB_REPOSITORY" --label swift-migration --state open --json number --jq 'length')
+          if [ "$OPEN" = "0" ]; then
+            echo "::error::The agent finished without opening a swift-migration PR. See the job summary for its reason."
+            exit 1
+          fi
