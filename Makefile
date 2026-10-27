@@ -166,8 +166,9 @@ ci-build-example:
 	  sed 's|^@import RadarSDK;$$|#import <RadarSDK/RadarSDK.h>|' "$$consumer_source" > "$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage.mm"; \
 	  xcrun --sdk iphonesimulator clang++ -fsyntax-only -arch "$$(uname -m)" -mios-simulator-version-min="$$(xcrun --sdk iphonesimulator --show-sdk-version)" -fobjc-arc -fno-modules -F "$$(dirname "$$framework")" "$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage.mm"
 
-# Fails if this repo's modules define a Swift async-import completion-handler thunk (mangled
-# suffix Tz_ unchecked or TZ_ checked), emitted by `await` on an Objective-C completion-handler API.
+# Fails if RadarSDK, RadarSDKMotion or RadarSDKFraud define a Swift async-import completion-handler
+# thunk (mangled suffix Tz_ unchecked or TZ_ checked), emitted by `await` on an Objective-C
+# completion-handler API.
 # These are weak symbols shared across a statically linked app, and some toolchains give the Swift
 # 5 and Swift 6 bodies the same name, so the linker can pair our continuation with another module's
 # incompatible thunk and crash. Wrap the completion-handler API in withChecked(Throwing)Continuation
@@ -175,7 +176,7 @@ ci-build-example:
 check-async-thunks:
 	@set -o pipefail; \
 	  intermediates="$(CI_EXAMPLE_DERIVED_DATA)/Build/Intermediates.noindex"; \
-	  objects=$$(find "$$intermediates/RadarSDK.build" "$$intermediates/RadarSDKMotion.build" -name '*.o' 2>/dev/null); \
+	  objects=$$(find "$$intermediates/RadarSDK.build" "$$intermediates/RadarSDKMotion.build" "$$intermediates/RadarSDKFraud.build" -name '*.o' 2>/dev/null); \
 	  if [ -z "$$objects" ]; then echo "No RadarSDK objects under $$intermediates; run make ci-build-example first"; exit 1; fi; \
 	  thunks=$$(for o in $$objects; do nm -m "$$o" | grep '(__TEXT,__text)' | grep -oE '_\$$s[^ ]*Iey[^ ]*T[zZ]_$$' | sed "s|^|$$(basename "$$o"): |"; done | sort -u); \
 	  echo "Checked $$(echo "$$objects" | wc -l | tr -d ' ') objects for async-import completion-handler thunks"; \
