@@ -10,20 +10,59 @@ import Foundation
 import UserNotifications
 
 protocol NotificationCenterProtocol {
-    nonisolated(nonsending) func add(_ request: UNNotificationRequest) async throws
-    nonisolated(nonsending) func pendingNotificationRequests() async -> [UNNotificationRequest]
+    nonisolated(nonsending) func radarAdd(_ request: UNNotificationRequest) async throws
+    nonisolated(nonsending) func radarPendingNotificationRequests() async -> [UNNotificationRequest]
     func removePendingNotificationRequests(withIdentifiers identifiers: [String])
 
     nonisolated(nonsending) func radarNotificationPermissions() async -> NotificationPermissions
 }
 
+// Lets `radarPendingNotificationRequests()` pass `[UNNotificationRequest]` out of its continuation.
+// Swift 6 only lets Sendable values cross from the completion handler's thread to the awaiting
+// task, and UNNotificationRequest isn't Sendable. It's safe here: UNNotificationRequest is
+// immutable, and the array is a fresh copy that only the awaiting task holds. See
+// https://github.com/radarlabs/radar-sdk-ios/pull/759.
+private struct PendingNotificationRequestsBox: @unchecked Sendable {
+    let requests: [UNNotificationRequest]
+}
+
+// Don't use the async imports of these APIs (e.g. `await notificationSettings()`), and don't
+// name a protocol requirement so that an async import satisfies it. Each async import emits a
+// compiler-generated completion-handler thunk that is a weak symbol shared by every module in
+// the app. Some Swift toolchains give the Swift 6 (checked) and Swift 5 (unchecked) thunks the
+// same name, so when RadarSDK is statically linked next to a Swift 5 module that awaits the same
+// API, the linker keeps one copy and the other module's continuation is resumed as the wrong
+// type, which crashes. Wrapping the completion-handler APIs ourselves emits no shared thunks.
+// `make check-async-thunks` enforces this in CI. See
+// https://github.com/radarlabs/radar-sdk-ios/pull/759.
 extension UNUserNotificationCenter: NotificationCenterProtocol {
-    nonisolated(nonsending) func radarNotificationPermissions() async -> NotificationPermissions {
-        let settings = await notificationSettings()
-        let permissions = NotificationPermissions(from: settings)
-        return permissions
+    nonisolated(nonsending) func radarAdd(_ request: UNNotificationRequest) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            add(request) { error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }
+        }
     }
 
+    nonisolated(nonsending) func radarPendingNotificationRequests() async -> [UNNotificationRequest] {
+        await withCheckedContinuation { continuation in
+            getPendingNotificationRequests { requests in
+                continuation.resume(returning: PendingNotificationRequestsBox(requests: requests))
+            }
+        }.requests
+    }
+
+    nonisolated(nonsending) func radarNotificationPermissions() async -> NotificationPermissions {
+        await withCheckedContinuation { continuation in
+            getNotificationSettings { settings in
+                continuation.resume(returning: NotificationPermissions(from: settings))
+            }
+        }
+    }
 }
 
 @objc(RadarNotificationHelper_Swift) @objcMembers
@@ -108,7 +147,7 @@ actor RadarNotificationHelper: NSObject {
     private func registerNotifications(notifications: [UNNotificationRequest]?) async {
         // if notifications is not null, we update the pending notifications, otherwise we only update the registered notifications list
         if let notifications {
-            let requests = await notificationCenter.pendingNotificationRequests()
+            let requests = await notificationCenter.radarPendingNotificationRequests()
             if Task.isCancelled {
                 return
             }
@@ -144,7 +183,7 @@ actor RadarNotificationHelper: NSObject {
             // place keep their arm point.
             for notification in notifications where !unchangedIdentifiers.contains(notification.identifier) {
                 do {
-                    try await notificationCenter.add(notification)
+                    try await notificationCenter.radarAdd(notification)
                     if Task.isCancelled {
                         return
                     }
@@ -157,7 +196,7 @@ actor RadarNotificationHelper: NSObject {
         if Task.isCancelled {
             return
         }
-        let pending = await notificationCenter.pendingNotificationRequests().compactMap {
+        let pending = await notificationCenter.radarPendingNotificationRequests().compactMap {
             NotificationValue(from: $0)
         }
         radarState.registeredNotifications = pending
@@ -251,7 +290,7 @@ actor RadarNotificationHelper: NSObject {
         guard let registered = radarState.registeredNotifications else {
             return []
         }
-        let pendingRequests = await notificationCenter.pendingNotificationRequests().compactMap {
+        let pendingRequests = await notificationCenter.radarPendingNotificationRequests().compactMap {
             NotificationValue(from: $0)
         }
 
