@@ -88,8 +88,11 @@ compiler generates their Objective-C interface in `RadarSDK-Swift.h`. See `Radar
    files.
 6. **Verify:** run `make ci-build-example`. Its Release build links an Objective-C consumer of
    every public class in the handwritten headers and `RadarSDK-Swift.h`, and compiles the same
-   consumer as non-modular Objective-C++ through the umbrella. Also run `make lint` to check the
-   CocoaPods header boundary.
+   consumer as non-modular Objective-C++ through the umbrella. It also compiles
+   `ObjCCompatibility/RadarSDKObjCAPISurface.m`, which calls every public member of each
+   Swift-implemented class from Objective-C. When you move a class to Swift or add a public
+   member, add its calls there; a change to an existing call breaks Objective-C apps. Also run
+   `make lint` to check the CocoaPods header boundary.
 
 ## Concurrency
 
