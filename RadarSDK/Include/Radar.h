@@ -12,7 +12,6 @@
 
 #import "RadarAddress.h"
 #import "RadarEvent.h"
-#import "RadarRegion.h"
 #import "RadarRouteMode.h"
 #import "RadarTrackingOptions.h"
 #import "RadarUser.h"

@@ -98,7 +98,7 @@ public final class RadarContext: NSObject {
         let place = (dict["place"] as? [String: Any]).flatMap { RadarSwift.bridge?.createPlace(dict: $0) }
 
         func region(_ key: String) -> RadarRegion? {
-            (dict[key] as? [String: Any]).flatMap { RadarSwift.bridge?.createRegion(dict: $0) }
+            RadarRegion(object: dict[key])
         }
 
         self.init(

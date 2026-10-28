@@ -7,12 +7,12 @@
 
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
-#import "RadarRegion.h"
 #import "RadarUser.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
 @class RadarFraud;
+@class RadarRegion;
 
 /**
  Represents a change in user state.

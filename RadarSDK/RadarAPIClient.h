@@ -13,7 +13,6 @@
 #import "RadarBeacon.h"
 #import "RadarConfig.h"
 #import "RadarEvent.h"
-#import "RadarRegion.h"
 #import "RadarUser.h"
 
 @class RadarTripLeg;

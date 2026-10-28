@@ -7,7 +7,6 @@
 
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
-#import "RadarRegion.h"
 #import <Foundation/Foundation.h>
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
