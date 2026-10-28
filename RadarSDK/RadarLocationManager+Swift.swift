@@ -32,6 +32,7 @@ import Foundation
     func startedInterval() -> Int32
     func setStartedInterval(_ interval: Int32)
     func sending() -> Bool
+    func setSending(_ sending: Bool)
     func timer() -> Timer?
     func setTimer(_ timer: Timer?)
 
@@ -49,16 +50,10 @@ import Foundation
     @objc(updateTracking:)
     func updateTracking(_ location: CLLocation?)
 
-    // Keep sending in Objective-C until `sendLocation:stopped:source:replayed:beacons:forceTrack:` is ported.
-    @objc(sendLocation:stopped:source:replayed:beacons:forceTrack:)
-    func sendLocation(  // swiftlint:disable:this function_parameter_count
-        _ location: CLLocation,
-        stopped: Bool,
-        source: RadarLocationSource,
-        replayed: Bool,
-        beacons: [RadarBeacon]?,
-        forceTrack: Bool
-    )
+    // The Objective-C `replaceSyncedGeofences:` also registers geofence notifications before it
+    // calls the Swift twin, so `sendLocation` replaces geofences through it.
+    @objc(replaceSyncedGeofences:)
+    func replaceSyncedGeofences(_ geofences: [RadarGeofence]?)
 
     var locationManager: CLLocationManager { get }
     var lowPowerLocationManager: CLLocationManager { get }

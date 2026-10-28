@@ -12,8 +12,8 @@ import Foundation
 // swiftlint:disable file_length
 
 // Swift port of `handleLocation:source:beacons:` in RadarLocationManager.m. It decides whether a
-// location updates the stopped state and whether it is sent to the server. Sending stays in
-// Objective-C behind the host's `sendLocation` until that method is ported.
+// location updates the stopped state and whether it is sent to the server. Sending is in
+// RadarLocationManager+SwiftSend.swift.
 extension RadarLocationManagerSwift {
 
     @objc(handleLocationWithHost:location:source:beacons:)
@@ -345,13 +345,16 @@ extension RadarLocationManagerSwift {
         host: RadarLocationManagerSwiftHost,
         forceTrack: Bool
     ) {
-        host.sendLocation(
-            outgoing.location,
-            stopped: outgoing.stopped,
-            source: context.source,
-            replayed: outgoing.replayed,
-            beacons: context.beacons,
-            forceTrack: forceTrack
+        sendLocationHandler(
+            host,
+            LocationToSend(
+                location: outgoing.location,
+                stopped: outgoing.stopped,
+                source: context.source,
+                replayed: outgoing.replayed,
+                beacons: context.beacons,
+                forceTrack: forceTrack
+            )
         )
     }
 }

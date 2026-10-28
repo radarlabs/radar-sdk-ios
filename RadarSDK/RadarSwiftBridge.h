@@ -15,6 +15,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "Radar.h"
 
+@class RadarConfig;
 @class RadarTripOptions;
 
 @protocol RadarSwiftBridgeProtocol
@@ -22,6 +23,7 @@
 - (void)flushReplaysRequest:(NSArray<NSDictionary *> * _Nonnull)replays
           completionHandler:(void (^_Nullable)(RadarStatus status, NSDictionary * _Nullable res))completionHandler;
 - (void)stopIndoorTracking;
+- (void)updateIndoorTrackingWithGeofences:(NSArray<RadarGeofence *> * _Nullable)geofences;
 - (void)updateTracking;
 - (void)updateTrackingFromInitialize;
 - (void)logOpenedAppConversion;
@@ -57,6 +59,23 @@
                beacons:(NSArray<RadarBeacon *> * _Nullable)beacons;
 - (void)updateTracking;
 - (void)didFailWithStatus:(RadarStatus)status;
+- (void)trackWithLocation:(CLLocation * _Nonnull)location
+                  stopped:(BOOL)stopped
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> * _Nullable)beacons
+           indoorLocation:(CLLocation * _Nullable)indoorLocation
+        completionHandler:(void (^_Nonnull)(RadarStatus status,
+                                            NSArray<RadarEvent *> * _Nullable events,
+                                            RadarUser * _Nullable user,
+                                            NSArray<RadarGeofence *> * _Nullable nearbyGeofences,
+                                            RadarConfig * _Nullable config))completionHandler;
+- (void)searchBeaconsNear:(CLLocation * _Nonnull)location
+                   radius:(int)radius
+                    limit:(int)limit
+        completionHandler:(void (^_Nonnull)(RadarStatus status,
+                                            NSArray<RadarBeacon *> * _Nullable beacons,
+                                            NSArray<NSString *> * _Nullable beaconUUIDs))completionHandler;
 - (RadarBeacon * _Nonnull)createBeaconWithUuid:(NSString * _Nonnull)uuid major:(NSString * _Nonnull)major minor:(NSString * _Nonnull)minor rssi:(NSInteger)rssi;
 - (RadarBeacon * _Nonnull)createBeaconFromRegion:(CLBeaconRegion * _Nonnull)region;
 - (void)setRssi:(NSInteger)rssi onBeacon:(RadarBeacon * _Nonnull)beacon;

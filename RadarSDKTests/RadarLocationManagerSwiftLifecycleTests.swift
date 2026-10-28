@@ -61,6 +61,22 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
 
     func sending() -> Bool { sendingValue }
 
+    // Called when `sendLocation` clears `sending`, so an async test can wait for the send to finish.
+    var onSendingCleared: (() -> Void)?
+
+    func setSending(_ sending: Bool) {
+        sendingValue = sending
+        if !sending {
+            onSendingCleared?()
+        }
+    }
+
+    private(set) var replacedSyncedGeofences: [[RadarGeofence]?] = []
+
+    func replaceSyncedGeofences(_ geofences: [RadarGeofence]?) {
+        replacedSyncedGeofences.append(geofences)
+    }
+
     func timer() -> Timer? { timerValue }
 
     func setTimer(_ timer: Timer?) { timerValue = timer }
@@ -114,18 +130,11 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
         updateTrackingLocations.append(location)
     }
 
-    func sendLocation(  // swiftlint:disable:this function_parameter_count
-        _ location: CLLocation,
-        stopped: Bool,
-        source: RadarLocationSource,
-        replayed: Bool,
-        beacons: [RadarBeacon]?,
-        forceTrack: Bool
-    ) {
+    func recordSentLocation(_ send: LocationToSend) {
         sentLocations.append(
             SentLocation(
-                location: location, stopped: stopped, source: source, replayed: replayed, beacons: beacons,
-                forceTrack: forceTrack))
+                location: send.location, stopped: send.stopped, source: send.source, replayed: send.replayed,
+                beacons: send.beacons, forceTrack: send.forceTrack))
     }
 }
 

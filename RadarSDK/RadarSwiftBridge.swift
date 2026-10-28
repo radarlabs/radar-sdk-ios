@@ -15,6 +15,8 @@ protocol RadarSwiftBridgeProtocol {
     func flushReplays()
     func flushReplaysRequest(_ replays: [[AnyHashable: Any]], completionHandler: ((RadarStatus, [AnyHashable: Any]?) -> Void)?)
     func stopIndoorTracking()
+    @objc(updateIndoorTrackingWithGeofences:)
+    func updateIndoorTracking(geofences: [RadarGeofence]?)
     func updateTrackingFromInitialize()
     func logOpenedAppConversion()
     func geofenceIds() -> [String]?
@@ -47,6 +49,24 @@ protocol RadarSwiftBridgeProtocol {
     func updateTracking()
     func radarUser() -> RadarUser?
     func didFail(status: RadarStatus)
+    // Calls the Objective-C `RadarAPIClient`, which `sendLocation` still uses to track and search beacons.
+    @objc(trackWithLocation:stopped:source:replayed:beacons:indoorLocation:completionHandler:)
+    func track(  // swiftlint:disable:this function_parameter_count
+        location: CLLocation,
+        stopped: Bool,
+        source: RadarLocationSource,
+        replayed: Bool,
+        beacons: [RadarBeacon]?,
+        indoorLocation: CLLocation?,
+        completionHandler: @escaping (RadarStatus, [RadarEvent]?, RadarUser?, [RadarGeofence]?, RadarConfig?) -> Void
+    )
+    @objc(searchBeaconsNear:radius:limit:completionHandler:)
+    func searchBeacons(
+        near location: CLLocation,
+        radius: Int32,
+        limit: Int32,
+        completionHandler: @escaping (RadarStatus, [RadarBeacon]?, [String]?) -> Void
+    )
     func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon
     func createBeacon(fromRegion region: CLBeaconRegion) -> RadarBeacon
     func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon)
