@@ -708,6 +708,15 @@ struct RadarTrackingOptionsTests {  // swiftlint:disable:this type_body_length
         #expect(defaultType == onTripType)
     }
 
+    @Test("isEqual rejects nil and other types")
+    func isEqualRejectsNilAndOtherTypes() {
+        let options = RadarTrackingOptions.presetEfficient
+
+        #expect(!options.isEqual(nil))
+        #expect(options.isEqual(options))
+        #expect(!options.isEqual("foo"))
+    }
+
     private func copy(
         _ options: RadarTrackingOptions
     ) throws -> RadarTrackingOptions {

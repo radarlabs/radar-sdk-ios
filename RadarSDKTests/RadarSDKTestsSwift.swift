@@ -10,37 +10,15 @@ import Testing
 
 @testable import RadarSDK
 
-/// Delivers `mockLocation` to the delegate on `requestLocation()`, like `CLLocationManagerMock`.
-private final class RequestLocationCLLocationManager: CLLocationManager, @unchecked Sendable {
-    var mockLocation: CLLocation?
-
-    override var location: CLLocation? { mockLocation }
-
-    override func requestLocation() {
-        if let mockLocation {
-            delegate?.locationManager?(self, didUpdateLocations: [mockLocation])
-        }
-    }
-}
-
 extension RadarSerializedTests {
     @Suite(.serialized)
+    @MainActor
     struct RadarSDKTestsSwift {
 
-        private let apiHelperMock = MainQueueAPIHelperMock()
-        private let locationManagerMock = RequestLocationCLLocationManager()
-        private let permissionsHelperMock = RadarPermissionsHelperMock()
-
-        init() {
-            Radar.initialize(publishableKey: "prj_test_pk_0000000000000000000000000000000000000000")
-
-            RadarAPIClient.sharedInstance().apiHelper = apiHelperMock
-            let locationManager = RadarLocationManager.sharedInstance()
-            locationManager.locationManager = locationManagerMock
-            locationManager.lowPowerLocationManager = locationManagerMock
-            locationManagerMock.delegate = locationManager
-            locationManager.permissionsHelper = permissionsHelperMock
-        }
+        private let fixture = RadarSDKTestFixture(apiHelperMock: MainQueueAPIHelperMock())
+        private var apiHelperMock: RadarAPIHelperMock { fixture.apiHelperMock }
+        private var locationManagerMock: RequestLocationCLLocationManager { fixture.locationManagerMock }
+        private var permissionsHelperMock: RadarPermissionsHelperMock { fixture.permissionsHelperMock }
 
         /// The mocks call back synchronously, so the track response is handled on the caller's thread.
         /// It must be main, because the response handler touches `@MainActor` `RadarInAppMessageManager`.
