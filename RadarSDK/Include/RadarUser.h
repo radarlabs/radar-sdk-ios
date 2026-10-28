@@ -8,13 +8,13 @@
 #import "RadarBeacon.h"
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
-#import "RadarRegion.h"
 #import "RadarSegment.h"
 #import "RadarTrip.h"
 #import <Foundation/Foundation.h>
 
 @class RadarExpectedAddress;
 @class RadarChain;
+@class RadarRegion;
 @class RadarFraud;
 @class RadarTrip;
 

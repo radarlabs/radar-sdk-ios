@@ -13,7 +13,6 @@
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
-#import "RadarRegion+Internal.h"
 #import "RadarUser+Internal.h"
 #import "RadarReplayBuffer.h"
 #import "Radar+Internal.h"
@@ -142,10 +141,6 @@
 
 - (RadarPlace * _Nullable)createPlaceWithDict:(NSDictionary *)dict {
     return [[RadarPlace alloc] initWithObject:dict];
-}
-
-- (RadarRegion * _Nullable)createRegionWithDict:(NSDictionary *)dict {
-    return [[RadarRegion alloc] initWithObject:dict];
 }
 
 - (BOOL)isForeground {

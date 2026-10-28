@@ -93,7 +93,7 @@ struct RadarContextTests {
     }
 }
 
-// Geofence, place, and region parsing goes through `RadarSwift.bridge`, so these tests swap the global bridge.
+// Geofence and place parsing goes through `RadarSwift.bridge`, so these tests swap the global bridge.
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarContextParsingTests {
@@ -109,7 +109,6 @@ extension RadarSerializedTests {
             let bridge = MockRadarSwiftBridge()
             bridge.createGeofenceHandler = { RadarGeofence(object: $0) }
             bridge.createPlaceHandler = { RadarPlace(object: $0) }
-            bridge.createRegionHandler = { RadarRegion(object: $0) }
             return bridge
         }
 
