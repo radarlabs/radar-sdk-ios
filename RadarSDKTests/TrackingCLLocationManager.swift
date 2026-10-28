@@ -12,8 +12,7 @@ import Foundation
 /// `stopMonitoring` / `requestState` calls and overrides `monitoredRegions`
 /// so Swift twins can be exercised without touching real Core Location
 /// state. Subclassing CLLocationManager is officially unsupported by Apple,
-/// but the existing ObjC test helper `CLLocationManagerMock` already relies
-/// on it for the same purpose.
+/// but `CLLocationManagerMock` already relies on it for the same purpose.
 final class TrackingCLLocationManager: CLLocationManager, @unchecked Sendable {
     private(set) var trackedRegions = Set<CLRegion>()
     private(set) var requestStateRegions: [CLRegion] = []

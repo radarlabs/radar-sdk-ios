@@ -11,25 +11,6 @@ import Testing
 
 @testable import RadarSDK
 
-/// Delivers `mockLocation` to the delegate on `requestLocation()`, like `CLLocationManagerMock`.
-final class RequestLocationCLLocationManager: CLLocationManager, @unchecked Sendable {
-    var mockLocation: CLLocation?
-
-    override var location: CLLocation? { mockLocation }
-
-    // The test host has no background location capability, so ignore this like the Objective-C mock.
-    override var pausesLocationUpdatesAutomatically: Bool {
-        get { false }
-        set {}
-    }
-
-    override func requestLocation() {
-        if let mockLocation {
-            delegate?.locationManager?(self, didUpdateLocations: [mockLocation])
-        }
-    }
-}
-
 /// Carries completion handler results that include non-Sendable SDK models back to the test.
 private struct UncheckedSendable<Value>: @unchecked Sendable {
     let value: Value
@@ -78,7 +59,7 @@ enum RadarSDKTestResources {
 @MainActor
 struct RadarSDKTestFixture {
     let apiHelperMock: RadarAPIHelperMock
-    let locationManagerMock = RequestLocationCLLocationManager()
+    let locationManagerMock = CLLocationManagerMock()
     let permissionsHelperMock = RadarPermissionsHelperMock()
 
     init(apiHelperMock: RadarAPIHelperMock = RadarAPIHelperMock()) {
