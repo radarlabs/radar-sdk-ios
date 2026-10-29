@@ -164,7 +164,16 @@ ci-build-example:
 	  xcrun --sdk iphonesimulator clang -arch "$$(uname -m)" -mios-simulator-version-min="$$(xcrun --sdk iphonesimulator --show-sdk-version)" -fobjc-arc -fmodules -fmodules-cache-path="$(CI_EXAMPLE_DERIVED_DATA)/ModuleCache.noindex" -Wno-incomplete-umbrella -F "$$(dirname "$$framework")" -framework RadarSDK -framework Foundation "$$consumer_source" -o "$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage"; \
 	  echo "Compiling the same consumer as non-modular Objective-C++ through the umbrella header"; \
 	  sed 's|^@import RadarSDK;$$|#import <RadarSDK/RadarSDK.h>|' "$$consumer_source" > "$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage.mm"; \
-	  xcrun --sdk iphonesimulator clang++ -fsyntax-only -arch "$$(uname -m)" -mios-simulator-version-min="$$(xcrun --sdk iphonesimulator --show-sdk-version)" -fobjc-arc -fno-modules -F "$$(dirname "$$framework")" "$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage.mm"
+	  xcrun --sdk iphonesimulator clang++ -fsyntax-only -arch "$$(uname -m)" -mios-simulator-version-min="$$(xcrun --sdk iphonesimulator --show-sdk-version)" -fobjc-arc -fno-modules -F "$$(dirname "$$framework")" "$(CI_EXAMPLE_DERIVED_DATA)/RadarSDKObjCLinkage.mm"; \
+	  echo "Compiling Objective-C calls to every public member of the Swift-implemented classes"; \
+	  xcrun --sdk iphonesimulator clang -fsyntax-only -arch "$$(uname -m)" -mios-simulator-version-min="$$(xcrun --sdk iphonesimulator --show-sdk-version)" -fobjc-arc -fmodules -fmodules-cache-path="$(CI_EXAMPLE_DERIVED_DATA)/ModuleCache.noindex" -Wno-incomplete-umbrella -Werror -Wnullable-to-nonnull-conversion -F "$$(dirname "$$framework")" ObjCCompatibility/RadarSDKObjCAPISurface.m; \
+	  echo "Checking that those calls cover every public member"; \
+	  python3 ObjCCompatibility/objc_api_surface.py --check --header "$$framework/Headers/RadarSDK-Swift.h"
+
+# Adds calls for new public Swift members to ObjCCompatibility/RadarSDKObjCAPISurface.m.
+# Reads the framework built by ci-build-example.
+update-objc-api-surface:
+	python3 ObjCCompatibility/objc_api_surface.py --update --header "$(CI_EXAMPLE_DERIVED_DATA)/Build/Products/Release-iphonesimulator/RadarSDK.framework/Headers/RadarSDK-Swift.h"
 
 # Fails if the SDK's compiled code contains Swift async-import thunks, which can crash apps that
 # link other Swift libraries. check-async-thunks.sh explains the bug and how to fix a failure.
@@ -177,4 +186,4 @@ docs:
 
 dist: clean-pretty test-pretty build-pretty lint docs
 
-.PHONY: bootstrap clean test build lint lint-swift format format-check ci-build-analyze ci-build-example check-async-thunks ci-test-pretty ci-test-swift docs dist
+.PHONY: bootstrap clean test build lint lint-swift format format-check ci-build-analyze ci-build-example update-objc-api-surface check-async-thunks ci-test-pretty ci-test-swift docs dist
