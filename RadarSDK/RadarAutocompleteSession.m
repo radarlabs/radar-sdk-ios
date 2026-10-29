@@ -22,7 +22,6 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        // Minted once and never replaced, which leaves the session immutable and safe to share.
         _sessionToken = [[NSUUID UUID] UUIDString];
     }
     return self;
