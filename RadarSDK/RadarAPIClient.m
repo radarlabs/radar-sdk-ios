@@ -1266,8 +1266,7 @@
     if (mailable) {
         [queryString appendFormat:@"&mailable=true"];
     }
-    // Only a RadarAutocompleteSession names a session; without a token the server infers one the SDK
-    // cannot name, and the results come back with no resultId.
+    // Without a token the results come back with no resultId.
     if (sessionToken) {
         [queryString appendFormat:@"&sessionToken=%@", sessionToken];
     }
@@ -1329,8 +1328,7 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    // Results only carry a handle when the originating autocomplete request opened a session. Without one
-    // there is nothing to report against, and posting would be a guaranteed 400.
+    // Only results from a RadarAutocompleteSession carry a handle.
     NSString *resultId = address.resultId;
     if (resultId.length == 0) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Autocomplete selection not reported | the address carries no resultId"];

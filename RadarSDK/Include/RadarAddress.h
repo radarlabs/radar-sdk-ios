@@ -166,12 +166,9 @@ The categories of the address.
 @property (nullable, copy, nonatomic, readonly) NSArray<NSString *> *categories;
 
 /**
-A handle for this autocomplete result, present only on results returned by a `RadarAutocompleteSession`.
+Identifies this result within the session that returned it, not the address itself.
 
-It names the result within that session, not the address: the same address from a different request carries a
-different handle, and a handle stops working once its session expires. It is not an address identifier and
-should not be stored as one. Pass the whole address back to that session's `selectAddress:completionHandler:`
-to report that the user chose it.
+Short-lived; pass the whole address to `selectAddress:completionHandler:` rather than storing this.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *resultId;
 
