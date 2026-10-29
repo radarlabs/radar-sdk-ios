@@ -42,7 +42,7 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
-          SWIFT_FORMAT_VERSION: "603.0.0"
+          SWIFT_FORMAT_VERSION: "604.0.0"
         run: |
           if ! command -v swift-format >/dev/null; then
             brew install swift-format
