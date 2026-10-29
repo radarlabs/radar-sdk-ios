@@ -17,7 +17,7 @@ extension RadarSerializedTests {
 
         private let fixture = RadarSDKTestFixture(apiHelperMock: MainQueueAPIHelperMock())
         private var apiHelperMock: RadarAPIHelperMock { fixture.apiHelperMock }
-        private var locationManagerMock: RequestLocationCLLocationManager { fixture.locationManagerMock }
+        private var locationManagerMock: CLLocationManagerMock { fixture.locationManagerMock }
         private var permissionsHelperMock: RadarPermissionsHelperMock { fixture.permissionsHelperMock }
 
         /// The mocks call back synchronously, so the track response is handled on the caller's thread.
