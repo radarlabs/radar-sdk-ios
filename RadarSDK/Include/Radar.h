@@ -288,16 +288,6 @@ typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
 typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses);
 
 /**
- Called when an autocomplete selection report succeeds, fails, or times out.
-
- Receives the request status and, for projects with address enrichment enabled, the enriched address. For every
- other project the address is nil on success: the selection was recorded and the server returned no body.
-
- @see https://radar.com/documentation/api#autocomplete
- */
-typedef void (^_Nullable RadarSelectAutocompleteAddressCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address);
-
-/**
  Called when an IP geocoding request succeeds, fails, or times out.
 
  Receives the request status and, if successful, the geocoding result (a partial address) and a boolean indicating whether the IP address is a known proxy.
@@ -1284,52 +1274,6 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
                      near:(CLLocation *_Nullable)near
                     limit:(int)limit
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:limit:completionHandler:));
-
-/**
- Autocompletes partial addresses and place names, sorted by relevance, grouping the request into a session you own.
-
- This is the only variant whose results can be reported with `selectAutocompleteAddress:completionHandler:`: the
- results carry a selection handle only when the request names a session. You own the token's lifetime. Mint one
- UUID per address field, reuse it for every keystroke in that field, and mint a fresh one once the field's search
- is finished. Two fields in one flow, such as a billing and a shipping address, must not share a token. The server
- expires a session after 20 minutes without a request.
-
- @param query The partial address or place name to autocomplete.
- @param near A location for the search.
- @param layers Optional layer filters.
- @param limit The max number of addresses to return. A number between 1 and 100.
- @param country An optional country filter. A string, the unique 2-letter country code.
- @param mailable Whether to only include mailable addresses. Default behavior in other function signatures is false.
- @param sessionToken A UUID grouping this address field's autocomplete requests and the selection they lead to. Pass nil to send none, which makes the results unselectable. A
- non-UUID value fails with `RadarStatusErrorBadRequest` without a request.
- @param completionHandler A completion handler.
-
- @see https://radar.com/documentation/api#autocomplete
- */
-+ (void)autocompleteQuery:(NSString *_Nonnull)query
-                     near:(CLLocation *_Nullable)near
-                   layers:(NSArray<NSString *> *_Nullable)layers
-                    limit:(int)limit
-                  country:(NSString *_Nullable)country
-                 mailable:(BOOL)mailable
-             sessionToken:(NSString *_Nullable)sessionToken
-        completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:layers:limit:country:mailable:sessionToken:completionHandler:));
-
-/**
- Reports which autocomplete result the user chose.
-
- Pass the address straight back from `autocomplete`; it carries the opaque handle the API needs. Only the
- `autocomplete` variant taking a `sessionToken` returns results with a handle. An address from any other
- variant, or from any other API, carries none, so nothing is reported, no request is made, and the completion
- handler receives `RadarStatusErrorBadRequest`.
-
- @param address The selected address, as returned by the `autocomplete` variant taking a `sessionToken`.
- @param completionHandler An optional completion handler.
-
- @see https://radar.com/documentation/api#autocomplete
- */
-+ (void)selectAutocompleteAddress:(RadarAddress *_Nonnull)address
-                completionHandler:(RadarSelectAutocompleteAddressCompletionHandler)completionHandler NS_SWIFT_NAME(selectAutocompleteAddress(address:completionHandler:));
 
 #pragma mark - Geocoding
 

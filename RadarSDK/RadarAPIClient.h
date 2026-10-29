@@ -159,7 +159,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                  mailable:(BOOL)mailable
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
-/// Pass a nil `sessionToken` to send none; a non-nil one must be a UUID.
+/// Pass a nil `sessionToken` to send none. `RadarAutocompleteSession` is the only caller that supplies one.
 - (void)autocompleteQuery:(NSString *_Nonnull)query
                      near:(CLLocation *_Nullable)near
                    layers:(NSArray<NSString *> *_Nullable)layers

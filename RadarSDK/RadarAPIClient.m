@@ -1247,14 +1247,6 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    // A malformed session token makes the server reject the whole autocomplete request, so a typo would
-    // break search itself and not just selection reporting. Fail before it reaches the wire.
-    if (sessionToken && ![[NSUUID alloc] initWithUUIDString:sessionToken]) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:@"Autocomplete sessionToken must be a UUID"];
-
-        return completionHandler(RadarStatusErrorBadRequest, nil, nil);
-    }
-
     int finalLimit = MIN(limit, 100);
 
     NSMutableString *queryString = [NSMutableString new];
@@ -1274,8 +1266,8 @@
     if (mailable) {
         [queryString appendFormat:@"&mailable=true"];
     }
-    // Only a caller-managed session makes the results selectable; without a token the server infers a
-    // session the SDK cannot name, and the results come back with no resultId.
+    // Only a RadarAutocompleteSession names a session; without a token the server infers one the SDK
+    // cannot name, and the results come back with no resultId.
     if (sessionToken) {
         [queryString appendFormat:@"&sessionToken=%@", sessionToken];
     }

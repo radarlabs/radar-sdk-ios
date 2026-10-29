@@ -166,11 +166,10 @@ The categories of the address.
 @property (nullable, copy, nonatomic, readonly) NSArray<NSString *> *categories;
 
 /**
-An opaque handle for this autocomplete result, present only on results returned by the `autocomplete` variant
-taking a `sessionToken`.
+An opaque handle for this autocomplete result, present only on results returned by a `RadarAutocompleteSession`.
 
-Pass the whole address to `selectAutocompleteAddress:completionHandler:` to report that the user chose it.
-Never parse, construct, or persist this value; its format is not part of the API contract.
+Pass the whole address back to that session's `selectAddress:completionHandler:` to report that the user chose
+it. Never parse, construct, or persist this value; its format is not part of the API contract.
  */
 @property (nullable, copy, nonatomic, readonly) NSString *resultId;
 
