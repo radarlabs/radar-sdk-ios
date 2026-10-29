@@ -11,14 +11,14 @@ import Testing
 @testable import RadarSDK
 
 extension RadarSerializedTests {
-    /// Covers the opaque result handle on autocomplete results and reporting which one the user chose.
+    /// Covers `RadarAutocompleteSession`: the token it owns, the handle its results carry, and reporting
+    /// which result the user chose.
     @Suite(.serialized)
     @MainActor
     struct RadarSDKAutocompleteSelectTests {
         private let fixture = RadarSDKTestFixture()
 
         private static let resultId = "v1_QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVowMTIzNDU2"
-        private static let sessionToken = "11111111-2222-3333-4444-555555555555"
 
         /// Mocks an autocomplete response. The API returns a selection handle on each result only when the
         /// request named a session, so a nil `resultId` here stands for a request that carried no token.
@@ -36,19 +36,17 @@ extension RadarSerializedTests {
             fixture.apiHelperMock.mockResponse = ["meta": ["code": 200], "addresses": [address]]
         }
 
-        /// The `autocomplete` variant that names a session, the only one whose results are selectable.
-        private func autocomplete(sessionToken: String?) async -> (RadarStatus, [RadarAddress]?) {
+        private func autocomplete(_ session: RadarAutocompleteSession) async -> (RadarStatus, [RadarAddress]?) {
             await awaitCompletion { resume in
-                Radar.autocomplete(
-                    query: "brooklyn roasting", near: nil, layers: nil, limit: 10, country: nil,
-                    mailable: false, sessionToken: sessionToken
+                session.autocomplete(
+                    query: "brooklyn roasting", near: nil, layers: nil, limit: 10, country: nil, mailable: false
                 ) { status, addresses in
                     resume((status, addresses))
                 }
             }
         }
 
-        /// An `autocomplete` variant that predates sessions and takes no token.
+        /// An `autocomplete` class method, which predates sessions and names none.
         private func autocompleteWithoutSession() async -> (RadarStatus, [RadarAddress]?) {
             await awaitCompletion { resume in
                 Radar.autocomplete(query: "brooklyn roasting", near: nil, limit: 10) { status, addresses in
@@ -57,9 +55,9 @@ extension RadarSerializedTests {
             }
         }
 
-        private func select(_ address: RadarAddress) async -> (RadarStatus, RadarAddress?) {
+        private func select(_ session: RadarAutocompleteSession, _ address: RadarAddress) async -> (RadarStatus, RadarAddress?) {
             await awaitCompletion { resume in
-                Radar.selectAutocompleteAddress(address: address) { status, selected in
+                session.select(address: address) { status, selected in
                     resume((status, selected))
                 }
             }
@@ -79,67 +77,75 @@ extension RadarSerializedTests {
             fixture.apiHelperMock.lastParams = nil
         }
 
-        @Test("autocomplete sends the session token it was given")
-        func autocompleteSendsGivenSessionToken() async {
-            mockAutocompleteResponse(resultId: Self.resultId)
+        @Test("each session mints its own token")
+        func eachSessionMintsItsOwnToken() {
+            let first = RadarAutocompleteSession()
+            let second = RadarAutocompleteSession()
 
-            _ = await autocomplete(sessionToken: Self.sessionToken)
-
-            #expect(lastSessionToken == Self.sessionToken)
+            #expect(UUID(uuidString: first.sessionToken) != nil)
+            #expect(first.sessionToken != second.sessionToken)
         }
 
-        @Test("autocomplete parses the opaque selection handle off each result")
-        func autocompleteParsesResultId() async {
+        @Test("a session sends its own token on every call")
+        func sessionSendsItsOwnTokenOnEveryCall() async {
+            mockAutocompleteResponse(resultId: Self.resultId)
+            let session = RadarAutocompleteSession()
+
+            _ = await autocomplete(session)
+            #expect(lastSessionToken == session.sessionToken)
+
+            _ = await autocomplete(session)
+            #expect(lastSessionToken == session.sessionToken)
+        }
+
+        // A second address field gets a second session, so the two never share the server's selection cap
+        // or its enrichment snapshot window.
+        @Test("one session's requests never carry another's token")
+        func sessionsDoNotShareTokens() async {
+            mockAutocompleteResponse(resultId: Self.resultId)
+            let billing = RadarAutocompleteSession()
+            let shipping = RadarAutocompleteSession()
+
+            _ = await autocomplete(billing)
+            let billingToken = lastSessionToken
+            _ = await autocomplete(shipping)
+
+            #expect(billingToken == billing.sessionToken)
+            #expect(lastSessionToken == shipping.sessionToken)
+            #expect(lastSessionToken != billingToken)
+        }
+
+        @Test("a session's results carry the opaque selection handle")
+        func sessionResultsCarryResultId() async {
             mockAutocompleteResponse(resultId: Self.resultId)
 
-            let (status, addresses) = await autocomplete(sessionToken: Self.sessionToken)
+            let (status, addresses) = await autocomplete(RadarAutocompleteSession())
 
             #expect(status == .success)
             #expect(addresses?.first?.resultId == Self.resultId)
         }
 
-        @Test("autocomplete sends no session token when none is given")
-        func autocompleteSendsNoSessionTokenByDefault() async {
-            mockAutocompleteResponse(resultId: nil)
-
-            _ = await autocompleteWithoutSession()
-            #expect(lastSessionToken == nil)
-
-            _ = await autocomplete(sessionToken: nil)
-            #expect(lastSessionToken == nil)
-        }
-
-        @Test("autocomplete without a session token returns results with no handle")
-        func autocompleteWithoutSessionTokenReturnsNoResultId() async {
+        @Test("the autocomplete class methods send no session token")
+        func classMethodSendsNoSessionToken() async {
             mockAutocompleteResponse(resultId: nil)
 
             let (status, addresses) = await autocompleteWithoutSession()
 
             #expect(status == .success)
+            #expect(lastSessionToken == nil)
             #expect(addresses?.isEmpty == false)
             #expect(addresses?.first?.resultId == nil)
         }
 
-        @Test("autocomplete rejects a non-UUID session token without a request")
-        func autocompleteRejectsNonUuidSessionToken() async {
+        @Test("select posts the handle and nothing else")
+        func selectPostsResultId() async throws {
             mockAutocompleteResponse(resultId: Self.resultId)
-            forgetLastRequest()
-
-            let (status, addresses) = await autocomplete(sessionToken: "not-a-uuid")
-
-            #expect(status == .errorBadRequest)
-            #expect(addresses == nil)
-            #expect(fixture.apiHelperMock.lastUrl == nil)
-        }
-
-        @Test("selectAutocompleteAddress posts the handle and nothing else")
-        func selectAutocompleteAddressPostsResultId() async throws {
-            mockAutocompleteResponse(resultId: Self.resultId)
-            let address = try #require(await autocomplete(sessionToken: Self.sessionToken).1?.first)
+            let session = RadarAutocompleteSession()
+            let address = try #require(await autocomplete(session).1?.first)
 
             // The server records the selection and answers 204 with no body.
             fixture.apiHelperMock.mockResponse = [:]
-            let (status, selected) = await select(address)
+            let (status, selected) = await select(session, address)
 
             #expect(status == .success)
             #expect(selected == nil)
@@ -148,10 +154,11 @@ extension RadarSerializedTests {
             #expect(fixture.apiHelperMock.lastParams as? [String: String] == ["resultId": Self.resultId])
         }
 
-        @Test("selectAutocompleteAddress returns the enriched address when the server sends one")
-        func selectAutocompleteAddressReturnsEnrichedAddress() async throws {
+        @Test("select returns the enriched address when the server sends one")
+        func selectReturnsEnrichedAddress() async throws {
             mockAutocompleteResponse(resultId: Self.resultId)
-            let address = try #require(await autocomplete(sessionToken: Self.sessionToken).1?.first)
+            let session = RadarAutocompleteSession()
+            let address = try #require(await autocomplete(session).1?.first)
 
             fixture.apiHelperMock.mockResponse = [
                 "meta": ["code": 200],
@@ -160,20 +167,20 @@ extension RadarSerializedTests {
                     "formattedAddress": "25 Jay St, Brooklyn, NY 11201 USA",
                 ],
             ]
-            let (status, selected) = await select(address)
+            let (status, selected) = await select(session, address)
 
             #expect(status == .success)
             #expect(selected?.formattedAddress == "25 Jay St, Brooklyn, NY 11201 USA")
         }
 
-        @Test("selectAutocompleteAddress makes no request for a result from a session-less request")
-        func selectAutocompleteAddressWithoutResultIdMakesNoRequest() async throws {
+        @Test("select makes no request for a result with no handle")
+        func selectWithoutResultIdMakesNoRequest() async throws {
             mockAutocompleteResponse(resultId: nil)
             let address = try #require(await autocompleteWithoutSession().1?.first)
             #expect(address.resultId == nil)
 
             forgetLastRequest()
-            let (status, selected) = await select(address)
+            let (status, selected) = await select(RadarAutocompleteSession(), address)
 
             #expect(status == .errorBadRequest)
             #expect(selected == nil)
@@ -181,13 +188,14 @@ extension RadarSerializedTests {
             #expect(fixture.apiHelperMock.lastUrl == nil)
         }
 
-        @Test("selectAutocompleteAddress surfaces a per-session cap as a status")
-        func selectAutocompleteAddressSurfacesRateLimit() async throws {
+        @Test("select surfaces a per-session cap as a status")
+        func selectSurfacesRateLimit() async throws {
             mockAutocompleteResponse(resultId: Self.resultId)
-            let address = try #require(await autocomplete(sessionToken: Self.sessionToken).1?.first)
+            let session = RadarAutocompleteSession()
+            let address = try #require(await autocomplete(session).1?.first)
 
             fixture.apiHelperMock.mockStatus = .errorRateLimit
-            let (status, selected) = await select(address)
+            let (status, selected) = await select(session, address)
 
             #expect(status == .errorRateLimit)
             #expect(selected == nil)
