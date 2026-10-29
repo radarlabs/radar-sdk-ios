@@ -40,6 +40,10 @@
     [[RadarIndoors shared] stopWithCompletionHandler:^{}];
 }
 
+- (void)updateIndoorTrackingWithGeofences:(NSArray<RadarGeofence *> *)geofences {
+    [[RadarIndoors shared] updateTrackingWithGeofences:geofences completionHandler:^{}];
+}
+
 - (void)updateTracking {
     [[RadarLocationManager sharedInstance] updateTracking];
 }
@@ -178,6 +182,40 @@
 
 - (void)didFailWithStatus:(RadarStatus)status {
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+}
+
+- (void)trackWithLocation:(CLLocation *)location
+                  stopped:(BOOL)stopped
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> *)beacons
+           indoorLocation:(CLLocation *)indoorLocation
+        completionHandler:(void (^)(RadarStatus, NSArray<RadarEvent *> *_Nullable, RadarUser *_Nullable, NSArray<RadarGeofence *> *_Nullable,
+                                    RadarConfig *_Nullable))completionHandler {
+    [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                               stopped:stopped
+                                            foreground:[RadarUtilsDeprecated foreground]
+                                                source:source
+                                              replayed:replayed
+                                               beacons:beacons
+                                        indoorLocation:indoorLocation
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+        completionHandler(status, events, user, nearbyGeofences, config);
+    }];
+}
+
+- (void)searchBeaconsNear:(CLLocation *)location
+                   radius:(int)radius
+                    limit:(int)limit
+        completionHandler:(void (^)(RadarStatus, NSArray<RadarBeacon *> *_Nullable, NSArray<NSString *> *_Nullable))completionHandler {
+    [[RadarAPIClient sharedInstance] searchBeaconsNear:location
+                                                radius:radius
+                                                 limit:limit
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
+                                                         NSArray<NSString *> *_Nullable beaconUUIDs) {
+        completionHandler(status, beacons, beaconUUIDs);
+    }];
 }
 
 - (RadarBeacon * _Nonnull)createBeaconWithUuid:(NSString *)uuid major:(NSString *)major minor:(NSString *)minor rssi:(NSInteger)rssi {
