@@ -1234,19 +1234,6 @@
                     }];
 }
 
-/// The SDK-managed autocomplete session token.
-///
-/// Minted lazily on the first autocomplete request and reused for the lifetime of the process. The server
-/// expires sessions on its own schedule, so the SDK never rotates it.
-static NSString *_Nonnull RadarAutocompleteSessionToken(void) {
-    static NSString *sessionToken;
-    static dispatch_once_t once;
-    dispatch_once(&once, ^{
-        sessionToken = [[NSUUID UUID] UUIDString];
-    });
-    return sessionToken;
-}
-
 - (void)autocompleteQuery:(NSString *)query
                      near:(CLLocation *_Nullable)near
                    layers:(NSArray<NSString *> *_Nullable)layers
@@ -1258,6 +1245,14 @@ static NSString *_Nonnull RadarAutocompleteSessionToken(void) {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
+    }
+
+    // A malformed session token makes the server reject the whole autocomplete request, so a typo would
+    // break search itself and not just selection reporting. Fail before it reaches the wire.
+    if (sessionToken && ![[NSUUID alloc] initWithUUIDString:sessionToken]) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:@"Autocomplete sessionToken must be a UUID"];
+
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil);
     }
 
     int finalLimit = MIN(limit, 100);
@@ -1279,8 +1274,11 @@ static NSString *_Nonnull RadarAutocompleteSessionToken(void) {
     if (mailable) {
         [queryString appendFormat:@"&mailable=true"];
     }
-    // Results only carry a resultId when the request opens a session, so always send one.
-    [queryString appendFormat:@"&sessionToken=%@", sessionToken.length > 0 ? sessionToken : RadarAutocompleteSessionToken()];
+    // Only a caller-managed session makes the results selectable; without a token the server infers a
+    // session the SDK cannot name, and the results come back with no resultId.
+    if (sessionToken) {
+        [queryString appendFormat:@"&sessionToken=%@", sessionToken];
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];

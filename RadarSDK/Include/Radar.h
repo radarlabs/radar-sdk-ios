@@ -1286,10 +1286,13 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
         completionHandler:(RadarGeocodeCompletionHandler)completionHandler NS_SWIFT_NAME(autocomplete(query:near:limit:completionHandler:));
 
 /**
- Autocompletes partial addresses and place names, sorted by relevance, grouping the request into an explicit session.
+ Autocompletes partial addresses and place names, sorted by relevance, grouping the request into a session you own.
 
- Most callers should use a variant without `sessionToken`: the SDK manages one session for the process. Pass an
- explicit token only to keep concurrent search fields in separate sessions.
+ This is the only variant whose results can be reported with `selectAutocompleteAddress:completionHandler:`: the
+ results carry a selection handle only when the request names a session. You own the token's lifetime. Mint one
+ UUID per address field, reuse it for every keystroke in that field, and mint a fresh one once the field's search
+ is finished. Two fields in one flow, such as a billing and a shipping address, must not share a token. The server
+ expires a session after 20 minutes without a request.
 
  @param query The partial address or place name to autocomplete.
  @param near A location for the search.
@@ -1297,7 +1300,8 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  @param limit The max number of addresses to return. A number between 1 and 100.
  @param country An optional country filter. A string, the unique 2-letter country code.
  @param mailable Whether to only include mailable addresses. Default behavior in other function signatures is false.
- @param sessionToken A UUID grouping related autocomplete requests and their selection into one session. Pass nil to use the SDK-managed session.
+ @param sessionToken A UUID grouping this address field's autocomplete requests and the selection they lead to. Pass nil to send none, which makes the results unselectable. A
+ non-UUID value fails with `RadarStatusErrorBadRequest` without a request.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#autocomplete
@@ -1314,11 +1318,12 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 /**
  Reports which autocomplete result the user chose.
 
- Pass the address straight back from `autocomplete`; it carries the opaque handle the API needs. Results only
- carry a handle when the originating request opened a session, which every `autocomplete` variant does. An
- address from any other API carries no handle, so nothing is reported and no request is made.
+ Pass the address straight back from `autocomplete`; it carries the opaque handle the API needs. Only the
+ `autocomplete` variant taking a `sessionToken` returns results with a handle. An address from any other
+ variant, or from any other API, carries none, so nothing is reported, no request is made, and the completion
+ handler receives `RadarStatusErrorBadRequest`.
 
- @param address The selected address, as returned by `autocomplete`.
+ @param address The selected address, as returned by the `autocomplete` variant taking a `sessionToken`.
  @param completionHandler An optional completion handler.
 
  @see https://radar.com/documentation/api#autocomplete
