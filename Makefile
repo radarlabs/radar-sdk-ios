@@ -5,6 +5,7 @@ PROJECT_EXAMPLE := Example/Example
 SCHEME := XCFramework
 SCHEME_EXAMPLE := Example
 SWIFTLINT := $(firstword $(wildcard .tools/swiftlint) swiftlint)
+SWIFT_FORMAT := $(firstword $(wildcard .tools/swift-format) swift-format)
 XC_ARGS := -sdk $(SDK) -project $(PROJECT).xcodeproj -scheme $(SCHEME) -destination "$(DESTINATION)" ONLY_ACTIVE_ARCH=NO OTHER_CFLAGS="-fembed-bitcode"
 XC_TEST_ARGS := $(XC_ARGS) GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES
 # The example app links MapLibre (swiftui-dsl), which needs two accommodations in a
@@ -76,8 +77,8 @@ lint-swift-fix:
 # CI passes the changed Swift files explicitly via FORMAT_FILES (from `gh pr diff`).
 # When it is empty (local use), fall back to diffing against FORMAT_BASE.
 format-check:
-	@if ! command -v swift-format >/dev/null; then \
-		echo "swift-format not installed; run 'make bootstrap' or 'brew install swift-format'"; \
+	@if ! command -v $(SWIFT_FORMAT) >/dev/null 2>&1 && [ ! -f "$(SWIFT_FORMAT)" ]; then \
+		echo "swift-format not installed; run 'make bootstrap'"; \
 		exit 1; \
 	fi
 	@SWIFT_FILES="$(FORMAT_FILES)"; \
@@ -90,12 +91,12 @@ format-check:
 	fi; \
 	echo "Checking format of changed Swift files:"; \
 	echo "$$SWIFT_FILES" | tr '\n' ' '; echo; \
-	echo "$$SWIFT_FILES" | xargs swift-format format -i --parallel; \
+	echo "$$SWIFT_FILES" | xargs $(SWIFT_FORMAT) format -i --parallel; \
 	git diff --exit-code -- $$SWIFT_FILES
 
 format:
 	./clang_format.sh
-	swift-format format -i -r --parallel RadarSDK RadarSDKTests
+	$(SWIFT_FORMAT) format -i -r --parallel RadarSDK RadarSDKTests
 
 clean-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) clean | xcpretty

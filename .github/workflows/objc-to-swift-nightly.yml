@@ -85,9 +85,18 @@ jobs:
         run: |
           sudo xcode-select -switch /Applications/Xcode_26.3.app
 
+      - name: Cache pinned Swift tools
+        if: steps.guard.outputs.open == '0'
+        uses: actions/cache@v4
+        with:
+          path: .tools
+          key: swift-tools-${{ runner.os }}-xcode-26.3-${{ hashFiles('install-tools.sh') }}
+
       - name: Install Swift validation tools
         if: steps.guard.outputs.open == '0'
-        run: brew install swift-format swiftlint
+        run: |
+          ./install-tools.sh
+          echo "$PWD/.tools" >> "$GITHUB_PATH"
 
       - name: Pick an available iPhone simulator
         if: steps.guard.outputs.open == '0'

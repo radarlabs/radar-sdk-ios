@@ -31,28 +31,27 @@ jobs:
       - name: Use Xcode 26.3
         run: sudo xcode-select -switch /Applications/Xcode_26.3.app
 
-      - name: Lint Swift
+      # SwiftLint and swift-format are pinned in install-tools.sh. swift-format is built from source,
+      # so cache the binaries; the key changes when a version or the Xcode toolchain changes.
+      - name: Cache pinned Swift tools
+        uses: actions/cache@v4
+        with:
+          path: .tools
+          key: swift-tools-${{ runner.os }}-xcode-26.3-${{ hashFiles('install-tools.sh') }}
+
+      - name: Install pinned Swift tools
         run: |
-          if ! command -v swiftlint >/dev/null; then
-            brew install swiftlint
-          fi
-          swiftlint lint --strict --baseline .swiftlint-baseline.json
+          ./install-tools.sh
+          echo "$PWD/.tools" >> "$GITHUB_PATH"
+
+      - name: Lint Swift
+        run: swiftlint lint --strict --baseline .swiftlint-baseline.json
 
       - name: Format Swift
         if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
-          SWIFT_FORMAT_VERSION: "603.0.0"
         run: |
-          if ! command -v swift-format >/dev/null; then
-            brew install swift-format
-          fi
-          INSTALLED_SWIFT_FORMAT_VERSION="$(swift-format --version)"
-          if [ "$INSTALLED_SWIFT_FORMAT_VERSION" != "$SWIFT_FORMAT_VERSION" ]; then
-            echo "::error::swift-format $INSTALLED_SWIFT_FORMAT_VERSION is installed, but CI is pinned to $SWIFT_FORMAT_VERSION."
-            echo "Install swift-format $SWIFT_FORMAT_VERSION and run 'make format', or bump SWIFT_FORMAT_VERSION in this workflow if upgrading on purpose."
-            exit 1
-          fi
           # Ask GitHub which files this PR changed (server-side diff — needs no local git
           # history or merge-base, so it is correct on stacked PRs without a deep checkout).
           # Keep the Swift files that still exist (drop deletions), then let make reformat
