@@ -14,6 +14,9 @@ FOUNDATION_EXPORT double RadarSDKVersionNumber;
 FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 
 #import "Radar.h"
+#import "RadarAddressLocationDetails.h"
+#import "RadarAddressPlace.h"
+#import "RadarAutocompleteEnrichedAddress.h"
 #import "RadarAutocompleteSession.h"
 #import "RadarDelegate.h"
 #import "RadarEvent.h"
