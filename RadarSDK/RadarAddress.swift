@@ -76,6 +76,13 @@ public final class RadarAddress: NSObject {
     public let street: String?
 
     /// The label of the address.
+    /**
+     Identifies this result within the session that returned it, not the address itself.
+
+     Short-lived; pass the whole address to `selectAddress:completionHandler:` rather than storing this.
+     */
+    public let resultId: String?
+
     public let addressLabel: String?
 
     /// The label of the place.
@@ -124,6 +131,7 @@ public final class RadarAddress: NSObject {
         neighborhood = nil
         number = nil
         street = nil
+        resultId = nil
         addressLabel = nil
         placeLabel = nil
         unit = nil
@@ -169,6 +177,7 @@ public final class RadarAddress: NSObject {
         neighborhood = dictionary["neighborhood"] as? String
         number = dictionary["number"] as? String
         street = dictionary["street"] as? String
+        resultId = dictionary["resultId"] as? String
         addressLabel = dictionary["addressLabel"] as? String
         placeLabel = dictionary["placeLabel"] as? String
         unit = dictionary["unit"] as? String
@@ -287,6 +296,7 @@ public final class RadarAddress: NSObject {
         dictionary["neighborhood"] = neighborhood
         dictionary["number"] = number
         dictionary["street"] = street
+        dictionary["resultId"] = resultId
         dictionary["addressLabel"] = addressLabel
         dictionary["placeLabel"] = placeLabel
         dictionary["unit"] = unit

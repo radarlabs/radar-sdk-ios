@@ -54,6 +54,8 @@ typedef void (^_Nonnull RadarSearchBeaconsAPICompletionHandler)(RadarStatus stat
 
 typedef void (^_Nonnull RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses);
 
+typedef void (^_Nonnull RadarSelectAutocompleteAddressAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address);
+
 typedef void (^_Nonnull RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy, NSError *_Nullable error);
 
 typedef void (^_Nonnull RadarDistanceAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarRoutes *_Nullable routes);
@@ -155,12 +157,24 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                  mailable:(BOOL)mailable
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
+/// Pass a nil `sessionToken` to use the SDK-managed session token.
+- (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray<NSString *> *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
+                 mailable:(BOOL)mailable
+             sessionToken:(NSString *_Nullable)sessionToken
+        completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+
 - (void)autocompleteQuery:(NSString *_Nonnull)query
                      near:(CLLocation *_Nullable)near
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
                   country:(NSString *_Nullable)country
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+
+- (void)selectAutocompleteAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarSelectAutocompleteAddressAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)geocodeAddress:(NSString *_Nonnull)query
                 layers:(NSArray<NSString *> *_Nullable)layers

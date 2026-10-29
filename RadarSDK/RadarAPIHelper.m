@@ -183,7 +183,9 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                 }
 
                 NSError *deserializationError = nil;
-                id resObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&deserializationError];
+                // Endpoints that answer 204 send no body at all; treat that as an empty response rather
+                // than a deserialization failure so the status code still decides success or failure.
+                id resObj = data.length > 0 ? [NSJSONSerialization JSONObjectWithData:data options:0 error:&deserializationError] : @{};
                 if (deserializationError || ![resObj isKindOfClass:[NSDictionary class]]) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         completionHandler(RadarStatusErrorServer, nil, deserializationError);
