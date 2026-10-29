@@ -55,6 +55,25 @@ final class RadarAPIHelper: Sendable {
         body: [String: Any?] = [:],
         prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
     ) async throws -> (Data, HTTPURLResponse) {
+        return try await request(
+            method: method,
+            url: url,
+            query: query,
+            headers: headers,
+            body: try Self.jsonBody(body, method: method),
+            prepareRequest: prepareRequest
+        )
+    }
+
+    /// Sends `body` as is, for callers that encode it themselves.
+    func request(
+        method: String,
+        url: String,
+        query: [URLQueryItem] = [],
+        headers: [String: String] = [:],
+        body: Data?,
+        prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
+    ) async throws -> (Data, HTTPURLResponse) {
         guard var urlComponents = URLComponents(string: url) else {
             throw URLError(.badURL)
         }
@@ -72,9 +91,7 @@ final class RadarAPIHelper: Sendable {
             request.addValue(value, forHTTPHeaderField: key)
         }
 
-        if !body.isEmpty && (method == "POST" || method == "PUT" || method == "PATCH") {
-            request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
-        }
+        request.httpBody = body
 
         let startTime = Date()
         let data: Data
@@ -101,8 +118,10 @@ final class RadarAPIHelper: Sendable {
         return (data, httpResponse)
     }
 
-    func addRadarHeaders(_ headers: [String: String]) async throws -> [String: String] {
-        guard let publishableKey = RadarSettings.publishableKey else {
+    /// Adds the standard Radar headers. `publishableKey` overrides the current key, for callers that must
+    /// authenticate with the key they read earlier (e.g. traces).
+    func addRadarHeaders(_ headers: [String: String], publishableKey: String? = nil) async throws -> [String: String] {
+        guard let publishableKey = publishableKey ?? RadarSettings.publishableKey else {
             throw RadarError(status: .errorPublishableKey)
         }
 
@@ -139,6 +158,30 @@ final class RadarAPIHelper: Sendable {
         body: [String: Any?] = [:],
         prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
     ) async throws -> (Data, HTTPURLResponse) {
+        return try await radarRequest(
+            host: host,
+            method: method,
+            url: url,
+            query: query,
+            headers: headers,
+            body: try Self.jsonBody(body, method: method),
+            prepareRequest: prepareRequest
+        )
+    }
+
+    /// Sends `body` as is, for callers that encode it themselves.
+    func radarRequest(
+        host: RadarHost,
+        method: String,
+        url: String,
+        query: [URLQueryItem] = [],
+        headers: [String: String] = [:],
+        body: Data?,
+        // nil uses the current key. Trace uploads pass the key that selected the batch, so a key change
+        // before the upload can't send one project's spans under another project's key.
+        publishableKey: String? = nil,
+        prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
+    ) async throws -> (Data, HTTPURLResponse) {
         let hostUrl =
             switch host {
             case .defaultHost:
@@ -149,7 +192,7 @@ final class RadarAPIHelper: Sendable {
                 RadarSettings.defaultVerifiedHostSecondary
             }
 
-        let headers = try await addRadarHeaders(headers)
+        let headers = try await addRadarHeaders(headers, publishableKey: publishableKey)
         let url = "\(hostUrl)/v1/\(url)"
 
         let (data, response) = try await request(
@@ -175,6 +218,12 @@ final class RadarAPIHelper: Sendable {
         let (data, response) = try await request(method: method, url: url, query: query, headers: headers, body: body)
 
         return (data, response)
+    }
+
+    /// JSON for a non-empty body on a method that takes one, otherwise nil.
+    private static func jsonBody(_ body: [String: Any?], method: String) throws -> Data? {
+        guard !body.isEmpty, method == "POST" || method == "PUT" || method == "PATCH" else { return nil }
+        return try JSONSerialization.data(withJSONObject: body, options: [])
     }
 
     static func networkErrorMessage(host: String?, error: Error, elapsedMs: Int) -> String {

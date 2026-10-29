@@ -25,6 +25,7 @@
 #import "RadarIndoors.h"
 #import "RadarInAppMessageDelegate.h"
 #import "RadarInAppMessageManager+Internal.h"
+#import "RadarTraceManager+Internal.h"
 #import "RadarSDKFraudProtocol.h"
 #import "RadarSwiftBridge.h"
 #import "RadarRevealRiskManager.h"
@@ -154,6 +155,8 @@ BOOL _initialized = NO;
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         [RadarSettings updateSessionId];
     }
+
+    [RadarTraceManager start];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
 
