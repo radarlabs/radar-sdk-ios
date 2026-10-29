@@ -1297,6 +1297,43 @@ BOOL _initialized = NO;
                                      }];
 }
 
++ (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
+                 mailable:(BOOL)mailable
+             sessionToken:(NSString *_Nullable)sessionToken
+        completionHandler:(RadarGeocodeCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"autocomplete()"];
+    [[RadarAPIClient sharedInstance] autocompleteQuery:query
+                                                  near:near
+                                                layers:layers
+                                                 limit:limit
+                                               country:country
+                                              mailable:mailable
+                                          sessionToken:sessionToken
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
+                                         if (completionHandler) {
+                                             [RadarUtilsDeprecated runOnMainThread:^{
+                                                 completionHandler(status, addresses);
+                                             }];
+                                         }
+                                     }];
+}
+
++ (void)selectAutocompleteAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarSelectAutocompleteAddressCompletionHandler)completionHandler {
+    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"selectAutocompleteAddress()"];
+    [[RadarAPIClient sharedInstance] selectAutocompleteAddress:address
+                                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable selectedAddress) {
+                                                 if (completionHandler) {
+                                                     [RadarUtilsDeprecated runOnMainThread:^{
+                                                         completionHandler(status, selectedAddress);
+                                                     }];
+                                                 }
+                                             }];
+}
+
 #pragma mark - Geocoding
 
 + (void)geocodeAddress:(NSString *)query 

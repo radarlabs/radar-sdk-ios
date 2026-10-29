@@ -284,6 +284,12 @@
         timeZone = [[RadarTimeZone alloc] initWithObject:timeZoneObj];
     }
 
+    NSString *resultId;
+    id resultIdObj = dict[@"resultId"];
+    if (resultIdObj && [resultIdObj isKindOfClass:[NSString class]]) {
+        resultId = (NSString *)resultIdObj;
+    }
+
     id categoriesObj = dict[@"categories"];
     if (categoriesObj && [categoriesObj isKindOfClass:[NSArray class]]) {
         NSMutableArray<NSString *> *validCategories = [NSMutableArray array];
@@ -294,33 +300,36 @@
         }
         categories = [validCategories copy];
     }
-    
-    return [[RadarAddress alloc] initWithCoordinate:coordinate
-                                   formattedAddress:formattedAddress
-                                            country:country
-                                        countryCode:countryCode
-                                        countryFlag:countryFlag
-                                                dma:dma
-                                            dmaCode:dmaCode
-                                              state:state
-                                          stateCode:stateCode
-                                         postalCode:postalCode
-                                               city:city
-                                            borough:borough
-                                             county:county
-                                       neighborhood:neighborhood
-                                             number:number
-                                             street:street
-                                       addressLabel:addressLabel
-                                         placeLabel:placeLabel
-                                               unit:unit
-                                              plus4:plus4
-                                           distance:distance
-                                              layer:layer
-                                           metadata:metadata
-                                         confidence:confidence
-                                           timeZone:timeZone
-                                         categories:categories];
+
+    RadarAddress *address = [[RadarAddress alloc] initWithCoordinate:coordinate
+                                                    formattedAddress:formattedAddress
+                                                             country:country
+                                                         countryCode:countryCode
+                                                         countryFlag:countryFlag
+                                                                 dma:dma
+                                                             dmaCode:dmaCode
+                                                               state:state
+                                                           stateCode:stateCode
+                                                          postalCode:postalCode
+                                                                city:city
+                                                             borough:borough
+                                                              county:county
+                                                        neighborhood:neighborhood
+                                                              number:number
+                                                              street:street
+                                                        addressLabel:addressLabel
+                                                          placeLabel:placeLabel
+                                                                unit:unit
+                                                               plus4:plus4
+                                                            distance:distance
+                                                               layer:layer
+                                                            metadata:metadata
+                                                          confidence:confidence
+                                                            timeZone:timeZone
+                                                          categories:categories];
+    address.resultId = resultId;
+
+    return address;
 }
 
 + (NSArray<NSDictionary *> *)arrayForAddresses:(NSArray<RadarAddress *> *)addresses {
@@ -392,6 +401,7 @@
     [dict setValue:[RadarAddress stringForConfidence:self.confidence] forKey:@"confidence"];
     [dict setValue:[self.timeZone dictionaryValue] forKey:@"timeZone"];
     [dict setValue:self.categories forKey:@"categories"];
+    [dict setValue:self.resultId forKey:@"resultId"];
     return dict;
 }
 

@@ -18,6 +18,9 @@
 
 @interface RadarAddress ()
 
+/// Redeclared writable so `initWithObject:` can set it without widening the designated initializer.
+@property (nullable, copy, nonatomic, readwrite) NSString *resultId;
+
 + (NSArray<RadarAddress *> *_Nullable)addressesFromObject:(id _Nonnull)object;
 
 
