@@ -54,10 +54,10 @@
 - (void)selectAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarAutocompleteSelectCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"selectAddress()"];
     [[RadarAPIClient sharedInstance] selectAutocompleteAddress:address
-                                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable selectedAddress) {
+                                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAutocompleteEnrichedAddress *_Nullable enrichedAddress) {
                                                  if (completionHandler) {
                                                      [RadarUtilsDeprecated runOnMainThread:^{
-                                                         completionHandler(status, selectedAddress);
+                                                         completionHandler(status, enrichedAddress);
                                                      }];
                                                  }
                                              }];

@@ -11,6 +11,7 @@
 #import "Radar+Internal.h"
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
+#import "RadarAutocompleteEnrichedAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarOneShotBeaconManager+Internal.h"
 #import "RadarConfig.h"
@@ -1353,12 +1354,10 @@
                             return completionHandler(status, res, nil);
                         }
 
-                        // The server records the selection and answers 204 with no body. Projects with
-                        // address enrichment enabled get a 200 carrying the enriched address instead.
-                        id addressObj = res[@"address"];
-                        RadarAddress *selectedAddress = addressObj ? [[RadarAddress alloc] initWithObject:addressObj] : nil;
+                        // A project that does not enrich answers 204 with no body.
+                        RadarAutocompleteEnrichedAddress *enrichedAddress = [[RadarAutocompleteEnrichedAddress alloc] initWithObject:res[@"address"]];
 
-                        completionHandler(RadarStatusSuccess, res, selectedAddress);
+                        completionHandler(RadarStatusSuccess, res, enrichedAddress);
                     }];
 }
 

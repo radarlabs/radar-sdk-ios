@@ -55,7 +55,7 @@ extension RadarSerializedTests {
             }
         }
 
-        private func select(_ session: RadarAutocompleteSession, _ address: RadarAddress) async -> (RadarStatus, RadarAddress?) {
+        private func select(_ session: RadarAutocompleteSession, _ address: RadarAddress) async -> (RadarStatus, RadarAutocompleteEnrichedAddress?) {
             await awaitCompletion { resume in
                 session.select(address: address) { status, selected in
                     resume((status, selected))
@@ -143,7 +143,7 @@ extension RadarSerializedTests {
             let session = RadarAutocompleteSession()
             let address = try #require(await autocomplete(session).1?.first)
 
-            // The server records the selection and answers 204 with no body.
+            // A project that does not enrich answers 204 with no body.
             fixture.apiHelperMock.mockResponse = [:]
             let (status, selected) = await select(session, address)
 
@@ -163,14 +163,51 @@ extension RadarSerializedTests {
             fixture.apiHelperMock.mockResponse = [
                 "meta": ["code": 200],
                 "address": [
-                    "latitude": 40.7039, "longitude": -73.9867,
-                    "formattedAddress": "25 Jay St, Brooklyn, NY 11201 USA",
+                    "formattedAddress": "123 Main St, New York, NY 10001 US",
+                    "locationDetails": [
+                        "usage": "residential",
+                        "dwelling": "single_family",
+                        "grounds": ["driveway", "lawn"],
+                        "places": [["name": "Joe's Deli", "categories": ["food-beverage", "restaurant"]]],
+                    ],
                 ],
             ]
             let (status, selected) = await select(session, address)
 
             #expect(status == .success)
-            #expect(selected?.formattedAddress == "25 Jay St, Brooklyn, NY 11201 USA")
+            #expect(selected?.formattedAddress == "123 Main St, New York, NY 10001 US")
+            #expect(selected?.locationDetails.usage == "residential")
+            #expect(selected?.locationDetails.dwelling == "single_family")
+            #expect(selected?.locationDetails.grounds == ["driveway", "lawn"])
+            #expect(selected?.locationDetails.places.count == 1)
+            #expect(selected?.locationDetails.places.first?.name == "Joe's Deli")
+            #expect(selected?.locationDetails.places.first?.categories == ["food-beverage", "restaurant"])
+        }
+
+        // The shape a project with nothing to report gets back, captured against staging.
+        @Test("select returns the enriched address when enrichment knows nothing")
+        func selectReturnsEnrichedAddressWithDefaults() async throws {
+            mockAutocompleteResponse(resultId: Self.resultId)
+            let session = RadarAutocompleteSession()
+            let address = try #require(await autocomplete(session).1?.first)
+
+            fixture.apiHelperMock.mockResponse = [
+                "meta": ["code": 200],
+                "address": [
+                    "formattedAddress": "123 Main St, New York, NY 10001 US",
+                    "locationDetails": [
+                        "usage": "unknown", "dwelling": "unknown", "grounds": [], "places": [],
+                    ],
+                ],
+            ]
+            let (status, selected) = await select(session, address)
+
+            #expect(status == .success)
+            #expect(selected?.formattedAddress == "123 Main St, New York, NY 10001 US")
+            #expect(selected?.locationDetails.usage == "unknown")
+            #expect(selected?.locationDetails.dwelling == "unknown")
+            #expect(selected?.locationDetails.grounds.isEmpty == true)
+            #expect(selected?.locationDetails.places.isEmpty == true)
         }
 
         @Test("select makes no request for a result with no handle")

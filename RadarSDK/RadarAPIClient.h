@@ -10,6 +10,7 @@
 #import "Radar.h"
 #import "RadarAPIHelper.h"
 #import "RadarAddress.h"
+#import "RadarAutocompleteEnrichedAddress.h"
 #import "RadarBeacon.h"
 #import "RadarConfig.h"
 #import "RadarEvent.h"
@@ -56,7 +57,7 @@ typedef void (^_Nonnull RadarGeocodeAPICompletionHandler)(RadarStatus status, NS
 
 typedef void (^_Nonnull RadarValidateAddressAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus);
 
-typedef void (^_Nonnull RadarSelectAutocompleteAddressAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address);
+typedef void (^_Nonnull RadarSelectAutocompleteAddressAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAutocompleteEnrichedAddress *_Nullable address);
 
 typedef void (^_Nonnull RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy, NSError *_Nullable error);
 

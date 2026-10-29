@@ -10,6 +10,7 @@
 
 #import "Radar.h"
 #import "RadarAddress.h"
+#import "RadarAutocompleteEnrichedAddress.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  @see https://radar.com/documentation/api#autocomplete
  */
-typedef void (^_Nullable RadarAutocompleteSelectCompletionHandler)(RadarStatus status, RadarAddress *_Nullable address);
+typedef void (^_Nullable RadarAutocompleteSelectCompletionHandler)(RadarStatus status, RadarAutocompleteEnrichedAddress *_Nullable address);
 
 /**
  An autocomplete search field and the selection a user makes in it.
