@@ -115,7 +115,7 @@ extension RadarSerializedTests {
             #expect(lastSessionToken != billingToken)
         }
 
-        @Test("a session's results carry the opaque selection handle")
+        @Test("a session's results carry a selection handle")
         func sessionResultsCarryResultId() async {
             mockAutocompleteResponse(resultId: Self.resultId)
 

@@ -67,9 +67,10 @@ typedef void (^_Nullable RadarAutocompleteSelectCompletionHandler)(RadarStatus s
 /**
  Reports which result the user chose, and returns it enriched where available.
 
- Pass the address straight back from this session's `autocompleteQuery:`; it carries the opaque handle the API
- needs. An address from anywhere else carries none, so nothing is reported, no request is made, and the
- completion handler receives `RadarStatusErrorBadRequest`.
+ Pass the address straight back from this session's `autocompleteQuery:`; it carries the handle the API needs.
+ That handle names the result within this session, so it stops working once the session expires. An address
+ from anywhere else carries none, so nothing is reported, no request is made, and the completion handler
+ receives `RadarStatusErrorBadRequest`.
 
  @param address The selected address, as returned by this session's `autocompleteQuery:`.
  @param completionHandler An optional completion handler.
