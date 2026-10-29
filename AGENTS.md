@@ -90,8 +90,10 @@ compiler generates their Objective-C interface in `RadarSDK-Swift.h`. See `Radar
    every public class in the handwritten headers and `RadarSDK-Swift.h`, and compiles the same
    consumer as non-modular Objective-C++ through the umbrella. It also compiles
    `ObjCCompatibility/RadarSDKObjCAPISurface.m`, which calls every public member of each
-   Swift-implemented class from Objective-C. When you move a class to Swift or add a public
-   member, add its calls there; a change to an existing call breaks Objective-C apps. Also run
+   Swift-implemented class from Objective-C, and fails if a class or member in `RadarSDK-Swift.h`
+   has no call there. Run `make update-objc-api-surface` after it to add the missing calls. A class
+   apps shouldn't use goes in `ObjCCompatibility/internal-classes.txt` with a reason instead.
+   Editing an existing call means Objective-C apps break, so call that out in the PR. Also run
    `make lint` to check the CocoaPods header boundary.
 
 ## Concurrency

@@ -1,0 +1,12 @@
+# Classes in RadarSDK-Swift.h that apps aren't meant to use, so RadarSDKObjCAPISurface.m doesn't
+# cover them. Every other class in RadarSDK-Swift.h must have a section in that file.
+# One class per line, followed by `#` and the reason.
+
+RadarDelegateHolder_Swift          # Swift half of the RadarDelegateHolder migration; apps set delegates through Radar
+RadarInAppMessage_Swift            # Swift subclass of RadarInAppMessage, which is still declared in RadarInAppMessage.h
+RadarInAppMessageDelegate_Swift    # Swift twin of RadarInAppMessageDelegate, which is still declared in RadarInAppMessageDelegate.h
+RadarEventNotifications            # Public only so the SDK's Objective-C notification code can call it
+RadarNotificationSwizzling         # Public only so the SDK's Objective-C notification code can call it
+RadarNotificationUtils             # Public only so the SDK's Objective-C notification code can call it
+RadarRouteModeUtils                # Backs Radar's route mode string conversion; apps call that instead
+RadarSyncManager                   # Internal geofence sync state
