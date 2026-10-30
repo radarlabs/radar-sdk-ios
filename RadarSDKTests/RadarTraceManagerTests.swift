@@ -18,8 +18,8 @@ final class RadarTraceManagerTests {
 
     @Test("Persists spans, uploads an OTLP envelope, then deletes acknowledged files")
     func persistsAndExportsOtlpEnvelope() async throws {
-        manager.record(TraceTestHarness.span(spanId(1)), project: try harness.project())
-        manager.record(TraceTestHarness.span(spanId(2)), project: try harness.project())
+        manager.record(TraceTestHarness.span(spanId(1)), project: try harness.project(), sessionId: manager.currentSessionId())
+        manager.record(TraceTestHarness.span(spanId(2)), project: try harness.project(), sessionId: manager.currentSessionId())
         await manager.awaitDiskForTesting()
         #expect(harness.traceFiles().count == 2)
 

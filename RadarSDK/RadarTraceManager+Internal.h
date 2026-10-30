@@ -15,11 +15,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (class, nonatomic, readonly) RadarTraceManager *sharedInstance;
 
-// Starts tracing for the process and uploads spans left from a previous one. Later calls do nothing.
+// Starts tracing for the process: deletes pending spans from every session except the current one, then uploads
+// stored spans. Later calls do nothing.
 - (void)start;
 
 // Uploads persisted spans, if any. Does nothing before -start.
 - (void)flush;
+
+// Applies the server's sampling decision for sessionId, which must be the session sent with the request, not the
+// current one. Only a session's first decision counts.
+- (void)onSamplingDecisionForSessionId:(NSString *)sessionId sampled:(BOOL)sampled;
 
 @end
 

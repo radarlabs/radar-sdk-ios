@@ -18,7 +18,10 @@ import Foundation
 /// span records a snapshot of its attributes.
 ///
 /// `manager` is nil only for the shared no-op span, returned when tracing hasn't started, there's no publishable key,
-/// or the trace isn't sampled. That span records nothing and propagates no context.
+/// or the session isn't sampled. That span records nothing and propagates no context.
+///
+/// A span started before the server has decided whether its session is sampled still records, so its trace can be
+/// uploaded if the decision is yes. A trace's `sessionId` is the session it started in, and its child spans inherit it.
 @objc(RadarTraceSpan)
 final class RadarTraceSpan: NSObject, @unchecked Sendable {
     let name: String
@@ -29,6 +32,7 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
 
     private let manager: RadarTraceManager?
     private let project: String
+    private let sessionId: String
     private let startUnixMillis: UInt64
     private let startMonotonicNanos: UInt64
 
@@ -39,11 +43,11 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
 
     /// Shared span returned when tracing is off. It records nothing, so one instance serves every caller.
     static let noop = RadarTraceSpan(
-        name: "", traceId: "", spanId: "", parentSpanId: nil, kind: .internal, manager: nil, project: "")
+        name: "", traceId: "", spanId: "", parentSpanId: nil, kind: .internal, manager: nil, project: "", sessionId: "")
 
     private init(
         name: String, traceId: String, spanId: String, parentSpanId: String?, kind: RadarSpanKind,
-        manager: RadarTraceManager?, project: String
+        manager: RadarTraceManager?, project: String, sessionId: String
     ) {
         self.name = name
         self.traceId = traceId
@@ -52,6 +56,7 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
         self.kind = kind
         self.manager = manager
         self.project = project
+        self.sessionId = sessionId
         self.startUnixMillis = manager?.clock.wallMillis() ?? 0
         self.startMonotonicNanos = manager?.clock.monotonicNanos() ?? 0
         super.init()
@@ -66,12 +71,15 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
     }
 
     static func start(_ name: String, manager: RadarTraceManager) -> RadarTraceSpan {
-        guard manager.started, manager.isSampled(), let project = manager.currentProjectFingerprint() else {
+        let sessionId = manager.currentSessionId()
+        guard manager.started, manager.samplingState(sessionId: sessionId) != .notSampled,
+            let project = manager.currentProjectFingerprint()
+        else {
             return noop
         }
         return RadarTraceSpan(
             name: name, traceId: newTraceId(), spanId: newSpanId(), parentSpanId: nil, kind: .internal,
-            manager: manager, project: project)
+            manager: manager, project: project, sessionId: sessionId)
     }
 
     /// Starts a child span in this trace. For a request to the Radar API, use `.client` and send the child's
@@ -80,7 +88,7 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
         guard let manager else { return self }
         return RadarTraceSpan(
             name: name, traceId: traceId, spanId: Self.newSpanId(), parentSpanId: spanId, kind: kind,
-            manager: manager, project: project)
+            manager: manager, project: project, sessionId: sessionId)
     }
 
     /// Temporary Objective-C entry point for `child(_:kind:)` with `.internal`. Objective-C can't see the internal
@@ -99,9 +107,11 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
     // MARK: - Context
 
     /// The W3C `traceparent` header for requests made in this span: `version-traceId-parentId-flags`, where flags
-    /// 01 means sampled. Nil for the no-op span. https://www.w3.org/TR/trace-context/#traceparent-header
+    /// 01 means sampled. Nil unless the session is sampled: there's no header while the decision is pending, and never
+    /// the not-sampled flag. https://www.w3.org/TR/trace-context/#traceparent-header
     @objc var traceparent: String? {
-        manager == nil ? nil : "00-\(traceId)-\(spanId)-01"
+        guard manager?.samplingState(sessionId: sessionId) == .sampled else { return nil }
+        return "00-\(traceId)-\(spanId)-01"
     }
 
     // MARK: - Attributes
@@ -163,7 +173,7 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
             status: status,
             attributes: snapshot
         )
-        manager.record(completed, project: project)
+        manager.record(completed, project: project, sessionId: sessionId)
     }
 
     // MARK: - IDs

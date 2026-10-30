@@ -156,6 +156,7 @@ BOOL _initialized = NO;
         [RadarSettings updateSessionId];
     }
 
+    // After updateSessionId, since start deletes pending spans from all but the current session.
     [[RadarTraceManager sharedInstance] start];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
