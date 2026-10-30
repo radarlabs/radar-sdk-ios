@@ -21,7 +21,7 @@ Example/Example/
 │
 ├── TestsSettings/               # Settings sheet behind the Tests-tab gear
 │   ├── TestsSettingsView.swift  # Composer
-│   ├── EnvironmentSectionView.swift # Environment picker + per-env key; EnvironmentBadge strip
+│   ├── EnvironmentSectionView.swift # Environment picker + per-env key; EnvironmentBadge (error-only strip)
 │   ├── PresetSectionView.swift  # Preset grid + tracking/SDK-config disclosures
 │   ├── IdentitySectionView.swift # userId / description / metadata
 │   ├── TrackingSectionView.swift # On/off, source, configured options

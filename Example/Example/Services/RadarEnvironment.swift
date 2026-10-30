@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftUI
 
 /// The Radar API environment the example app talks to. This is the only place the hosts are
 /// defined: pick an environment in Settings → Environment instead of editing constants.
@@ -25,14 +24,6 @@ enum RadarEnvironment: String, CaseIterable, Identifiable {
         case .production: return "Production"
         case .staging: return "Staging"
         case .local: return "Local"
-        }
-    }
-
-    var color: Color {
-        switch self {
-        case .production: return .orange
-        case .staging: return .blue
-        case .local: return .gray
         }
     }
 

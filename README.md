@@ -25,7 +25,7 @@ Run `make bootstrap` to set up your environment for development and allow you to
 
 In the Example app, open the Tests tab, tap the settings gear, and pick an environment under **Environment**: Production, Staging, or Local. Each environment keeps its own publishable key. **Apply & quit** saves the choice; reopen the app to use it.
 
-- The strip across the top of the app shows the active environment, the key, and which environments the key is valid on. On launch the app checks the key against both production and staging, and the strip turns red if the key isn't valid on the selected environment.
+- If no key is set, or the key isn't valid on the selected environment, a red strip across the top of the app says so. On launch the app checks the key against both production and staging to find out. Settings → Environment always shows the active environment, host, key, and key-check result.
 - Errors that usually mean a wrong host or key (network, unauthorized, publishable key) include the environment, host, key, and key-check result in the Debug console.
 - **Local** points both the SDK's API and verified hosts at your dev server:
   - **Simulator:** `http://localhost:8081` — the simulator reaches your Mac over loopback.
