@@ -156,7 +156,7 @@ BOOL _initialized = NO;
         [RadarSettings updateSessionId];
     }
 
-    [RadarTraceManager start];
+    [[RadarTraceManager sharedInstance] start];
 
     [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
 

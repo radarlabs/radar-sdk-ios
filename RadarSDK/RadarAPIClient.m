@@ -602,7 +602,7 @@
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
                             [RadarState.shared setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
-                            [RadarTraceManager flush];
+                            [[RadarTraceManager sharedInstance] flushIfStarted];
                             [RadarSettings updateLastTrackedTime];
 
                             RadarConfig *config = [RadarConfig fromDictionary:res];

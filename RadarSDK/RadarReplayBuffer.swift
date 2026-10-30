@@ -106,7 +106,7 @@ final class RadarReplayBuffer: NSObject, @unchecked Sendable {
                 RadarLogger.shared.debug("Flushed replays successfully")
                 removeReplaysFromBuffer(replaysArray)
                 RadarLogger.flushLogs()
-                RadarTraceManager.flushTraces()
+                RadarTraceManager.shared.flushIfStarted()
             } else if replayParams != nil, let newReplayParams = newReplayParams {
                 writeNewReplayToBuffer(newReplayParams)
             }
