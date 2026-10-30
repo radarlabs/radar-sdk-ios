@@ -15,15 +15,15 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarVerifiedDelegate {
 
-    /// Point the SDK at a dev server by setting this to its address.
-    /// Use "http://localhost:8081" for the Simulator, or your Mac's current LAN IP
-    /// (for example, "http://192.168.0.24:8081") for a physical device. Replace the example
-    /// with your own address. Overrides the API + verified hosts on launch; leave blank to use
-    /// the SDK defaults.
-    static let TARGET_HOST = ""
+    // Default publishable keys, used until you save one in Settings → Environment. Pick the
+    // environment (Production / Staging / Local) there too. hooks/clean-filter keeps real keys
+    // out of git (they're saved to .radar-env and restored on checkout).
 
-    /// Hardcoded publishable key used when no override is set.
+    /// Default key for the Production environment.
     static let DEFAULT_PUBLISHABLE_KEY = "prj_live_pk_..."
+
+    /// Default key for the Staging environment.
+    static let DEFAULT_STAGING_PUBLISHABLE_KEY = "prj_live_pk_..."
 
     let locationManager = CLLocationManager()
     var window: UIWindow?  // required for UIWindowSceneDelegate
@@ -51,17 +51,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.silentPush = true
 
         Radar.setAppGroup("group.waypoint.data")
-        // Point the SDK at a dev server (see `TARGET_HOST`). Writes the API + verified hosts
-        // to UserDefaults, or clears the overrides when `TARGET_HOST` is blank.
-        let radarDefaults = UserDefaults(suiteName: "group.waypoint.data") ?? .standard
-        if Self.TARGET_HOST.isEmpty {
-            radarDefaults.removeObject(forKey: "radar-host")
-            radarDefaults.removeObject(forKey: "radar-verifiedHost")
-        } else {
-            radarDefaults.set(Self.TARGET_HOST, forKey: "radar-host")
-            radarDefaults.set(Self.TARGET_HOST, forKey: "radar-verifiedHost")
-        }
+        // Point the SDK at the selected environment before initializing, then check the key.
+        settingsStore.environment.apply(localURL: settingsStore.localURL)
+        print("radar-env: \(settingsStore.environmentSummary)")
+        logStream.errorContext = { [weak settingsStore] in settingsStore?.environmentSummary }
         Radar.initialize(publishableKey: settingsStore.resolvedPublishableKey, options: radarInitializeOptions)
+        settingsStore.runKeyCheck(logStream: logStream)
         Radar.setDelegate(logStream)
         wireLiveActivitySubscriptions()
         Radar.setVerifiedDelegate(self)
