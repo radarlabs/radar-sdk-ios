@@ -165,6 +165,13 @@ The categories of the address.
  */
 @property (nullable, copy, nonatomic, readonly) NSArray<NSString *> *categories;
 
+/**
+Identifies this result within the session that returned it, not the address itself.
+
+Short-lived; pass the whole address to `selectAddress:completionHandler:` rather than storing this.
+ */
+@property (nullable, copy, nonatomic, readonly) NSString *resultId;
+
 + (RadarAddress *_Nullable)addressFromObject:(id _Nonnull)object;
 + (NSArray<NSDictionary *> *_Nullable)arrayForAddresses:(NSArray<RadarAddress *> *_Nullable)addresses;
 - (NSDictionary *_Nonnull)dictionaryValue;

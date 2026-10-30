@@ -11,6 +11,7 @@
 #import "Radar+Internal.h"
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
+#import "RadarAutocompleteEnrichedAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarOneShotBeaconManager+Internal.h"
 #import "RadarConfig.h"
@@ -1240,6 +1241,7 @@
                     limit:(int)limit
                   country:(NSString *_Nullable)country
                  mailable:(BOOL)mailable
+             sessionToken:(NSString *_Nullable)sessionToken
         completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
@@ -1265,7 +1267,10 @@
     if (mailable) {
         [queryString appendFormat:@"&mailable=true"];
     }
-
+    // Without a token the results come back with no resultId.
+    if (sessionToken) {
+        [queryString appendFormat:@"&sessionToken=%@", sessionToken];
+    }
 
     NSString *host = [RadarSettings host];
     NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
@@ -1300,99 +1305,59 @@
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
                   country:(NSString *_Nullable)country
+                 mailable:(BOOL)mailable
         completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
-    NSString *publishableKey = [RadarSettings publishableKey];
-    if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
-    }
+    [self autocompleteQuery:query near:near layers:layers limit:limit country:country mailable:mailable sessionToken:nil completionHandler:completionHandler];
+}
 
-    int finalLimit = MIN(limit, 100);
-
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"query=%@", query];
-    if (near) {
-        [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    }
-    if (layers && layers.count > 0) {
-        [queryString appendFormat:@"&layers=%@", [layers componentsJoinedByString:@","]];
-    }
-    if (limit) {
-        [queryString appendFormat:@"&limit=%d", finalLimit];
-    }
-    if (country) {
-        [queryString appendFormat:@"&country=%@", country];
-    }
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
-
-    [self.apiHelper requestWithMethod:@"GET"
-                                  url:url
-                              headers:headers
-                               params:nil
-                                sleep:NO
-                           logPayload:YES
-                      extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
-                        if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil);
-                        }
-
-                        id addressesObj = res[@"addresses"];
-                        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
-                        if (addresses) {
-                            return completionHandler(RadarStatusSuccess, res, addresses);
-                        }
-
-                        completionHandler(RadarStatusErrorServer, nil, nil);
-                    }];
+- (void)autocompleteQuery:(NSString *)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray<NSString *> *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
+        completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+    [self autocompleteQuery:query near:near layers:layers limit:limit country:country mailable:NO sessionToken:nil completionHandler:completionHandler];
 }
 
 - (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nullable)near limit:(int)limit completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
+    [self autocompleteQuery:query near:near layers:nil limit:limit country:nil mailable:NO sessionToken:nil completionHandler:completionHandler];
+}
+
+- (void)selectAutocompleteAddress:(RadarAddress *)address completionHandler:(RadarSelectAutocompleteAddressAPICompletionHandler)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
     }
 
-    int finalLimit = MIN(limit, 100);
+    // Only results from a RadarAutocompleteSession carry a handle.
+    NSString *resultId = address.resultId;
+    if (resultId.length == 0) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Autocomplete selection not reported | the address carries no resultId"];
 
-    NSMutableString *queryString = [NSMutableString new];
-    [queryString appendFormat:@"query=%@", query];
-    if (near) {
-        [queryString appendFormat:@"&near=%.06f,%.06f", near.coordinate.latitude, near.coordinate.longitude];
-    }
-    if (limit) {
-        [queryString appendFormat:@"&limit=%d", finalLimit];
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil);
     }
 
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete/select", host];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
-    [self.apiHelper requestWithMethod:@"GET"
+    [self.apiHelper requestWithMethod:@"POST"
                                   url:url
                               headers:headers
-                               params:nil
+                               params:@{@"resultId": resultId}
                                 sleep:NO
                            logPayload:YES
                       extendedTimeout:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
-                        if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil);
+                        if (status != RadarStatusSuccess) {
+                            return completionHandler(status, res, nil);
                         }
 
-                        id addressesObj = res[@"addresses"];
-                        NSArray<RadarAddress *> *addresses = [RadarAddress addressesFromObject:addressesObj];
-                        if (addresses) {
-                            return completionHandler(RadarStatusSuccess, res, addresses);
-                        }
+                        // A project that does not enrich answers 204 with no body.
+                        RadarAutocompleteEnrichedAddress *enrichedAddress = [[RadarAutocompleteEnrichedAddress alloc] initWithObject:res[@"address"]];
 
-                        completionHandler(RadarStatusErrorServer, nil, nil);
+                        completionHandler(RadarStatusSuccess, res, enrichedAddress);
                     }];
 }
 
