@@ -1417,13 +1417,11 @@
         [queryString appendFormat:@"&stateCode=%@", address.stateCode];
         [queryString appendFormat:@"&city=%@", address.city];
         [queryString appendFormat:@"&postalCode=%@", address.postalCode];
-        if (address.street) {
+        // The API rejects a request with both, and addresses from search and geocoding have both.
+        if (address.street && address.number) {
             [queryString appendFormat:@"&street=%@", address.street];
-        }
-        if (address.number) {
             [queryString appendFormat:@"&number=%@", address.number];
-        }
-        if (address.addressLabel) {
+        } else {
             [queryString appendFormat:@"&addressLabel=%@", address.addressLabel];
         }
     }

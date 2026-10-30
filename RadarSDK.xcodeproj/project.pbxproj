@@ -220,6 +220,7 @@
 		F3050B0630059A000035CBDB /* RadarContinuousBeaconManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050B0530059A000035CBDB /* RadarContinuousBeaconManagerTests.swift */; };
 		F3050C0230059A000035CBDB /* RadarSwiftBridgeConformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050C0130059A000035CBDB /* RadarSwiftBridgeConformanceTests.swift */; };
 		F3050D0230059A000035CBDB /* RadarAPIClientSearchBeaconsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050D0130059A000035CBDB /* RadarAPIClientSearchBeaconsTests.swift */; };
+		70C3D746F1AB1CFC877C78B7 /* RadarAPIClientValidateAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 780B8AE6B6126AB61F59CA95 /* RadarAPIClientValidateAddressTests.swift */; };
 		BABC4BA1300599750035CBDB /* RadarOneShotBeaconManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABC4BA03005996B0035CBDB /* RadarOneShotBeaconManagerTests.swift */; };
 		BAC932F02FF43E8100503C2C /* RadarStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC932EF2FF43E7400503C2C /* RadarStateTests.swift */; };
 		BAC932F22FF45B4200503C2C /* RadarReplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC932F12FF45B3C00503C2C /* RadarReplayTests.swift */; };
@@ -532,6 +533,7 @@
 		F3050B0530059A000035CBDB /* RadarContinuousBeaconManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarContinuousBeaconManagerTests.swift; sourceTree = "<group>"; };
 		F3050C0130059A000035CBDB /* RadarSwiftBridgeConformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSwiftBridgeConformanceTests.swift; sourceTree = "<group>"; };
 		F3050D0130059A000035CBDB /* RadarAPIClientSearchBeaconsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIClientSearchBeaconsTests.swift; sourceTree = "<group>"; };
+		780B8AE6B6126AB61F59CA95 /* RadarAPIClientValidateAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIClientValidateAddressTests.swift; sourceTree = "<group>"; };
 		BABC4BA03005996B0035CBDB /* RadarOneShotBeaconManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOneShotBeaconManagerTests.swift; sourceTree = "<group>"; };
 		BAC932EF2FF43E7400503C2C /* RadarStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarStateTests.swift; sourceTree = "<group>"; };
 		BAC932F12FF45B3C00503C2C /* RadarReplayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarReplayTests.swift; sourceTree = "<group>"; };
@@ -930,6 +932,7 @@
 				F3051005300A5A000035CBDB /* RadarContinuousBeaconManagerRangingTests.swift */,
 				F3050C0130059A000035CBDB /* RadarSwiftBridgeConformanceTests.swift */,
 				F3050D0130059A000035CBDB /* RadarAPIClientSearchBeaconsTests.swift */,
+				780B8AE6B6126AB61F59CA95 /* RadarAPIClientValidateAddressTests.swift */,
 				BABC4BA03005996B0035CBDB /* RadarOneShotBeaconManagerTests.swift */,
 				BA8D153A300E9BD100022EB3 /* RadarEventNotificationsTest.swift */,
 				BA7794BD2FAD198B00E197CA /* RadarFileStorageTests.swift */,
@@ -1570,6 +1573,7 @@
 				F3051006300A5A000035CBDB /* RadarContinuousBeaconManagerRangingTests.swift in Sources */,
 				F3050C0230059A000035CBDB /* RadarSwiftBridgeConformanceTests.swift in Sources */,
 				F3050D0230059A000035CBDB /* RadarAPIClientSearchBeaconsTests.swift in Sources */,
+				70C3D746F1AB1CFC877C78B7 /* RadarAPIClientValidateAddressTests.swift in Sources */,
 				BABC4BA1300599750035CBDB /* RadarOneShotBeaconManagerTests.swift in Sources */,
 				BA3540252F9100AB00E553A1 /* RadarOfflineEventManagerBeaconDwellTests.swift in Sources */,
 				BA3540242F9033A900E553A1 /* RadarSerializedTests.swift in Sources */,
