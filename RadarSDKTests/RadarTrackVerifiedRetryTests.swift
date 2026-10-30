@@ -123,12 +123,13 @@ extension RadarVerifiedHostOverrideTests {
             let preparer = try makeTrackPreparer(instance: instance, options: ["nonce": "test-nonce"])
             let finished = expectation(description: "One final track callback")
             finished.assertForOverFulfill = true
-            trackForEncryptionTest(preparer, secondary: secondary) { status, _, _, _, _, _, _ in
+            let track = trackForEncryptionTest(preparer, secondary: secondary) { status, _, _, _, _, _, _ in
                 XCTAssertTrue(Thread.isMainThread)
                 XCTAssertEqual(status, expectedStatus)
                 finished.fulfill()
             }
             wait(for: [finished], timeout: 5)
+            track.cancel()
 
             let requests = TrackRetryProtocol.state.recordedRequests()
             XCTAssertEqual(requests.count, expectedRequests)
@@ -152,11 +153,12 @@ extension RadarVerifiedHostOverrideTests {
                 TrackRetryProtocol.state.reset(failures: [])
                 let next = expectation(description: "Next track is not blocked")
                 next.assertForOverFulfill = true
-                trackForEncryptionTest(preparer, secondary: secondary) { status, _, _, _, _, _, _ in
+                let nextTrack = trackForEncryptionTest(preparer, secondary: secondary) { status, _, _, _, _, _, _ in
                     XCTAssertEqual(status, .errorServer)
                     next.fulfill()
                 }
                 wait(for: [next], timeout: 5)
+                nextTrack.cancel()
                 XCTAssertEqual(TrackRetryProtocol.state.recordedRequests().count, 1)
             }
         }
@@ -168,6 +170,13 @@ extension RadarVerifiedHostOverrideTests {
         secondary: Bool
     ) throws {
         guard let first = requests.first else { return }
+        // Each request must have its own seal context. A failed seal leaves a context without a
+        // request, but never the reverse. Fail instead of indexing past the end, which would
+        // crash the test process and skip the rest of the run.
+        guard requests.count <= contexts.count else {
+            XCTFail("Recorded \(requests.count) requests for \(contexts.count) seal contexts")
+            return
+        }
         let host = secondary ? RadarSettings.defaultVerifiedHostSecondary : RadarSettings.verifiedHost
 
         for (index, request) in requests.enumerated() {
