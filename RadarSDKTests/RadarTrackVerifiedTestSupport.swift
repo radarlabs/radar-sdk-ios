@@ -90,20 +90,26 @@ extension RadarVerifiedHostOverrideTests {
         return RadarTrackVerifiedRequestPreparer(fraudSDK: fraudSDK, options: options)
     }
 
+    // Callers cancel the returned task once their wait ends. A wait that times out leaves the
+    // task running, and it would otherwise send its track through whichever API helper a later
+    // test has installed on the shared client.
     func trackForEncryptionTest(
         _ preparer: RadarTrackVerifiedRequestPreparer,
         secondary: Bool = false,
         completion: @escaping RadarTrackAPICompletionHandler
-    ) {
+    ) -> Task<Void, Never> {
         // Collect before the API call, as the verification manager now does.
         // This helper exercises the collector/API boundary, not location acquisition.
         let callback = TrackResultCallback(completion)
-        Task { @MainActor in
+        return Task { @MainActor in
             guard RadarSettings.publishableKey != nil else {
                 callback.invoke(.errorPublishableKey, nil, nil, nil, nil, nil, nil)
                 return
             }
             let (status, payload, error) = await preparer.preparePayload()
+            // Cancellation and this check both run on the main actor, so a cancelled task
+            // never reaches the shared API client.
+            guard !Task.isCancelled else { return }
             guard status == .success, let payload, error == nil else {
                 callback.invoke(status == .success ? .errorUnknown : status, nil, nil, nil, nil, nil, nil)
                 return

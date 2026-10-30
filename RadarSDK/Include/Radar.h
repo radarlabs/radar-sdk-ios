@@ -10,7 +10,6 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
-#import "RadarAddress.h"
 #import "RadarEvent.h"
 #import "RadarRouteMode.h"
 #import "RadarTrackingOptions.h"
@@ -25,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarInAppMessageProtocol;
 @protocol RadarIndoorsProtocol;
 
+@class RadarAddress;
 @class RadarTripOptions;
 @class RadarInAppMessage;
 @class RadarRevealRiskToken;

@@ -101,7 +101,7 @@ extension RadarVerifiedHostOverrideTests {
         let finished = expectation(description: "One tracking callback")
         finished.assertForOverFulfill = true
 
-        trackForEncryptionTest(preparer) { status, _, _, _, _, config, _ in
+        let track = trackForEncryptionTest(preparer) { status, _, _, _, _, config, _ in
             XCTAssertTrue(Thread.isMainThread)
             let expectedStatus: RadarStatus = preparationFails ? .errorBadRequest : .errorNetwork
             XCTAssertEqual(status, expectedStatus)
@@ -115,6 +115,7 @@ extension RadarVerifiedHostOverrideTests {
         }
 
         wait(for: [finished], timeout: 5.0)
+        track.cancel()
         XCTAssertEqual(delegate.recordedStatuses, preparationFails ? [] : [.errorNetwork])
         XCTAssertEqual(instance.recordedOptions().count, 1)
         if preparationFails {
