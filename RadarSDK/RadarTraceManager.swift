@@ -29,7 +29,11 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     @objc(sharedInstance)
     static let shared = RadarTraceManager()
 
+    // TODO(jordan-nelson): use sampling decison from the server
+    private static let sampled = false
+
     let disk = DispatchQueue(label: "io.radar.traces", qos: .utility)
+    let clock: RadarTraceClock
     private let apiClient: RadarAPIClient
     private let publishableKey: @Sendable () -> String?
 
@@ -42,15 +46,18 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     private var isFlushing = false
     private var pendingWrites = 0
     private var droppedWrites = 0
+    private var sampledOverride: Bool?
 
-    /// The defaults are what production uses. Tests inject a temporary directory, a mock API client, and a key, so
-    /// they don't share files or change the global setting.
+    /// The defaults are what production uses. Tests inject a temporary directory, a mock API client, a key, and a
+    /// clock, so they don't share files or change global state.
     init(
         directory: URL = RadarTraceStore.defaultDirectory(),
         apiClient: RadarAPIClient = .shared,
-        publishableKey: @escaping @Sendable () -> String? = { RadarSettings.publishableKey }
+        publishableKey: @escaping @Sendable () -> String? = { RadarSettings.publishableKey },
+        clock: RadarTraceClock = .system
     ) {
         self.store = RadarTraceStore(directory: directory)
+        self.clock = clock
         self.apiClient = apiClient
         self.publishableKey = publishableKey
         super.init()
@@ -78,6 +85,9 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     var started: Bool {
         lock.withLock { isStarted }
     }
+
+    /// Whether new traces are recorded. Spans of an unsampled trace are no-ops.
+    func isSampled() -> Bool { lock.withLock { sampledOverride } ?? Self.sampled }
 
     /// Queues a completed span to be written to disk. `project` is the fingerprint of the publishable key the span was
     /// recorded under. Never throws into SDK call paths.
@@ -343,6 +353,9 @@ extension RadarTraceManager {
 // MARK: - Test hooks
 
 extension RadarTraceManager {
+
+    /// Forces `isSampled()` to return `sampled`, or restores the default when nil.
+    func overrideSampledForTesting(_ sampled: Bool?) { lock.withLock { sampledOverride = sampled } }
 
     /// Waits for queued disk work, including span writes, to finish. Suspends instead of blocking, so tests waiting
     /// on slow writes don't hold threads that other tests' uploads need.
