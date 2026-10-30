@@ -101,6 +101,16 @@
     return headers;
 }
 
+// Applies tracingEnabled from meta.<settingsKey> in a successful response. sessionId must be the session sent with the
+// request, not the current one. A missing or non-boolean value means not sampled.
+- (void)applySamplingDecisionForSessionId:(NSString *)sessionId response:(NSDictionary *)res settingsKey:(NSString *)settingsKey {
+    NSDictionary *meta = [res[@"meta"] isKindOfClass:[NSDictionary class]] ? res[@"meta"] : nil;
+    NSDictionary *settings = [meta[settingsKey] isKindOfClass:[NSDictionary class]] ? meta[settingsKey] : nil;
+    id tracingEnabled = settings[@"tracingEnabled"];
+    BOOL sampled = [tracingEnabled isKindOfClass:[NSNumber class]] && [tracingEnabled boolValue];
+    [[RadarTraceManager sharedInstance] onSamplingDecisionForSessionId:sessionId sampled:sampled];
+}
+
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
     [self getConfigForUsage:usage verified:verified useSecondaryVerifiedHost:NO completionHandler:completionHandler];
 }
@@ -114,9 +124,10 @@
         return completionHandler(RadarStatusErrorPublishableKey, nil);
     }
 
+    NSString *sessionId = [RadarSettings sessionId];
     NSMutableString *queryString = [NSMutableString new];
     [queryString appendFormat:@"installId=%@", [RadarSettings installId]];
-    [queryString appendFormat:@"&sessionId=%@", [RadarSettings sessionId]];
+    [queryString appendFormat:@"&sessionId=%@", sessionId];
     [queryString appendFormat:@"&id=%@", [RadarSettings _id]];
     NSString *locationAuthorization = [RadarUtils locationAuthorization];
     if (locationAuthorization) {
@@ -154,6 +165,9 @@
                         }
 
                         [Radar flushLogs];
+                        if (status == RadarStatusSuccess) {
+                            [self applySamplingDecisionForSessionId:sessionId response:res settingsKey:@"sdkConfiguration"];
+                        }
 
                         RadarConfig *config = [RadarConfig fromDictionary:res];
         
@@ -250,6 +264,8 @@
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
     BOOL anonymous = [RadarSettings anonymousTrackingEnabled];
     params[@"anonymous"] = @(anonymous);
+    // Anonymous tracks don't send a session, so the response has no sampling decision for one.
+    NSString *sessionId = nil;
     if (anonymous) {
         params[@"deviceId"] = @"anonymous";
         params[@"geofenceIds"] = RadarState.shared.geofenceIds;
@@ -267,10 +283,8 @@
         if (userTags && userTags.count > 0) {
             params[@"userTags"] = userTags;
         }
-        NSString *sessionId = [RadarSettings sessionId];
-        if (sessionId) {
-            params[@"sessionId"] = sessionId;
-        }
+        sessionId = [RadarSettings sessionId];
+        params[@"sessionId"] = sessionId;
     }
     params[@"latitude"] = @(location.coordinate.latitude);
     params[@"longitude"] = @(location.coordinate.longitude);
@@ -465,6 +479,7 @@
         }
 
         [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
+                                                         sessionId:sessionId
                                             preparedFraudPayload:preparedFraudPayload
                                                             options:options
                                                             stopped:stopped
@@ -480,6 +495,7 @@
 }
 
 - (void)makeTrackRequestWithParams:(NSDictionary *)params
+                         sessionId:(NSString *_Nullable)sessionId
             preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
                         options:(RadarTrackingOptions *)options
                         stopped:(BOOL)stopped
@@ -601,6 +617,9 @@
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
                             [RadarState.shared setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
+                            if (sessionId) {
+                                [self applySamplingDecisionForSessionId:sessionId response:res settingsKey:@"featureSettings"];
+                            }
                             [[RadarTraceManager sharedInstance] flush];
                             [RadarSettings updateLastTrackedTime];
 

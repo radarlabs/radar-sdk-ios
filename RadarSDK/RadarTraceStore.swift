@@ -17,7 +17,15 @@ final class RadarTraceStore {
     static let staleTempFileAge: TimeInterval = 60
 
     private static let recordExtension = "json"
+    private static let pendingExtension = "pending"
     private static let tempExtension = "tmp"
+
+    /// A span waiting for its session's sampling decision: `<base>.<sessionId>.pending`.
+    private struct PendingRecord {
+        let name: String
+        let sessionId: String
+        let base: String
+    }
 
     /// A file in the trace directory.
     struct Entry {
@@ -61,10 +69,11 @@ final class RadarTraceStore {
 
     /// Atomically writes one span record, then enforces the storage limits.
     ///
-    /// Each span is one file, `<directory>/<millis>-<sequence>-<uuid>.json`. Names sort oldest first: millis, then a
-    /// sequence for spans written in the same millisecond. The record is written to a `.tmp` file, synced, and
-    /// renamed, so readers never see a partial record.
-    func write(_ data: Data) {
+    /// Each span is one file, `<directory>/<millis>-<sequence>-<uuid>.json`. A span waiting for its session's sampling
+    /// decision is written as `<millis>-<sequence>-<uuid>.<sessionId>.pending` instead, and renamed or deleted when the
+    /// decision arrives. Names sort oldest first: millis, then a sequence for spans written in the same millisecond.
+    /// The record is written to a `.tmp` file, synced, and renamed, so readers never see a partial record.
+    func write(_ data: Data, pendingSessionId: String? = nil) {
         let temp = url(for: "span-\(UUID().uuidString.lowercased()).\(Self.tempExtension)")
         defer { try? FileManager.default.removeItem(at: temp) }
         do {
@@ -77,7 +86,8 @@ final class RadarTraceStore {
             try handle.synchronize()
 
             let millis = Int64(Date().timeIntervalSince1970 * 1000)
-            let name = String(format: "%lld-%09ld-%@.%@", millis, fileSequence, UUID().uuidString.lowercased(), Self.recordExtension)
+            let base = String(format: "%lld-%09ld-%@", millis, fileSequence, UUID().uuidString.lowercased())
+            let name = pendingSessionId.map { "\(base).\($0).\(Self.pendingExtension)" } ?? "\(base).\(Self.recordExtension)"
             fileSequence += 1
             try FileManager.default.moveItem(at: temp, to: url(for: name))
             prune()
@@ -86,9 +96,33 @@ final class RadarTraceStore {
         }
     }
 
-    /// Committed span records, oldest first.
+    /// Uploadable span records, oldest first.
     func records() -> [Entry] {
         entries().filter { Self.pathExtension($0.name) == Self.recordExtension }
+    }
+
+    /// Makes a session's pending spans uploadable if it is sampled, or deletes them.
+    func resolvePending(sessionId: String, sampled: Bool) {
+        for record in pendingRecords() where record.sessionId == sessionId {
+            if !sampled {
+                remove(record.name)
+                continue
+            }
+            do {
+                try FileManager.default.moveItem(at: url(for: record.name), to: url(for: "\(record.base).\(Self.recordExtension)"))
+            } catch {
+                RadarLogger.shared.error("Could not make pending trace span uploadable | message = \(error.localizedDescription)", type: .sdkError)
+            }
+        }
+    }
+
+    /// Deletes pending spans from every session except `sessionId`. Should be run when the manager is initialized since
+    /// during initialize, decisions for other sessions can't arrive anymore, while a request in this process can still 
+    /// return the current session's.
+    func deletePending(exceptSessionId sessionId: String) {
+        for record in pendingRecords() where record.sessionId != sessionId {
+            remove(record.name)
+        }
     }
 
     func contents(of name: String) -> Data? {
@@ -103,7 +137,8 @@ final class RadarTraceStore {
         try? FileManager.default.removeItem(at: url(for: name))
     }
 
-    /// Removes stale temp files and expired spans, then evicts the oldest spans until within limits.
+    /// Removes stale temp files and expired spans, then evicts the oldest spans until within limits. Pending spans count
+    /// toward the limits, so a decision that never arrives can't grow storage.
     func prune() {
         let now = Date()
         let all = entries()
@@ -115,7 +150,7 @@ final class RadarTraceStore {
         }
 
         var records: [Entry] = []
-        for entry in all where Self.pathExtension(entry.name) == Self.recordExtension {
+        for entry in all where [Self.recordExtension, Self.pendingExtension].contains(Self.pathExtension(entry.name)) {
             if now.timeIntervalSince(entry.modified) > Self.maxAge {
                 remove(entry.name)
             } else {
@@ -134,6 +169,19 @@ final class RadarTraceStore {
     }
 
     // MARK: - Private
+
+    /// Pending span records, oldest first.
+    private func pendingRecords() -> [PendingRecord] {
+        entries().compactMap { entry in
+            guard Self.pathExtension(entry.name) == Self.pendingExtension else { return nil }
+            let withoutExtension = (entry.name as NSString).deletingPathExtension
+            return PendingRecord(
+                name: entry.name,
+                sessionId: (withoutExtension as NSString).pathExtension,
+                base: (withoutExtension as NSString).deletingPathExtension
+            )
+        }
+    }
 
     private func url(for name: String) -> URL {
         directory.appendingPathComponent(name, isDirectory: false)

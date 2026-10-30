@@ -15,11 +15,6 @@ final class RadarTraceSpanTests {
     private let harness = TraceTestHarness()
     private var manager: RadarTraceManager { harness.manager }
 
-    init() {
-        // Most tests are about recording, so traces are sampled unless a test clears this.
-        harness.manager.overrideSampledForTesting(true)
-    }
-
     @Test("Child spans share the trace and link to their parent")
     func childSpansShareTraceAndLinkToParent() async throws {
         let root = RadarTraceSpan.start("root", manager: manager)
@@ -130,16 +125,56 @@ final class RadarTraceSpanTests {
         #expect(end - start == 1_500_000_000)
     }
 
-    @Test("Spans are no-ops until sampling is enabled")
-    func spansAreNoOpsByDefault() async throws {
-        manager.overrideSampledForTesting(nil)
+    @Test("A span started before its session is decided records, but sends no traceparent")
+    func spanStartedBeforeDecisionIsNotNoOp() {
+        harness.useServerSampling(sessionId: "1000")
 
+        let root = RadarTraceSpan.start("root", manager: manager)
+        let child = root.child("HTTP POST /v1/test", kind: .client)
+
+        // Pending spans are real so they can be kept until the decision arrives.
+        #expect(root !== RadarTraceSpan.noop)
+        #expect(root !== child)
+        #expect(child.traceId == root.traceId)
+        // No header while the decision is pending, and never the not-sampled flag.
+        #expect(child.traceparent == nil)
+
+        manager.onSamplingDecision(sessionId: "1000", sampled: true)
+        #expect(child.traceparent == "00-\(child.traceId)-\(child.spanId)-01")
+    }
+
+    @Test("A span's traceparent is dropped once its session is not sampled")
+    func traceparentIsOmittedWhenSessionIsNotSampled() {
+        harness.useServerSampling(sessionId: "1000")
         let span = RadarTraceSpan.start("root", manager: manager)
-        span.end(status: .success)
 
-        #expect(span === RadarTraceSpan.noop)
-        try await manager.flushAndWaitForTesting()
-        #expect(harness.session.requests.isEmpty)
+        manager.onSamplingDecision(sessionId: "1000", sampled: false)
+
+        #expect(span.traceparent == nil)
+    }
+
+    @Test("Child spans use the session their trace started in")
+    func childSpansUseTheSessionTheirTraceStartedIn() {
+        harness.useServerSampling(sessionId: "1000")
+        let root = RadarTraceSpan.start("root", manager: manager)
+        harness.radarSession.value = "2000"
+        let child = root.child("HTTP POST /v1/test", kind: .client)
+
+        manager.onSamplingDecision(sessionId: "2000", sampled: false)
+        manager.onSamplingDecision(sessionId: "1000", sampled: true)
+
+        #expect(child.traceparent == "00-\(child.traceId)-\(child.spanId)-01")
+    }
+
+    @Test("A span in a session that isn't sampled is the shared no-op span")
+    func spanIsNoOpWhenSessionIsNotSampled() {
+        harness.useServerSampling(sessionId: "1000")
+        manager.onSamplingDecision(sessionId: "1000", sampled: false)
+
+        let root = RadarTraceSpan.start("root", manager: manager)
+
+        #expect(root === RadarTraceSpan.noop)
+        #expect(root.traceparent == nil)
     }
 
     @Test("An unsampled trace is the shared no-op span")
