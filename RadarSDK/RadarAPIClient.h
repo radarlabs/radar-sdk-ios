@@ -9,12 +9,12 @@
 
 #import "Radar.h"
 #import "RadarAPIHelper.h"
-#import "RadarAddress.h"
 #import "RadarBeacon.h"
 #import "RadarConfig.h"
 #import "RadarEvent.h"
 #import "RadarUser.h"
 
+@class RadarAddress;
 @class RadarTripLeg;
 @class RadarRouteMatrix;
 @class RadarRoutes;
