@@ -55,6 +55,12 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     private var isFlushing = false
     private var pendingWrites = 0
     private var droppedWrites = 0
+    // TEMP diagnostic for CI flush timeouts: when the current upload task was created and when it started running.
+    private var uploadTaskCreatedAt: Date?
+    private var uploadTaskStartedAt: Date?
+
+    // TEMP diagnostic: set by tests to describe main queue and task pool delays when a flush times out.
+    nonisolated(unsafe) static var timeoutDiagnosticsForTesting: (@Sendable () -> String)?
 
     /// The defaults are what production uses. Tests inject a temporary directory, a mock API client, a key, a session,
     /// and a clock, so they don't share files or change global state.
@@ -188,7 +194,12 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
             return
         }
 
+        lock.withLock {
+            uploadTaskCreatedAt = Date()
+            uploadTaskStartedAt = nil
+        }
         Task(priority: .utility) {
+            self.lock.withLock { self.uploadTaskStartedAt = Date() }
             let outcome: UploadOutcome
             do {
                 let (data, response) = try await self.apiClient.postTraces(body: batch.body, publishableKey: publishableKey)
@@ -341,11 +352,40 @@ extension RadarTraceManager {
         let deadline = Date().addingTimeInterval(60)
         while lock.withLock({ isFlushing }) {
             guard Date() < deadline else {
+                let diagnostics = await diagnosticsForTesting()
                 throw NSError(
                     domain: "io.radar.traces", code: 1,
-                    userInfo: [NSLocalizedDescriptionKey: "Trace flush did not finish within 60 seconds"])
+                    userInfo: [NSLocalizedDescriptionKey: "Trace flush did not finish within 60 seconds | \(diagnostics)"])
             }
             try await Task.sleep(nanoseconds: 10_000_000)
         }
+    }
+
+    /// TEMP diagnostic: where the current upload is, whether the disk queue responds, and the tests' main queue and
+    /// task pool delays.
+    func diagnosticsForTesting() async -> String {
+        let (created, started) = lock.withLock { (uploadTaskCreatedAt, uploadTaskStartedAt) }
+        let now = Date()
+        var upload = "no upload task"
+        if let created {
+            upload = String(format: "upload task created %.1fs ago, ", now.timeIntervalSince(created))
+            upload += started.map { String(format: "started %.1fs ago", now.timeIntervalSince($0)) } ?? "not started"
+        }
+        let disk = await diskResponseForTesting(limit: 5)
+        return "\(upload); disk queue \(disk); \(Self.timeoutDiagnosticsForTesting?() ?? "no monitor")"
+    }
+
+    private func diskResponseForTesting(limit: TimeInterval) async -> String {
+        let start = Date()
+        let disk = disk
+        let responded = await withCheckedContinuation { (continuation: CheckedContinuation<Bool, Never>) in
+            DispatchQueue.global().async {
+                let group = DispatchGroup()
+                group.enter()
+                disk.async { group.leave() }
+                continuation.resume(returning: group.wait(timeout: .now() + limit) == .success)
+            }
+        }
+        return responded ? String(format: "responded in %.2fs", Date().timeIntervalSince(start)) : "no response in \(Int(limit))s"
     }
 }
