@@ -26,6 +26,7 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     // Spans waiting for the disk queue. Past this, storing a new span would only evict an older one.
     static let maxPendingWrites = RadarTraceStore.maxFiles
 
+    @objc(sharedInstance)
     static let shared = RadarTraceManager()
 
     let disk = DispatchQueue(label: "io.radar.traces", qos: .utility)
@@ -59,25 +60,11 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
         }
     }
 
-    // MARK: - Entry points
+    // MARK: - Recording and flushing
 
     /// Starts tracing for the process and uploads spans left from a previous one. Called from `initialize`; later
     /// calls do nothing.
-    @objc(start)
-    static func start() {
-        shared.start()
-    }
-
-    /// Uploads persisted spans, if any. Called after successful track and replay requests. Does nothing before
-    /// `start`.
-    @objc(flush)
-    static func flushTraces() {
-        guard shared.started else { return }
-        shared.flush()
-    }
-
-    // MARK: - Recording and flushing
-
+    @objc
     func start() {
         let first = lock.withLock {
             defer { isStarted = true }
@@ -90,6 +77,14 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
 
     var started: Bool {
         lock.withLock { isStarted }
+    }
+
+    /// Uploads persisted spans, if any. Called after successful track and replay requests. Does nothing before
+    /// `start`.
+    @objc
+    func flushIfStarted() {
+        guard started else { return }
+        flush()
     }
 
     /// Queues a completed span to be written to disk. `project` is the fingerprint of the publishable key the span was

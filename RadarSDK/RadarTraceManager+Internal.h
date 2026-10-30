@@ -13,11 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
 // into RadarSDK-Swift.h.
 @interface RadarTraceManager : NSObject
 
-// Starts tracing for the process and uploads spans left from a previous one. Later calls do nothing.
-+ (void)start;
+@property (class, nonatomic, readonly) RadarTraceManager *sharedInstance;
 
-// Uploads persisted spans, if any. Does nothing before +start.
-+ (void)flush;
+// Starts tracing for the process and uploads spans left from a previous one. Later calls do nothing.
+- (void)start;
+
+// Uploads persisted spans, if any. Does nothing before -start.
+- (void)flushIfStarted;
 
 @end
 
