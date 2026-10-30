@@ -92,11 +92,9 @@ final class RadarTraceStorageTests {
 
     @Test("Corrupt records are deleted and valid records uploaded")
     func corruptRecordsAreDeleted() async throws {
-        let directory = harness.directory
-        try Data("not json".utf8).write(to: directory.appendingPathComponent("1000-000000001-a.json"))
-        try JSONSerialization.data(withJSONObject: ["project": try harness.project()])
-            .write(to: directory.appendingPathComponent("1000-000000002-a.json"))
-        try harness.writeRecordFile("1000-000000003-a.json", spanId: spanId(3))
+        try await harness.writeFile("1000-000000001-a.json", Data("not json".utf8))
+        try await harness.writeFile("1000-000000002-a.json", JSONSerialization.data(withJSONObject: ["project": try harness.project()]))
+        try await harness.writeRecordFile("1000-000000003-a.json", spanId: spanId(3))
 
         try await manager.flushAndWaitForTesting()
 
@@ -122,8 +120,9 @@ final class RadarTraceStorageTests {
     func spansSurviveRestart() async throws {
         try await harness.recordSpans(3)
 
-        harness.manager = harness.makeManager()
-        try await manager.flushAndWaitForTesting()
+        harness.manager = harness.makeManager(start: false)
+        manager.start()
+        try await manager.waitForFlushForTesting()
 
         #expect(harness.traceFiles().isEmpty)
         #expect(Set(session.payloads.flatMap(TraceTestHarness.spanIds)) == Set((1...3).map(spanId)))

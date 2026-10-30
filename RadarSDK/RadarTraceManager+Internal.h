@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)start;
 
 // Uploads persisted spans, if any. Does nothing before -start.
-- (void)flushIfStarted;
+- (void)flush;
 
 @end
 
