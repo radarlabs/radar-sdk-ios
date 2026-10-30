@@ -138,7 +138,7 @@ final class RadarTraceStorageTests {
         // written and the storage limits would evict the oldest 100 instead.
         let project = try harness.project()
         for id in 1...600 {
-            manager.record(TraceTestHarness.span(spanId(id)), project: project)
+            manager.record(TraceTestHarness.span(spanId(id)), project: project, sessionId: manager.currentSessionId())
         }
         release.signal()
         // Let the 500 writes finish before timing the flush; they're slow on CI runners.

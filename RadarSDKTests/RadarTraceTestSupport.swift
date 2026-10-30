@@ -19,6 +19,7 @@ final class TraceTestHarness {
     let directory: URL
     let session = TraceURLSession()
     let key = TraceKey(TraceTestHarness.publishableKey)
+    let radarSession = TraceSession("1000")
     let clock = TraceTestClock()
     var manager: RadarTraceManager!
 
@@ -39,20 +40,31 @@ final class TraceTestHarness {
         }
     }
 
-    /// A new manager on the same directory, session, key, and clock, as after a process restart. Started by default,
-    /// like the shared manager after `initialize`. Pass `start: false` to test `start` itself.
+    /// A new manager on the same directory, URL session, key, Radar session, and clock, as after a process restart.
+    /// Started by default, like the shared manager after `initialize`; pass `start: false` to test `start` itself.
+    /// Most tests are about storage and upload, so every trace is sampled unless a test clears the override with
+    /// `useServerSampling`.
     func makeManager(start: Bool = true) -> RadarTraceManager {
         let key = key
+        let radarSession = radarSession
         let manager = RadarTraceManager(
             directory: directory,
             apiClient: RadarAPIClient(apiHelper: RadarAPIHelper(session: session)),
             publishableKey: { key.value },
+            sessionId: { radarSession.value },
             clock: clock.radarClock
         )
+        manager.overrideSampledForTesting(true)
         if start {
             manager.start()
         }
         return manager
+    }
+
+    /// Uses the server's sampling decisions instead of sampling everything, starting in `sessionId`.
+    func useServerSampling(sessionId: String) {
+        manager.overrideSampledForTesting(nil)
+        radarSession.value = sessionId
     }
 
     func project() throws -> String {
@@ -62,7 +74,7 @@ final class TraceTestHarness {
     func recordSpans(_ count: Int, firstId: Int = 1, attributes: [String: RadarTraceAttributeValue] = [:]) async throws {
         let project = try project()
         for id in firstId..<(firstId + count) {
-            manager.record(Self.span(Self.spanId(id), attributes: attributes), project: project)
+            manager.record(Self.span(Self.spanId(id), attributes: attributes), project: project, sessionId: manager.currentSessionId())
         }
         await manager.awaitDiskForTesting()
     }
@@ -84,8 +96,17 @@ final class TraceTestHarness {
     }
 
     func traceFiles() -> [URL] {
+        files(withExtension: "json")
+    }
+
+    /// Spans waiting for their session's sampling decision.
+    func pendingFiles() -> [URL] {
+        files(withExtension: "pending")
+    }
+
+    private func files(withExtension pathExtension: String) -> [URL] {
         let urls = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.fileSizeKey])) ?? []
-        return urls.filter { $0.pathExtension == "json" }
+        return urls.filter { $0.pathExtension == pathExtension }
     }
 
     func persistedSpanIds() -> Set<String> {
@@ -163,6 +184,21 @@ final class TraceTestClock: @unchecked Sendable {
     /// Changes only the wall clock, as a user or network time update does.
     func setWallClock(milliseconds: UInt64) {
         lock.withLock { wallMillis = milliseconds }
+    }
+}
+
+/// The Radar session a test's manager reads, changeable during the test.
+final class TraceSession: @unchecked Sendable {
+    private let lock = NSLock()
+    private var current: String
+
+    init(_ value: String) {
+        current = value
+    }
+
+    var value: String {
+        get { lock.withLock { current } }
+        set { lock.withLock { current = newValue } }
     }
 }
 
