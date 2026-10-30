@@ -138,6 +138,19 @@ public final class RadarAPIClient: Sendable {
         }
     }
 
+    /// Uploads an OTLP/JSON trace batch to `/v1/traces`, authenticated with `publishableKey` so the key that selected
+    /// the batch also uploads it. Returns the raw response; `RadarTraceManager` decides what to do with the batch.
+    /// Throws on network errors.
+    func postTraces(body: Data, publishableKey: String) async throws -> (Data, HTTPURLResponse) {
+        return try await apiHelper.radarRequest(
+            host: .defaultHost,
+            method: "POST",
+            url: "traces",
+            body: body,
+            publishableKey: publishableKey
+        )
+    }
+
     func revealRisk(
         preparedPayload: RadarPreparedFraudPayload,
         useSecondaryVerifiedHost: Bool

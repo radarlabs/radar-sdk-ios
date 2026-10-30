@@ -20,6 +20,7 @@
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarInAppMessageManager+Internal.h"
+#import "RadarTraceManager+Internal.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarPlace+Internal.h"
@@ -601,6 +602,7 @@
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
                             [RadarState.shared setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
+                            [[RadarTraceManager sharedInstance] flush];
                             [RadarSettings updateLastTrackedTime];
 
                             RadarConfig *config = [RadarConfig fromDictionary:res];
