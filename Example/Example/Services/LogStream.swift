@@ -81,6 +81,10 @@ final class LogStream: NSObject, ObservableObject {
 
     @Published private(set) var lastFailure: RadarStatus?
 
+    /// Describes the current environment (env, host, key, key check). Attached to errors that
+    /// are usually caused by a wrong host or key, so the console says where the request went.
+    var errorContext: (() -> String?)?
+
     // MARK: - Event publishers (for non-UI consumers, e.g. TripLiveActivityManager)
 
     /// Fires once per `didReceiveEvents` callback from the SDK. Subscribers see only
@@ -224,8 +228,17 @@ extension LogStream: RadarDelegate {
         append(
             ConsoleEntry(
                 kind: .error,
-                summary: "didFail: \(Radar.stringForStatus(status))"
+                summary: "didFail: \(Radar.stringForStatus(status))",
+                detail: withErrorContext(status, detail: nil)
             ))
+    }
+
+    /// Appends `errorContext` for statuses that usually mean the wrong host or key.
+    fileprivate func withErrorContext(_ status: RadarStatus, detail: String?) -> String? {
+        guard [.errorNetwork, .errorUnauthorized, .errorPublishableKey].contains(status),
+            let context = errorContext?()
+        else { return detail }
+        return [detail, context].compactMap { $0 }.joined(separator: "\n")
     }
 }
 
@@ -238,7 +251,7 @@ extension LogStream {
         if status == .success {
             write(result: summary, detail: detail)
         } else {
-            write(error: summary, detail: detail)
+            write(error: summary, detail: withErrorContext(status, detail: detail))
         }
     }
 }

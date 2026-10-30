@@ -9,11 +9,10 @@
 import SwiftUI
 
 /// Modal configuration view presented from TestsView's gear icon. Composes
-/// four sections (Presets, Identity, Tracking, Permissions) that previously
-/// lived inline at the top of TestsView.
+/// five sections (Environment, Presets, Identity, Tracking, Permissions).
 ///
-/// All edits write through to the SettingsStore / SDK immediately — there is
-/// no pending state to commit on Done. Done just dismisses the sheet.
+/// Environment changes are saved by its Apply button and take effect on relaunch. All other
+/// edits write through to the SettingsStore / SDK immediately — Done just dismisses the sheet.
 struct TestsSettingsView: View {
     @EnvironmentObject var settingsStore: SettingsStore
     @EnvironmentObject var permissionsStore: PermissionsStore
@@ -23,6 +22,7 @@ struct TestsSettingsView: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    EnvironmentSectionView(settingsStore: settingsStore)
                     PresetSectionView(settingsStore: settingsStore)
                     IdentitySectionView(settingsStore: settingsStore)
                     TrackingSectionView(settingsStore: settingsStore)

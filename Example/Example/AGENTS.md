@@ -21,6 +21,7 @@ Example/Example/
 │
 ├── TestsSettings/               # Settings sheet behind the Tests-tab gear
 │   ├── TestsSettingsView.swift  # Composer
+│   ├── EnvironmentSectionView.swift # Environment picker + per-env key; EnvironmentBadge strip
 │   ├── PresetSectionView.swift  # Preset grid + tracking/SDK-config disclosures
 │   ├── IdentitySectionView.swift # userId / description / metadata
 │   ├── TrackingSectionView.swift # On/off, source, configured options
@@ -51,7 +52,8 @@ Example/Example/
 │
 ├── Services/                    # Stateful, observable bridges + cross-cutting value types
 │   ├── LogStream.swift          # RadarDelegate + console source-of-truth
-│   ├── SettingsStore.swift      # SDK-backed identity + tracking + field breakdowns
+│   ├── SettingsStore.swift      # SDK-backed identity + tracking + field breakdowns; environment + keys
+│   ├── RadarEnvironment.swift   # Production / Staging / Local hosts (only place they're defined) + key check
 │   ├── PermissionsStore.swift   # CLAuthorizationStatus + UNAuthorizationStatus
 │   ├── TripBuilderStore.swift   # Map-driven trip selection + active-trip mirror
 │   ├── TestPreset.swift         # Bundled tracking presets
