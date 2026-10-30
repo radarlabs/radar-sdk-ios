@@ -25,6 +25,7 @@ final class TraceTestHarness {
 
     /// `start: false` leaves the manager unstarted, for tests of `start` itself.
     init(start: Bool = true) {
+        _ = TraceStallMonitor.shared
         directory = FileManager.default.temporaryDirectory.appendingPathComponent("radar-traces-\(UUID().uuidString)")
         // Tests write files into the directory directly, so create it now rather than waiting for the manager to.
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -259,7 +260,7 @@ final class TraceURLSession: RadarURLSessionProtocol, @unchecked Sendable {
         let deadline = Date().addingTimeInterval(60)
         while lock.withLock({ held.count }) < count {
             guard Date() < deadline else {
-                Issue.record("No trace upload started")
+                Issue.record("No trace upload started | \(TraceStallMonitor.shared.report())")
                 return
             }
             try await Task.sleep(nanoseconds: 10_000_000)
@@ -292,6 +293,64 @@ final class TraceURLSession: RadarURLSessionProtocol, @unchecked Sendable {
             return (data, response)
         case .error(let error):
             throw error
+        }
+    }
+}
+
+/// TEMP diagnostic for CI trace timeouts. Every 100 ms, queues a job on the main queue and a utility-priority task, and
+/// records how late each one runs, so a timeout can report whether either was stalled.
+final class TraceStallMonitor: @unchecked Sendable {
+    static let shared = TraceStallMonitor()
+
+    private struct Sample {
+        let time: Date
+        let delay: TimeInterval
+    }
+
+    private let lock = NSLock()
+    private var mainSamples: [Sample] = []
+    private var taskSamples: [Sample] = []
+    private var lastMainRun = Date()
+    private var lastTaskRun = Date()
+    private let timer = DispatchSource.makeTimerSource(queue: DispatchQueue(label: "io.radar.traces.stall-monitor"))
+
+    private init() {
+        timer.schedule(deadline: .now(), repeating: .milliseconds(100))
+        timer.setEventHandler { [self] in
+            let sent = Date()
+            DispatchQueue.main.async { self.record(main: true, sent: sent) }
+            Task(priority: .utility) { self.record(main: false, sent: sent) }
+        }
+        timer.resume()
+        RadarTraceManager.timeoutDiagnosticsForTesting = { TraceStallMonitor.shared.report() }
+    }
+
+    private func record(main: Bool, sent: Date) {
+        let now = Date()
+        let sample = Sample(time: now, delay: now.timeIntervalSince(sent))
+        lock.withLock {
+            if main {
+                lastMainRun = now
+                mainSamples.append(sample)
+                mainSamples.removeAll { now.timeIntervalSince($0.time) > 180 }
+            } else {
+                lastTaskRun = now
+                taskSamples.append(sample)
+                taskSamples.removeAll { now.timeIntervalSince($0.time) > 180 }
+            }
+        }
+    }
+
+    func report() -> String {
+        lock.withLock {
+            let now = Date()
+            func summary(_ name: String, _ samples: [Sample], _ lastRun: Date) -> String {
+                let worst = samples.max { $0.delay < $1.delay }
+                return String(
+                    format: "%@ max delay %.1fs (%.0fs ago), last ran %.1fs ago", name, worst?.delay ?? 0,
+                    worst.map { now.timeIntervalSince($0.time) } ?? 0, now.timeIntervalSince(lastRun))
+            }
+            return summary("main queue", mainSamples, lastMainRun) + "; " + summary("utility tasks", taskSamples, lastTaskRun)
         }
     }
 }
