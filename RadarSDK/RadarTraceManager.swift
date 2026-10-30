@@ -79,14 +79,6 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
         lock.withLock { isStarted }
     }
 
-    /// Uploads persisted spans, if any. Called after successful track and replay requests. Does nothing before
-    /// `start`.
-    @objc
-    func flushIfStarted() {
-        guard started else { return }
-        flush()
-    }
-
     /// Queues a completed span to be written to disk. `project` is the fingerprint of the publishable key the span was
     /// recorded under. Never throws into SDK call paths.
     func record(_ span: RadarCompletedSpan, project: String) {
@@ -126,11 +118,14 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     }
 
     /// Uploads batches on the disk queue until the queue is empty or an upload does not succeed. The storage limits
-    /// keep a full backlog to about 5 batches.
+    /// keep a full backlog to about 5 batches. Called after successful track and replay requests. Does nothing before
+    /// `start`, or while a flush is in progress.
+    @objc
     func flush() {
         let shouldFlush = lock.withLock {
-            defer { isFlushing = true }
-            return !isFlushing
+            guard isStarted, !isFlushing else { return false }
+            isFlushing = true
+            return true
         }
         guard shouldFlush else { return }
         disk.async { self.uploadNextBatch() }

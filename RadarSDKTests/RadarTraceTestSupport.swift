@@ -21,11 +21,12 @@ final class TraceTestHarness {
     let key = TraceKey(TraceTestHarness.publishableKey)
     var manager: RadarTraceManager!
 
-    init() {
+    /// `start: false` leaves the manager unstarted, for tests of `start` itself.
+    init(start: Bool = true) {
         directory = FileManager.default.temporaryDirectory.appendingPathComponent("radar-traces-\(UUID().uuidString)")
         // Tests write files into the directory directly, so create it now rather than waiting for the manager to.
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        manager = makeManager()
+        manager = makeManager(start: start)
     }
 
     deinit {
@@ -37,14 +38,19 @@ final class TraceTestHarness {
         }
     }
 
-    /// A new manager on the same directory, session, and key, as after a process restart.
-    func makeManager() -> RadarTraceManager {
+    /// A new manager on the same directory, session, and key, as after a process restart. Started by default, like
+    /// the shared manager after `initialize`. Pass `start: false` to test `start` itself.
+    func makeManager(start: Bool = true) -> RadarTraceManager {
         let key = key
-        return RadarTraceManager(
+        let manager = RadarTraceManager(
             directory: directory,
             apiClient: RadarAPIClient(apiHelper: RadarAPIHelper(session: session)),
             publishableKey: { key.value }
         )
+        if start {
+            manager.start()
+        }
+        return manager
     }
 
     func project() throws -> String {
@@ -59,13 +65,20 @@ final class TraceTestHarness {
         await manager.awaitDiskForTesting()
     }
 
-    func writeRecordFile(_ name: String, spanId: String, sdkVersion: String = RadarUtils.sdkVersion) throws {
+    func writeRecordFile(_ name: String, spanId: String, sdkVersion: String = RadarUtils.sdkVersion) async throws {
         let record: [String: Any] = [
             "project": try project(),
             "sdkVersion": sdkVersion,
             "span": Self.span(spanId).otlpJSON(),
         ]
-        try JSONSerialization.data(withJSONObject: record).write(to: directory.appendingPathComponent(name))
+        try await writeFile(name, JSONSerialization.data(withJSONObject: record))
+    }
+
+    /// Writes a file into the trace directory once the manager's startup flush has finished, so that flush can't
+    /// upload some of a test's files before the rest are written.
+    func writeFile(_ name: String, _ data: Data) async throws {
+        try await manager.waitForFlushForTesting()
+        try data.write(to: directory.appendingPathComponent(name))
     }
 
     func traceFiles() -> [URL] {

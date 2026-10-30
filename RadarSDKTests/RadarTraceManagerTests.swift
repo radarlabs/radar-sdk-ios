@@ -164,14 +164,26 @@ final class RadarTraceManagerTests {
 
     @Test("Spans from different SDK versions are uploaded in separate batches")
     func sdkVersionsUploadSeparately() async throws {
-        try harness.writeRecordFile("1000-000000001-a.json", spanId: spanId(1), sdkVersion: "3.44.0")
-        try harness.writeRecordFile("1000-000000002-a.json", spanId: spanId(2), sdkVersion: "3.44.0")
-        try harness.writeRecordFile("1000-000000003-a.json", spanId: spanId(3), sdkVersion: "3.45.0")
+        try await harness.writeRecordFile("1000-000000001-a.json", spanId: spanId(1), sdkVersion: "3.44.0")
+        try await harness.writeRecordFile("1000-000000002-a.json", spanId: spanId(2), sdkVersion: "3.44.0")
+        try await harness.writeRecordFile("1000-000000003-a.json", spanId: spanId(3), sdkVersion: "3.45.0")
 
         try await manager.flushAndWaitForTesting()
 
         #expect(session.payloads.map { TraceTestHarness.resourceAttribute($0, "radar.sdk.version") } == ["3.44.0", "3.45.0"])
         #expect(harness.batchSizes() == [2, 1])
+    }
+
+    @Test("A flush before start does nothing")
+    func flushBeforeStartDoesNothing() async throws {
+        let harness = TraceTestHarness(start: false)
+        try await harness.recordSpans(1)
+
+        harness.manager.flush()
+        try await harness.manager.waitForFlushForTesting()
+
+        #expect(harness.session.requests.isEmpty)
+        #expect(harness.traceFiles().count == 1)
     }
 
     @Test("A second flush during an upload is ignored")
