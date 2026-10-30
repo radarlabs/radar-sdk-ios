@@ -117,7 +117,7 @@ final class RadarTraceStore {
     }
 
     /// Deletes pending spans from every session except `sessionId`. Should be run when the manager is initialized since
-    /// during initialize, decisions for other sessions can't arrive anymore, while a request in this process can still 
+    /// during initialize, decisions for other sessions can't arrive anymore, while a request in this process can still
     /// return the current session's.
     func deletePending(exceptSessionId sessionId: String) {
         for record in pendingRecords() where record.sessionId != sessionId {
