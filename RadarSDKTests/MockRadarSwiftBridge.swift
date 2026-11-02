@@ -22,6 +22,7 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
 
     func flushReplaysRequest(
         _ replays: [[AnyHashable: Any]],
+        parentSpan: RadarTraceSpan?,
         completionHandler: ((RadarStatus, [AnyHashable: Any]?) -> Void)?
     ) {
         lastFlushedReplays = replays

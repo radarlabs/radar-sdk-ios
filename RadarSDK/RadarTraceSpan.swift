@@ -22,6 +22,15 @@ import Foundation
 ///
 /// A span started before the server has decided whether its session is sampled still records, so its trace can be
 /// uploaded if the decision is yes. A trace's `sessionId` is the session it started in, and its child spans inherit it.
+///
+/// Instrumentation lives in one `Radar<Subsystem>Tracing.swift` file per attribute namespace, for example
+/// `radar.location.*` in RadarLocationTracing.swift. Each file holds its attribute setters and completion handler
+/// wrappers as `@objc` extensions, declared for Objective-C in RadarTraceSpan+Internal.h. A wrapper ends its span with
+/// the result's status before calling the handler, so every path that calls back ends the span. Attribute names and
+/// values match the Android SDK where both platforms record the same thing, so one query works on both.
+///
+/// Never record precise coordinates, identifiers (install, device, user, session, transaction), strings the app passes
+/// in, tokens, or fraud check results.
 @objc(RadarTraceSpan)
 final class RadarTraceSpan: NSObject, @unchecked Sendable {
     let name: String
@@ -64,10 +73,13 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
 
     // MARK: - Starting spans
 
+    /// The manager `start(_:)` records into. Tests point it at an isolated manager.
+    nonisolated(unsafe) static var defaultManager: RadarTraceManager = .shared
+
     /// Starts a new trace with this span as its root, or returns the no-op span if tracing is off.
     @objc(startWithName:)
     static func start(_ name: String) -> RadarTraceSpan {
-        start(name, manager: .shared)
+        start(name, manager: defaultManager)
     }
 
     static func start(_ name: String, manager: RadarTraceManager) -> RadarTraceSpan {
