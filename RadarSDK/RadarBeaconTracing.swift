@@ -9,8 +9,9 @@ import Foundation
 
 // Beacon instrumentation: `radar.beacon*` attributes and the `radar.beacon.range` span.
 extension RadarTraceSpan {
-    /// Where a root's beacons came from: `continuous` (continuous ranging supplied them) or `search` (a nearby beacon
-    /// search, then one-shot ranging).
+    /// Where a root's beacons came from: `continuous` (continuous ranging supplied them), `search` (a nearby beacon
+    /// search, then one-shot ranging), or, for tracking updates, `sync_region` (ranging the synced region's beacons,
+    /// with no search).
     @objc(setBeaconSource:)
     func setBeaconSource(_ source: String) {
         setString(source, forKey: "radar.beacon.source")

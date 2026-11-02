@@ -608,6 +608,7 @@
         }
 
         [RadarSettings updateLastTrackedTime];
+        [traceSpan markBatched];
         completionHandler(RadarStatusSuccess, nil, nil, nil, nil, nil, nil);
         return;
     }
