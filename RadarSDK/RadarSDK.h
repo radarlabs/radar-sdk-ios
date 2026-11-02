@@ -14,7 +14,6 @@ FOUNDATION_EXPORT double RadarSDKVersionNumber;
 FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 
 #import "Radar.h"
-#import "RadarAddress.h"
 #import "RadarDelegate.h"
 #import "RadarEvent.h"
 #import "RadarGeofence.h"
@@ -40,6 +39,7 @@ FOUNDATION_EXPORT const unsigned char RadarSDKVersionString[];
 
 // Compatibility headers for classes now declared in RadarSDK-Swift.h. Listed here so the
 // umbrella covers every public header; each one only re-imports this file.
+#import "RadarAddress.h"
 #import "RadarChain.h"
 #import "RadarCircleGeometry.h"
 #import "RadarContext.h"
