@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "Radar.h"
 @class RadarReplay;
+@class RadarTraceSpan;
 @class RadarTrackingOptions;
 
 // 2d: figure out what this means
@@ -22,6 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)writeNewReplayToBuffer:(NSMutableDictionary *)replayParams;
 
 - (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
+                        completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler;
+
+// parentSpan traces the replay request, for a traced track that's sent as a replay flush.
+- (void)flushReplaysWithCompletionHandler:(NSDictionary *_Nullable)replayParams
+                               parentSpan:(RadarTraceSpan *_Nullable)parentSpan
                         completionHandler:(RadarFlushReplaysCompletionHandler _Nullable)completionHandler;
 
 - (void)setIsFlushing:(BOOL)flushing;
