@@ -42,12 +42,18 @@ extension RadarTraceManager {
     }
 
     /// Wraps spans in an OTLP ExportTraceServiceRequest.
+    ///
+    /// Device attributes are read at upload time, so spans recorded before an OS update are labeled with the new
+    /// `os.version`.
     static func otlpPayload(spans: [[String: Any]], sdkVersion: String) -> [String: Any] {
         let resource: [String: Any] = [
             "attributes": [
                 attribute("service.name", "radar-client"),
                 attribute("os.type", "ios"),
                 attribute("radar.sdk.version", sdkVersion),
+                attribute("os.version", RadarUtils.deviceOSVersion),
+                attribute("device.manufacturer", RadarUtils.deviceMake),
+                attribute("device.model.identifier", RadarUtils.deviceModel),
             ]
         ]
         let scopeSpans: [String: Any] = [

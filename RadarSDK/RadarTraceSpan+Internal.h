@@ -27,6 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 // The W3C traceparent header for requests made in this span. Nil for the no-op span.
 @property (nonatomic, readonly, copy, nullable) NSString *traceparent;
 
+// NO for the no-op span, which ignores attributes and records nothing. Check it before computing attribute values
+// that cost more than reading a stored value.
+@property (nonatomic, readonly) BOOL isRecording;
+
 // Attribute setters. Ignored on the no-op span and after -endWithStatus:.
 - (void)setString:(NSString *)value forKey:(NSString *)key;
 - (void)setInteger:(int64_t)value forKey:(NSString *)key;
