@@ -70,13 +70,6 @@ extension RadarSerializedTests {
             return components.queryItems?.first { $0.name == "sessionToken" }?.value
         }
 
-        /// Clears the captured request so a later assertion can tell that no new request was made.
-        private func forgetLastRequest() {
-            fixture.apiHelperMock.lastMethod = nil
-            fixture.apiHelperMock.lastUrl = nil
-            fixture.apiHelperMock.lastParams = nil
-        }
-
         @Test("each session mints its own token")
         func eachSessionMintsItsOwnToken() {
             let first = RadarAutocompleteSession()
@@ -216,13 +209,14 @@ extension RadarSerializedTests {
             let address = try #require(await autocompleteWithoutSession().1?.first)
             #expect(address.resultId == nil)
 
-            forgetLastRequest()
+            // the mock captures only the most recent request, so an unchanged capture means
+            // select never reached the wire
+            let urlBeforeSelect = fixture.apiHelperMock.lastUrl
             let (status, selected) = await select(RadarAutocompleteSession(), address)
 
             #expect(status == .errorBadRequest)
             #expect(selected == nil)
-            #expect(fixture.apiHelperMock.lastMethod == nil)
-            #expect(fixture.apiHelperMock.lastUrl == nil)
+            #expect(fixture.apiHelperMock.lastUrl == urlBeforeSelect)
         }
 
         @Test("select surfaces a per-session cap as a status")
