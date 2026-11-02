@@ -1397,42 +1397,53 @@
 }
 
 - (void)validateAddress:(RadarAddress *)address completionHandler:(RadarValidateAddressAPICompletionHandler)completionHandler {
+    // Every result goes to the main thread, and a nil handler is allowed.
+    void (^finish)(RadarStatus, NSDictionary *, RadarAddress *, RadarAddressVerificationStatus) =
+        ^(RadarStatus status, NSDictionary *res, RadarAddress *address, RadarAddressVerificationStatus verificationStatus) {
+            if (completionHandler) {
+                [RadarUtilsDeprecated runOnMainThread:^{
+                    completionHandler(status, res, address, verificationStatus);
+                }];
+            }
+        };
+
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil, RadarAddressVerificationStatusNone);
+        return finish(RadarStatusErrorPublishableKey, nil, nil, RadarAddressVerificationStatusNone);
     }
 
-    NSMutableString *queryString = [NSMutableString new];
-    if (!address.countryCode || !address.stateCode || !address.city || !address.postalCode || 
-        !((address.street && address.number) || address.addressLabel)) {
-        if (completionHandler) {
-            [RadarUtilsDeprecated runOnMainThread:^{
-                completionHandler(RadarStatusErrorBadRequest, nil, nil, RadarAddressVerificationStatusNone);
-            }];
-        }
+    // An empty street or number can't be validated, so fall back to the label.
+    BOOL hasStreetAndNumber = address.street.length > 0 && address.number.length > 0;
+    if (!address.countryCode || !address.stateCode || !address.city || !address.postalCode || !(hasStreetAndNumber || address.addressLabel.length > 0)) {
+        return finish(RadarStatusErrorBadRequest, nil, nil, RadarAddressVerificationStatusNone);
+    }
 
-        return;
+    // Escape each value on its own: URLQueryAllowedCharacterSet allows &, =, and +, which would split or alter a value.
+    NSMutableCharacterSet *allowedCharacters = [[NSCharacterSet URLQueryAllowedCharacterSet] mutableCopy];
+    [allowedCharacters removeCharactersInString:@"&=+"];
+    NSMutableArray<NSString *> *queryItems = [NSMutableArray new];
+    void (^addQueryItem)(NSString *, NSString *) = ^(NSString *name, NSString *value) {
+        [queryItems addObject:[NSString stringWithFormat:@"%@=%@", name, [value stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters]]];
+    };
+
+    addQueryItem(@"countryCode", address.countryCode);
+    addQueryItem(@"stateCode", address.stateCode);
+    addQueryItem(@"city", address.city);
+    addQueryItem(@"postalCode", address.postalCode);
+    // The API rejects a request with both, and addresses from search and geocoding have both.
+    if (hasStreetAndNumber) {
+        addQueryItem(@"street", address.street);
+        addQueryItem(@"number", address.number);
     } else {
-        [queryString appendFormat:@"countryCode=%@", address.countryCode];
-        [queryString appendFormat:@"&stateCode=%@", address.stateCode];
-        [queryString appendFormat:@"&city=%@", address.city];
-        [queryString appendFormat:@"&postalCode=%@", address.postalCode];
-        // The API rejects a request with both, and addresses from search and geocoding have both.
-        if (address.street && address.number) {
-            [queryString appendFormat:@"&street=%@", address.street];
-            [queryString appendFormat:@"&number=%@", address.number];
-        } else {
-            [queryString appendFormat:@"&addressLabel=%@", address.addressLabel];
-        }
+        addQueryItem(@"addressLabel", address.addressLabel);
     }
 
     if (address.unit) {
-        [queryString appendFormat:@"&unit=%@", address.unit];
+        addQueryItem(@"unit", address.unit);
     }
 
     NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/addresses/validate?%@", host, queryString];
-    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString *url = [NSString stringWithFormat:@"%@/v1/addresses/validate?%@", host, [queryItems componentsJoinedByString:@"&"]];
 
     NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
 
@@ -1445,30 +1456,18 @@
                       extendedTimeout:NO
                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                         if (status != RadarStatusSuccess || !res) {
-                            return completionHandler(status, nil, nil, RadarAddressVerificationStatusNone);
+                            return finish(status, nil, nil, RadarAddressVerificationStatusNone);
                         }
 
                         id addressObj = res[@"address"];
-                        id resultObj = res[@"result"];
-                        if (!addressObj || !resultObj) {
-                            return completionHandler(RadarStatusErrorServer, nil, nil, RadarAddressVerificationStatusNone);
+                        NSDictionary *result = res[@"result"];
+                        if (!addressObj || !result[@"verificationStatus"]) {
+                            return finish(RadarStatusErrorServer, nil, nil, RadarAddressVerificationStatusNone);
                         }
 
                         RadarAddress *address = [[RadarAddress alloc] initWithObject:addressObj];
-
-                        NSDictionary *result = res[@"result"];
-                        if (result[@"verificationStatus"]) {
-                            RadarAddressVerificationStatus verificationStatus = [RadarAddress addressVerificationStatusForString:result[@"verificationStatus"]];
-
-                            if (completionHandler) {
-                                [RadarUtilsDeprecated runOnMainThread:^{
-                                    completionHandler(RadarStatusSuccess, res, address, verificationStatus);
-                                }];
-                                return;
-                            }
-                        }
-
-                        completionHandler(RadarStatusErrorServer, nil, nil, RadarAddressVerificationStatusNone);
+                        RadarAddressVerificationStatus verificationStatus = [RadarAddress addressVerificationStatusForString:result[@"verificationStatus"]];
+                        finish(RadarStatusSuccess, res, address, verificationStatus);
                     }];
 }
 

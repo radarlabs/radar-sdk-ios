@@ -25,13 +25,22 @@ extension RadarSerializedTests {
             "postalCode": "11201",
         ]
 
-        private func validate(_ fields: [String: Any]) async throws -> (RadarStatus, [String: String]) {
+        private static let verifiedResponse: [AnyHashable: Any] = [
+            "address": baseFields.merging(["number": "20", "street": "Jay St"]) { _, new in new },
+            "result": ["verificationStatus": "verified"],
+        ]
+
+        private func validate(
+            _ fields: [String: Any],
+            response: [AnyHashable: Any] = verifiedResponse
+        ) async throws -> (RadarStatus, [String: String]) {
             let address = try #require(RadarAddress(from: Self.baseFields.merging(fields) { _, new in new }))
             fixture.apiHelperMock.mockStatus = .success
-            fixture.apiHelperMock.mockResponse = [:]
+            fixture.apiHelperMock.mockResponse = response
 
             let status = await awaitCompletion { resume in
                 RadarAPIClient.sharedInstance().validate(address) { status, _, _, _ in
+                    #expect(Thread.isMainThread)
                     resume(status)
                 }
             }
@@ -52,6 +61,48 @@ extension RadarSerializedTests {
             #expect(query["number"] == "20")
             #expect(query["addressLabel"] == nil)
             #expect(query["postalCode"] == "11201")
+        }
+
+        @Test("a verified response returns the address and verification status")
+        func verifiedResponse_returnsSuccess() async throws {
+            let address = try #require(RadarAddress(from: Self.baseFields.merging(["addressLabel": "20 Jay St"]) { _, new in new }))
+            fixture.apiHelperMock.mockStatus = .success
+            fixture.apiHelperMock.mockResponse = Self.verifiedResponse
+
+            let (status, number, verificationStatus) = await awaitCompletion { resume in
+                RadarAPIClient.sharedInstance().validate(address) { status, _, address, verificationStatus in
+                    resume((status, address?.number, verificationStatus))
+                }
+            }
+
+            #expect(status == .success)
+            #expect(number == "20")
+            #expect(verificationStatus == .verified)
+        }
+
+        @Test("a response without a verification status returns a server error")
+        func responseWithoutVerificationStatus_returnsServerError() async throws {
+            let (status, _) = try await validate(["addressLabel": "20 Jay St"], response: ["address": Self.baseFields])
+
+            #expect(status == .errorServer)
+        }
+
+        @Test("values with &, =, and + are escaped")
+        func reservedCharacters_areEscaped() async throws {
+            let (_, query) = try await validate(["addressLabel": "1st & Main=A+B", "unit": "#3"])
+
+            #expect(query["addressLabel"] == "1st & Main=A+B")
+            #expect(query["unit"] == "#3")
+            #expect(fixture.apiHelperMock.lastUrl?.contains("A%2BB") == true)
+        }
+
+        @Test("an empty street or number sends the label")
+        func emptyStreet_sendsLabel() async throws {
+            let (_, query) = try await validate(["street": "", "number": "20", "addressLabel": "20 Jay St"])
+
+            #expect(query["addressLabel"] == "20 Jay St")
+            #expect(query["street"] == nil)
+            #expect(query["number"] == nil)
         }
 
         @Test("an address with only a label sends the label")
@@ -80,6 +131,7 @@ extension RadarSerializedTests {
 
             let status = await awaitCompletion { resume in
                 RadarAPIClient.sharedInstance().validate(address) { status, _, _, _ in
+                    #expect(Thread.isMainThread)
                     resume(status)
                 }
             }
