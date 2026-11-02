@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
     /// Default key for the Production environment.
     static let DEFAULT_PUBLISHABLE_KEY = "prj_live_pk_..."
 
-    /// Default key for the Staging environment.
+    /// Default key for the Staging and Local environments.
     static let DEFAULT_STAGING_PUBLISHABLE_KEY = "prj_live_pk_..."
 
     let locationManager = CLLocationManager()

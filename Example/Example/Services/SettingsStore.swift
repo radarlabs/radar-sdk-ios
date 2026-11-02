@@ -150,8 +150,7 @@ final class SettingsStore: ObservableObject {
         let key: String
         switch environment {
         case .production: key = AppDelegate.DEFAULT_PUBLISHABLE_KEY
-        case .staging: key = AppDelegate.DEFAULT_STAGING_PUBLISHABLE_KEY
-        case .local: key = ""
+        case .staging, .local: key = AppDelegate.DEFAULT_STAGING_PUBLISHABLE_KEY
         }
         // hooks/clean-filter replaces real keys with "prj_live_pk_..." in git.
         return key.hasSuffix("...") ? "" : key
