@@ -23,7 +23,7 @@ Run `make bootstrap` to set up your environment for development and allow you to
 
 ## Switching environments (production, staging, local server)
 
-In the Example app, open the Tests tab, tap the settings gear, and pick Production, Staging, or Local under **Environment**. Each environment keeps its own publishable key. **Apply & quit** saves the choice; reopen the app to use it. **Local** points both the API and verified hosts at your dev server: `http://localhost:8081` in the Simulator, or your Mac's LAN IP (e.g. `http://192.168.1.10:8081`) on a device.
+In the Example app, open the Tests tab, tap the settings gear, and pick Production, Staging, or Local under **Environment**. Each environment keeps its own publishable key. **Apply & quit** saves the choice; reopen the app to use it. On launch the app checks the key against production and staging, and a red strip across the top says so if no key is set or the key isn't valid on the selected environment. **Local** points both the API and verified hosts at your dev server: `http://localhost:8081` in the Simulator, or your Mac's LAN IP (e.g. `http://192.168.1.10:8081`) on a device.
 
 The Example `Info.plist` sets `NSAllowsArbitraryLoads` so plaintext HTTP to any dev-server IP works without a per-developer ATS exception; certificate pinning for the Radar verified hosts is preserved via `NSPinnedDomains`.
 

@@ -30,6 +30,9 @@ enum RadarEnvironment: String, CaseIterable, Identifiable {
 
     func host(localURL: String) -> String { hosts?.api ?? localURL }
 
+    /// Environments with fixed hosts, which the key check probes.
+    static let checkable: [RadarEnvironment] = [.production, .staging]
+
     /// Writes the host overrides the SDK reads (see RadarUserDefaults). Production clears them so
     /// the SDK uses its built-in defaults. Call after `Radar.setAppGroup`.
     func apply(localURL: String) {
@@ -40,6 +43,72 @@ enum RadarEnvironment: String, CaseIterable, Identifiable {
         } else {
             defaults.set(host(localURL: localURL), forKey: "radar-host")
             defaults.set(hosts?.verified ?? localURL, forKey: "radar-verifiedHost")
+        }
+    }
+}
+
+/// Which environments a publishable key is valid on. A key's string doesn't say whether it
+/// belongs to staging or production, so `KeyChecker` asks each environment's `/v1/config`.
+enum KeyCheck: Equatable {
+    case notChecked
+    case checking
+    /// `unknown` lists environments that couldn't be reached or gave an unexpected response.
+    case done(validOn: [RadarEnvironment], unknown: [RadarEnvironment])
+
+    /// Whether the key is known not to work on `environment`. Local is never checked.
+    func mismatches(_ environment: RadarEnvironment) -> Bool {
+        guard case let .done(validOn, unknown) = self else { return false }
+        return RadarEnvironment.checkable.contains(environment)
+            && !validOn.contains(environment) && !unknown.contains(environment)
+    }
+
+    var summary: String {
+        switch self {
+        case .notChecked:
+            return "not checked"
+        case .checking:
+            return "checking…"
+        case let .done(validOn, unknown):
+            let valid =
+                validOn.isEmpty
+                ? "valid on neither"
+                : "valid on " + validOn.map(\.label).joined(separator: " and ")
+            if unknown.isEmpty { return valid }
+            return "\(valid) (\(unknown.map(\.label).joined(separator: ", ")) unreachable)"
+        }
+    }
+}
+
+enum KeyChecker {
+    /// Probes every `RadarEnvironment.checkable` environment; calls back on the main queue.
+    static func check(publishableKey: String, completion: @escaping (KeyCheck) -> Void) {
+        Task {
+            var validOn: [RadarEnvironment] = []
+            var unknown: [RadarEnvironment] = []
+            for environment in RadarEnvironment.checkable {
+                switch await probe(host: environment.host(localURL: ""), publishableKey: publishableKey) {
+                case true?: validOn.append(environment)
+                case false?: break
+                case nil: unknown.append(environment)
+                }
+            }
+            let result = KeyCheck.done(validOn: validOn, unknown: unknown)
+            await MainActor.run { completion(result) }
+        }
+    }
+
+    /// true = accepted, false = rejected (401/403), nil = unreachable or unexpected response.
+    private static func probe(host: String, publishableKey: String) async -> Bool? {
+        guard let url = URL(string: "\(host)/v1/config?installId=example-key-check&usage=keyCheck") else { return nil }
+        var request = URLRequest(url: url, timeoutInterval: 5)
+        request.setValue(publishableKey, forHTTPHeaderField: "Authorization")
+        guard let (_, response) = try? await URLSession.shared.data(for: request),
+            let status = (response as? HTTPURLResponse)?.statusCode
+        else { return nil }
+        switch status {
+        case 200..<300: return true
+        case 401, 403: return false
+        default: return nil
         }
     }
 }

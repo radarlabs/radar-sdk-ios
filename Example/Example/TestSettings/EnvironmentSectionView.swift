@@ -63,3 +63,27 @@ struct EnvironmentSectionView: View {
         }
     }
 }
+
+/// A red strip across the top of every tab, shown only when the environment is misconfigured: no
+/// key is set, or the key check says the key isn't valid on the selected environment.
+struct EnvironmentBadge: View {
+    @EnvironmentObject var settingsStore: SettingsStore
+
+    var body: some View {
+        let env = settingsStore.environment
+        let key = settingsStore.resolvedPublishableKey
+        if key.isEmpty || settingsStore.keyCheck.mismatches(env) {
+            let problem =
+                key.isEmpty ? "no key set" : "\(SettingsStore.keyPrefix(key)) · \(settingsStore.keyCheck.summary)"
+            Text("⚠ \(env.label) · \(problem)")
+                .font(.caption.weight(.semibold))
+                .foregroundColor(.white)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .background(Color.red.ignoresSafeArea(edges: .top))
+        }
+    }
+}

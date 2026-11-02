@@ -102,6 +102,9 @@ final class SettingsStore: ObservableObject {
     /// The Local server URL this launch uses.
     let localURL: String
 
+    /// Which environments `resolvedPublishableKey` is valid on.
+    @Published private(set) var keyCheck: KeyCheck = .notChecked
+
     @Published var defaultTabRaw: String {
         didSet {
             UserDefaults.standard.set(defaultTabRaw, forKey: Keys.defaultTabRaw)
@@ -162,11 +165,37 @@ final class SettingsStore: ObservableObject {
         defaults.set(localURL.trimmingCharacters(in: .whitespaces), forKey: Keys.localURL)
     }
 
-    /// Where requests go, e.g. `env = Staging; host = https://…; key = prj_test_pk_ab12…`.
-    var environmentSummary: String {
+    /// Checks which environments `resolvedPublishableKey` is valid on, and logs an error if it
+    /// isn't valid on the selected one.
+    func runKeyCheck(logStream: LogStream) {
         let key = resolvedPublishableKey
-        let shortKey = key.isEmpty ? "(none)" : key.count <= 16 ? key : String(key.prefix(16)) + "…"
-        return "env = \(environment.label); host = \(environment.host(localURL: localURL)); key = \(shortKey)"
+        guard !key.isEmpty else {
+            logStream.write(error: "No publishable key set for \(environment.label)", detail: "Set one in Settings → Environment.")
+            return
+        }
+        keyCheck = .checking
+        KeyChecker.check(publishableKey: key) { [weak self] result in
+            guard let self = self else { return }
+            self.keyCheck = result
+            if result.mismatches(self.environment) {
+                logStream.write(
+                    error: "Key \(Self.keyPrefix(key)) is not valid on \(self.environment.label)",
+                    detail: "Key check: \(result.summary). Switch environment or change the key in Settings → Environment.")
+            } else {
+                logStream.write(result: "key check: \(result.summary)", detail: self.environmentSummary)
+            }
+        }
+    }
+
+    /// Where requests go, e.g. `env = Staging; host = https://…; key = prj_test_pk_ab12…; key check = …`.
+    var environmentSummary: String {
+        "env = \(environment.label); host = \(environment.host(localURL: localURL)); key = \(Self.keyPrefix(resolvedPublishableKey)); key check = \(keyCheck.summary)"
+    }
+
+    /// A key shortened for display, e.g. `prj_live_pk_76b8…`.
+    static func keyPrefix(_ key: String) -> String {
+        if key.isEmpty { return "(none)" }
+        return key.count <= 16 ? key : key.prefix(16) + "…"
     }
 
     /// Reads SDK-backed settings into the store. Call once after `Radar.initialize`.

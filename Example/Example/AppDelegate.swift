@@ -54,6 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         print("radar-env: \(settingsStore.environmentSummary)")
         logStream.write(result: "radar-env: \(settingsStore.environmentSummary)")
         Radar.initialize(publishableKey: settingsStore.resolvedPublishableKey, options: radarInitializeOptions)
+        settingsStore.runKeyCheck(logStream: logStream)
         Radar.setDelegate(logStream)
         wireLiveActivitySubscriptions()
         Radar.setVerifiedDelegate(self)
