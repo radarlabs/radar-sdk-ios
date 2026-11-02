@@ -96,10 +96,30 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
            prepareRequest:(RadarAPIRequestPreparation)prepareRequest
 preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
         completionHandler:(RadarAPICompletionHandler)completionHandler {
+    [self requestWithMethod:method url:url headers:headers params:params sleep:sleep logPayload:logPayload
+            extendedTimeout:extendedTimeout prepareRequest:prepareRequest preparationFailureHandler:preparationFailureHandler
+                      trace:nil completionHandler:completionHandler];
+}
+
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *)headers
+                   params:(NSDictionary *)params
+                    sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+           prepareRequest:(RadarAPIRequestPreparation)prepareRequest
+preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
+                    trace:(id<RadarAPIRequestTrace>)trace
+        completionHandler:(RadarAPICompletionHandler)completionHandler {
+    uint64_t enqueuedNanos = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     dispatch_async(self.queue, ^{
         if (sleep) {
             dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
         }
+
+        // Queue time includes waiting for an earlier track request and its post-request sleep.
+        [trace requestStartedWithURL:url headers:headers queueNanos:clock_gettime_nsec_np(CLOCK_MONOTONIC) - enqueuedNanos];
 
         NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
         req.HTTPMethod = method;
@@ -121,6 +141,12 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                 for (NSString *key in headers) {
                     [req addValue:[headers valueForKey:key] forHTTPHeaderField:key];
                 }
+            }
+            // Read when the request starts, not when it's enqueued, since the session can be decided while the request
+            // waits. Verified requests seal only the body and their bound headers, so this passes through unchanged.
+            NSString *traceparent = trace.traceparent;
+            if (traceparent) {
+                [req setValue:traceparent forHTTPHeaderField:@"traceparent"];
             }
 
             if (params) {
@@ -165,6 +191,7 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                 if (error) {
                     long elapsedMs = (long)(latency * 1000);
                     NSString *host = req.URL.host ?: @"unknown";
+                    [trace endWithNetworkError:error];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [[RadarLogger sharedInstance]
                             logWithLevel:RadarLogLevelError
@@ -185,6 +212,7 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                 NSError *deserializationError = nil;
                 id resObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:&deserializationError];
                 if (deserializationError || ![resObj isKindOfClass:[NSDictionary class]]) {
+                    [trace endWithStatus:RadarStatusErrorServer];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         completionHandler(RadarStatusErrorServer, nil, deserializationError);
                     });
@@ -237,6 +265,7 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                     }
                 }
 
+                [trace endWithStatus:status];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     completionHandler(status, res, nil);
                 });
@@ -255,6 +284,7 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                 NSURLRequest *prepared = prepareRequest(req, &error);
                 if (!prepared || error) {
                     NSError *preparationError = error ?: [NSError errorWithDomain:@"RadarRequestPreparation" code:0 userInfo:nil];
+                    [trace endWithStatus:RadarStatusErrorBadRequest];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (preparationFailureHandler) {
                             preparationFailureHandler(preparationError);
@@ -274,6 +304,7 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                 if (error && [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNetworkConnectionLost) {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                        message:[NSString stringWithFormat:@"📍 Radar API retrying after lost connection | url = %@", url]];
+                    [trace setResendCount:1];
                     NSURLRequest *retryRequest = requestForAttempt();
                     if (!retryRequest) { return; }
                     NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:retryRequest completionHandler:dataTaskCompletionHandler];
@@ -291,6 +322,7 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
             if (sleep) {
                 dispatch_semaphore_signal(self.semaphore);
             }
+            [trace endWithStatus:RadarStatusErrorBadRequest];
             NSError *exceptionError = [NSError errorWithDomain:@"RadarSDK"
                                                           code:0
                                                       userInfo:@{
