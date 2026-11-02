@@ -195,6 +195,33 @@ final class RadarTraceSpanTests {
         #expect(harness.session.requests.isEmpty)
     }
 
+    @Test("recording runs only for spans that record")
+    func recordingRunsOnlyForRecordingSpans() {
+        harness.useServerSampling(sessionId: "1000")
+        let pending = RadarTraceSpan.start("pending", manager: manager)
+        manager.overrideSampledForTesting(false)
+        let noop = RadarTraceSpan.start("noop", manager: manager)
+
+        var calls: [String] = []
+        pending.recording { _ in calls.append("pending") }
+        noop.recording { _ in calls.append("noop") }
+
+        // A pending span records, in case its session is sampled.
+        #expect(pending.isRecording)
+        #expect(!noop.isRecording)
+        #expect(calls == ["pending"])
+    }
+
+    @Test("recording sets attributes on its span")
+    func recordingSetsAttributes() async throws {
+        let root = RadarTraceSpan.start("root", manager: manager)
+            .recording { $0.setBool(true, forKey: "recorded") }
+        root.end(status: .success)
+
+        let json = try #require(try await uploadedSpans()["root"])
+        #expect(attribute(json, "recorded")?["boolValue"] as? Bool == true)
+    }
+
     @Test("Spans are no-ops before tracing starts")
     func spanIsNoOpBeforeStart() {
         let notStarted = harness.makeManager(start: false)
@@ -242,7 +269,7 @@ final class RadarTraceSpanTests {
         #expect(NSClassFromString("RadarTraceSpan") === RadarTraceSpan.self)
         #expect(RadarTraceSpan.responds(to: NSSelectorFromString("startWithName:")))
         let selectors = [
-            "child:", "clientChild:", "traceparent", "setString:forKey:", "setInteger:forKey:", "setDouble:forKey:",
+            "child:", "clientChild:", "traceparent", "isRecording", "setString:forKey:", "setInteger:forKey:", "setDouble:forKey:",
             "setBool:forKey:", "endWithStatus:",
         ]
         for selector in selectors {
