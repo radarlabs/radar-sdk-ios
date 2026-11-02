@@ -28,8 +28,6 @@
 }
 
 - (instancetype _Nullable)initWithSessionToken:(NSString *_Nonnull)sessionToken {
-    // The server packs the token into the result handle as 16 raw bytes, so anything that is not a UUID
-    // cannot be encoded and makes the API reject the whole autocomplete request.
     if (![[NSUUID alloc] initWithUUIDString:sessionToken]) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError type:RadarLogTypeSDKError message:@"Autocomplete sessionToken must be a UUID"];
 

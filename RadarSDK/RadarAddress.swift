@@ -148,6 +148,7 @@ public final class RadarAddress: NSObject {
     // Keeps the Objective-C initializer declared in RadarAddress+Internal.h working. Wrongly
     // typed fields are ignored, and a missing latitude or longitude gives an invalid coordinate.
     @objc(initWithObject:)
+    // swiftlint:disable:next function_body_length
     init?(object: Any) {
         guard let dictionary = object as? NSDictionary else {
             return nil

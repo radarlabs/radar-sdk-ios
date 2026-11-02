@@ -91,7 +91,6 @@ extension RadarSerializedTests {
             #expect(lastSessionToken == token)
         }
 
-        // The server packs the token into the result handle as raw bytes, so a non-UUID cannot be encoded.
         @Test("a session cannot be resumed from a non-UUID token")
         func resumedSessionRejectsNonUuidToken() {
             #expect(RadarAutocompleteSession(sessionToken: "not-a-uuid") == nil)
