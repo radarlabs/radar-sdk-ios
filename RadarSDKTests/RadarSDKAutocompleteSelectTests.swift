@@ -79,6 +79,25 @@ extension RadarSerializedTests {
             #expect(first.sessionToken != second.sessionToken)
         }
 
+        @Test("a session resumed from a token sends that token")
+        func resumedSessionSendsGivenToken() async throws {
+            mockAutocompleteResponse(resultId: Self.resultId)
+            let token = UUID().uuidString
+            let session = try #require(RadarAutocompleteSession(sessionToken: token))
+
+            _ = await autocomplete(session)
+
+            #expect(session.sessionToken == token)
+            #expect(lastSessionToken == token)
+        }
+
+        // The server packs the token into the result handle as raw bytes, so a non-UUID cannot be encoded.
+        @Test("a session cannot be resumed from a non-UUID token")
+        func resumedSessionRejectsNonUuidToken() {
+            #expect(RadarAutocompleteSession(sessionToken: "not-a-uuid") == nil)
+            #expect(RadarAutocompleteSession(sessionToken: "") == nil)
+        }
+
         @Test("a session sends its own token on every call")
         func sessionSendsItsOwnTokenOnEveryCall() async {
             mockAutocompleteResponse(resultId: Self.resultId)

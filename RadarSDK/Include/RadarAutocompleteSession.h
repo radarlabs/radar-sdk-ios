@@ -38,6 +38,15 @@ typedef void (^_Nullable RadarAutocompleteSelectCompletionHandler)(RadarStatus s
 @property (copy, nonatomic, readonly) NSString *sessionToken;
 
 /**
+ Resumes a session from a token minted elsewhere.
+
+ Intended for wrapper SDKs that cannot hold a session instance; prefer `init`.
+
+ @param sessionToken A UUID. Returns nil for anything else, which the API would reject.
+ */
+- (instancetype _Nullable)initWithSessionToken:(NSString *_Nonnull)sessionToken NS_SWIFT_NAME(init(sessionToken:));
+
+/**
  Autocompletes partial addresses and place names within this session, sorted by relevance.
 
  @param query The partial address or place name to autocomplete.
