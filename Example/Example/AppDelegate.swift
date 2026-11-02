@@ -15,9 +15,8 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarVerifiedDelegate {
 
-    // Default publishable keys, used until you save one in Settings → Environment. Pick the
-    // environment (Production / Staging / Local) there too. hooks/clean-filter keeps real keys
-    // out of git (they're saved to .radar-env and restored on checkout).
+    // Default keys, used until you save one in Settings → Environment. hooks/clean-filter keeps
+    // real keys out of git.
 
     /// Default key for the Production environment.
     static let DEFAULT_PUBLISHABLE_KEY = "prj_live_pk_..."
@@ -51,12 +50,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         radarInitializeOptions.silentPush = true
 
         Radar.setAppGroup("group.waypoint.data")
-        // Point the SDK at the selected environment before initializing, then check the key.
         settingsStore.environment.apply(localURL: settingsStore.localURL)
         print("radar-env: \(settingsStore.environmentSummary)")
-        logStream.errorContext = { [weak settingsStore] in settingsStore?.environmentSummary }
+        logStream.write(result: "radar-env: \(settingsStore.environmentSummary)")
         Radar.initialize(publishableKey: settingsStore.resolvedPublishableKey, options: radarInitializeOptions)
-        settingsStore.runKeyCheck(logStream: logStream)
         Radar.setDelegate(logStream)
         wireLiveActivitySubscriptions()
         Radar.setVerifiedDelegate(self)

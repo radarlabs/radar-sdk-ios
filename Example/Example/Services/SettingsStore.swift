@@ -42,8 +42,6 @@ final class SettingsStore: ObservableObject {
     // MARK: - Defaults
 
     private enum Keys {
-        /// Pre-environment single key override; migrated into the production slot.
-        static let legacyPublishableKeyOverride = "settings.publishableKeyOverride"
         static let environment = "settings.environment"
         static let localURL = "settings.localURL"
         static let defaultTabRaw = "settings.defaultTabRaw"
@@ -104,9 +102,6 @@ final class SettingsStore: ObservableObject {
     /// The Local server URL this launch uses.
     let localURL: String
 
-    /// Which environments `resolvedPublishableKey` is valid on.
-    @Published private(set) var keyCheck: KeyCheck = .notChecked
-
     @Published var defaultTabRaw: String {
         didSet {
             UserDefaults.standard.set(defaultTabRaw, forKey: Keys.defaultTabRaw)
@@ -125,7 +120,6 @@ final class SettingsStore: ObservableObject {
     init() {
         // UserDefaults — safe to read before Radar is initialized.
         let defaults = UserDefaults.standard
-        Self.migrateLegacyKeyOverride(defaults)
         self.environment = defaults.string(forKey: Keys.environment).flatMap(RadarEnvironment.init(rawValue:)) ?? .production
         self.localURL = defaults.string(forKey: Keys.localURL) ?? ""
         self.defaultTabRaw = defaults.string(forKey: Keys.defaultTabRaw) ?? ""
@@ -144,11 +138,6 @@ final class SettingsStore: ObservableObject {
         publishableKey(for: environment)
     }
 
-    /// The API host for `environment`.
-    var host: String {
-        environment.host(localURL: localURL)
-    }
-
     /// The saved key for `environment`, falling back to its default in `AppDelegate`
     /// (placeholders count as unset).
     func publishableKey(for environment: RadarEnvironment) -> String {
@@ -165,61 +154,19 @@ final class SettingsStore: ObservableObject {
         return key.hasSuffix("...") ? "" : key
     }
 
-    /// The saved Local URL, which may differ from `localURL` if it changed since launch.
-    var savedLocalURL: String {
-        UserDefaults.standard.string(forKey: Keys.localURL) ?? ""
-    }
-
     /// Persists the environment settings. Takes effect on the next launch.
     func saveEnvironment(_ environment: RadarEnvironment, publishableKey: String, localURL: String) {
         let defaults = UserDefaults.standard
         defaults.set(environment.rawValue, forKey: Keys.environment)
         defaults.set(publishableKey.trimmingCharacters(in: .whitespaces), forKey: Keys.publishableKey(environment))
-        var url = localURL.trimmingCharacters(in: .whitespaces)
-        while url.hasSuffix("/") { url.removeLast() }
-        defaults.set(url, forKey: Keys.localURL)
+        defaults.set(localURL.trimmingCharacters(in: .whitespaces), forKey: Keys.localURL)
     }
 
-    /// Checks which environments `resolvedPublishableKey` is valid on, and logs an error if it
-    /// isn't valid on the selected one.
-    func runKeyCheck(logStream: LogStream) {
-        let key = resolvedPublishableKey
-        guard !key.isEmpty else {
-            logStream.write(error: "No publishable key set for \(environment.label)", detail: "Set one in Settings → Environment.")
-            return
-        }
-        keyCheck = .checking
-        KeyChecker.check(publishableKey: key) { [weak self] result in
-            guard let self = self else { return }
-            self.keyCheck = result
-            if result.mismatches(self.environment) {
-                logStream.write(
-                    error: "Key \(Self.keyPrefix(key)) is not valid on \(self.environment.label)",
-                    detail: "Key check: \(result.summary). Switch environment or change the key in Settings → Environment.")
-            } else {
-                logStream.write(result: "key check: \(result.summary)", detail: self.environmentSummary)
-            }
-        }
-    }
-
-    /// One line describing where requests go, for error context.
+    /// Where requests go, e.g. `env = Staging; host = https://…; key = prj_test_pk_ab12…`.
     var environmentSummary: String {
-        "env = \(environment.label); host = \(host); key = \(Self.keyPrefix(resolvedPublishableKey)); key check = \(keyCheck.summary)"
-    }
-
-    /// A key shortened for display, e.g. `prj_live_pk_76b8…`.
-    static func keyPrefix(_ key: String) -> String {
-        if key.isEmpty { return "(none)" }
-        return key.count <= 16 ? key : key.prefix(16) + "…"
-    }
-
-    /// Moves the single pre-environment key override into the production slot.
-    private static func migrateLegacyKeyOverride(_ defaults: UserDefaults) {
-        guard let legacy = defaults.string(forKey: Keys.legacyPublishableKeyOverride) else { return }
-        if !legacy.isEmpty && defaults.string(forKey: Keys.publishableKey(.production)) == nil {
-            defaults.set(legacy, forKey: Keys.publishableKey(.production))
-        }
-        defaults.removeObject(forKey: Keys.legacyPublishableKeyOverride)
+        let key = resolvedPublishableKey
+        let shortKey = key.isEmpty ? "(none)" : key.count <= 16 ? key : String(key.prefix(16)) + "…"
+        return "env = \(environment.label); host = \(environment.host(localURL: localURL)); key = \(shortKey)"
     }
 
     /// Reads SDK-backed settings into the store. Call once after `Radar.initialize`.

@@ -11,8 +11,8 @@ import SwiftUI
 /// Modal configuration view presented from TestsView's gear icon. Composes
 /// five sections (Environment, Presets, Identity, Tracking, Permissions).
 ///
-/// Environment changes are saved by its Apply button and take effect on relaunch. All other
-/// edits write through to the SettingsStore / SDK immediately — Done just dismisses the sheet.
+/// All edits except Environment (which applies on relaunch) write through to the SettingsStore /
+/// SDK immediately. Done just dismisses the sheet.
 struct TestsSettingsView: View {
     @EnvironmentObject var settingsStore: SettingsStore
     @EnvironmentObject var permissionsStore: PermissionsStore
