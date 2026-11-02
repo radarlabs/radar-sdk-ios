@@ -105,8 +105,9 @@ public final class RadarAddress: NSObject {
     /// The categories of the address.
     public let categories: [String]?
 
-    // Matches Objective-C `-init`, which left every field zeroed.
-    override init() {
+    // Public so `RadarAddress()` and `[RadarAddress new]` keep working as they did with the
+    // old header. Matches Objective-C `-init`, which left every field zeroed.
+    public override init() {
         coordinate = CLLocationCoordinate2D()
         formattedAddress = nil
         country = nil
