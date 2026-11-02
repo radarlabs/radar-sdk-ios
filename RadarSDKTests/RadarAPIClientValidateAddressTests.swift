@@ -122,11 +122,8 @@ extension RadarSerializedTests {
             #expect(query["street"] == nil)
         }
 
-        @Test("an address without a postal code fails before sending a request")
-        func missingPostalCode_returnsBadRequest() async throws {
-            var fields = Self.baseFields
-            fields["postalCode"] = nil
-            fields["addressLabel"] = "20 Jay St"
+        /// Validates an address built from `fields` alone and returns the status, checking that no request was sent.
+        private func validateLocallyRejected(_ fields: [String: Any]) async throws -> RadarStatus {
             let address = try #require(RadarAddress(from: fields))
 
             let status = await awaitCompletion { resume in
@@ -136,8 +133,40 @@ extension RadarSerializedTests {
                 }
             }
 
-            #expect(status == .errorBadRequest)
             #expect(fixture.apiHelperMock.lastUrl == nil)
+            return status
+        }
+
+        @Test("an address without a postal code fails before sending a request")
+        func missingPostalCode_returnsBadRequest() async throws {
+            var fields = Self.baseFields
+            fields["postalCode"] = nil
+            fields["addressLabel"] = "20 Jay St"
+
+            #expect(try await validateLocallyRejected(fields) == .errorBadRequest)
+        }
+
+        @Test("an address with an empty postal code fails before sending a request")
+        func emptyPostalCode_returnsBadRequest() async throws {
+            let fields = Self.baseFields.merging(["postalCode": "", "addressLabel": "20 Jay St"]) { _, new in new }
+
+            #expect(try await validateLocallyRejected(fields) == .errorBadRequest)
+        }
+
+        @Test("a label that isn't valid UTF-16 fails before sending a request")
+        func malformedLabel_returnsBadRequest() async throws {
+            // "20 Jay St " followed by the first half of an emoji's surrogate pair.
+            let label = NSString(characters: Array("20 Jay St ".utf16) + [0xD83D], length: 11)
+            let fields = Self.baseFields.merging(["addressLabel": label]) { _, new in new }
+
+            #expect(try await validateLocallyRejected(fields) == .errorBadRequest)
+        }
+
+        @Test("an empty unit isn't sent")
+        func emptyUnit_isOmitted() async throws {
+            let (_, query) = try await validate(["addressLabel": "20 Jay St", "unit": ""])
+
+            #expect(query["unit"] == nil)
         }
     }
 }

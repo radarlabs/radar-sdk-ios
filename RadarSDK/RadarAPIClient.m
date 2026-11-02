@@ -1414,7 +1414,8 @@
 
     // An empty street or number can't be validated, so fall back to the label.
     BOOL hasStreetAndNumber = address.street.length > 0 && address.number.length > 0;
-    if (!address.countryCode || !address.stateCode || !address.city || !address.postalCode || !(hasStreetAndNumber || address.addressLabel.length > 0)) {
+    if (address.countryCode.length == 0 || address.stateCode.length == 0 || address.city.length == 0 || address.postalCode.length == 0 ||
+        !(hasStreetAndNumber || address.addressLabel.length > 0)) {
         return finish(RadarStatusErrorBadRequest, nil, nil, RadarAddressVerificationStatusNone);
     }
 
@@ -1422,8 +1423,15 @@
     NSMutableCharacterSet *allowedCharacters = [[NSCharacterSet URLQueryAllowedCharacterSet] mutableCopy];
     [allowedCharacters removeCharactersInString:@"&=+"];
     NSMutableArray<NSString *> *queryItems = [NSMutableArray new];
+    // Encoding returns nil for a string that isn't valid UTF-16, such as one cut in the middle of an emoji.
+    __block BOOL encodable = YES;
     void (^addQueryItem)(NSString *, NSString *) = ^(NSString *name, NSString *value) {
-        [queryItems addObject:[NSString stringWithFormat:@"%@=%@", name, [value stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters]]];
+        NSString *encodedValue = [value stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+        if (!encodedValue) {
+            encodable = NO;
+            return;
+        }
+        [queryItems addObject:[NSString stringWithFormat:@"%@=%@", name, encodedValue]];
     };
 
     addQueryItem(@"countryCode", address.countryCode);
@@ -1438,8 +1446,12 @@
         addQueryItem(@"addressLabel", address.addressLabel);
     }
 
-    if (address.unit) {
+    if (address.unit.length > 0) {
         addQueryItem(@"unit", address.unit);
+    }
+
+    if (!encodable) {
+        return finish(RadarStatusErrorBadRequest, nil, nil, RadarAddressVerificationStatusNone);
     }
 
     NSString *host = [RadarSettings host];
