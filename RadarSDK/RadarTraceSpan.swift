@@ -118,6 +118,7 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
 
     @objc(setDouble:forKey:)
     func setDouble(_ value: Double, forKey key: String) {
+        guard value.isFinite else { return }
         setAttribute(key, .double(value))
     }
 
