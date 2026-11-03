@@ -510,3 +510,40 @@ RADAR_API_SURFACE NSArray<NSString *> *_Nullable get_RadarVerifiedLocationToken_
 RADAR_API_SURFACE NSString *_Nullable get_RadarVerifiedLocationToken__id(RadarVerifiedLocationToken *obj) { return obj._id; }
 RADAR_API_SURFACE NSDictionary *_Nullable get_RadarVerifiedLocationToken_fullDict(RadarVerifiedLocationToken *obj) { return obj.fullDict; }
 RADAR_API_SURFACE NSDictionary *_Nonnull call_RadarVerifiedLocationToken_dictionaryValue(RadarVerifiedLocationToken *obj) { return [obj dictionaryValue]; }
+
+#pragma mark - RadarAddress
+
+RADAR_API_SURFACE Class class_RadarAddress(void) { return [RadarAddress class]; }
+RADAR_API_SURFACE CLLocationCoordinate2D get_RadarAddress_coordinate(RadarAddress *obj) { return obj.coordinate; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_formattedAddress(RadarAddress *obj) { return obj.formattedAddress; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_country(RadarAddress *obj) { return obj.country; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_countryCode(RadarAddress *obj) { return obj.countryCode; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_countryFlag(RadarAddress *obj) { return obj.countryFlag; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_dma(RadarAddress *obj) { return obj.dma; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_dmaCode(RadarAddress *obj) { return obj.dmaCode; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_state(RadarAddress *obj) { return obj.state; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_stateCode(RadarAddress *obj) { return obj.stateCode; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_postalCode(RadarAddress *obj) { return obj.postalCode; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_city(RadarAddress *obj) { return obj.city; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_borough(RadarAddress *obj) { return obj.borough; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_county(RadarAddress *obj) { return obj.county; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_neighborhood(RadarAddress *obj) { return obj.neighborhood; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_number(RadarAddress *obj) { return obj.number; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_street(RadarAddress *obj) { return obj.street; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_addressLabel(RadarAddress *obj) { return obj.addressLabel; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_placeLabel(RadarAddress *obj) { return obj.placeLabel; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_unit(RadarAddress *obj) { return obj.unit; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_plus4(RadarAddress *obj) { return obj.plus4; }
+RADAR_API_SURFACE NSNumber *_Nullable get_RadarAddress_distance(RadarAddress *obj) { return obj.distance; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarAddress_layer(RadarAddress *obj) { return obj.layer; }
+RADAR_API_SURFACE NSDictionary *_Nullable get_RadarAddress_metadata(RadarAddress *obj) { return obj.metadata; }
+RADAR_API_SURFACE enum RadarAddressConfidence get_RadarAddress_confidence(RadarAddress *obj) { return obj.confidence; }
+RADAR_API_SURFACE void set_RadarAddress_confidence(RadarAddress *obj, enum RadarAddressConfidence value) { obj.confidence = value; }
+RADAR_API_SURFACE RadarTimeZone *_Nullable get_RadarAddress_timeZone(RadarAddress *obj) { return obj.timeZone; }
+RADAR_API_SURFACE NSArray<NSString *> *_Nullable get_RadarAddress_categories(RadarAddress *obj) { return obj.categories; }
+RADAR_API_SURFACE RadarAddress *_Nonnull call_RadarAddress_init(void) { return [[RadarAddress alloc] init]; }
+RADAR_API_SURFACE RadarAddress *_Nullable call_RadarAddress_class_addressFromObject(id _Nonnull a0) { return [RadarAddress addressFromObject:a0]; }
+RADAR_API_SURFACE NSArray<NSDictionary *> *_Nullable call_RadarAddress_class_arrayForAddresses(NSArray<RadarAddress *> *_Nullable a0) {
+    return [RadarAddress arrayForAddresses:a0];
+}
+RADAR_API_SURFACE NSDictionary *_Nonnull call_RadarAddress_dictionaryValue(RadarAddress *obj) { return [obj dictionaryValue]; }
