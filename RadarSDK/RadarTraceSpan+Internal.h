@@ -49,14 +49,15 @@ NS_ASSUME_NONNULL_BEGIN
 // RadarTrackTracing.swift
 @interface RadarTraceSpan (Track)
 
-// Attributes of a radar.track_once or radar.track_verified root. Pass nil for foreground when the app state can't be
-// read, which is only possible on the main thread.
-- (void)recordTrackWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
-                               beacons:(BOOL)beacons
-                            foreground:(NSNumber *_Nullable)foreground;
+// Attributes of a radar.track_once root. The app state is omitted when called off the main thread.
+- (void)recordTrackWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons;
 
-// Whether the app is in the foreground (omitted when nil), and whether location access is precise.
-- (void)recordAppContextWithForeground:(NSNumber *_Nullable)foreground;
+// Attributes of a radar.track_verified root, with the app state the caller already read on the main thread.
+- (void)recordTrackWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons foreground:(BOOL)foreground;
+
+// Whether the app is in the foreground (omitted when called off the main thread), and whether location access is
+// precise, for a root that doesn't record the track attributes.
+- (void)recordAppContext;
 
 // Set on the root when its track is sent as a replay flush instead.
 - (void)markReplayed;

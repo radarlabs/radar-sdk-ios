@@ -324,12 +324,9 @@ BOOL _initialized = NO;
 + (void)trackOnceWithDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy beacons:(BOOL)beacons completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
 
-    // The root ends on the main thread, before the app's completion handler runs. The app state is only readable on
-    // the main thread, so it's omitted for calls from other threads.
+    // The root ends on the main thread, before the app's completion handler runs.
     RadarTraceSpan *trace = [RadarTraceSpan startWithName:@"radar.track_once"];
-    [trace recordTrackWithDesiredAccuracy:desiredAccuracy
-                                  beacons:beacons
-                               foreground:[NSThread isMainThread] ? @([RadarUtilsDeprecated foreground]) : nil];
+    [trace recordTrackWithDesiredAccuracy:desiredAccuracy beacons:beacons];
     completionHandler = [trace endingTrackHandler:completionHandler];
 
     [[RadarLocationManager sharedInstance]
@@ -436,9 +433,8 @@ BOOL _initialized = NO;
 + (void)trackOnceWithLocation:(CLLocation *)location completionHandler:(RadarTrackCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"trackOnce()"];
 
-    // A separate root name, since this skips getting a location and its latency is mostly one request.
     RadarTraceSpan *trace = [RadarTraceSpan startWithName:@"radar.track_once_with_location"];
-    [trace recordAppContextWithForeground:[NSThread isMainThread] ? @([RadarUtilsDeprecated foreground]) : nil];
+    [trace recordAppContext];
     completionHandler = [trace endingTrackHandler:completionHandler];
 
     [[RadarIndoors shared] getLocationWithCompletionHandler:^(CLLocation *_Nullable indoorLocation) {
