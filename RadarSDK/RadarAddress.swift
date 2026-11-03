@@ -75,14 +75,13 @@ public final class RadarAddress: NSObject {
     /// The street name of the address.
     public let street: String?
 
-    /// The label of the address.
-    /**
-     Identifies this result within the session that returned it, not the address itself.
-
-     Short-lived; pass the whole address to `selectAddress:completionHandler:` rather than storing this.
-     */
+    /// Identifies this result within the session that returned it, not the address itself.
+    ///
+    /// Short-lived; pass the whole address to `RadarAutocompleteSession.select` rather than
+    /// storing this.
     public let resultId: String?
 
+    /// The label of the address.
     public let addressLabel: String?
 
     /// The label of the place.
