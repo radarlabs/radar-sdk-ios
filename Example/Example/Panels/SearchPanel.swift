@@ -229,6 +229,43 @@ struct SearchPanel: View {
                     )
                 }
             }
+            ActionButton("autocomplete (session)") {
+                let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
+                // one session per input: autocomplete within it, then report the pick
+                let session = RadarAutocompleteSession()
+                session.autocomplete(
+                    query: "123 Main",
+                    near: origin,
+                    layers: nil,
+                    limit: 5,
+                    country: "US",
+                    mailable: false
+                ) { (status, addresses) in
+                    let selected = addresses?.first
+                    logStream.write(
+                        status,
+                        summary: "autocomplete (session): \(Radar.stringForStatus(status))",
+                        detail: "results = \(addresses?.count ?? 0); "
+                            + "formattedAddress = \(String(describing: selected?.formattedAddress)); "
+                            + "resultId = \(String(describing: selected?.resultId))"
+                    )
+                    guard let selected else { return }
+                    session.select(address: selected) { (selectStatus, enriched) in
+                        // only an address result has anything to enrich; everything else is
+                        // recorded and comes back without one
+                        let detail = enriched.map {
+                            "formattedAddress = \(String(describing: $0.formattedAddress)); "
+                                + "usage = \($0.locationDetails.usage); "
+                                + "dwelling = \($0.locationDetails.dwelling)"
+                        } ?? "recorded, no enrichment for this result"
+                        logStream.write(
+                            selectStatus,
+                            summary: "select: \(Radar.stringForStatus(selectStatus))",
+                            detail: detail
+                        )
+                    }
+                }
+            }
         }
     }
 }
