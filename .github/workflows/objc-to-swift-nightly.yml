@@ -139,7 +139,10 @@ jobs:
             headers. Declare internal Objective-C initializers in `ClassName+Internal.h`;
             public headers must not import `+Internal.h` headers. Run `make ci-build-example CI_DESTINATION="$MIGRATION_DESTINATION"`
             and `make lint`, then resolve any Release linkage or CocoaPods header failures
-            before opening the PR. The workflow provides GH_TOKEN and
+            before opening the PR. If `ci-build-example` reports a class or member missing from
+            `ObjCCompatibility/RadarSDKObjCAPISurface.m`, run `make update-objc-api-surface` and
+            run `ci-build-example` again. Never edit an existing call in that file to make it
+            compile: a failing call means the port changed the Objective-C API, so fix the Swift. The workflow provides GH_TOKEN and
             MIGRATION_DESTINATION.
           claude_args: '--allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 80'
 

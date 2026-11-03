@@ -55,9 +55,13 @@ compiler generates their Objective-C interface in `RadarSDK-Swift.h`. See `Radar
 `Include/RadarChain.h`, and `RadarChain+Internal.h` for the full pattern.
 
 1. **Declaration:** `@objc(ClassName) @objcMembers public final class ClassName: NSObject`, with the
-   same name in Swift and Objective-C. Models the SDK returns are `final` and have no public `init()`.
-   Keep an internal `override init()` that builds an empty value, so an Objective-C `-init` doesn't
-   trap. Option types customers create, such as `RadarTripOptions`, keep their public initializers
+   same name in Swift and Objective-C. Models the SDK returns are `final`.
+   Keep the `init()` availability the old header had. If the old header didn't mark `-init` or
+   `+new` `NS_UNAVAILABLE`, they were public through `NSObject`, so write `public override init()`
+   that builds an empty value (`RadarAddress` does this). Use an internal `override init()` only when
+   the old header made them unavailable. `Example/Example/PublicAPICompat.swift` fails
+   `make ci-build-example` if a class that must stay constructible loses its public `init()`; add
+   the class there. Option types customers create, such as `RadarTripOptions`, keep their public initializers
    and aren't `final`. Use `@objc(selector:)` on a member only when it needs a custom selector.
 2. **Public surface:** exactly what the class's old header declared, spelled the way Swift imported
    it: the same names, types, nullability, selectors, and failable initializers. For example,
@@ -88,8 +92,13 @@ compiler generates their Objective-C interface in `RadarSDK-Swift.h`. See `Radar
    files.
 6. **Verify:** run `make ci-build-example`. Its Release build links an Objective-C consumer of
    every public class in the handwritten headers and `RadarSDK-Swift.h`, and compiles the same
-   consumer as non-modular Objective-C++ through the umbrella. Also run `make lint` to check the
-   CocoaPods header boundary.
+   consumer as non-modular Objective-C++ through the umbrella. It also compiles
+   `ObjCCompatibility/RadarSDKObjCAPISurface.m`, which calls every public member of each
+   Swift-implemented class from Objective-C, and fails if a class or member in `RadarSDK-Swift.h`
+   has no call there. Run `make update-objc-api-surface` after it to add the missing calls. A class
+   apps shouldn't use goes in `ObjCCompatibility/internal-classes.txt` with a reason instead.
+   Editing an existing call means Objective-C apps break, so call that out in the PR. Also run
+   `make lint` to check the CocoaPods header boundary.
 
 ## Concurrency
 
