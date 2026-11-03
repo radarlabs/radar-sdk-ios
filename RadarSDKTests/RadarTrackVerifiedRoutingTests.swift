@@ -80,10 +80,11 @@ extension RadarVerifiedHostOverrideTests {
             let preparer = try makeTrackPreparer(instance: instance, options: ["nonce": "test-nonce"])
             let finished = expectation(description: "Verified track completes")
             finished.assertForOverFulfill = true
-            trackForEncryptionTest(preparer, secondary: secondary) { _, _, _, _, _, _, _ in
+            let track = trackForEncryptionTest(preparer, secondary: secondary) { _, _, _, _, _, _, _ in
                 finished.fulfill()
             }
             wait(for: [finished], timeout: 5)
+            track.cancel()
 
             let host = secondary ? RadarSettings.defaultVerifiedHostSecondary : RadarSettings.verifiedHost
             XCTAssertEqual(helper.lastUrl, "\(host)/v1/track")
@@ -149,12 +150,13 @@ extension RadarVerifiedHostOverrideTests {
 
             let finished = expectation(description: "One preparation failure callback")
             finished.assertForOverFulfill = true
-            trackForEncryptionTest(preparer) { status, _, _, _, _, _, _ in
+            let track = trackForEncryptionTest(preparer) { status, _, _, _, _, _, _ in
                 XCTAssertTrue(Thread.isMainThread)
                 XCTAssertEqual(status, expectedStatus)
                 finished.fulfill()
             }
             wait(for: [finished], timeout: 5)
+            track.cancel()
             XCTAssertNil(helper.lastMethod)
         }
     }
