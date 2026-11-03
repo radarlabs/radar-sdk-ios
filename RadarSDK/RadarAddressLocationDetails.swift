@@ -25,7 +25,7 @@ public final class RadarAddressLocationDetails: NSObject {
 
     // The server fills every field, so these defaults only stand in for a malformed response.
     @objc(initWithObject:)
-    public init(object: Any?) {
+    init(object: Any?) {
         let dictionary = object as? NSDictionary ?? NSDictionary()
 
         usage = dictionary["usage"] as? String ?? "unknown"

@@ -8,13 +8,6 @@
 import CoreLocation
 import Foundation
 
-/// Called when an autocomplete selection report succeeds, fails, or times out.
-///
-/// Receives the request status and, where available, the enriched address.
-///
-/// - SeeAlso: https://radar.com/documentation/api#autocomplete
-public typealias RadarAutocompleteSelectCompletionHandler = (RadarStatus, RadarAutocompleteEnrichedAddress?) -> Void
-
 /// An autocomplete search field and the selection a user makes in it.
 ///
 /// Create one session per address field.

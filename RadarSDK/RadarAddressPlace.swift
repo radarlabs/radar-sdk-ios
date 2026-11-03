@@ -18,7 +18,7 @@ public final class RadarAddressPlace: NSObject {
     public let categories: [String]
 
     @objc(initWithObject:)
-    public init?(object: Any) {
+    init?(object: Any) {
         guard let dictionary = object as? NSDictionary else {
             return nil
         }

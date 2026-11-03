@@ -23,7 +23,7 @@ public final class RadarAutocompleteEnrichedAddress: NSObject {
     public let locationDetails: RadarAddressLocationDetails
 
     @objc(initWithObject:)
-    public init?(object: Any?) {
+    init?(object: Any?) {
         guard let dictionary = object as? NSDictionary else {
             return nil
         }
