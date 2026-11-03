@@ -23,6 +23,27 @@
 
 RADAR_API_SURFACE void call_Radar_class_startRangingBeacons(void) { [Radar startRangingBeacons]; }
 RADAR_API_SURFACE void call_Radar_class_stopRangingBeacons(void) { [Radar stopRangingBeacons]; }
+RADAR_API_SURFACE void call_Radar_class_validateAddressWithStreet_number_unit_city_stateCode_postalCode_countryCode_completionHandler(
+    NSString *_Nonnull a0,
+    NSString *_Nonnull a1,
+    NSString *_Nullable a2,
+    NSString *_Nonnull a3,
+    NSString *_Nonnull a4,
+    NSString *_Nonnull a5,
+    NSString *_Nonnull a6,
+    void (^_Nonnull a7)(RadarStatus, RadarAddress *_Nullable, RadarAddressVerificationStatus)) {
+    [Radar validateAddressWithStreet:a0 number:a1 unit:a2 city:a3 stateCode:a4 postalCode:a5 countryCode:a6 completionHandler:a7];
+}
+RADAR_API_SURFACE void call_Radar_class_validateAddressWithAddressLabel_unit_city_stateCode_postalCode_countryCode_completionHandler(
+    NSString *_Nonnull a0,
+    NSString *_Nullable a1,
+    NSString *_Nonnull a2,
+    NSString *_Nonnull a3,
+    NSString *_Nonnull a4,
+    NSString *_Nonnull a5,
+    void (^_Nonnull a6)(RadarStatus, RadarAddress *_Nullable, RadarAddressVerificationStatus)) {
+    [Radar validateAddressWithAddressLabel:a0 unit:a1 city:a2 stateCode:a3 postalCode:a4 countryCode:a5 completionHandler:a6];
+}
 
 #pragma mark - RadarChain
 

@@ -299,18 +299,8 @@ extension RadarAPIClient {
 
         return RadarValidateAddressResponse(
             address: address,
-            verificationStatus: Self.addressVerificationStatus(for: verificationStatus)
+            verificationStatus: RadarAddress.addressVerificationStatus(for: verificationStatus)
         )
-    }
-
-    private static func addressVerificationStatus(for string: String) -> RadarAddressVerificationStatus {
-        switch string {
-        case "verified": .verified
-        case "partially verified": .partiallyVerified
-        case "ambiguous": .ambiguous
-        case "unverified": .unverified
-        default: .none
-        }
     }
 }
 
