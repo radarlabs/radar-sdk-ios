@@ -25,6 +25,7 @@
 		BA5198C92EDE3B8C004A3B35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */; };
 		BA7792EF2FA3D1DD00E197CA /* LogStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792EE2FA3D1D800E197CA /* LogStream.swift */; };
 		BA7792F12FA8FF0600E197CA /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */; };
+		6FEB0E3D5FFA0B194291C6B7 /* RadarEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2773B074EE5B97E37FDDBFDA /* RadarEnvironment.swift */; };
 		BA7792F42FA907EE00E197CA /* ControlRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F32FA907EB00E197CA /* ControlRow.swift */; };
 		BA7792F62FA9081A00E197CA /* FieldEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F52FA9081700E197CA /* FieldEditor.swift */; };
 		BA7792F82FA9087200E197CA /* TogglePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7792F72FA9086B00E197CA /* TogglePanel.swift */; };
@@ -63,6 +64,7 @@
 		BAB2ACC62FB66ADD00560332 /* ActiveTripBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACC52FB66AD500560332 /* ActiveTripBarView.swift */; };
 		BAB2ACC92FB66C3F00560332 /* PresetSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACC82FB66C3800560332 /* PresetSectionView.swift */; };
 		BAB2ACCB2FB66C5B00560332 /* IdentitySectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACCA2FB66C5500560332 /* IdentitySectionView.swift */; };
+		3CB1AC0CA0A1B5DE2E0BC87C /* EnvironmentSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C41BB7B1EC738418776B7F /* EnvironmentSectionView.swift */; };
 		BAB2ACCD2FB66C7100560332 /* PermissionsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACCC2FB66C6B00560332 /* PermissionsSectionView.swift */; };
 		BAB2ACCF2FB66C9D00560332 /* TrackingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACCE2FB66C9700560332 /* TrackingSectionView.swift */; };
 		BAB2ACD12FB66CC700560332 /* PermissionStatus+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB2ACD02FB66CBC00560332 /* PermissionStatus+Display.swift */; };
@@ -233,6 +235,7 @@
 		BA5198C82EDE3B8C004A3B35 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BA7792EE2FA3D1D800E197CA /* LogStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogStream.swift; sourceTree = "<group>"; };
 		BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		2773B074EE5B97E37FDDBFDA /* RadarEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarEnvironment.swift; sourceTree = "<group>"; };
 		BA7792F32FA907EB00E197CA /* ControlRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlRow.swift; sourceTree = "<group>"; };
 		BA7792F52FA9081700E197CA /* FieldEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldEditor.swift; sourceTree = "<group>"; };
 		BA7792F72FA9086B00E197CA /* TogglePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglePanel.swift; sourceTree = "<group>"; };
@@ -271,6 +274,7 @@
 		BAB2ACC52FB66AD500560332 /* ActiveTripBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveTripBarView.swift; sourceTree = "<group>"; };
 		BAB2ACC82FB66C3800560332 /* PresetSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetSectionView.swift; sourceTree = "<group>"; };
 		BAB2ACCA2FB66C5500560332 /* IdentitySectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentitySectionView.swift; sourceTree = "<group>"; };
+		69C41BB7B1EC738418776B7F /* EnvironmentSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentSectionView.swift; sourceTree = "<group>"; };
 		BAB2ACCC2FB66C6B00560332 /* PermissionsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsSectionView.swift; sourceTree = "<group>"; };
 		BAB2ACCE2FB66C9700560332 /* TrackingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingSectionView.swift; sourceTree = "<group>"; };
 		BAB2ACD02FB66CBC00560332 /* PermissionStatus+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PermissionStatus+Display.swift"; sourceTree = "<group>"; };
@@ -392,6 +396,7 @@
 				BA7793382FAAA11C00E197CA /* PermissionsStore.swift */,
 				BA7792FB2FA92DEF00E197CA /* TestPreset.swift */,
 				BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */,
+				2773B074EE5B97E37FDDBFDA /* RadarEnvironment.swift */,
 				BA7792EE2FA3D1D800E197CA /* LogStream.swift */,
 			);
 			path = Services;
@@ -464,6 +469,7 @@
 				BAB2ACCE2FB66C9700560332 /* TrackingSectionView.swift */,
 				BAB2ACCC2FB66C6B00560332 /* PermissionsSectionView.swift */,
 				BAB2ACCA2FB66C5500560332 /* IdentitySectionView.swift */,
+				69C41BB7B1EC738418776B7F /* EnvironmentSectionView.swift */,
 				BAB2ACC82FB66C3800560332 /* PresetSectionView.swift */,
 			);
 			path = TestSettings;
@@ -840,6 +846,7 @@
 				BAB2ACC02FB66A9500560332 /* OverlayPickerSheet.swift in Sources */,
 				BA7793462FAAAE7F00E197CA /* SyncedRegionSource.swift in Sources */,
 				BA7792F12FA8FF0600E197CA /* SettingsStore.swift in Sources */,
+				6FEB0E3D5FFA0B194291C6B7 /* RadarEnvironment.swift in Sources */,
 				BA7793342FAA70F100E197CA /* MessagingPanel.swift in Sources */,
 				BA7792F62FA9081A00E197CA /* FieldEditor.swift in Sources */,
 				BA7793362FAA997300E197CA /* ConsoleEntry+UI.swift in Sources */,
@@ -871,6 +878,7 @@
 				BAB2ACAF2FB538EC00560332 /* TripBreadcrumbsSource.swift in Sources */,
 				BAB2ACCF2FB66C9D00560332 /* TrackingSectionView.swift in Sources */,
 				BAB2ACCB2FB66C5B00560332 /* IdentitySectionView.swift in Sources */,
+				3CB1AC0CA0A1B5DE2E0BC87C /* EnvironmentSectionView.swift in Sources */,
 				BA7793422FAAA81800E197CA /* MonitoredRegionsSource.swift in Sources */,
 				DD291169230D0AF900049D3A /* Utils.swift in Sources */,
 				F61886BF2EA7DB1D0072E87C /* TestsView.swift in Sources */,
