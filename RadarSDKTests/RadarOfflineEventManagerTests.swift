@@ -31,7 +31,7 @@ extension RadarSerializedTests {
                 "_id": "test-user",
                 "location": ["coordinates": [testLng, testLat]],
             ])
-            RadarSyncTestHelper.setRadarUser(cachedUser)
+            RadarState.shared.radarUser = cachedUser
         }
 
         // MARK: - Helpers

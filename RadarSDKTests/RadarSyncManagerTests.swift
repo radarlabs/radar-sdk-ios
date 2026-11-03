@@ -334,7 +334,7 @@ extension RadarSerializedTests {
 
         @Test("getPlaces returns place when within radius")
         func getPlaces_withinRadius() {
-            RadarSyncTestHelper.setStopped(true)
+            RadarState.shared.stopped = true
             let place = makePlace(id: "place1", lat: testLat, lng: testLng)
             var state = RadarSyncState()
             state.syncedPlaces = [place]
@@ -349,7 +349,7 @@ extension RadarSerializedTests {
 
         @Test("getPlaces returns empty when outside radius")
         func getPlaces_outsideRadius() {
-            RadarSyncTestHelper.setStopped(true)
+            RadarState.shared.stopped = true
             let place = makePlace(id: "place1", lat: testLatFar, lng: testLng)
             var state = RadarSyncState()
             state.syncedPlaces = [place]
@@ -365,7 +365,7 @@ extension RadarSerializedTests {
 
         @Test("placeStateChanged detects entry")
         func placeStateChanged_entry() {
-            RadarSyncTestHelper.setStopped(true)
+            RadarState.shared.stopped = true
             let place = makePlace(id: "place1", lat: testLat, lng: testLng)
             var state = RadarSyncState()
             state.syncedPlaces = [place]
@@ -378,7 +378,7 @@ extension RadarSerializedTests {
 
         @Test("placeStateChanged skips entry when not stopped")
         func placeStateChanged_entrySkippedWhenNotStopped() {
-            RadarSyncTestHelper.setStopped(false)
+            RadarState.shared.stopped = false
             let place = makePlace(id: "place1", lat: testLat, lng: testLng)
             var state = RadarSyncState()
             state.syncedPlaces = [place]
@@ -391,7 +391,7 @@ extension RadarSerializedTests {
 
         @Test("placeStateChanged detects exit")
         func placeStateChanged_exit() {
-            RadarSyncTestHelper.setStopped(false)
+            RadarState.shared.stopped = false
             let place = makePlace(id: "place1", lat: testLatFar, lng: testLng)
             var state = RadarSyncState()
             state.syncedPlaces = [place]
@@ -404,7 +404,7 @@ extension RadarSerializedTests {
 
         @Test("getPlaces returns place when within geometryRadius + detection radius")
         func getPlaces_withinGeometryRadius() {
-            RadarSyncTestHelper.setStopped(true)
+            RadarState.shared.stopped = true
             let place = makePlace(id: "place1", lat: testLatNearby, lng: testLng, geometryRadius: 100.0)
             var state = RadarSyncState()
             state.syncedPlaces = [place]
@@ -418,7 +418,7 @@ extension RadarSerializedTests {
 
         @Test("getPlaces returns empty when outside geometryRadius + detection radius")
         func getPlaces_outsideGeometryRadiusPlusDetection() {
-            RadarSyncTestHelper.setStopped(true)
+            RadarState.shared.stopped = true
             let place = makePlace(id: "place1", lat: testLatFar, lng: testLng, geometryRadius: 50.0)
             var state = RadarSyncState()
             state.syncedPlaces = [place]
@@ -432,7 +432,7 @@ extension RadarSerializedTests {
 
         @Test("placeStateChanged no exit when within geometryRadius + exit buffer")
         func placeStateChanged_exitWithGeometryRadius() {
-            RadarSyncTestHelper.setStopped(false)
+            RadarState.shared.stopped = false
             let place = makePlace(id: "place1", lat: testLatNearby, lng: testLng, geometryRadius: 20.0)
             var state = RadarSyncState()
             state.syncedPlaces = [place]
@@ -447,7 +447,7 @@ extension RadarSerializedTests {
 
         @Test("placeStateChanged detects exit beyond geometryRadius + exit buffer")
         func placeStateChanged_exitBeyondBuffer() {
-            RadarSyncTestHelper.setStopped(false)
+            RadarState.shared.stopped = false
             let place = makePlace(id: "place1", lat: testLatFar, lng: testLng, geometryRadius: 50.0)
             var state = RadarSyncState()
             state.syncedPlaces = [place]
@@ -462,7 +462,7 @@ extension RadarSerializedTests {
 
         @Test("placeStateChanged blocks switch when still within exit radius of current place")
         func placeStateChanged_switchBlockedWithinExitRadius() {
-            RadarSyncTestHelper.setStopped(true)
+            RadarState.shared.stopped = true
             let place1 = makePlace(id: "place1", lat: testLat, lng: testLng, geometryRadius: 100.0)
             let place2 = makePlace(id: "place2", lat: testLatNearby, lng: testLng, geometryRadius: 100.0)
             var state = RadarSyncState()
@@ -479,7 +479,7 @@ extension RadarSerializedTests {
 
         @Test("placeStateChanged suppresses re-entry of server-rejected place")
         func placeStateChanged_rejectedPlaceNotReentered() {
-            RadarSyncTestHelper.setStopped(true)
+            RadarState.shared.stopped = true
             let place = makePlace(id: "place1", lat: testLat, lng: testLng)
             var state = RadarSyncState()
             state.syncedPlaces = [place]
@@ -506,7 +506,7 @@ extension RadarSerializedTests {
 
         @Test("placeStateChanged clears rejections when user moves beyond accuracy")
         func placeStateChanged_rejectionsClearedOnMovement() {
-            RadarSyncTestHelper.setStopped(true)
+            RadarState.shared.stopped = true
             let place = makePlace(id: "place1", lat: testLat, lng: testLng)
             var state = RadarSyncState()
             state.syncedPlaces = [place]
@@ -550,7 +550,7 @@ extension RadarSerializedTests {
 
         @Test("getPlaces returns only the single closest place")
         func getPlaces_returnsSingleClosest() {
-            RadarSyncTestHelper.setStopped(true)
+            RadarState.shared.stopped = true
             let place1 = makePlace(id: "place1", lat: testLat, lng: testLng, geometryRadius: 100.0)
             let place2 = makePlace(id: "place2", lat: testLatNearby, lng: testLng, geometryRadius: 100.0)
             var state = RadarSyncState()
@@ -761,7 +761,7 @@ extension RadarSerializedTests {
 
         @Test("stop detection blocks geofence entry when not stopped")
         func geofenceEntry_stopDetectionBlocks() {
-            RadarSyncTestHelper.setStopped(false)
+            RadarState.shared.stopped = false
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100, stopDetection: true)
             var state = RadarSyncState()
             state.syncedGeofences = [geofence]
@@ -774,7 +774,7 @@ extension RadarSerializedTests {
 
         @Test("stop detection allows geofence entry when stopped")
         func geofenceEntry_stopDetectionAllows() {
-            RadarSyncTestHelper.setStopped(true)
+            RadarState.shared.stopped = true
             let geofence = makeCircleGeofence(id: "geofence1", lat: testLat, lng: testLng, radius: 100, stopDetection: true)
             var state = RadarSyncState()
             state.syncedGeofences = [geofence]

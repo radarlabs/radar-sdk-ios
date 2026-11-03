@@ -338,7 +338,7 @@ extension RadarSerializedTests {
             let originalBridge = RadarSwift.bridge
             RadarSwift.bridge = bridge
             defer { RadarSwift.bridge = originalBridge }
-            RadarSyncTestHelper.setStopped(false)
+            RadarState.shared.stopped = false
 
             let state = RadarState.shared
             let originalAuthorizationStatus = state.locationAuthorizationStatus

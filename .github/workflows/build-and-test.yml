@@ -10,17 +10,59 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-# gh (used by the Format Swift step) needs read access to the PR diff.
 permissions:
   contents: read
-  pull-requests: read
 
 jobs:
+  format:
+    name: Format Swift
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    # swift-format ships with the Swift toolchain, so this image tag pins its version: Homebrew and
+    # runner-image updates can't change it. Bump the tag on purpose to upgrade.
+    container:
+      image: swift:6.3.3-noble
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          # The PR's merge commit and its first parent (the base branch), to list the files the PR
+          # changed. Works for stacked PRs too, since the parent is whatever branch the PR targets.
+          fetch-depth: 2
+
+      - name: Check format of changed Swift files
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          echo "swift-format $(swift-format --version)"
+          FILES=$(git diff --diff-filter=ACMR --name-only HEAD^1 HEAD -- '*.swift')
+          if [ -z "$FILES" ]; then
+            echo "No Swift files changed; skipping format check."
+            exit 0
+          fi
+          echo "Checking format of:"
+          echo "$FILES"
+          echo "$FILES" | xargs swift-format format --in-place --parallel
+          if ! git diff --exit-code -- $FILES; then
+            echo "::error::These files don't match swift-format. Run swift-format on them, or apply the diff above."
+            exit 1
+          fi
+
   build:
     name: Build and analyse default scheme using xcodebuild command
+    # This is the required check, so it carries the format result: it waits for the format job and
+    # fails if that failed. (A job skipped because a dependency failed would count as passing.)
+    needs: format
+    if: ${{ !cancelled() }}
     runs-on: macos-15
 
     steps:
+      - name: Require a passing format check
+        if: needs.format.result == 'failure'
+        run: |
+          echo "::error::The Format Swift job failed. See its log for the diff."
+          exit 1
+
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -37,32 +79,6 @@ jobs:
             brew install swiftlint
           fi
           swiftlint lint --strict --baseline .swiftlint-baseline.json
-
-      - name: Format Swift
-        if: github.event_name == 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SWIFT_FORMAT_VERSION: "603.0.0"
-        run: |
-          if ! command -v swift-format >/dev/null; then
-            brew install swift-format
-          fi
-          INSTALLED_SWIFT_FORMAT_VERSION="$(swift-format --version)"
-          if [ "$INSTALLED_SWIFT_FORMAT_VERSION" != "$SWIFT_FORMAT_VERSION" ]; then
-            echo "::error::swift-format $INSTALLED_SWIFT_FORMAT_VERSION is installed, but CI is pinned to $SWIFT_FORMAT_VERSION."
-            echo "Install swift-format $SWIFT_FORMAT_VERSION and run 'make format', or bump SWIFT_FORMAT_VERSION in this workflow if upgrading on purpose."
-            exit 1
-          fi
-          # Ask GitHub which files this PR changed (server-side diff — needs no local git
-          # history or merge-base, so it is correct on stacked PRs without a deep checkout).
-          # Keep the Swift files that still exist (drop deletions), then let make reformat
-          # them and fail if anything changed.
-          CHANGED=$(gh pr diff ${{ github.event.pull_request.number }} --name-only)
-          FILES=""
-          for f in $CHANGED; do
-            case "$f" in *.swift) [ -f "$f" ] && FILES="$FILES $f" ;; esac
-          done
-          make format-check FORMAT_FILES="$FILES"
 
       - name: Pick an available iPhone simulator
         id: pick_sim

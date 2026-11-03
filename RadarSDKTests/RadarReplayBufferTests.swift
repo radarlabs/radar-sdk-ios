@@ -172,4 +172,50 @@ final class RadarReplayBufferTests: XCTestCase {
         XCTAssertEqual(captured, .errorServer)
         XCTAssertEqual(buffer.batchCount(), 1)  // failed replay written back
     }
+
+    // MARK: - Batching
+
+    private func batchingOptions(batchSize: Int32) -> RadarTrackingOptions {
+        let options = RadarTrackingOptions.presetResponsive
+        options.batchInterval = 0
+        options.batchSize = batchSize
+        return options
+    }
+
+    // The buffer doesn't read the track params, so any dictionary stands in for one.
+    private let trackParams: [AnyHashable: Any] = ["latitude": 0.1, "longitude": 0.1, "stopped": true]
+
+    func test_addToBatch_incrementsCount() {
+        let options = batchingOptions(batchSize: 10)
+        let buffer = RadarReplayBuffer.sharedInstance
+        XCTAssertEqual(buffer.batchCount(), 0)
+
+        buffer.addToBatch(trackParams, options: options)
+        XCTAssertEqual(buffer.batchCount(), 1)
+
+        buffer.addToBatch(trackParams, options: options)
+        XCTAssertEqual(buffer.batchCount(), 2)
+    }
+
+    func test_shouldFlushBatch_respectsSize() {
+        let options = batchingOptions(batchSize: 2)
+        let buffer = RadarReplayBuffer.sharedInstance
+
+        XCTAssertFalse(buffer.shouldFlushBatch(withOptions: options), "Empty buffer should not flush")
+
+        buffer.addToBatch(trackParams, options: options)
+        XCTAssertFalse(buffer.shouldFlushBatch(withOptions: options), "1 < batchSize 2, should not flush")
+
+        buffer.addToBatch(trackParams, options: options)
+        XCTAssertTrue(buffer.shouldFlushBatch(withOptions: options), "2 >= batchSize 2, should flush")
+    }
+
+    func test_shouldFlushBatch_withZeroSize() {
+        let options = batchingOptions(batchSize: 0)
+        let buffer = RadarReplayBuffer.sharedInstance
+        for _ in 0..<5 {
+            buffer.addToBatch(trackParams, options: options)
+        }
+        XCTAssertFalse(buffer.shouldFlushBatch(withOptions: options), "batchSize 0 means no size-based flush")
+    }
 }
