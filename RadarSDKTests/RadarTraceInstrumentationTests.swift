@@ -66,13 +66,13 @@ final class RadarTraceInstrumentationTests {
 
     // MARK: - Track
 
-    @Test("recordTrack sets the root attributes, and omits the app state when it's unknown")
+    @Test("recordTrack sets the root attributes, and omits the app state off the main thread")
     func recordTrackSetsRootAttributes() async throws {
         let withState = RadarTraceSpan.start("with-state", manager: manager)
-        withState.recordTrack(desiredAccuracy: .high, beacons: true, foreground: NSNumber(value: false))
+        withState.recordTrack(desiredAccuracy: .high, beacons: true, foreground: false)
         withState.end(status: .success)
         let withoutState = RadarTraceSpan.start("without-state", manager: manager)
-        withoutState.recordTrack(desiredAccuracy: .low, beacons: false, foreground: nil)
+        await Task.detached { withoutState.recordTrack(desiredAccuracy: .low, beacons: false) }.value
         withoutState.end(status: .success)
 
         let spans = try await harness.uploadedSpans()
@@ -266,9 +266,9 @@ final class RadarTraceInstrumentationTests {
     @Test("Objective-C can reach the instrumentation API")
     func objectiveCSurface() {
         let selectors = [
-            "recordTrackWithDesiredAccuracy:beacons:foreground:", "recordAppContextWithForeground:", "markReplayed",
-            "endingTrackHandler:", "tracingLocationHandler:", "recordLocationQuality:", "setBeaconSource:",
-            "tracingBeaconHandler:mode:", "setVerifiedFailover:", "endingTrackVerifiedHandler:",
+            "recordTrackWithDesiredAccuracy:beacons:", "recordTrackWithDesiredAccuracy:beacons:foreground:",
+            "recordAppContext", "markReplayed", "endingTrackHandler:", "tracingLocationHandler:",
+            "recordLocationQuality:", "setBeaconSource:", "tracingBeaconHandler:mode:", "setVerifiedFailover:", "endingTrackVerifiedHandler:",
             "tracingFraudPrepareHandler:", "requestStartedWithURL:headers:queueNanos:", "setResendCount:",
             "endWithNetworkError:",
         ]

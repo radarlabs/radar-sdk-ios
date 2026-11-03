@@ -138,7 +138,7 @@
     // Every exit calls completionHandler on the main thread, so the wrapper ends the root on each of them. reason and
     // transactionId can come from the app, so they're never recorded.
     RadarTraceSpan *trace = [RadarTraceSpan startWithName:@"radar.track_verified"];
-    [trace recordTrackWithDesiredAccuracy:desiredAccuracy beacons:beacons foreground:@(foreground)];
+    [trace recordTrackWithDesiredAccuracy:desiredAccuracy beacons:beacons foreground:foreground];
     [trace setVerifiedFailover:NO];
     completionHandler = [trace endingTrackVerifiedHandler:completionHandler];
 

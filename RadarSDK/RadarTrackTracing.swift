@@ -11,10 +11,23 @@ import Foundation
 // Track instrumentation: `radar.track.*` and other attributes of trackOnce() and trackVerified() root spans, and the
 // completion handler wrapper that ends them.
 extension RadarTraceSpan {
-    /// Attributes of a `radar.track_once` or `radar.track_verified` root. `foreground` is nil when the caller can't
-    /// read the app state, which is only available on the main thread. The attribute is then omitted.
+    /// Attributes of a `radar.track_once` root. The app state is only readable on the main thread, so it's omitted
+    /// when this is called from another thread.
+    @objc(recordTrackWithDesiredAccuracy:beacons:)
+    func recordTrack(desiredAccuracy: RadarTrackingOptionsDesiredAccuracy, beacons: Bool) {
+        recording { span in
+            span.recordTrackAttributes(
+                desiredAccuracy: desiredAccuracy, beacons: beacons, foreground: RadarUtils.foregroundIfOnMainThread)
+        }
+    }
+
+    /// Attributes of a `radar.track_verified` root, with the app state the caller already read on the main thread.
     @objc(recordTrackWithDesiredAccuracy:beacons:foreground:)
-    func recordTrack(desiredAccuracy: RadarTrackingOptionsDesiredAccuracy, beacons: Bool, foreground: NSNumber?) {
+    func recordTrack(desiredAccuracy: RadarTrackingOptionsDesiredAccuracy, beacons: Bool, foreground: Bool) {
+        recordTrackAttributes(desiredAccuracy: desiredAccuracy, beacons: beacons, foreground: foreground)
+    }
+
+    private func recordTrackAttributes(desiredAccuracy: RadarTrackingOptionsDesiredAccuracy, beacons: Bool, foreground: Bool?) {
         recording { span in
             span.setString(RadarTrackingOptions.string(for: desiredAccuracy), forKey: "radar.location.desired_accuracy")
             span.setBool(beacons, forKey: "radar.beacons")
@@ -22,13 +35,19 @@ extension RadarTraceSpan {
         }
     }
 
-    /// App state that changes how long a track takes: whether the app is in the foreground (omitted when
-    /// `foreground` is nil), and whether location access is precise.
-    @objc(recordAppContextWithForeground:)
-    func recordAppContext(foreground: NSNumber?) {
+    /// App state that changes how long a track takes, for a root that doesn't call `recordTrack`. The app state is only
+    /// readable on the main thread, so it's omitted when this is called from another thread.
+    @objc func recordAppContext() {
+        recording { span in
+            span.recordAppContext(foreground: RadarUtils.foregroundIfOnMainThread)
+        }
+    }
+
+    /// Whether the app is in the foreground (omitted when nil), and whether location access is precise.
+    func recordAppContext(foreground: Bool?) {
         recording { span in
             if let foreground {
-                span.setBool(foreground.boolValue, forKey: "radar.app.foreground")
+                span.setBool(foreground, forKey: "radar.app.foreground")
             }
             span.setString(RadarUtils.locationAccuracyAuthorization, forKey: "radar.location.accuracy_authorization")
         }
