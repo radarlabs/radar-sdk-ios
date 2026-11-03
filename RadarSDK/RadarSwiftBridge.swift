@@ -50,6 +50,18 @@ protocol RadarSwiftBridgeProtocol {
     func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon
     func createBeacon(fromRegion region: CLBeaconRegion) -> RadarBeacon
     func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon)
+
+    @objc(autocompleteQuery:near:layers:limit:country:mailable:sessionToken:completionHandler:)
+    // swiftlint:disable:next function_parameter_count
+    func autocomplete(
+        query: String, near: CLLocation?, layers: [String]?, limit: Int32, country: String?,
+        mailable: Bool, sessionToken: String,
+        completionHandler: @escaping (RadarStatus, [RadarAddress]?) -> Void)
+
+    @objc(selectAutocompleteAddress:completionHandler:)
+    func selectAutocompleteAddress(
+        _ address: RadarAddress,
+        completionHandler: @escaping (RadarStatus, RadarAutocompleteEnrichedAddress?) -> Void)
 }
 
 /// Builds Objective-C models whose parsers are internal. Matches `RadarModelFactoryProtocol` in

@@ -130,4 +130,20 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     }
 
     func updateClientSideCampaigns(withPrefix prefix: String, notificationRequests: [UNNotificationRequest]) {}
+
+    // swiftlint:disable:next function_parameter_count
+    func autocomplete(
+        query: String, near: CLLocation?, layers: [String]?, limit: Int32, country: String?,
+        mailable: Bool, sessionToken: String,
+        completionHandler: @escaping (RadarStatus, [RadarAddress]?) -> Void
+    ) {
+        completionHandler(.success, nil)
+    }
+
+    func selectAutocompleteAddress(
+        _ address: RadarAddress,
+        completionHandler: @escaping (RadarStatus, RadarAutocompleteEnrichedAddress?) -> Void
+    ) {
+        completionHandler(.success, nil)
+    }
 }

@@ -17,6 +17,7 @@
 #import "Radar.h"
 
 @class RadarTripOptions;
+@class RadarAutocompleteEnrichedAddress;
 
 @protocol RadarSwiftBridgeProtocol
 - (void)flushReplays;
@@ -61,6 +62,16 @@
 - (RadarBeacon * _Nonnull)createBeaconWithUuid:(NSString * _Nonnull)uuid major:(NSString * _Nonnull)major minor:(NSString * _Nonnull)minor rssi:(NSInteger)rssi;
 - (RadarBeacon * _Nonnull)createBeaconFromRegion:(CLBeaconRegion * _Nonnull)region;
 - (void)setRssi:(NSInteger)rssi onBeacon:(RadarBeacon * _Nonnull)beacon;
+- (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray<NSString *> *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
+                 mailable:(BOOL)mailable
+             sessionToken:(NSString *_Nonnull)sessionToken
+        completionHandler:(void (^_Nonnull)(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses))completionHandler;
+- (void)selectAutocompleteAddress:(RadarAddress *_Nonnull)address
+                completionHandler:(void (^_Nonnull)(RadarStatus status, RadarAutocompleteEnrichedAddress *_Nullable address))completionHandler;
 @end
 
 // Builds Objective-C models whose parsers are internal. Installed when the framework loads, so

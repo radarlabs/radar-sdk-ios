@@ -9,7 +9,6 @@
 
 #import "Radar.h"
 #import "RadarAPIHelper.h"
-#import "RadarAutocompleteEnrichedAddress.h"
 #import "RadarBeacon.h"
 #import "RadarConfig.h"
 #import "RadarEvent.h"
@@ -21,6 +20,7 @@
 @class RadarVerifiedLocationToken;
 @class RadarContext;
 @class RadarUser;
+@class RadarAutocompleteEnrichedAddress;
 
 NS_ASSUME_NONNULL_BEGIN
 
