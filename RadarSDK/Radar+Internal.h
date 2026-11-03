@@ -32,3 +32,10 @@
 + (NSString *_Nonnull)stringForMotionAuthorizationStatus;
 
 @end
+
+// Implemented in Radar+ValidateAddress.swift.
+@interface Radar (ValidateAddress)
+
++ (void)validateRadarAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler;
+
+@end

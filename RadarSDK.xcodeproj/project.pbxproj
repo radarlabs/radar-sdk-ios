@@ -209,6 +209,7 @@
 		BA8D15C230100DF600022EB3 /* RadarSwizzleHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = BA8D15C130100DE800022EB3 /* RadarSwizzleHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BA8D15C430100E0500022EB3 /* RadarSwizzleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = BA8D15C330100E0100022EB3 /* RadarSwizzleHelper.m */; };
 		F3050F0230059A000035CBDB /* Radar+BeaconRanging.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050F0130059A000035CBDB /* Radar+BeaconRanging.swift */; };
+		F3051A0230059A000035CBDB /* Radar+ValidateAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3051A0130059A000035CBDB /* Radar+ValidateAddress.swift */; };
 		F3051002300A5A000035CBDB /* RadarNearbyBeaconSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3051001300A5A000035CBDB /* RadarNearbyBeaconSearch.swift */; };
 		F3050B0230059A000035CBDB /* RadarContinuousBeaconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050B0130059A000035CBDB /* RadarContinuousBeaconManager.swift */; };
 		BABC4B91300190E50035CBDB /* RadarOneShotBeaconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABC4B90300190E10035CBDB /* RadarOneShotBeaconManager.swift */; };
@@ -520,6 +521,7 @@
 		BA8D15C130100DE800022EB3 /* RadarSwizzleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSwizzleHelper.h; sourceTree = "<group>"; };
 		BA8D15C330100E0100022EB3 /* RadarSwizzleHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSwizzleHelper.m; sourceTree = "<group>"; };
 		F3050F0130059A000035CBDB /* Radar+BeaconRanging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Radar+BeaconRanging.swift"; sourceTree = "<group>"; };
+		F3051A0130059A000035CBDB /* Radar+ValidateAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Radar+ValidateAddress.swift"; sourceTree = "<group>"; };
 		F3051001300A5A000035CBDB /* RadarNearbyBeaconSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarNearbyBeaconSearch.swift; sourceTree = "<group>"; };
 		F3051004300A5A000035CBDB /* RadarContinuousBeaconManager+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarContinuousBeaconManager+Internal.h"; sourceTree = "<group>"; };
 		F3051003300A5A000035CBDB /* RadarNearbyBeaconSearch+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarNearbyBeaconSearch+Internal.h"; sourceTree = "<group>"; };
@@ -830,6 +832,7 @@
 				DD633EC2237C5B800026C91A /* RadarAPIHelper.m */,
 				F686B7362E4D2AFC00D3D614 /* RadarAPIHelper.swift */,
 				F3050F0130059A000035CBDB /* Radar+BeaconRanging.swift */,
+				F3051A0130059A000035CBDB /* Radar+ValidateAddress.swift */,
 				F3050B0130059A000035CBDB /* RadarContinuousBeaconManager.swift */,
 				F3051007300A5A000035CBDB /* RadarContinuousBeaconManager+Delegate.swift */,
 				F3051004300A5A000035CBDB /* RadarContinuousBeaconManager+Internal.h */,
@@ -1451,6 +1454,7 @@
 				BA8647AB2F6C4CD800F1A199 /* RadarFileStorage.swift in Sources */,
 				0107AAB02622016B008AB52F /* RadarPlace.m in Sources */,
 				F3050F0230059A000035CBDB /* Radar+BeaconRanging.swift in Sources */,
+				F3051A0230059A000035CBDB /* Radar+ValidateAddress.swift in Sources */,
 				F3050B0230059A000035CBDB /* RadarContinuousBeaconManager.swift in Sources */,
 				F3051008300A5A000035CBDB /* RadarContinuousBeaconManager+Delegate.swift in Sources */,
 				F3051002300A5A000035CBDB /* RadarNearbyBeaconSearch.swift in Sources */,
