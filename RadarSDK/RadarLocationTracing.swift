@@ -27,7 +27,8 @@ extension RadarTraceSpan {
         }
     }
 
-    /// The location's age and accuracy. A small age means a cached or fresh fix.
+    /// The location's age and accuracy. Age measures staleness, not source: a large age means an old cached fix, and a
+    /// small age can be a new fix or one Core Location cached moments ago.
     @objc(recordLocationQuality:)
     func recordLocationQuality(_ location: CLLocation) {
         recording { span in

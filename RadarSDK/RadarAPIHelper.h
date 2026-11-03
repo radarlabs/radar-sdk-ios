@@ -16,7 +16,9 @@ typedef void (^_Nullable RadarAPICompletionHandler)(RadarStatus status, NSDictio
 typedef NSURLRequest *_Nullable (^RadarAPIRequestPreparation)(NSURLRequest *request, NSError *_Nullable *_Nullable error);
 
 // The client span of a traced request, which RadarAPIHelper starts, propagates, and ends. RadarTraceSpan implements it.
-// It's a protocol so this header doesn't depend on that internal Swift class.
+// It's a protocol rather than RadarTraceSpan because the test bridging header imports this header: Swift tests would
+// otherwise see both an Objective-C declaration and the internal Swift class under the same name. It also lets tests
+// drive the helper with a fake trace.
 @protocol RadarAPIRequestTrace <NSObject>
 
 // The W3C traceparent header to send, or nil when the trace's session isn't sampled.
