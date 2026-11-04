@@ -77,7 +77,10 @@ public final class RadarAutocompleteSession: NSObject {
         }
     }
 
-    /// Reports which result the user chose, and returns it enriched where available.
+    /// Reports which result the user chose. Selections are how autocomplete quality is
+    /// measured and improved.
+    ///
+    /// Returns the enriched address where available.
     ///
     /// - Parameters:
     ///   - address: The selected result, as returned by this session's `autocomplete`. An address
