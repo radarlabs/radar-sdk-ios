@@ -175,11 +175,12 @@ struct SearchPanel: View {
                     session.select(address: selected) { (selectStatus, enriched) in
                         // only an address result has anything to enrich; everything else is
                         // recorded and comes back without one
-                        let detail = enriched.map {
-                            "formattedAddress = \(String(describing: $0.formattedAddress)); "
-                                + "usage = \($0.locationDetails.usage); "
-                                + "dwelling = \($0.locationDetails.dwelling)"
-                        } ?? "recorded, no enrichment for this result"
+                        let detail =
+                            enriched.map {
+                                "formattedAddress = \(String(describing: $0.formattedAddress)); "
+                                    + "usage = \($0.locationDetails.usage); "
+                                    + "dwelling = \($0.locationDetails.dwelling)"
+                            } ?? "recorded, no enrichment for this result"
                         logStream.write(
                             selectStatus,
                             summary: "select: \(Radar.stringForStatus(selectStatus))",
