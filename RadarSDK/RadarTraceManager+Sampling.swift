@@ -52,7 +52,7 @@ extension RadarTraceManager {
         guard isFirst else { return }
         disk.async { self.store.resolvePending(sessionId: sessionId, sampled: sampled) }
         if sampled {
-            flush()
+            flush(force: true)
         }
     }
 

@@ -194,9 +194,10 @@ final class RadarTraceManagerTests {
         session.hold()
         try await harness.recordSpans(1)
 
-        manager.flush()
+        // Forced, so only the flush in progress can make the second call do nothing.
+        manager.flush(force: true)
         try await session.waitForHeldRequests(1)
-        manager.flush()
+        manager.flush(force: true)
         await manager.awaitDiskForTesting()
 
         #expect(session.requests.count == 1)
@@ -205,6 +206,72 @@ final class RadarTraceManagerTests {
         #expect(harness.traceFiles().isEmpty)
         #expect(session.requests.count == 1)
     }
+
+    // MARK: - Flush interval
+
+    @Test("A flush waits 5 minutes after the last flush started")
+    func flushWaitsForInterval() async throws {
+        // start's flush, with nothing to upload, started the interval.
+        try await harness.recordSpans(1)
+
+        harness.clock.advance(milliseconds: Self.flushIntervalMillis - 1)
+        manager.flush()
+        try await manager.waitForFlushForTesting()
+        #expect(session.requests.isEmpty)
+
+        harness.clock.advance(milliseconds: 1)
+        manager.flush()
+        try await manager.waitForFlushForTesting()
+        #expect(session.requests.count == 1)
+        #expect(harness.traceFiles().isEmpty)
+    }
+
+    @Test("A failed upload isn't retried within 5 minutes")
+    func failedUploadWaitsForInterval() async throws {
+        session.queue(.error(URLError(.notConnectedToInternet)))
+        try await harness.recordSpans(1)
+        try await manager.flushAndWaitForTesting()
+        #expect(session.requests.count == 1)
+
+        harness.clock.advance(milliseconds: Self.flushIntervalMillis - 1)
+        manager.flush()
+        try await manager.waitForFlushForTesting()
+        #expect(session.requests.count == 1)
+        #expect(harness.traceFiles().count == 1)
+
+        harness.clock.advance(milliseconds: 1)
+        manager.flush()
+        try await manager.waitForFlushForTesting()
+        #expect(session.requests.count == 2)
+        #expect(harness.traceFiles().isEmpty)
+    }
+
+    @Test("A forced flush ignores the interval")
+    func forcedFlushIgnoresInterval() async throws {
+        try await harness.recordSpans(1)
+
+        manager.flush(force: true)
+        try await manager.waitForFlushForTesting()
+
+        #expect(session.requests.count == 1)
+        #expect(harness.traceFiles().isEmpty)
+    }
+
+    @Test("A sampled decision forces a flush")
+    func sampledDecisionForcesFlush() async throws {
+        harness.useServerSampling(sessionId: "session-1")
+        try await harness.recordSpans(1)
+        #expect(harness.pendingFiles().count == 1)
+
+        manager.onSamplingDecision(sessionId: "session-1", sampled: true)
+        await manager.awaitDiskForTesting()
+        try await manager.waitForFlushForTesting()
+
+        #expect(session.requests.count == 1)
+        #expect(harness.traceFiles().isEmpty)
+    }
+
+    private static let flushIntervalMillis = UInt64(RadarTraceManager.flushInterval * 1000)
 
     @Test("Spans are only uploaded under the key they were recorded with")
     func spansAreIsolatedByProjectKey() async throws {

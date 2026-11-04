@@ -19,8 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 // stored spans. Later calls do nothing.
 - (void)start;
 
-// Uploads persisted spans, if any. Does nothing before -start.
-- (void)flush;
+// Uploads persisted spans, if any. Does nothing before -start, or, unless force is YES, within 5 minutes of the last
+// flush starting.
+- (void)flushWithForce:(BOOL)force;
 
 // Applies the server's sampling decision for sessionId, which must be the session sent with the request, not the
 // current one. Only a session's first decision counts.

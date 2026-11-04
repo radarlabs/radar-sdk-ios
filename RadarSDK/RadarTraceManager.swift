@@ -16,8 +16,8 @@ import Foundation
 /// rather than an actor.
 ///
 /// Uploads go through the Swift `RadarAPIHelper`, which has its own `URLSession`, so they never wait behind or delay
-/// track requests on the Objective-C helper. Like log uploads, flushes are triggered after successful API calls, so
-/// failed batches stay on disk and are retried on the next trigger instead of on a timer.
+/// track requests on the Objective-C helper. There are no timers: flushes follow successful requests, and unless
+/// forced, `flush` waits `flushInterval` after the last one started. Failed batches stay on disk for the next flush.
 ///
 /// The server decides sampling per session (see `RadarTraceManager+Sampling.swift`). Spans can end before that decision arrives, so
 /// they're written as pending, tagged with their session, and not uploaded until `onSamplingDecision` makes them
@@ -27,6 +27,9 @@ import Foundation
 final class RadarTraceManager: NSObject, @unchecked Sendable {
     static let maxBatchSpans = 100
     static let maxBatchBytes = 128 * 1024
+
+    // Minimum time between unforced flushes, counted from when the last flush started, whatever its result.
+    static let flushInterval: TimeInterval = 5 * 60
 
     // Spans waiting for the disk queue. Past this, storing a new span would only evict an older one.
     static let maxPendingWrites = RadarTraceStore.maxFiles
@@ -53,6 +56,8 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     // Guarded by lock.
     private var isStarted = false
     private var isFlushing = false
+    // clock.monotonicNanos() when the last flush started, or nil if none has started in this process.
+    private var lastFlushStartedAt: UInt64?
     private var pendingWrites = 0
     private var droppedWrites = 0
 
@@ -80,7 +85,7 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     // MARK: - Recording and flushing
 
     /// Starts tracing for the process: deletes pending spans from every session except the current one, then uploads
-    /// stored spans. Called from `initialize`; later calls do nothing.
+    /// stored spans, ignoring the flush interval. Called from `initialize`; later calls do nothing.
     @objc
     func start() {
         let first = lock.withLock {
@@ -90,7 +95,7 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
         guard first else { return }
         let currentSessionId = currentSessionId()
         disk.async { self.store.deletePending(exceptSessionId: currentSessionId) }
-        flush()
+        flush(force: true)
     }
 
     var started: Bool {
@@ -146,13 +151,19 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     }
 
     /// Uploads batches on the disk queue until the queue is empty or an upload does not succeed. The storage limits
-    /// keep a full backlog to about 5 batches. Called after successful track and replay requests. Does nothing before
-    /// `start`, or while a flush is in progress.
-    @objc
-    func flush() {
+    /// keep a full backlog to about 10 batches. Does nothing before `start`, or while a flush is in progress.
+    ///
+    /// Unless `force` is true, also does nothing within `flushInterval` of the last flush starting, so frequent
+    /// tracking doesn't upload after every track and a failed upload isn't retried until the interval passes. `start`
+    /// and a session's first sampled decision force a flush. Successful track and replay requests call it unforced.
+    @objc(flushWithForce:)
+    func flush(force: Bool = false) {
+        let now = clock.monotonicNanos()
         let shouldFlush = lock.withLock {
             guard isStarted, !isFlushing else { return false }
+            if !force, let last = lastFlushStartedAt, now < last + UInt64(Self.flushInterval * 1_000_000_000) { return false }
             isFlushing = true
+            lastFlushStartedAt = now
             return true
         }
         guard shouldFlush else { return }
@@ -328,10 +339,10 @@ extension RadarTraceManager {
         }
     }
 
-    /// Waits for any flush in progress, then runs a full flush and waits for it to finish.
+    /// Waits for any flush in progress, then runs a full flush, ignoring the flush interval, and waits for it to finish.
     func flushAndWaitForTesting() async throws {
         try await waitForFlushForTesting()
-        flush()
+        flush(force: true)
         try await waitForFlushForTesting()
     }
 
