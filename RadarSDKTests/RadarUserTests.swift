@@ -92,31 +92,23 @@ private func fullUserObject() -> [String: Any] {
     return object
 }
 
-// Geofence, beacon, place, and segment parsing goes through `RadarSwift.bridge`, so these tests
-// swap the global bridge.
+// Geofences, beacons, places, and segments are built by `RadarSwift.modelFactory`, not
+// `RadarSwift.bridge`. These tests clear the global bridge, as before `Radar.initialize`, to check
+// that parsing doesn't depend on it.
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarUserTests {
 
-        private func withBridge<T>(_ bridge: RadarSwiftBridgeProtocol?, _ body: () throws -> T) rethrows -> T {
+        private func withoutBridge<T>(_ body: () throws -> T) rethrows -> T {
             let original = RadarSwift.bridge
-            RadarSwift.bridge = bridge
+            RadarSwift.bridge = nil
             defer { RadarSwift.bridge = original }
             return try body()
         }
 
-        private func modelBridge() -> MockRadarSwiftBridge {
-            let bridge = MockRadarSwiftBridge()
-            bridge.createGeofenceHandler = { RadarGeofence(object: $0) }
-            bridge.createPlaceHandler = { RadarPlace(object: $0) }
-            bridge.createBeaconHandler = { RadarBeacon(object: $0) }
-            bridge.createSegmentHandler = { RadarSegment(object: $0) }
-            return bridge
-        }
-
         @Test("Parses every field")
         func parsesEveryField() throws {
-            let user = try withBridge(modelBridge()) { try #require(RadarUser(object: fullUserObject())) }
+            let user = try withoutBridge { try #require(RadarUser(object: fullUserObject())) }
 
             #expect(user._id == "user-id")
             #expect(user.userId == "customer-user-id")
@@ -154,7 +146,7 @@ extension RadarSerializedTests {
 
         @Test("Defaults optional fields when only _id and location are present")
         func defaultsOptionalFields() throws {
-            let user = try withBridge(modelBridge()) { try #require(RadarUser(object: baseUserObject())) }
+            let user = try withoutBridge { try #require(RadarUser(object: baseUserObject())) }
 
             #expect(user.userId == nil)
             #expect(user.deviceId == nil)
@@ -213,7 +205,7 @@ extension RadarSerializedTests {
             object["barometricAltitude"] = 3.25
             object["nearbyPlaceChains"] = "chains"
 
-            let user = try withBridge(modelBridge()) { try #require(RadarUser(object: object)) }
+            let user = try withoutBridge { try #require(RadarUser(object: object)) }
 
             #expect(user.userId == nil)
             #expect(user.metadata == nil)
@@ -246,7 +238,7 @@ extension RadarSerializedTests {
             object["geofences"] = [geofenceObject(id: "geofence-1"), "not-a-geofence"]
             object["beacons"] = [beaconObject(id: "beacon-1"), "not-a-beacon"]
 
-            let user = try withBridge(modelBridge()) { try #require(RadarUser(object: object)) }
+            let user = try withoutBridge { try #require(RadarUser(object: object)) }
 
             #expect(user.geofences == nil)
             #expect(user.beacons == nil)
@@ -258,7 +250,7 @@ extension RadarSerializedTests {
             object["geofences"] = [] as [Any]
             object["beacons"] = [] as [Any]
 
-            let user = try withBridge(modelBridge()) { try #require(RadarUser(object: object)) }
+            let user = try withoutBridge { try #require(RadarUser(object: object)) }
 
             #expect(user.geofences?.isEmpty == true)
             #expect(user.beacons?.isEmpty == true)
@@ -266,7 +258,7 @@ extension RadarSerializedTests {
 
         @Test("Serializes every field")
         func serializesEveryField() throws {
-            let user = try withBridge(modelBridge()) { try #require(RadarUser(object: fullUserObject())) }
+            let user = try withoutBridge { try #require(RadarUser(object: fullUserObject())) }
             let dict = user.dictionaryValue()
 
             #expect(dict["_id"] as? String == "user-id")
@@ -324,7 +316,7 @@ extension RadarSerializedTests {
 
         @Test("Round-trips through dictionaryValue")
         func roundTrips() throws {
-            try withBridge(modelBridge()) {
+            try withoutBridge {
                 let user = try #require(RadarUser(object: fullUserObject()))
                 let reparsed = try #require(RadarUser(object: user.dictionaryValue()))
 
@@ -341,16 +333,9 @@ extension RadarSerializedTests {
             }
         }
 
-        @Test("Leaves bridge-parsed models empty without a bridge")
-        func parsesWithoutBridge() throws {
-            let user = try withBridge(nil) { try #require(RadarUser(object: fullUserObject())) }
-
-            #expect(user.geofences == nil)
-            #expect(user.beacons == nil)
-            #expect(user.place == nil)
-            #expect(user.segments?.isEmpty == true)
-            #expect(user.country?.code == "US")
-            #expect(user.trip != nil)
+        @Test("Installs the model factory when the framework loads")
+        func installsModelFactory() {
+            #expect(RadarSwift.modelFactory != nil)
         }
     }
 }

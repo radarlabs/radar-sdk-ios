@@ -198,7 +198,8 @@ public final class RadarUser: NSObject {
     // Parsing matches the Objective-C implementation: wrongly typed fields are ignored, but a
     // `location` without two or three numeric coordinates, or a missing `_id` or `location`,
     // returns nil. Geofences, beacons, places, and segments are Objective-C models with internal
-    // parsers, so they're built through `RadarSwift.bridge`, which `Radar.initialize` installs.
+    // parsers, so they're built through `RadarSwift.modelFactory`, which is installed when the
+    // framework loads.
     public init?(object: Any) {
         guard let dict = object as? NSDictionary else {
             return nil
@@ -214,7 +215,7 @@ public final class RadarUser: NSObject {
             return nil
         }
 
-        let bridge = RadarSwift.bridge
+        let factory = RadarSwift.modelFactory
 
         _id = id
         userId = dict["userId"] as? String
@@ -224,11 +225,11 @@ public final class RadarUser: NSObject {
         self.location = location
         activityType = Self.activityType(for: dict["activityType"] as? String)
         geofences = (dict["geofences"] as? NSArray).flatMap { array in
-            Self.all(array) { bridge?.createGeofence(dict: $0) }
+            Self.all(array) { factory?.createGeofence(dict: $0) }
         }
-        place = (dict["place"] as? [String: Any]).flatMap { bridge?.createPlace(dict: $0) }
+        place = (dict["place"] as? [String: Any]).flatMap { factory?.createPlace(dict: $0) }
         beacons = (dict["beacons"] as? NSArray).flatMap { array in
-            Self.all(array) { bridge?.createBeacon(dict: $0) }
+            Self.all(array) { factory?.createBeacon(dict: $0) }
         }
         stopped = Self.bool(dict["stopped"])
         foreground = Self.bool(dict["foreground"])
@@ -238,7 +239,7 @@ public final class RadarUser: NSObject {
         postalCode = RadarRegion(object: dict["postalCode"])
         nearbyPlaceChains = (dict["nearbyPlaceChains"] as? NSArray)?.compactMap { RadarChain(object: $0) }
         segments = (dict["segments"] as? NSArray)?.compactMap { element in
-            (element as? [String: Any]).flatMap { bridge?.createSegment(dict: $0) }
+            (element as? [String: Any]).flatMap { factory?.createSegment(dict: $0) }
         }
         topChains = (dict["topChains"] as? NSArray)?.compactMap { RadarChain(object: $0) }
         source = Self.locationSource(for: dict["source"] as? String)

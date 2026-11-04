@@ -38,6 +38,12 @@
 
 @implementation RadarSwiftBridge
 
++ (void)load {
+    // Runs before `main`, so the factory is in place before any Swift model parses and is never
+    // written again. The bridge itself is still installed by `Radar.initialize`.
+    RadarSwift.modelFactory = [[RadarSwiftBridge alloc] init];
+}
+
 - (void)flushReplays {
     [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
 }

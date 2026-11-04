@@ -85,10 +85,6 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func createGeofence(dict: [String: Any]) -> RadarGeofence? { createGeofenceHandler?(dict) }
     var createPlaceHandler: (([String: Any]) -> RadarPlace?)?
     func createPlace(dict: [String: Any]) -> RadarPlace? { createPlaceHandler?(dict) }
-    var createBeaconHandler: (([String: Any]) -> RadarBeacon?)?
-    func createBeacon(dict: [String: Any]) -> RadarBeacon? { createBeaconHandler?(dict) }
-    var createSegmentHandler: (([String: Any]) -> RadarSegment?)?
-    func createSegment(dict: [String: Any]) -> RadarSegment? { createSegmentHandler?(dict) }
     var mockIsForeground = false
     func isForeground() -> Bool { mockIsForeground }
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {}
