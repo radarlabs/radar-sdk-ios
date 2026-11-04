@@ -311,7 +311,6 @@ public final class RadarUser: NSObject {
         return result
     }
 
-    // Coordinates and accuracy go through `Float`, matching the Objective-C `-floatValue` reads.
     private static func location(from locationDict: NSDictionary, accuracy: Any?) -> CLLocation? {
         guard let coordinates = locationDict["coordinates"] as? NSArray,
             coordinates.count == 2 || coordinates.count == 3,
@@ -321,20 +320,20 @@ public final class RadarUser: NSObject {
             return nil
         }
 
-        var altitude: Float = -1
+        var altitude: CLLocationDistance = -1
         if coordinates.count == 3, let altitudeNumber = coordinates[2] as? NSNumber {
-            altitude = altitudeNumber.floatValue
+            altitude = altitudeNumber.doubleValue
         }
 
-        let horizontalAccuracy = (accuracy as? NSNumber)?.floatValue ?? -1
+        let horizontalAccuracy = (accuracy as? NSNumber)?.doubleValue ?? -1
 
         return CLLocation(
             coordinate: CLLocationCoordinate2D(
-                latitude: CLLocationDegrees(latitude.floatValue),
-                longitude: CLLocationDegrees(longitude.floatValue)
+                latitude: latitude.doubleValue,
+                longitude: longitude.doubleValue
             ),
-            altitude: CLLocationDistance(altitude),
-            horizontalAccuracy: CLLocationAccuracy(horizontalAccuracy),
+            altitude: altitude,
+            horizontalAccuracy: horizontalAccuracy,
             verticalAccuracy: -1,
             timestamp: Date()
         )

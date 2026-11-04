@@ -115,9 +115,8 @@ extension RadarSerializedTests {
             #expect(user.deviceId == "device-id")
             #expect(user.__description == "Test user")
             #expect(user.metadata?["tier"] as? String == "gold")
-            // Coordinates go through Float, like the Objective-C `-floatValue` reads.
-            #expect(user.location.coordinate.latitude == Double(Float(40.7356)))
-            #expect(user.location.coordinate.longitude == Double(Float(-73.9906)))
+            #expect(user.location.coordinate.latitude == 40.7356)
+            #expect(user.location.coordinate.longitude == -73.9906)
             #expect(user.location.altitude == 12.5)
             #expect(user.location.horizontalAccuracy == 8)
             #expect(user.location.verticalAccuracy == -1)
