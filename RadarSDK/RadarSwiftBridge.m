@@ -13,7 +13,7 @@
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
-#import "RadarUser+Internal.h"
+#import "RadarSegment+Internal.h"
 #import "RadarReplayBuffer.h"
 #import "Radar+Internal.h"
 #import "RadarState.h"
@@ -23,6 +23,12 @@
 #import "RadarAPIClient.h"
 #import "RadarIndoors.h"
 #import "RadarLocationManager.h"
+
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
 
 @interface RadarLocationManager (SwiftBeaconLocation)
 - (void)handleLocation:(CLLocation *)location
@@ -141,6 +147,14 @@
 
 - (RadarPlace * _Nullable)createPlaceWithDict:(NSDictionary *)dict {
     return [[RadarPlace alloc] initWithObject:dict];
+}
+
+- (RadarBeacon * _Nullable)createBeaconWithDict:(NSDictionary *)dict {
+    return [[RadarBeacon alloc] initWithObject:dict];
+}
+
+- (RadarSegment * _Nullable)createSegmentWithDict:(NSDictionary *)dict {
+    return [[RadarSegment alloc] initWithObject:dict];
 }
 
 - (BOOL)isForeground {

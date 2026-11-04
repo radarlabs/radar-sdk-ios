@@ -39,6 +39,8 @@ protocol RadarSwiftBridgeProtocol {
     func createUser(dict: [String: Any]) -> RadarUser?
     func createGeofence(dict: [String: Any]) -> RadarGeofence?
     func createPlace(dict: [String: Any]) -> RadarPlace?
+    func createBeacon(dict: [String: Any]) -> RadarBeacon?
+    func createSegment(dict: [String: Any]) -> RadarSegment?
     func isForeground() -> Bool
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser)
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource)
