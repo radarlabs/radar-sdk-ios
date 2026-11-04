@@ -9,6 +9,11 @@
 #import <Foundation/Foundation.h>
 
 #import "RadarSwiftBridge.h"
+#import "RadarBeacon+Internal.h"
+#import "RadarEvent+Internal.h"
+#import "RadarGeofence+Internal.h"
+#import "RadarPlace+Internal.h"
+#import "RadarUser+Internal.h"
 #import "RadarReplayBuffer.h"
 #import "Radar+Internal.h"
 #import "RadarState.h"
@@ -16,7 +21,14 @@
 #import "RadarUtils.h"
 #import "RadarDelegateHolder.h"
 #import "RadarAPIClient.h"
+#import "RadarIndoors.h"
 #import "RadarLocationManager.h"
+
+@interface RadarLocationManager (SwiftBeaconLocation)
+- (void)handleLocation:(CLLocation *)location
+                source:(RadarLocationSource)source
+               beacons:(NSArray<RadarBeacon *> *)beacons;
+@end
 
 @implementation RadarSwiftBridge
 
@@ -24,20 +36,32 @@
     [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
 }
 
+- (void)stopIndoorTracking {
+    [[RadarIndoors shared] stopWithCompletionHandler:^{}];
+}
+
+- (void)updateTracking {
+    [[RadarLocationManager sharedInstance] updateTracking];
+}
+
+- (void)updateTrackingFromInitialize {
+    [[RadarLocationManager sharedInstance] updateTrackingFromInitialize];
+}
+
 - (void)logOpenedAppConversion {
     [Radar logOpenedAppConversion];
 }
 
 - (NSArray<NSString *> * _Nullable)geofenceIds {
-    return [RadarState geofenceIds];
+    return RadarState.shared.geofenceIds;
 }
 
 - (NSArray<NSString *> * _Nullable)beaconIds {
-    return [RadarState beaconIds];
+    return RadarState.shared.beaconIds;
 }
 
 - (NSString * _Nullable)placeId {
-    return [RadarState placeId];
+    return RadarState.shared.placeId;
 }
 
 - (RadarTripOptions * _Nullable)getTripOptions {
@@ -45,11 +69,55 @@
 }
 
 - (CLLocation * _Nullable)lastLocation {
-    return [RadarState lastLocation];
+    return RadarState.shared.lastLocation;
 }
 
 - (BOOL)isStopped {
-    return [RadarState stopped];
+    return RadarState.shared.stopped;
+}
+
+- (void)setStopped:(BOOL)stopped {
+    RadarState.shared.stopped = stopped;
+}
+
+- (void)setLastLocation:(CLLocation * _Nullable)location {
+    RadarState.shared.lastLocation = location;
+}
+
+- (CLLocation * _Nullable)lastMovedLocation {
+    return RadarState.shared.lastMovedLocation;
+}
+
+- (void)setLastMovedLocation:(CLLocation * _Nullable)location {
+    RadarState.shared.lastMovedLocation = location;
+}
+
+- (NSDate * _Nullable)lastMovedAt {
+    return RadarState.shared.lastMovedAt;
+}
+
+- (void)setLastMovedAt:(NSDate *)date {
+    RadarState.shared.lastMovedAt = date;
+}
+
+- (CLLocation * _Nullable)lastFailedStoppedLocation {
+    return RadarState.shared.lastFailedStoppedLocation;
+}
+
+- (void)setLastFailedStoppedLocation:(CLLocation * _Nullable)location {
+    RadarState.shared.lastFailedStoppedLocation = location;
+}
+
+- (NSDate * _Nullable)lastSentAt {
+    return RadarState.shared.lastSentAt;
+}
+
+- (void)updateLastSentAt {
+    [RadarState.shared updateLastSentAt];
+}
+
+- (BOOL)canExit {
+    return RadarState.shared.canExit;
 }
 
 - (void)logCampaignConversionWithName:(NSString *)name metadata:(NSDictionary<NSString *, id> * _Nonnull)metadata campaign:(NSString * _Nullable)campaign {
@@ -71,6 +139,10 @@
     return [[RadarGeofence alloc] initWithObject:dict];
 }
 
+- (RadarPlace * _Nullable)createPlaceWithDict:(NSDictionary *)dict {
+    return [[RadarPlace alloc] initWithObject:dict];
+}
+
 - (BOOL)isForeground {
     return [RadarUtilsDeprecated foreground];
 }
@@ -87,8 +159,12 @@
     [[RadarLocationManager sharedInstance] handleLocation:location source:source];
 }
 
+- (void)handleLocation:(CLLocation *)location source:(RadarLocationSource)source beacons:(NSArray<RadarBeacon *> *)beacons {
+    [[RadarLocationManager sharedInstance] handleLocation:location source:source beacons:beacons];
+}
+
 - (RadarUser * _Nullable)radarUser {
-    return [RadarState radarUser];
+    return RadarState.shared.radarUser;
 }
 
 - (void)flushReplaysRequest:(NSArray<NSDictionary *> *)replays

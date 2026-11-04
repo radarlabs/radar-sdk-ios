@@ -1,10 +1,10 @@
 name: Nightly ObjC to Swift migration
 
-# Converts ONE safe Objective-C file to Swift per run and opens a PR for human
-# review. Approval happens at PR review (see AGENTS.md "Language Policy") — the
-# agent only picks conservative leaf files, and skips the run entirely while a
-# previous migration PR is still open. This job runs the same macOS validation
-# as PR CI before publication; PR CI remains the independent verifier.
+# Converts ONE eligible Objective-C implementation to Swift per run and opens a PR
+# for human review. The migration skill chooses the simplest candidate using explicit
+# candidacy rules, then replaces it while preserving its Objective-C contract. Approval
+# happens at PR review (see AGENTS.md "Language Policy"). This job runs the same macOS
+# validation as PR CI before publication; PR CI remains the independent verifier.
 
 on:
   schedule:
@@ -73,6 +73,9 @@ jobs:
       - name: Install the skill for this run
         if: steps.guard.outputs.open == '0'
         run: |
+          # The skill is runtime input from clankers, not a migration change.
+          # Keep other checked-in Claude skills visible to Git.
+          printf '%s\n' '.claude/skills/objc-to-swift/' >> .git/info/exclude
           mkdir -p .claude/skills
           cp -R clankers-skill/skills/objc-to-swift .claude/skills/objc-to-swift
           rm -rf clankers-skill
@@ -108,6 +111,7 @@ jobs:
           echo "MIGRATION_DESTINATION=platform=iOS Simulator,id=$SIMULATOR_ID" >> "$GITHUB_ENV"
 
       - name: Run the migration agent
+        id: migrate
         if: steps.guard.outputs.open == '0'
         uses: anthropics/claude-code-action@v1
         env:
@@ -118,7 +122,52 @@ jobs:
           prompt: |
             /objc-to-swift batch
 
-            This is the unattended nightly migration run. Follow the skill's
-            "Batch mode (unattended CI runs)" section exactly. The workflow
-            provides GH_TOKEN and MIGRATION_DESTINATION for that procedure.
+            Inspect the full RadarSDK Objective-C backlog and choose exactly one eligible
+            implementation. Prefer the smallest implementation, then the least coupled,
+            then the filename. Exclude managers, partial migrations, files containing an
+            `// objc-only:` marker, and models already represented elsewhere. State the
+            selected file and rationale before editing.
+            Replace it with a same-basename Swift implementation, preserve Objective-C
+            compatibility, delete the old .m and project references, and do not select
+            another file or leave the old implementation beside Swift. For a public
+            class, follow "Public classes implemented in Swift" in AGENTS.md: declare it once
+            as `@objc(ClassName) @objcMembers public final class ClassName` (option types
+            customers create keep public initializers and are not final), keep exactly the
+            old header's public API as Swift imported it, move the header's docs onto the Swift members
+            as `///`, reduce the header to a forwarder that nothing else imports (keep enums
+            other headers use, without the umbrella import), and use `@class` in other public
+            headers. Declare internal Objective-C initializers in `ClassName+Internal.h`;
+            public headers must not import `+Internal.h` headers. Run `make ci-build-example CI_DESTINATION="$MIGRATION_DESTINATION"`
+            and `make lint`, then resolve any Release linkage or CocoaPods header failures
+            before opening the PR. If `ci-build-example` reports a class or member missing from
+            `ObjCCompatibility/RadarSDKObjCAPISurface.m`, run `make update-objc-api-surface` and
+            run `ci-build-example` again. Never edit an existing call in that file to make it
+            compile: a failing call means the port changed the Objective-C API, so fix the Swift. The workflow provides GH_TOKEN and
+            MIGRATION_DESTINATION.
           claude_args: '--allowedTools "Bash,Read,Write,Edit,Glob,Grep" --max-turns 80'
+
+      # The agent stops without publishing when it finds no eligible file, hits a
+      # compatibility blocker, or fails validation, and the action still reports success.
+      # Surface its final report (not the full transcript, since this repo's logs are
+      # public) and fail the job when no PR was opened, so a stalled night is visible.
+      - name: Report the agent's result
+        if: always() && steps.guard.outputs.open == '0'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          EXECUTION_FILE: ${{ steps.migrate.outputs.execution_file }}
+        run: |
+          {
+            echo "## Migration agent report"
+            echo
+            if [ -n "$EXECUTION_FILE" ] && [ -f "$EXECUTION_FILE" ]; then
+              jq -r '[.[] | select(.type == "result")] | last | .result // "(no final report)"' "$EXECUTION_FILE"
+            else
+              echo "(no execution file; the agent step did not complete)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          OPEN=$(gh pr list --repo "$GITHUB_REPOSITORY" --label swift-migration --state open --json number --jq 'length')
+          if [ "$OPEN" = "0" ]; then
+            echo "::error::The agent finished without opening a swift-migration PR. See the job summary for its reason."
+            exit 1
+          fi

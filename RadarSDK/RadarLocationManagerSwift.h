@@ -18,6 +18,8 @@
 #import "RadarMeta.h"
 #import "RadarTrackingOptions.h"
 
+@protocol RadarLocationManagerSwiftHost;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarLocationManagerSwift : NSObject
@@ -25,7 +27,36 @@ NS_ASSUME_NONNULL_BEGIN
 + (CLLocationAccuracy)clLocationAccuracyForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
 + (BOOL)shouldBypassDeviceLocationStateForSource:(RadarLocationSource)source;
 
++ (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions;
+
++ (void)updateTrackingWithHost:(id<RadarLocationManagerSwiftHost>)host
+                      location:(nullable CLLocation *)location
+                fromInitialize:(BOOL)fromInitialize;
+
++ (void)handleLocationWithHost:(id<RadarLocationManagerSwiftHost>)host
+                      location:(CLLocation *)location
+                        source:(RadarLocationSource)source
+                       beacons:(nullable NSArray<RadarBeacon *> *)beacons;
+
 + (void)restartPreviousTrackingOptions;
++ (void)stopTrackingOnLocationManager:(CLLocationManager *)locationManager
+                      activityManager:(nullable id)activityManager;
++ (void)startUpdatesWithHost:(id<RadarLocationManagerSwiftHost>)host
+              locationManager:(CLLocationManager *)locationManager
+       lowPowerLocationManager:(CLLocationManager *)lowPowerLocationManager
+                      interval:(int)interval
+                       blueBar:(BOOL)blueBar;
++ (void)stopUpdatesWithHost:(id<RadarLocationManagerSwiftHost>)host
+             locationManager:(CLLocationManager *)locationManager;
++ (void)getLocationWithHost:(id<RadarLocationManagerSwiftHost>)host
+          authorizationStatus:(CLAuthorizationStatus)authorizationStatus
+              locationManager:(CLLocationManager *)locationManager
+             completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler;
++ (void)getLocationWithDesiredAccuracyOnHost:(id<RadarLocationManagerSwiftHost>)host
+                           authorizationStatus:(CLAuthorizationStatus)authorizationStatus
+                               locationManager:(CLLocationManager *)locationManager
+                              desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy
+                             completionHandler:(RadarLocationCompletionHandler _Nullable)completionHandler;
 
 + (NSArray<NSString *> *)matchBeaconIdsWithRanged:(NSArray<RadarBeacon *> *)rangedBeacons
                                            synced:(NSArray<RadarBeacon *> *)syncedBeacons;
@@ -48,11 +79,20 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable CLLocation *)effectiveLocationForLocationManager:(CLLocationManager *)locationManager;
 
 + (void)applyRemoteTrackingOptions:(nullable RadarMeta *)meta;
++ (void)updateTrackingFromMeta:(nullable RadarMeta *)meta;
 
 + (BOOL)shouldHandleRegionWithIdentifier:(NSString *)identifier action:(NSString *)action;
 
 + (void)didUpdateLocations:(nullable NSArray<CLLocation *> *)updates completionHandlerCount:(NSUInteger)completionHandlerCount;
 + (void)didVisitOnLocationManager:(CLLocationManager *)locationManager visit:(CLVisit *)visit;
++ (void)didEnterRegionOnLocationManager:(CLLocationManager *)locationManager
+                                 region:(CLRegion *)region;
++ (void)didExitRegionOnLocationManager:(CLLocationManager *)locationManager
+                                region:(CLRegion *)region;
+
++ (void)didDetermineState:(CLRegionState)state
+                   region:(CLRegion *)region
+        completionHandler:(RadarBeaconCompletionHandler)completionHandler;
 
 + (void)didUpdateHeading:(CLHeading *)newHeading;
 + (void)didChangeAuthorizationStatus:(CLAuthorizationStatus)status;

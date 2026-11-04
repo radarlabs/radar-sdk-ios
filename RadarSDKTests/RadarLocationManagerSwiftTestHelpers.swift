@@ -17,6 +17,33 @@ import Foundation
 
 enum RadarLocationManagerSwiftTestHelpers {
 
+    /// Swift tracking crosses both injection seams; keeping their lifetime scoped together
+    /// prevents a test's bridge or authorization state from leaking into the next test.
+    static func withMockedSwiftTrackingDependencies(
+        authorizationStatus: CLAuthorizationStatus = .authorizedAlways,
+        _ body: (MockRadarSwiftBridge) throws -> Void
+    ) rethrows {
+        clearState()
+        defer { clearState() }
+
+        let bridge = MockRadarSwiftBridge()
+        let originalBridge = RadarSwift.bridge
+        RadarSwift.bridge = bridge
+        defer { RadarSwift.bridge = originalBridge }
+
+        let permissionsHelper = MockRadarPermissionsHelper()
+        permissionsHelper.mockAuthorizationStatus = authorizationStatus
+        let originalPermissionsHelper = RadarLocationManagerSwift.permissionsHelper
+        RadarLocationManagerSwift.permissionsHelper = permissionsHelper
+        defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
+
+        let originalBootstrapIndoorTracking = RadarLocationManagerSwift.bootstrapIndoorTracking
+        RadarLocationManagerSwift.bootstrapIndoorTracking = {}
+        defer { RadarLocationManagerSwift.bootstrapIndoorTracking = originalBootstrapIndoorTracking }
+
+        try body(bridge)
+    }
+
     /// Reset every `RadarSettings` key the seam tests write so each test starts
     /// from a known state, and restore the shared `RadarLocationManager`'s
     /// permissions helper to a real one. Call at the beginning of each test
@@ -27,6 +54,8 @@ enum RadarLocationManagerSwiftTestHelpers {
         RadarSettings.tracking = false
         RadarSettings.trackingOptions = nil
         RadarSettings.remoteTrackingOptions = nil
+        RadarLocationManagerSwift.bubbleGeofenceRegion = nil
+        RadarLocationManager.sharedInstance().setValue(nil, forKey: "bubbleGeofenceRegion")
         RadarLocationManager.sharedInstance().permissionsHelper = RadarPermissionsHelper()
     }
 

@@ -41,13 +41,13 @@ final class MockNotificationCenter: NotificationCenterProtocol, @unchecked Senda
         return NotificationPermissions(authorized: authorized, canSend: canSend)
     }
 
-    func add(_ request: UNNotificationRequest) async throws {
+    func radarAdd(_ request: UNNotificationRequest) async throws {
         try await Task.sleep(nanoseconds: 10_000_000)
         addCallCount += 1
         pendingRequests.append(request)
     }
 
-    func pendingNotificationRequests() async -> [UNNotificationRequest] {
+    func radarPendingNotificationRequests() async -> [UNNotificationRequest] {
         try? await Task.sleep(nanoseconds: 10_000_000)
         return (authorized && canSend) ? pendingRequests : []
     }
@@ -156,7 +156,7 @@ struct RadarNotificationHelperTest {
             makeGeofenceDict(id: "2"),
         ])
 
-        let pending = await mockCenter.pendingNotificationRequests()
+        let pending = await mockCenter.radarPendingNotificationRequests()
         #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_1", "radar_geofence_2"]))
 
         let registered = mockState.registeredNotifications
@@ -172,7 +172,7 @@ struct RadarNotificationHelperTest {
         let mockCenter = MockNotificationCenter()
 
         let request = UNNotificationRequest(identifier: "app_custom", content: UNMutableNotificationContent(), trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false))
-        try await mockCenter.add(request)
+        try await mockCenter.radarAdd(request)
 
         let mockState = MockRadarState()
         let helper = RadarNotificationHelper(notificationCenter: mockCenter, radarState: mockState)
@@ -181,7 +181,7 @@ struct RadarNotificationHelperTest {
             makeGeofenceDict(id: "2"),
         ])
 
-        let pending = await mockCenter.pendingNotificationRequests()
+        let pending = await mockCenter.radarPendingNotificationRequests()
         #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_1", "radar_geofence_2", "app_custom"]))
 
         let registered = mockState.registeredNotifications
@@ -226,7 +226,7 @@ struct RadarNotificationHelperTest {
             makeGeofenceDict(id: "3"),
         ])
 
-        let pending = await mockCenter.pendingNotificationRequests()
+        let pending = await mockCenter.radarPendingNotificationRequests()
         #expect(pending.isEmpty)
 
         let delivered = await helper.getDeliveredNotifications()
@@ -247,7 +247,7 @@ struct RadarNotificationHelperTest {
             makeGeofenceDict(id: "3")
         ])
 
-        let pending = await mockCenter.pendingNotificationRequests()
+        let pending = await mockCenter.radarPendingNotificationRequests()
         #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_3"]))
 
         let registered = mockState.registeredNotifications
@@ -290,7 +290,7 @@ struct RadarNotificationHelperTest {
         }
 
         // Final state must be consistent
-        let pending = await mockCenter.pendingNotificationRequests()
+        let pending = await mockCenter.radarPendingNotificationRequests()
         #expect(Set(pending.map(\.identifier)) == Set(mockState.registeredNotifications?.map(\.identifier) ?? []), "State must be consistent after rapid registrations")
 
         // No false deliveries

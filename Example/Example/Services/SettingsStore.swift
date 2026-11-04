@@ -14,7 +14,8 @@ import RadarSDK
 ///
 /// SDK-owned settings (userId, description, metadata, tracking state) are read from
 /// and written to the Radar SDK directly — the SDK persists them. App-only settings
-/// (publishable-key override, default tab) are persisted to UserDefaults.
+/// (environment, per-environment publishable keys, Local URL, default tab) are persisted to
+/// UserDefaults.
 ///
 /// Mutation flow:
 ///
@@ -40,12 +41,14 @@ import RadarSDK
 final class SettingsStore: ObservableObject {
     // MARK: - Defaults
 
-    /// Hardcoded publishable key used when no override is set.
-    static let defaultPublishableKey = "prj_test_pk_0000000000000000000000000000000000000000"
-
     private enum Keys {
-        static let publishableKeyOverride = "settings.publishableKeyOverride"
+        static let environment = "settings.environment"
+        static let localURL = "settings.localURL"
         static let defaultTabRaw = "settings.defaultTabRaw"
+
+        static func publishableKey(_ environment: RadarEnvironment) -> String {
+            "settings.publishableKey.\(environment.rawValue)"
+        }
     }
 
     // MARK: - SDK-backed (read/write)
@@ -92,11 +95,15 @@ final class SettingsStore: ObservableObject {
 
     // MARK: - App-only (UserDefaults)
 
-    @Published var publishableKeyOverride: String {
-        didSet {
-            UserDefaults.standard.set(publishableKeyOverride, forKey: Keys.publishableKeyOverride)
-        }
-    }
+    /// The environment this launch uses. Fixed for the life of the process: change it with
+    /// `saveEnvironment(_:publishableKey:localURL:)` and relaunch.
+    let environment: RadarEnvironment
+
+    /// The Local server URL this launch uses.
+    let localURL: String
+
+    /// Which environments `resolvedPublishableKey` is valid on.
+    @Published private(set) var keyCheck: KeyCheck = .notChecked
 
     @Published var defaultTabRaw: String {
         didSet {
@@ -116,7 +123,8 @@ final class SettingsStore: ObservableObject {
     init() {
         // UserDefaults — safe to read before Radar is initialized.
         let defaults = UserDefaults.standard
-        self.publishableKeyOverride = defaults.string(forKey: Keys.publishableKeyOverride) ?? ""
+        self.environment = defaults.string(forKey: Keys.environment).flatMap(RadarEnvironment.init(rawValue:)) ?? .production
+        self.localURL = defaults.string(forKey: Keys.localURL) ?? ""
         self.defaultTabRaw = defaults.string(forKey: Keys.defaultTabRaw) ?? ""
 
         // SDK-backed properties get neutral defaults; loadFromSDK() will populate them.
@@ -127,10 +135,66 @@ final class SettingsStore: ObservableObject {
 
     // MARK: - Public API
 
-    /// The publishable key to pass to `Radar.initialize`. Returns the override if set,
-    /// otherwise the hardcoded default.
+    /// The publishable key to pass to `Radar.initialize`: the key for `environment`, or "" if
+    /// none is set.
     var resolvedPublishableKey: String {
-        publishableKeyOverride.isEmpty ? Self.defaultPublishableKey : publishableKeyOverride
+        publishableKey(for: environment)
+    }
+
+    /// The saved key for `environment`, falling back to its default in `AppDelegate`
+    /// (placeholders count as unset).
+    func publishableKey(for environment: RadarEnvironment) -> String {
+        if let saved = UserDefaults.standard.string(forKey: Keys.publishableKey(environment)) {
+            return saved
+        }
+        let key: String
+        switch environment {
+        case .production: key = AppDelegate.DEFAULT_PUBLISHABLE_KEY
+        case .staging, .local: key = AppDelegate.DEFAULT_STAGING_PUBLISHABLE_KEY
+        }
+        // hooks/clean-filter replaces real keys with "prj_live_pk_..." in git.
+        return key.hasSuffix("...") ? "" : key
+    }
+
+    /// Persists the environment settings. Takes effect on the next launch.
+    func saveEnvironment(_ environment: RadarEnvironment, publishableKey: String, localURL: String) {
+        let defaults = UserDefaults.standard
+        defaults.set(environment.rawValue, forKey: Keys.environment)
+        defaults.set(publishableKey.trimmingCharacters(in: .whitespaces), forKey: Keys.publishableKey(environment))
+        defaults.set(localURL.trimmingCharacters(in: .whitespaces), forKey: Keys.localURL)
+    }
+
+    /// Checks which environments `resolvedPublishableKey` is valid on, and logs an error if it
+    /// isn't valid on the selected one.
+    func runKeyCheck(logStream: LogStream) {
+        let key = resolvedPublishableKey
+        guard !key.isEmpty else {
+            logStream.write(error: "No publishable key set for \(environment.label)", detail: "Set one in Settings → Environment.")
+            return
+        }
+        keyCheck = .checking
+        KeyChecker.check(publishableKey: key) { [weak self] result in
+            guard let self = self else { return }
+            self.keyCheck = result
+            if result.mismatches(self.environment) {
+                logStream.write(
+                    error: "Key \(Self.keyPrefix(key)) is not valid on \(self.environment.label)",
+                    detail: "Key check: \(result.summary). Switch environment or change the key in Settings → Environment.")
+            } else {
+                logStream.write(result: "key check: \(result.summary)", detail: self.environmentSummary)
+            }
+        }
+    }
+
+    /// Where requests go, e.g. `env = Staging; host = https://…; key = prj_test_pk_ab12…; key check = …`.
+    var environmentSummary: String {
+        "env = \(environment.label); host = \(environment.host(localURL: localURL)); key = \(Self.keyPrefix(resolvedPublishableKey)); key check = \(keyCheck.summary)"
+    }
+
+    /// A key shortened for display, e.g. `prj_live_pk_76b8…`.
+    static func keyPrefix(_ key: String) -> String {
+        if key.isEmpty { return "(none)" }
+        return key.count <= 16 ? key : key.prefix(16) + "…"
     }
 
     /// Reads SDK-backed settings into the store. Call once after `Radar.initialize`.
@@ -301,55 +365,48 @@ extension SettingsStore {
     /// settings). Returns a single placeholder row if no config has been fetched
     /// yet. Re-evaluated on each access; refresh via `settingsStore.refresh()`.
     var currentSdkConfigFields: [TrackingField] {
-        guard let c = RadarSdkConfiguration.current() else {
+        // `RadarSdkConfiguration` isn't public, so read the dictionary the SDK
+        // persists under `radar-sdkConfiguration` directly.
+        guard let config = Utils.radarUserDefaults?.dictionary(forKey: "radar-sdkConfiguration") else {
             return [.text("status", "No SDK config fetched yet")]
         }
-        return Self.fields(from: c)
+        return Self.fields(from: config)
     }
 
-    private static func fields(from c: RadarSdkConfiguration) -> [TrackingField] {
+    /// Missing keys fall back to the same defaults `RadarSdkConfiguration` uses
+    /// when parsing the dictionary.
+    private static func fields(from config: [String: Any]) -> [TrackingField] {
+        func bool(_ key: String, default value: Bool = false) -> TrackingField {
+            .bool(key, config[key] as? Bool ?? value)
+        }
         var fields: [TrackingField] = [
             // Logging
-            .text("logLevel", logLevelString(c.logLevel())),
+            .text("logLevel", config["logLevel"] as? String ?? "none"),
             // Lifecycle
-            .bool("startTrackingOnInitialize", c.startTrackingOnInitialize()),
-            .bool("trackOnceOnAppOpen", c.trackOnceOnAppOpen()),
+            bool("startTrackingOnInitialize"),
+            bool("trackOnceOnAppOpen"),
             // Sync mode
-            .bool("useSyncRegion", c.useSyncRegion()),
-            .bool("syncAfterSetUser", c.syncAfterSetUser()),
+            bool("useSyncRegion"),
+            bool("syncAfterSetUser"),
             // Geofence behavior
-            .bool("bufferGeofenceEntries", c.bufferGeofenceEntries()),
-            .bool("bufferGeofenceExits", c.bufferGeofenceExits()),
-            .text("defaultGeofenceDwellThreshold", "\(c.defaultGeofenceDwellThreshold())"),
-            .bool("stopDetection", c.stopDetection()),
+            bool("bufferGeofenceEntries", default: true),
+            bool("bufferGeofenceExits", default: true),
+            .text("defaultGeofenceDwellThreshold", "\(config["defaultGeofenceDwellThreshold"] as? Int ?? 0)"),
+            bool("stopDetection"),
             // Persistence / logging
-            .bool("usePersistence", c.usePersistence()),
-            .bool("useLogPersistence", c.useLogPersistence()),
-            .bool("extendFlushReplays", c.extendFlushReplays()),
+            bool("usePersistence"),
+            bool("useLogPersistence"),
+            bool("extendFlushReplays"),
             // Misc / less-common
-            .bool("useRadarModifiedBeacon", c.useRadarModifiedBeacon()),
-            .bool("useOpenedAppConversion", c.useOpenedAppConversion()),
-            .bool("useForegroundLocationUpdatedAtMsDiff", c.useForegroundLocationUpdatedAtMsDiff()),
-            .bool("useOfflineRTOUpdates", c.useOfflineRTOUpdates()),
-            .bool("offlineEventGenerationEnabled", c.offlineEventGenerationEnabled()),
-            .bool("skipForegroundCheck", c.skipForegroundCheck()),
+            bool("useRadarModifiedBeacon"),
+            bool("useOpenedAppConversion"),
+            bool("useForegroundLocationUpdatedAtMsDiff"),
+            bool("useOfflineRTOUpdates"),
+            bool("offlineEventGenerationEnabled"),
+            bool("skipForegroundCheck", default: true),
         ]
-        let rtoCount = c.remoteTrackingOptions()?.count ?? 0
+        let rtoCount = (config["remoteTrackingOptions"] as? [Any])?.count ?? 0
         fields.append(.text("remoteTrackingOptions", "\(rtoCount) preset(s)"))
         return fields
-    }
-
-    /// `RadarLogLevel.toString()` is internal in the SDK module, so duplicate
-    /// the mapping here. If the SDK ever exposes it publicly (or adds
-    /// `+stringForLogLevel:` like the other tracking-options enums), drop this.
-    private static func logLevelString(_ level: RadarLogLevel) -> String {
-        switch level {
-        case .none: return "none"
-        case .error: return "error"
-        case .warning: return "warning"
-        case .info: return "info"
-        case .debug: return "debug"
-        @unknown default: return "unknown"
-        }
     }
 }

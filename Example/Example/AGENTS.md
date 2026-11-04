@@ -16,11 +16,12 @@ Example/Example/
 │   └── ActiveTripBarView.swift  # Active-trip header + advance/reorder + complete/cancel
 │
 ├── Tests/                       # Tests tab
-│   ├── TestsView.swift          # Tab body — gear + recent activity + 6 panels
+│   ├── TestsView.swift          # Tab body — gear + recent activity + 7 panels
 │   └── RecentActivitySection.swift # Last-5 LogStream preview
 │
 ├── TestsSettings/               # Settings sheet behind the Tests-tab gear
 │   ├── TestsSettingsView.swift  # Composer
+│   ├── EnvironmentSectionView.swift # Environment picker + per-env key; EnvironmentBadge (error-only strip)
 │   ├── PresetSectionView.swift  # Preset grid + tracking/SDK-config disclosures
 │   ├── IdentitySectionView.swift # userId / description / metadata
 │   ├── TrackingSectionView.swift # On/off, source, configured options
@@ -45,12 +46,14 @@ Example/Example/
 │   ├── TripsPanel.swift
 │   ├── VerifiedPanel.swift
 │   ├── SearchPanel.swift
+│   ├── RoutingPanel.swift
 │   ├── NotificationsPanel.swift
 │   └── MessagingPanel.swift
 │
 ├── Services/                    # Stateful, observable bridges + cross-cutting value types
 │   ├── LogStream.swift          # RadarDelegate + console source-of-truth
-│   ├── SettingsStore.swift      # SDK-backed identity + tracking + field breakdowns
+│   ├── SettingsStore.swift      # SDK-backed identity + tracking + field breakdowns; environment + keys
+│   ├── RadarEnvironment.swift   # Production / Staging / Local hosts + key check
 │   ├── PermissionsStore.swift   # CLAuthorizationStatus + UNAuthorizationStatus
 │   ├── TripBuilderStore.swift   # Map-driven trip selection + active-trip mirror
 │   ├── TestPreset.swift         # Bundled tracking presets

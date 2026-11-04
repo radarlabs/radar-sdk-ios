@@ -22,6 +22,15 @@ struct MainView: View {
     @State private var selectedTab: TabIdentifier = .Tests
 
     var body: some View {
+        // The badge sits above the TabView rather than in a safe-area inset: tab content doesn't
+        // inherit an inset applied to the TabView, so it would scroll underneath.
+        VStack(spacing: 0) {
+            EnvironmentBadge()
+            tabs
+        }
+    }
+
+    private var tabs: some View {
         TabView(selection: $selectedTab) {
             MapView().tabItem {
                 Text("Map")

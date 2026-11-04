@@ -21,14 +21,11 @@ See migration guides in `MIGRATION.md`.
 
 Run `make bootstrap` to set up your environment for development and allow you to use the other `make` commands. It will call `sudo` to install some gems.
 
-## Targeting a local server
+## Switching environments (production, staging, local server)
 
-To point the SDK at a dev server during development, set `TARGET_HOST` at the top of `AppDelegate` in `Example/Example/AppDelegate.swift` to its address:
+In the Example app, open the Tests tab, tap the settings gear, and pick Production, Staging, or Local under **Environment**. Each environment keeps its own publishable key. **Apply & quit** saves the choice; reopen the app to use it. On launch the app checks the key against production and staging, and a red strip across the top says so if no key is set or the key isn't valid on the selected environment. **Local** points both the API and verified hosts at your dev server: `http://localhost:8081` in the Simulator, or your Mac's LAN IP (e.g. `http://192.168.1.10:8081`) on a device.
 
-- **Simulator:** `http://localhost:8081` — the simulator reaches your Mac over loopback.
-- **Device:** `http://192.168.1.10:8081` — your server's LAN IP.
-
-The Example app writes it to the SDK's API and verified hosts on launch; leave it blank to use the SDK defaults. The Example `Info.plist` sets `NSAllowsArbitraryLoads` so plaintext HTTP to any dev-server IP works without a per-developer ATS exception; certificate pinning for the Radar verified hosts is preserved via `NSPinnedDomains`.
+The Example `Info.plist` sets `NSAllowsArbitraryLoads` so plaintext HTTP to any dev-server IP works without a per-developer ATS exception; certificate pinning for the Radar verified hosts is preserved via `NSPinnedDomains`.
 
 > **Note:** `NSAllowsArbitraryLoads` disables App Transport Security app-wide and exists here only to make local development convenient in this sample app. Do not copy it into a production app — it lets your app make insecure cleartext connections. Real apps should keep ATS enabled and add a narrowly-scoped `NSExceptionDomains` entry only if a specific host truly requires it.
 
@@ -36,7 +33,7 @@ The Example app writes it to the SDK's API and verified hosts on launch; leave i
 
 See a Swift example app in `Example/`.
 
-To run the example app, clone this repository, add your publishable API key in `AppDelegate.swift`, and build the app.
+To run the example app, clone this repository, build the app, and set your publishable API key in the Tests tab under Settings → Environment. You can also set default keys in `AppDelegate.swift` (`DEFAULT_PUBLISHABLE_KEY` for production, `DEFAULT_STAGING_PUBLISHABLE_KEY` for staging).
 
 Setup Radar key check pre-commit hook to prevent accidental key leak when working with the Example app.
 ```

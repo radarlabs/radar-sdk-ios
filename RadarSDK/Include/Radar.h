@@ -10,17 +10,10 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
-#import "RadarAddress.h"
-#import "RadarContext.h"
 #import "RadarEvent.h"
-#import "RadarRegion.h"
-#import "RadarRouteMatrix.h"
 #import "RadarRouteMode.h"
-#import "RadarRoutes.h"
 #import "RadarTrackingOptions.h"
-#import "RadarVerifiedLocationToken.h"
 #import "RadarUser.h"
-#import "RadarInitializeOptions.h"
 #import "RadarTripLeg.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -31,9 +24,16 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarInAppMessageProtocol;
 @protocol RadarIndoorsProtocol;
 
+@class RadarAddress;
 @class RadarTripOptions;
 @class RadarInAppMessage;
 @class RadarRevealRiskToken;
+@class RadarInitializeOptions;
+@class RadarTripLeg;
+@class RadarRouteMatrix;
+@class RadarRoutes;
+@class RadarVerifiedLocationToken;
+@class RadarContext;
 
 #pragma mark - Enums
 
@@ -725,6 +725,13 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  @param stateCode The user's expected two-letter state code.
  */
 + (void)setExpectedJurisdictionWithCountryCode:(NSString *_Nullable)countryCode stateCode:(NSString *_Nullable)stateCode NS_SWIFT_NAME(setExpectedJurisdiction(countryCode:stateCode:));
+
+/**
+ Optionally sets the user's expected address and the radius.
+
+ @param address The user's expected address.
+ */
++ (void)setExpectedAddress:(NSString *_Nullable)address NS_SWIFT_NAME(setExpectedAddress(_:));
 
 /**
  Starts tracking the user's location in the background with configurable tracking options.

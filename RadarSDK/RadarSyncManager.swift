@@ -10,6 +10,7 @@ import CoreLocation
 import Foundation
 
 @objc(RadarSyncManager)
+@objcMembers
 public final class RadarSyncManager: NSObject {
 
     static let syncStore = RadarFileStorageObject<RadarSyncState>(fileName: "radar_sync_state.json")
@@ -31,7 +32,7 @@ public final class RadarSyncManager: NSObject {
 
     // MARK: - Lifecycle
 
-    @objc public static func start(interval: TimeInterval) {
+    public static func start(interval: TimeInterval) {
         stop()
 
         fetchSyncRegion()
@@ -43,7 +44,7 @@ public final class RadarSyncManager: NSObject {
         }
     }
 
-    @objc public static func stop() {
+    public static func stop() {
         syncTimer?.invalidate()
         syncTimer = nil
         RadarLogger.shared.debug("SyncManager: Stopped sync region polling")
@@ -51,7 +52,7 @@ public final class RadarSyncManager: NSObject {
 
     // MARK: - API
 
-    @objc public static func fetchSyncRegion() {
+    public static func fetchSyncRegion() {
         guard let location = RadarSwift.bridge?.lastLocation() else {
             RadarLogger.shared.debug("SyncManager: No last location, skipping sync region fetch")
             return
@@ -98,7 +99,7 @@ public final class RadarSyncManager: NSObject {
 
     // MARK: - Track Decision
 
-    @objc public static func shouldTrack(location: CLLocation, options: RadarTrackingOptions) -> Bool {
+    public static func shouldTrack(location: CLLocation, options: RadarTrackingOptions) -> Bool {
         guard options.syncLocations == .events else {
             RadarLogger.shared.debug("SyncManager: shouldTrack = YES | reason: syncLocations != events")
             return true
@@ -138,7 +139,7 @@ public final class RadarSyncManager: NSObject {
         return false
     }
 
-    @objc public static func isNearSyncedRegionBoundary(location: CLLocation) -> Bool {
+    public static func isNearSyncedRegionBoundary(location: CLLocation) -> Bool {
         guard let state = syncStore.read(),
             let center = state.syncedRegionCenter,
             let radius = state.syncedRegionRadius, radius > 0
@@ -153,7 +154,7 @@ public final class RadarSyncManager: NSObject {
         return distanceFromEdge >= 0 && distanceFromEdge <= (radius * boundaryThresholdFraction)
     }
 
-    @objc public static func isOutsideSyncedRegion(location: CLLocation) -> Bool {
+    public static func isOutsideSyncedRegion(location: CLLocation) -> Bool {
         guard let state = syncStore.read(),
             let center = state.syncedRegionCenter,
             let radius = state.syncedRegionRadius, radius > 0
@@ -167,14 +168,14 @@ public final class RadarSyncManager: NSObject {
 
     // MARK: - Geometry Helpers
 
-    @objc public static func isPoint(_ point: CLLocation, insideCircleWithCenter center: CLLocationCoordinate2D, radius: Double) -> Bool {
+    public static func isPoint(_ point: CLLocation, insideCircleWithCenter center: CLLocationCoordinate2D, radius: Double) -> Bool {
         let centerLocation = CLLocation(latitude: center.latitude, longitude: center.longitude)
         let distance = centerLocation.distance(from: point)
 
         return distance <= radius
     }
 
-    private static func isPoint(_ point: CLLocationCoordinate2D, insidePolygon polygon: [RadarCoordinateSwift]) -> Bool {
+    private static func isPoint(_ point: CLLocationCoordinate2D, insidePolygon polygon: [RadarCoordinate]) -> Bool {
         guard polygon.count >= 3 else { return false }
 
         var inside = false
@@ -207,7 +208,7 @@ public final class RadarSyncManager: NSObject {
         return inside
     }
 
-    private static func distanceToPolygonEdge(from point: CLLocationCoordinate2D, polygon: [RadarCoordinateSwift]) -> Double {
+    private static func distanceToPolygonEdge(from point: CLLocationCoordinate2D, polygon: [RadarCoordinate]) -> Double {
         guard polygon.count >= 3 else { return Double.greatestFiniteMagnitude }
 
         let pointLocation = CLLocation(latitude: point.latitude, longitude: point.longitude)
@@ -367,12 +368,12 @@ public final class RadarSyncManager: NSObject {
 
     // MARK: - State Detection
 
-    @objc public static func hasSyncedRegion() -> Bool {
+    public static func hasSyncedRegion() -> Bool {
         let state = syncStore.read()
         return state?.syncedRegionCenter != nil && (state?.syncedRegionRadius ?? 0) > 0
     }
 
-    @objc public static func hasGeofenceStateChanged(location: CLLocation) -> Bool {
+    public static func hasGeofenceStateChanged(location: CLLocation) -> Bool {
         let state = syncStore.read() ?? RadarSyncState()
         let lastKnownIds = Set(state.lastSyncedGeofenceIds)
 
@@ -404,7 +405,7 @@ public final class RadarSyncManager: NSObject {
         return false
     }
 
-    @objc public static func hasBeaconStateChanged(rangedBeaconIds: Set<String>) -> Bool {
+    public static func hasBeaconStateChanged(rangedBeaconIds: Set<String>) -> Bool {
         let state = syncStore.read() ?? RadarSyncState()
         let lastKnownBeaconIds = Set(state.lastSyncedBeaconIds)
 
@@ -422,7 +423,7 @@ public final class RadarSyncManager: NSObject {
         return rangedBeaconIds != lastKnownBeaconIds
     }
 
-    @objc public static func hasPlaceStateChanged(location: CLLocation) -> Bool {
+    public static func hasPlaceStateChanged(location: CLLocation) -> Bool {
         lastPlaceCheckLocation = location
 
         if let rejectedLocation = rejectedAtLocation, !rejectedPlaceIds.isEmpty {
@@ -617,7 +618,7 @@ public final class RadarSyncManager: NSObject {
         updateLastKnownSyncState(location: location)
     }
 
-    @objc public static func reconcileSyncState(user: RadarUser) {
+    public static func reconcileSyncState(user: RadarUser) {
         let serverGeofenceIds = user.geofences?.compactMap { $0._id } ?? []
         let serverPlaceIds: [String] = user.place?._id != nil ? [user.place!._id] : []
         let serverBeaconIds = user.beacons?.compactMap { $0._id } ?? []
@@ -687,7 +688,7 @@ public final class RadarSyncManager: NSObject {
         clearPreviousState()
     }
 
-    @objc public static func saveBeaconState(beaconIds: [String]) {
+    public static func saveBeaconState(beaconIds: [String]) {
         previousSyncedBeaconIds = syncStore.read()?.lastSyncedBeaconIds
 
         RadarLogger.shared.info("SyncManager: Saving beacon state | previous=\(previousSyncedBeaconIds?.count ?? 0) new=\(beaconIds.count)")
@@ -698,7 +699,7 @@ public final class RadarSyncManager: NSObject {
         }
     }
 
-    @objc public static func rollbackSyncState() {
+    public static func rollbackSyncState() {
         guard previousSyncedGeofenceIds != nil || previousSyncedPlaceIds != nil || previousSyncedBeaconIds != nil else { return }
 
         RadarLogger.shared.info("SyncManager: Track failed, rolling back to previous sync state")
@@ -718,7 +719,7 @@ public final class RadarSyncManager: NSObject {
         previousSyncedBeaconIds = nil
     }
 
-    @objc public static func markDwellFired(_ geofenceId: String) {
+    public static func markDwellFired(_ geofenceId: String) {
         syncStore.modify { state in
             guard state != nil else { return }
             if !(state?.dwellEventsFired.contains(geofenceId) ?? false) {
@@ -729,13 +730,12 @@ public final class RadarSyncManager: NSObject {
 
     // MARK: - Beacon Bridging
 
-    @objc public static func getObjCBeacons(for location: CLLocation) -> [RadarBeacon] {
+    public static func getObjCBeacons(for location: CLLocation) -> [RadarBeacon] {
         return getBeacons(for: location).compactMap { swiftBeacon in
             let geometry = RadarCoordinate(
-                coordinate: CLLocationCoordinate2D(
-                    latitude: swiftBeacon.geometry?.latitude ?? 0,
-                    longitude: swiftBeacon.geometry?.longitude ?? 0
-                ))!
+                latitude: swiftBeacon.geometry?.latitude ?? 0,
+                longitude: swiftBeacon.geometry?.longitude ?? 0
+            )
             return RadarBeacon(
                 id: swiftBeacon.id,
                 description: swiftBeacon.description,
@@ -754,7 +754,7 @@ public final class RadarSyncManager: NSObject {
     // Read-only snapshot accessors over the locally-cached synced data, exposed
     // for the example app's MapView.
 
-    public static func getSyncedRegion() -> CLCircularRegion? {
+    @nonobjc public static func getSyncedRegion() -> CLCircularRegion? {
         guard let state = syncStore.read(),
             let center = state.syncedRegionCenter,
             let radius = state.syncedRegionRadius, radius > 0

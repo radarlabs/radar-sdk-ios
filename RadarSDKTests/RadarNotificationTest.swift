@@ -20,7 +20,7 @@ private func makeGeofence(metadata: [String: RadarMetadataValue]?) -> RadarGeofe
         tag: "test",
         externalId: "ext_1",
         geometry: .circle(
-            center: RadarCoordinateSwift(latitude: 40.0, longitude: -74.0),
+            center: RadarCoordinate(latitude: 40.0, longitude: -74.0),
             radius: 100
         ),
         dwellThreshold: nil,

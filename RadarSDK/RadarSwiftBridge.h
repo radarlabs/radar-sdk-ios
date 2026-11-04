@@ -6,20 +6,24 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarEvent+Internal.h"
-#import "RadarGeofence+Internal.h"
+#import "RadarEvent.h"
+#import "RadarGeofence.h"
 #import "RadarTrackingOptions.h"
 #import "RadarState.h"
-#import "RadarBeacon+Internal.h"
-#import "RadarPlace+Internal.h"
-#import "RadarTripOptions.h"
+#import "RadarBeacon.h"
+#import "RadarPlace.h"
 #import <CoreLocation/CoreLocation.h>
 #import "Radar.h"
+
+@class RadarTripOptions;
 
 @protocol RadarSwiftBridgeProtocol
 - (void)flushReplays;
 - (void)flushReplaysRequest:(NSArray<NSDictionary *> * _Nonnull)replays
           completionHandler:(void (^_Nullable)(RadarStatus status, NSDictionary * _Nullable res))completionHandler;
+- (void)stopIndoorTracking;
+- (void)updateTracking;
+- (void)updateTrackingFromInitialize;
 - (void)logOpenedAppConversion;
 
 - (NSArray<NSString *> * _Nullable)geofenceIds;
@@ -27,15 +31,31 @@
 - (NSString * _Nullable)placeId;
 - (CLLocation * _Nullable)lastLocation;
 - (BOOL)isStopped;
+- (void)setStopped:(BOOL)stopped;
+- (void)setLastLocation:(CLLocation * _Nullable)location;
+- (CLLocation * _Nullable)lastMovedLocation;
+- (void)setLastMovedLocation:(CLLocation * _Nullable)location;
+- (NSDate * _Nullable)lastMovedAt;
+- (void)setLastMovedAt:(NSDate * _Nonnull)date;
+- (CLLocation * _Nullable)lastFailedStoppedLocation;
+- (void)setLastFailedStoppedLocation:(CLLocation * _Nullable)location;
+- (NSDate * _Nullable)lastSentAt;
+- (void)updateLastSentAt;
+- (BOOL)canExit;
 - (RadarEvent * _Nullable)createEventWithDict:(NSDictionary * _Nonnull)dict;
 - (RadarUser * _Nullable)createUserWithDict:(NSDictionary * _Nonnull)dict;
 - (RadarGeofence * _Nullable)createGeofenceWithDict:(NSDictionary * _Nonnull)dict;
+- (RadarPlace * _Nullable)createPlaceWithDict:(NSDictionary * _Nonnull)dict;
 - (BOOL)isForeground;
 - (RadarTripOptions * _Nullable)getTripOptions;
 - (RadarUser * _Nullable)radarUser;
 - (void)didReceiveEvents:(NSArray<RadarEvent *> * _Nonnull)events user:(RadarUser * _Nonnull)user;
 - (void)didUpdateClientLocation:(CLLocation * _Nonnull)location stopped:(BOOL)stopped source:(RadarLocationSource)source;
 - (void)handleLocation:(CLLocation * _Nonnull)location source:(RadarLocationSource)source;
+- (void)handleLocation:(CLLocation * _Nonnull)location
+                source:(RadarLocationSource)source
+               beacons:(NSArray<RadarBeacon *> * _Nullable)beacons;
+- (void)updateTracking;
 - (void)didFailWithStatus:(RadarStatus)status;
 - (RadarBeacon * _Nonnull)createBeaconWithUuid:(NSString * _Nonnull)uuid major:(NSString * _Nonnull)major minor:(NSString * _Nonnull)minor rssi:(NSInteger)rssi;
 - (RadarBeacon * _Nonnull)createBeaconFromRegion:(CLBeaconRegion * _Nonnull)region;

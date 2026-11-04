@@ -66,9 +66,152 @@ extension RadarLocationManagerSwift {
         RadarSwift.bridge?.handleLocation(location, source: source)
     }
 
+    @objc(didEnterRegionOnLocationManager:region:)
+    static func didEnterRegion(locationManager: CLLocationManager, region: CLRegion) {
+        handleRegion(
+            locationManager: locationManager,
+            region: region,
+            action: "entry",
+            isEntry: true
+        )
+    }
+
+    @objc(didExitRegionOnLocationManager:region:)
+    static func didExitRegion(locationManager: CLLocationManager, region: CLRegion) {
+        handleRegion(
+            locationManager: locationManager,
+            region: region,
+            action: "exit",
+            isEntry: false
+        )
+    }
+
+    private static func handleRegion(
+        locationManager: CLLocationManager,
+        region: CLRegion,
+        action: String,
+        isEntry: Bool
+    ) {
+        guard shouldHandleRegion(identifier: region.identifier, action: action) else {
+            return
+        }
+
+        let identifier = region.identifier
+        let location = effectiveLocation(for: locationManager)
+        let beaconSource: RadarLocationSource = isEntry ? .beaconEnter : .beaconExit
+        let geofenceSource: RadarLocationSource = isEntry ? .geofenceEnter : .geofenceExit
+
+        if identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) || identifier.hasPrefix(syncBeaconIdentifierPrefix) {
+            guard let location, let beaconRegion = region as? CLBeaconRegion else {
+                return
+            }
+
+            handleBeaconRegion(
+                location: location,
+                identifier: identifier,
+                region: beaconRegion,
+                source: beaconSource,
+                isEntry: isEntry
+            )
+        } else if let location = locationManager.location {
+            RadarSwift.bridge?.handleLocation(location, source: geofenceSource)
+        }
+    }
+
+    private static func handleBeaconRegion(
+        location: CLLocation,
+        identifier: String,
+        region: CLBeaconRegion,
+        source: RadarLocationSource,
+        isEntry: Bool
+    ) {
+        let beaconUUID = region.uuid
+        let beaconMajor = region.major?.uint16Value
+        let beaconMinor = region.minor?.uint16Value
+
+        Task { @MainActor in
+            let beaconManager = RadarOneShotBeaconManager.shared
+            let completionHandler: RadarBeaconCompletionHandler = { _, nearbyBeacons in
+                RadarSwift.bridge?.handleLocation(
+                    location,
+                    source: source,
+                    beacons: nearbyBeacons
+                )
+            }
+
+            let beaconRegion: CLBeaconRegion
+            if let beaconMajor, let beaconMinor {
+                beaconRegion = CLBeaconRegion(
+                    uuid: beaconUUID,
+                    major: beaconMajor,
+                    minor: beaconMinor,
+                    identifier: identifier
+                )
+            } else if let beaconMajor {
+                beaconRegion = CLBeaconRegion(
+                    uuid: beaconUUID,
+                    major: beaconMajor,
+                    identifier: identifier
+                )
+            } else {
+                beaconRegion = CLBeaconRegion(uuid: beaconUUID, identifier: identifier)
+            }
+
+            handleBeacon(
+                region: beaconRegion,
+                isEntry: isEntry,
+                completionHandler: completionHandler
+            )
+        }
+    }
+
+    @MainActor
+    private static func handleBeacon(
+        region: CLBeaconRegion,
+        isEntry: Bool,
+        completionHandler: @escaping RadarBeaconCompletionHandler
+    ) {
+        let beaconManager = RadarOneShotBeaconManager.shared
+        if region.identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix) {
+            if isEntry {
+                beaconManager.handleBeaconUUIDEntry(for: region, completionHandler: completionHandler)
+            } else {
+                beaconManager.handleBeaconUUIDExit(for: region, completionHandler: completionHandler)
+            }
+        } else if isEntry {
+            beaconManager.handleBeaconEntry(for: region, completionHandler: completionHandler)
+        } else {
+            beaconManager.handleBeaconExit(for: region, completionHandler: completionHandler)
+        }
+    }
+
+    @MainActor
+    @objc(didDetermineState:region:completionHandler:)
+    static func didDetermineState(
+        _ state: CLRegionState,
+        region: CLRegion,
+        completionHandler: @escaping RadarBeaconCompletionHandler
+    ) {
+        let identifier = region.identifier
+        guard identifier.hasPrefix(syncBeaconIdentifierPrefix) || identifier.hasPrefix(syncBeaconUUIDIdentifierPrefix),
+            let beaconRegion = region as? CLBeaconRegion
+        else {
+            return
+        }
+
+        let isInside = state == .inside
+        RadarLogger.shared.debug("🦅 \(isInside ? "Inside" : "Outside") beacon region | identifier = \(identifier)")
+
+        handleBeacon(
+            region: beaconRegion,
+            isEntry: isInside,
+            completionHandler: completionHandler
+        )
+    }
+
     @objc(didUpdateHeading:)
     static func didUpdateHeading(_ heading: CLHeading) {
-        RadarState().lastHeadingData = [
+        RadarState.shared.lastHeadingData = [
             "magneticHeading": heading.magneticHeading,
             "trueHeading": heading.trueHeading,
             "headingAccuracy": heading.headingAccuracy,
@@ -81,12 +224,19 @@ extension RadarLocationManagerSwift {
 
     @objc(didChangeAuthorizationStatus:)
     static func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
-        let state = RadarState()
+        let state = RadarState.shared
         let previousStatus = state.locationAuthorizationStatus
         state.locationAuthorizationStatus = status
 
         if status == previousStatus {
             return
+        }
+
+        // The permissions helper reads the cached status, so `updateTracking` may have run with the status
+        // from before the permission changed, for example while the app wasn't running. Apply tracking
+        // again with the new one.
+        if RadarSettings.tracking {
+            RadarSwift.bridge?.updateTracking()
         }
 
         guard let config = RadarSettings.sdkConfiguration else {

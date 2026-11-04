@@ -13,7 +13,7 @@ struct RadarPlaceSwift: Codable, Sendable {
     let id: String
     let name: String
     let categories: [String]
-    let location: RadarCoordinateSwift
+    let location: RadarCoordinate
     let group: String?
     let geometryRadius: Double?
 
@@ -35,10 +35,10 @@ struct RadarPlaceSwift: Codable, Sendable {
         geometryRadius = try container.decodeIfPresent(Double.self, forKey: .geometryRadius)
 
         let geoJSON = try container.decode(GeoJSONPoint.self, forKey: .location)
-        location = RadarCoordinateSwift(latitude: geoJSON.coordinates[1], longitude: geoJSON.coordinates[0])
+        location = RadarCoordinate(latitude: geoJSON.coordinates[1], longitude: geoJSON.coordinates[0])
     }
 
-    init(id: String, name: String, categories: [String], location: RadarCoordinateSwift, group: String?, geometryRadius: Double? = nil) {
+    init(id: String, name: String, categories: [String], location: RadarCoordinate, group: String?, geometryRadius: Double? = nil) {
         self.id = id
         self.name = name
         self.categories = categories

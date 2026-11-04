@@ -63,6 +63,9 @@ import Foundation
         case notificationPermissionGranted = "radar-notificationPermissionGranted"
         case registeredNotifications = "radar-registeredNotifications"
         case locationAuthorizationStatus = "radar-locationAuthorizationStatus"
+        case motionAuthorization = "radar-motionAuthorization"
+        case altitudeAdjustments = "radar-altitudeAdjustments"
+        case radarUser = "radar-radarUser"
     }
 
     // should be set once and then readonly
@@ -80,8 +83,8 @@ import Foundation
 
     /// The backing store the SDK persists to — the app-group suite when one is configured
     /// via `Radar.initializeWithAppGroup:`, otherwise `UserDefaults.standard`. Exposed to
-    /// ObjC so accessors not yet migrated to the `Key`-typed API (e.g. `RadarState`'s
-    /// heading data) read and write the same store this funnel uses.
+    /// ObjC so accessors not yet migrated to the `Key`-typed API read and write the same
+    /// store this funnel uses.
     @objc static var sharedUserDefaults: UserDefaults { userDefaults }
 
     private static let flushQueue = DispatchQueue(

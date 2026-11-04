@@ -1,5 +1,24 @@
 # Migration guides
 
+## 3.43.x to 3.44.0
+
+- Verified tracking and reveal-risk requests now encrypt the complete request body. Apps using these features must update `RadarSDKFraud` alongside `RadarSDK` to a compatible version that supports encrypted requests. Regular tracking does not require the Fraud SDK.
+- A missing or incompatible Fraud SDK returns `RadarStatusErrorPlugin` (`.errorPlugin` in Swift), with additional diagnostic logging.
+- If payload preparation or encryption fails, the request stops without sending a plaintext fallback.
+
+## 3.41.0 to 3.42.0
+
+These models are now declared in Swift: `RadarChain`, `RadarCoordinate`, `RadarCircleGeometry`, `RadarPolygonGeometry`, `RadarFraud`, `RadarInitializeOptions`, `RadarOperatingHours`, `RadarRevealRiskToken` (and its nested types), `RadarRoute`, `RadarRouteDistance`, `RadarRouteDuration`, `RadarRouteGeometry`, `RadarRouteModeUtils`, `RadarTimeZone`, `RadarTrip`, `RadarTripLeg`, `RadarTripOptions`, and `RadarTripOrder`. Their properties and methods keep the same names and types in Swift and Objective-C.
+
+- Import the whole SDK: `import RadarSDK` in Swift, and `@import RadarSDK;` or `#import <RadarSDK/RadarSDK.h>` in Objective-C. Objective-C files that import a single header, such as `#import <RadarSDK/RadarUser.h>`, and then use one of the models above (for example `user.trip.status`) must import the whole SDK instead.
+- Models the SDK returns (`RadarTrip`, `RadarTripOrder`, `RadarChain`, `RadarCoordinate`, `RadarFraud`, `RadarTimeZone`, `RadarOperatingHours`, the geofence geometries, the route types, and the Reveal Risk types) can no longer be created with a plain `init`/`new` or subclassed. Initializers that take arguments, such as `RadarCoordinate(coordinate:)`, are unchanged. Models you create, such as `RadarTripOptions`, `RadarTripLeg`, and `RadarInitializeOptions`, are unchanged.
+- `RadarSdkConfiguration` is no longer public. It holds server-provided SDK settings and was never meant for app use.
+- The Swift-only `RadarRoute` struct added in 3.41.0 is replaced by the `RadarRoute` class returned in `RadarRoutes`.
+
+## 3.40.x to 3.41.x
+
+- The minimum supported iOS version is now 15.0. Raise your app's deployment target to iOS 15 or later before upgrading. Apps that must support iOS 13 or 14 should remain on an earlier SDK release.
+
 ## 3.20.x to 3.21.x
 - The `Radar.searchPlaces()` method now expects an additional parameter `countryCodes` to filter results by country. See [documentation](https://radar.com/documentation/sdk/ios#search).
 

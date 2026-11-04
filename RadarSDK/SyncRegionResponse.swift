@@ -12,6 +12,6 @@ struct SyncRegionResponse {
     let geofences: [RadarGeofenceSwift]?
     let places: [RadarPlaceSwift]?
     let beacons: [RadarBeaconSwift]?
-    let regionCenter: RadarCoordinateSwift?
+    let regionCenter: RadarCoordinate?
     let regionRadius: Double?
 }

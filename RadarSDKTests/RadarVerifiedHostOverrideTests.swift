@@ -13,15 +13,30 @@ import XCTest
 final class RadarVerifiedHostOverrideTests: XCTestCase {
 
     private var apiHelperMock: RadarAPIHelperMock!
+    private var restoreState: (() -> Void)?
 
     override func setUp() {
         super.setUp()
-        Radar.initialize(publishableKey: "prj_test_pk_radar_sdk_ios")
+        let originalAPIHelper = RadarAPIClient.sharedInstance().apiHelper
+        let originalKey = RadarSettings.publishableKey
+        restoreState = {
+            RadarAPIClient.sharedInstance().apiHelper = originalAPIHelper
+            RadarSettings.publishableKey = originalKey
+        }
+        // Configure authentication without starting asynchronous SDK initialization.
+        RadarSettings.publishableKey = "prj_test_pk_radar_sdk_ios"
 
         apiHelperMock = RadarAPIHelperMock()
         apiHelperMock.mockStatus = .success
         apiHelperMock.mockResponse = ["meta": ["config": [:]]]
         RadarAPIClient.sharedInstance().apiHelper = apiHelperMock
+    }
+
+    override func tearDown() {
+        restoreState?()
+        apiHelperMock = nil
+        restoreState = nil
+        super.tearDown()
     }
 
     // MARK: - getConfigForUsage
@@ -82,9 +97,10 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
             beacons: nil,
             indoorLocation: nil,
             verified: true,
-            fraudPayload: nil,
+            preparedFraudPayload: nil,
             expectedCountryCode: nil,
             expectedStateCode: nil,
+            expectedAddress: nil,
             reason: nil,
             transactionId: nil,
             revealRiskId: nil,
@@ -111,9 +127,10 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
             beacons: nil,
             indoorLocation: nil,
             verified: true,
-            fraudPayload: nil,
+            preparedFraudPayload: nil,
             expectedCountryCode: nil,
             expectedStateCode: nil,
+            expectedAddress: nil,
             reason: nil,
             transactionId: nil,
             revealRiskId: nil,
@@ -139,9 +156,10 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
             beacons: nil,
             indoorLocation: nil,
             verified: false,
-            fraudPayload: nil,
+            preparedFraudPayload: nil,
             expectedCountryCode: nil,
             expectedStateCode: nil,
+            expectedAddress: nil,
             reason: nil,
             transactionId: nil,
             revealRiskId: nil,
@@ -158,20 +176,20 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
 
     // MARK: - RadarInitializeOptions roundtrip
 
-    func test_initializeOptions_trackVerifiedAutoFailover_defaultsFalse() {
+    func test_initializeOptions_trackVerifiedAutoFailover_defaultsTrue() {
         let options = RadarInitializeOptions()
-        XCTAssertFalse(options.trackVerifiedAutoFailover)
+        XCTAssertTrue(options.trackVerifiedAutoFailover)
     }
 
     func test_initializeOptions_trackVerifiedAutoFailover_roundtripsThroughDictionary() {
         let options = RadarInitializeOptions()
-        options.trackVerifiedAutoFailover = true
+        options.trackVerifiedAutoFailover = false
 
         let dict = options.dictionaryValue()
-        XCTAssertEqual(dict["trackVerifiedAutoFailover"] as? NSNumber, NSNumber(value: true))
+        XCTAssertEqual(dict["trackVerifiedAutoFailover"] as? NSNumber, NSNumber(value: false))
 
         let restored = RadarInitializeOptions(dict: dict)
-        XCTAssertTrue(restored.trackVerifiedAutoFailover)
+        XCTAssertFalse(restored.trackVerifiedAutoFailover)
     }
 
     func test_initializeOptions_networkTimeoutInterval_defaultsToTen() {
@@ -196,4 +214,5 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
     func test_defaultVerifiedHostSecondary_isExpected() {
         XCTAssertEqual(RadarSettings.defaultVerifiedHostSecondary, "https://api-verified.radar.com")
     }
+
 }

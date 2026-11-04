@@ -13,25 +13,33 @@
 
 #import "Radar+Internal.h"
 #import "RadarAPIClient.h"
-#import "RadarBeaconManagerSwift.h"
+#import "RadarSdkConfiguration.h"
+#import "RadarOneShotBeaconManager+Internal.h"
+#import "RadarNearbyBeaconSearch+Internal.h"
+#import "RadarContinuousBeaconManager+Internal.h"
 #import "RadarDelegateHolder.h"
 #import "RadarLocationManager.h"
 #import "RadarLogger.h"
 #import "RadarSettings.h"
 #import "RadarState.h"
 #import "RadarUtils.h"
-#import "RadarSDKFraudProtocol.h"
 #import "RadarRevealRiskManager.h"
+#import "RadarTrackVerifiedRequestPreparer.h"
 
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 
-@interface RadarVerificationManager ()
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
+
+@protocol RadarVerificationManagerSwiftHost
 
 @property (assign, nonatomic) NSTimeInterval startedInterval;
 @property (assign, nonatomic) BOOL startedBeacons;
 @property (strong, nonatomic) NSTimer *intervalTimer;
-@property (nonatomic, retain) nw_path_monitor_t monitor;
 @property (strong, nonatomic) RadarVerifiedLocationToken *lastToken;
 @property (assign, nonatomic) NSTimeInterval lastTokenSystemUptime;
 @property (assign, nonatomic) BOOL lastTokenBeacons;
@@ -39,10 +47,38 @@
 @property (assign, nonatomic) NSTimeInterval lastIPChangeDeliveredAt;
 @property (copy, nonatomic) NSString *expectedCountryCode;
 @property (copy, nonatomic) NSString *expectedStateCode;
+@property (weak, nonatomic) RadarVerificationManagerSwift *swiftInstance;
+
+@end
+
+
+@interface RadarVerificationManager () <RadarVerificationManagerSwiftHost>
+
+// Allows tests to inject a location manager per instance; nil uses the shared manager.
+@property (nullable, nonatomic, strong) RadarLocationManager *trackVerifiedLocationManager;
+
+// Allows tests to inject a fraud helper per instance; nil uses the installed fraud SDK.
+@property (nonatomic, copy, nullable) RadarTrackVerifiedRequestPreparer * _Nonnull (^trackVerifiedPayloadFactory)(NSDictionary<NSString *, id> *options);
+
+@property (nonatomic, retain) nw_path_monitor_t monitor;
 
 @end
 
 @implementation RadarVerificationManager
+
+// because the properties now comes from RadarVerificationManagerSwiftHost protocol, the properties needs to be manually synthesized
+@synthesize expectedStateCode;
+@synthesize intervalTimer;
+@synthesize lastIPChangeDeliveredAt;
+@synthesize lastIPs;
+@synthesize lastToken;
+@synthesize lastTokenBeacons;
+@synthesize lastTokenSystemUptime;
+@synthesize startedBeacons;
+@synthesize startedInterval;
+@synthesize swiftInstance;
+@synthesize expectedCountryCode;
+
 
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
@@ -50,11 +86,23 @@
     if ([NSThread isMainThread]) {
         dispatch_once(&once, ^{
             sharedInstance = [self new];
+
+            // this must run after sharedInstance has been initialized
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // touch swift shared instance to initialize it
+                [RadarVerificationManagerSwift sharedInstance];
+            });
         });
     } else {
         dispatch_sync(dispatch_get_main_queue(), ^{
             dispatch_once(&once, ^{
                 sharedInstance = [self new];
+
+                // this must run after sharedInstance has been initialized
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    // touch swift shared instance to initialize it
+                    [RadarVerificationManagerSwift sharedInstance];
+                });
             });
         });
     }
@@ -82,7 +130,9 @@
         });
     }
     
-    BOOL autoFailover = [RadarSettings initializeOptions].trackVerifiedAutoFailover;
+    // Initializing without options never persists any, so fall back to the default (on).
+    RadarInitializeOptions *initializeOptions = [RadarSettings initializeOptions];
+    BOOL autoFailover = initializeOptions ? initializeOptions.trackVerifiedAutoFailover : YES;
 
     void (^continueWithConfig)(RadarStatus, RadarConfig * _Nullable, BOOL) =
     ^(RadarStatus status, RadarConfig * _Nullable config, BOOL useSecondaryVerifiedHost) {
@@ -100,7 +150,10 @@
             return;
         }
 
-        [[RadarLocationManager sharedInstance]
+        RadarLocationManager *locationManager =
+            self.trackVerifiedLocationManager ?: [RadarLocationManager sharedInstance];
+
+        [locationManager
          getLocationWithDesiredAccuracy:desiredAccuracy
          completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
@@ -116,7 +169,10 @@
             }
             
             Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
-            if (!RadarSDKFraud) {
+            if (!RadarSDKFraud && !self.trackVerifiedPayloadFactory) {
+                [[RadarLogger sharedInstance]
+                    logWithLevel:RadarLogLevelError
+                         message:@"A compatible Radar Fraud SDK is required for verified requests."];
                 [RadarUtilsDeprecated runOnMainThread:^{
                     [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorPlugin];
                     
@@ -128,101 +184,108 @@
             }
 
             NSMutableDictionary *options = [NSMutableDictionary dictionary];
+
             if (location) {
                 options[@"location"] = location;
             }
+
             if (config.nonce) {
                 options[@"nonce"] = config.nonce;
             }
-            // TODO: migrate to swift and use RadarSDKFraud in swift.
-            if (![RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
-                completionHandler(RadarStatusErrorPlugin, nil);
-                return;
-            }
-            if (![[RadarSDKFraud sharedInstance] respondsToSelector:@selector(getFraudPayloadWithOptions:completionHandler:)]) {
-                completionHandler(RadarStatusErrorPlugin, nil);
-                return;
-            }
-            [[RadarSDKFraud sharedInstance] getFraudPayloadWithOptions:options completionHandler:^(NSDictionary<NSString *, id> *_Nullable result) {
-                if (!result) {
+
+            RadarTrackVerifiedRequestPreparer *requestPreparer =
+                self.trackVerifiedPayloadFactory
+                    ? self.trackVerifiedPayloadFactory(options)
+                    : [[RadarTrackVerifiedRequestPreparer alloc] initWithOptions:options];
+
+            NSString *revealRiskId = [RadarRevealRiskManager shared].revealRiskId;
+
+            void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
+                void (^failCollection)(RadarStatus) = ^(RadarStatus failureStatus) {
                     [RadarUtilsDeprecated runOnMainThread:^{
-                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
-                        
+                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:failureStatus];
                         if (completionHandler) {
-                            completionHandler(RadarStatusErrorUnknown, nil);
+                            completionHandler(failureStatus, nil);
                         }
-                    }];
-                    return;
-                }
-                
-                NSString *error = result[@"error"];
-                if (error) {
-                    [RadarUtilsDeprecated runOnMainThread:^{
-                        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorUnknown];
-                        
-                        if (completionHandler) {
-                            completionHandler(RadarStatusErrorUnknown, nil);
-                        }
-                    }];
-                    return;
-                }
-                
-                NSString *fraudPayload = result[@"payload"];
-                NSString *revealRiskId = [RadarRevealRiskManager shared].revealRiskId;
-                
-                void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
-                [[RadarAPIClient sharedInstance]
-                 trackWithLocation:location
-                 stopped:RadarState.stopped
-                 foreground:foreground
-                 source:RadarLocationSourceForegroundLocation
-                 replayed:NO
-                 beacons:beacons
-                 indoorLocation:nil
-                 verified:YES
-                 fraudPayload:fraudPayload
-                 expectedCountryCode:self.expectedCountryCode
-                 expectedStateCode:self.expectedStateCode
-                 reason:reason
-                 transactionId:transactionId
-                 revealRiskId:revealRiskId
-                 useSecondaryVerifiedHost:useSecondaryVerifiedHost
-                 completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
-                                     RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
-                                     RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
-                    if (status == RadarStatusSuccess && config != nil) {
-                        [RadarRevealRiskManager shared].revealRiskId = nil;
-                        [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
-                    }
-                    
-                    if (token) {
-                        self.lastToken = token;
-                        self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
-                        self.lastTokenBeacons = lastTokenBeacons;
-                    }
-                    
-                    [RadarUtilsDeprecated runOnMainThread:^{
-                        if (status != RadarStatusSuccess) {
-                            [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-                        }
-                        
-                        if (completionHandler) {
-                            completionHandler(status, token);
-                        }
-                        }];
                     }];
                 };
-            
-            if (beacons) {
+
+                NSString *publishableKey = [RadarSettings publishableKey];
+                if (!publishableKey) {
+                    failCollection(RadarStatusErrorPublishableKey);
+                    return;
+                }
+                [requestPreparer preparePayloadWithCompletionHandler:^(RadarStatus status, RadarPreparedFraudPayloadWrapper *_Nullable payload, NSError *_Nullable error) {
+                                                    if (status != RadarStatusSuccess || !payload || error) {
+                                                        failCollection(status == RadarStatusSuccess ? RadarStatusErrorUnknown : status);
+                                                        return;
+                                                    }
+                                                    // Anonymous requests omit the install ID required by encrypted payloads.
+                                                    if ([RadarSettings anonymousTrackingEnabled]) {
+                                                        failCollection(RadarStatusErrorUnknown);
+                                                        return;
+                                                    }
+
+                                                    [[RadarAPIClient sharedInstance]
+                                                               trackWithLocation:location
+                                                                         stopped:RadarState.shared.stopped
+                                                                      foreground:foreground
+                                                                          source:RadarLocationSourceForegroundLocation
+                                                                        replayed:NO
+                                                                         beacons:beacons
+                                                                  indoorLocation:nil
+                                                                        verified:YES
+                                                                    preparedFraudPayload:payload
+                                                             expectedCountryCode:self.expectedCountryCode
+                                                               expectedStateCode:self.expectedStateCode
+                                                                 expectedAddress:self.expectedAddress
+                                                                          reason:reason
+                                                                   transactionId:transactionId
+                                                                    revealRiskId:revealRiskId
+                                                        useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                                                               completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
+                                                                                   RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
+                                                                                   RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                                                                   if (status == RadarStatusSuccess && config != nil) {
+                                                                       [RadarRevealRiskManager shared].revealRiskId = nil;
+                                                                       [[RadarLocationManager sharedInstance] updateTrackingFromMeta:config.meta];
+                                                                   }
+
+                                                                   if (token) {
+                                                                       self.lastToken = token;
+                                                                       self.lastTokenSystemUptime = [NSProcessInfo processInfo].systemUptime;
+                                                                       self.lastTokenBeacons = lastTokenBeacons;
+                                                                   }
+
+                                                                   [RadarUtilsDeprecated runOnMainThread:^{
+                                                                       if (status != RadarStatusSuccess) {
+                                                                           [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                                                                       }
+
+                                                                       if (completionHandler) {
+                                                                           completionHandler(status, token);
+                                                                       }
+                                                                   }];
+                                                               }];
+                                                }];
+            };
+
+            void (^rangeBeaconsAndTrack)(void) = ^{
                 [[RadarAPIClient sharedInstance]
                      searchBeaconsNear:location
-                     radius:1000
-                     limit:10
+                     radius:RadarNearbyBeaconSearch.radius
+                     limit:RadarNearbyBeaconSearch.limit
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                          NSArray<NSString *> *_Nullable beaconUUIDs) {
+                        // Continuous ranging couldn't serve this request, so it ranges this
+                        // search's beacons from now on rather than searching again itself.
+                        [RadarUtilsDeprecated runOnMainThread:^{
+                            [[RadarContinuousBeaconManager shared] handleSearchFrom:location status:status beaconUUIDs:beaconUUIDs beacons:beacons];
+                        }];
+
                         if (beaconUUIDs && beaconUUIDs.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
-                                [[RadarBeaconManagerSwift shared]
+                                [[RadarOneShotBeaconManager shared]
                                  rangeBeaconUUIDs:beaconUUIDs
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                     if (status != RadarStatusSuccess || !beacons) {
@@ -236,7 +299,7 @@
                             }];
                         } else if (beacons && beacons.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
-                                [[RadarBeaconManagerSwift shared]
+                                [[RadarOneShotBeaconManager shared]
                                  rangeBeacons:beacons
                                  completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                     if (status != RadarStatusSuccess || !beacons) {
@@ -252,10 +315,24 @@
                             callTrackAPI(@[]);
                         }
                     }];
-                } else {
-                    callTrackAPI(nil);
-                }
-            }];
+            };
+
+            if (beacons) {
+                [RadarUtilsDeprecated runOnMainThread:^{
+                    NSArray<RadarBeacon *> *continuousBeacons = [[RadarContinuousBeaconManager shared] beaconsNear:location];
+                    if (!continuousBeacons) {
+                        rangeBeaconsAndTrack();
+                        return;
+                    }
+
+                    [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                       message:[NSString stringWithFormat:@"Using continuously ranged beacons | beacons.count = %lu", (unsigned long)continuousBeacons.count]];
+
+                    callTrackAPI(continuousBeacons);
+                }];
+            } else {
+                callTrackAPI(nil);
+            }
         }];
     };
 
@@ -406,11 +483,20 @@
 }
 
 - (void)setExpectedJurisdictionWithCountryCode:(NSString *)countryCode stateCode:(NSString *)stateCode {
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && swiftInstance) {
+        [swiftInstance setExpectedJurisdictionWithCountryCode:countryCode stateCode:stateCode];
+        return;
+    }
+
     self.expectedCountryCode = countryCode;
     self.expectedStateCode = stateCode;
 }
 
 - (BOOL)isSharing {
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && swiftInstance) {
+        return [swiftInstance isSharing];
+    }
+
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
         return NO;
@@ -434,6 +520,11 @@
 }
 
 - (void)clearSharing {
+    if (RadarSettings.sdkConfiguration.useSwiftVerificationManager && swiftInstance) {
+        [swiftInstance clearSharing];
+        return;
+    }
+
     Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
     if (!RadarSDKFraud) {
         return;
@@ -466,9 +557,9 @@
     if (!_monitor) {
         _monitor = nw_path_monitor_create();
 
-        nw_path_monitor_set_queue(_monitor, dispatch_get_main_queue());
+        nw_path_monitor_set_queue(self.monitor, dispatch_get_main_queue());
 
-        nw_path_monitor_set_update_handler(_monitor, ^(nw_path_t path) {
+        nw_path_monitor_set_update_handler(self.monitor, ^(nw_path_t path) {
             if (nw_path_get_status(path) != nw_path_status_satisfied) {
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Network disconnected"];
                 return;
@@ -512,9 +603,9 @@
 }
 
 - (void)stopMonitoringIPChanges {
-    if (_monitor) {
-        nw_path_monitor_cancel(_monitor);
-        _monitor = nil;
+    if (self.monitor) {
+        nw_path_monitor_cancel(self.monitor);
+        self.monitor = nil;
     }
 }
 

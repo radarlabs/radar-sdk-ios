@@ -9,19 +9,23 @@
 
 #import "Radar.h"
 #import "RadarAPIHelper.h"
-#import "RadarAddress.h"
 #import "RadarBeacon.h"
 #import "RadarConfig.h"
-#import "RadarContext.h"
 #import "RadarEvent.h"
-#import "RadarRegion.h"
-#import "RadarRouteMatrix.h"
-#import "RadarRoutes.h"
 #import "RadarUser.h"
-#import "RadarVerifiedLocationToken.h"
-#import "RadarTripLeg.h"
+
+@class RadarAddress;
+@class RadarTripLeg;
+@class RadarRouteMatrix;
+@class RadarRoutes;
+@class RadarVerifiedLocationToken;
+@class RadarContext;
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface RadarPreparedFraudPayloadWrapper : NSObject
+- (NSURLRequest *_Nullable)prepareRequest:(NSURLRequest *)request error:(NSError *_Nullable *_Nullable)error;
+@end
 
 typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
                                                         NSDictionary *_Nullable res,
@@ -96,26 +100,10 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                   beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
            indoorLocation:(CLLocation *_Nullable)indoorLocation
                  verified:(BOOL)verified
-            fraudPayload:(NSString *_Nullable)fraudPayload
-         // -- payload encryption --
-         // fraudKeyVersion:(NSInteger)fraudKeyVersion
+             preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
         expectedStateCode:(NSString *_Nullable)expectedStateCode
-                   reason:(NSString *_Nullable)reason
-            transactionId:(NSString *_Nullable)transactionId
-        completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
-
-- (void)trackWithLocation:(CLLocation *_Nonnull)location
-                  stopped:(BOOL)stopped
-               foreground:(BOOL)foreground
-                   source:(RadarLocationSource)source
-                 replayed:(BOOL)replayed
-                  beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
-           indoorLocation:(CLLocation *_Nullable)indoorLocation
-                 verified:(BOOL)verified
-            fraudPayload:(NSString *_Nullable)fraudPayload
-      expectedCountryCode:(NSString *_Nullable)expectedCountryCode
-        expectedStateCode:(NSString *_Nullable)expectedStateCode
+          expectedAddress:(NSString *_Nullable)expectedAddress
                    reason:(NSString *_Nullable)reason
             transactionId:(NSString *_Nullable)transactionId
              revealRiskId:(NSString *_Nullable)revealRiskId

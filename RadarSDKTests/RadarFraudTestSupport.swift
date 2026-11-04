@@ -1,0 +1,165 @@
+import Foundation
+import Testing
+
+@testable import RadarSDK
+
+enum MockFraudEnvelope {
+    // This is a transport fixture, not cryptographic output.
+    static let payload = #"{"encv":1,"kv":1,"encryptionAttemptId":"test-attempt","issuedAt":123,"enc":"mock-enc","ct":"mock-ct"}"#
+    static let fieldNames: Set<String> = ["encv", "kv", "encryptionAttemptId", "issuedAt", "enc", "ct"]
+
+    static func result(for options: [String: Any]) -> [String: Any] {
+        guard
+            options["body"] is Data,
+            let attemptId = options["encryptionAttemptId"] as? String,
+            let issuedAt = options["issuedAt"] as? Int
+        else {
+            return ["error": "Missing request body or encryption context"]
+        }
+
+        let envelope: [String: Any] = [
+            "encv": 1, "kv": 1, "encryptionAttemptId": attemptId,
+            "issuedAt": issuedAt, "enc": "mock-enc", "ct": "encrypted-\(attemptId)",
+        ]
+        guard
+            let data = try? JSONSerialization.data(withJSONObject: envelope, options: .sortedKeys),
+            let payload = String(data: data, encoding: .utf8)
+        else {
+            return ["error": "Invalid mock envelope"]
+        }
+        return ["payload": payload]
+    }
+}
+
+/// Stands in for the fraud SDK's class, whose `sharedInstance` returns an unowned singleton.
+final class MockLegacyFraudSDKClass: NSObject {
+    nonisolated(unsafe) static var instance: NSObject = MockLegacyFraudInstance()
+
+    @objc(sharedInstance)
+    static func sharedInstance() -> NSObject {
+        instance
+    }
+}
+
+final class MockLegacyFraudInstance: NSObject, @unchecked Sendable {
+    private let lock = NSLock()
+    private var sharing = true
+    private var plaintextCalls = 0
+
+    @objc(isSharing)
+    func isSharing() -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return sharing
+    }
+
+    @objc(clearSharing)
+    func clearSharing() {
+        lock.lock()
+        defer { lock.unlock() }
+        sharing = false
+    }
+
+    func recordedPlaintextCalls() -> Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return plaintextCalls
+    }
+
+    @objc(initializeWithOptions:)
+    func initialize(options: [String: Any]) {}
+
+    @objc(getFraudPayloadWithOptions:completionHandler:)
+    func getFraudPayload(
+        options: [String: Any],
+        completionHandler: @escaping ([String: Any]?) -> Void
+    ) {
+        lock.lock()
+        plaintextCalls += 1
+        lock.unlock()
+        completionHandler(nil)
+    }
+}
+
+final class MockCollectingFraudInstance: NSObject, @unchecked Sendable {
+    private let optionsLock = NSLock()
+    private var capturedOptions: [[String: Any]] = []
+
+    let result: [String: Any]?
+    private let missingSelectors: Set<String>
+    private let compatibilityVersion: NSObject?
+
+    init(
+        result: [String: Any]?,
+        missingSelectors: Set<String> = [],
+        compatibilityVersion: NSObject? = NSNumber(value: 1)
+    ) {
+        self.result = result
+        self.missingSelectors = missingSelectors
+        self.compatibilityVersion = compatibilityVersion
+    }
+
+    override func responds(to selector: Selector!) -> Bool {
+        !missingSelectors.contains(NSStringFromSelector(selector))
+            && super.responds(to: selector)
+    }
+
+    @objc(coreCompatibilityVersion)
+    func coreCompatibilityVersion() -> NSObject? {
+        compatibilityVersion
+    }
+
+    @objc(initializeWithOptions:)
+    func initialize(options: [String: Any]) {}
+
+    @objc(prepareFraudPayloadWithOptions:completionHandler:)
+    func prepareFraudPayload(
+        options: [String: Any],
+        completionHandler: @escaping ([String: Any]?) -> Void
+    ) {
+        optionsLock.lock()
+        capturedOptions.append(options)
+        optionsLock.unlock()
+
+        completionHandler(result)
+    }
+
+    func recordedOptions() -> [[String: Any]] {
+        optionsLock.lock()
+        defer { optionsLock.unlock() }
+        return capturedOptions
+    }
+
+    @objc(isSharing)
+    func isSharing() -> Bool {
+        return false
+    }
+
+    @objc(clearSharing)
+    func clearSharing() {}
+}
+
+final class MockPreparedFraudPayloadInstance: NSObject {
+    let result: [String: Any]?
+    private let resultForOptions: (([String: Any]) -> [String: Any]?)?
+
+    private(set) var capturedOptions: [[String: Any]] = []
+
+    init(
+        result: [String: Any]?,
+        resultForOptions: (([String: Any]) -> [String: Any]?)? = nil
+    ) {
+        self.result = result
+        self.resultForOptions = resultForOptions
+        super.init()
+    }
+
+    @objc(sealWithOptions:)
+    func seal(options: [String: Any]) -> [String: Any]? {
+        capturedOptions.append(options)
+        if let resultForOptions {
+            return resultForOptions(options)
+        }
+        return result
+    }
+}

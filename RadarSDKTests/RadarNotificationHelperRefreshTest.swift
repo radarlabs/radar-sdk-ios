@@ -46,7 +46,7 @@ extension RadarNotificationHelperTest {
         )
         await helperAfterRelaunch.refreshGeofenceNotifications()
 
-        let pending = await mockCenter.pendingNotificationRequests()
+        let pending = await mockCenter.radarPendingNotificationRequests()
         #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_1", "radar_geofence_2"]))
 
         store.clear()
@@ -62,7 +62,7 @@ extension RadarNotificationHelperTest {
 
         await helper.refreshGeofenceNotifications()
 
-        let pending = await mockCenter.pendingNotificationRequests()
+        let pending = await mockCenter.radarPendingNotificationRequests()
         #expect(pending.isEmpty)
     }
 
@@ -79,7 +79,7 @@ extension RadarNotificationHelperTest {
             makeGeofenceDict(id: "1", endsAt: isoString(Date().addingTimeInterval(3600))),
             makeGeofenceDict(id: "2"),
         ])
-        var pending = await mockCenter.pendingNotificationRequests()
+        var pending = await mockCenter.radarPendingNotificationRequests()
         #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_1", "radar_geofence_2"]))
 
         // The window for geofence "1" has since ended (endsAt now in the past). A refresh push
@@ -90,7 +90,7 @@ extension RadarNotificationHelperTest {
         ])
         await helper.refreshGeofenceNotifications()
 
-        pending = await mockCenter.pendingNotificationRequests()
+        pending = await mockCenter.radarPendingNotificationRequests()
         #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_2"]))
 
         store.clear()
@@ -114,7 +114,7 @@ extension RadarNotificationHelperTest {
 
         await helper.refreshGeofenceNotifications()
 
-        let pending = await mockCenter.pendingNotificationRequests()
+        let pending = await mockCenter.radarPendingNotificationRequests()
         #expect(Set(pending.map(\.identifier)) == Set(["radar_geofence_1"]))
 
         store.clear()
@@ -161,7 +161,7 @@ extension RadarNotificationHelperTest {
         // Same id but a different region — the trigger changed, so it must be rebuilt.
         await helper.registerGeofenceNotifications(geofences: [makeGeofenceDict(id: "1", radius: 250.0)])
 
-        let pending = await mockCenter.pendingNotificationRequests()
+        let pending = await mockCenter.radarPendingNotificationRequests()
         #expect(pending.count == 1)
         #expect(pending.first?.identifier == "radar_geofence_1")
         #expect(pending.first !== first, "A changed geofence notification should be rebuilt, not left in place")
@@ -180,7 +180,7 @@ extension RadarNotificationHelperTest {
         // so the notification must be re-registered with the new metadata.
         await helper.registerGeofenceNotifications(geofences: [makeGeofenceDict(id: "1", campaignId: "campaign_2")])
 
-        let pending = await mockCenter.pendingNotificationRequests()
+        let pending = await mockCenter.radarPendingNotificationRequests()
         #expect(pending.count == 1)
         #expect(pending.first?.identifier == "radar_geofence_1")
         #expect(pending.first !== first, "Changed campaign metadata should rebuild the notification")

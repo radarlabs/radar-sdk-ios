@@ -15,6 +15,7 @@ IntegrationExamples
 .build/
 Example/Example.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
 .radar-keys
+.radar-env
 .claude/settings.local.json
 .tools/
 

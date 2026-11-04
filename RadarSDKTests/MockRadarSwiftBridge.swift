@@ -14,6 +14,11 @@ import UserNotifications
 final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked Sendable {
     var flushStatus: RadarStatus = .success
     private(set) var lastFlushedReplays: [[AnyHashable: Any]]?
+    private(set) var flushReplaysCallCount = 0
+    private(set) var stopIndoorTrackingCallCount = 0
+    private(set) var updateTrackingCallCount = 0
+    private(set) var updateTrackingFromInitializeCallCount = 0
+    private(set) var callOrder: [String] = []
 
     func flushReplaysRequest(
         _ replays: [[AnyHashable: Any]],
@@ -23,19 +28,63 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
         completionHandler?(flushStatus, nil)
     }
 
-    func flushReplays() {}
+    func flushReplays() {
+        flushReplaysCallCount += 1
+        callOrder.append("flushReplays")
+    }
+
+    func stopIndoorTracking() {
+        stopIndoorTrackingCallCount += 1
+        callOrder.append("stopIndoorTracking")
+    }
+
+    func updateTracking() {
+        updateTrackingCallCount += 1
+        callOrder.append("updateTracking")
+    }
+
+    // Called from `updateTrackingFromInitialize()`, so a test can route it to a specific manager.
+    var onUpdateTrackingFromInitialize: (() -> Void)?
+
+    func updateTrackingFromInitialize() {
+        updateTrackingFromInitializeCallCount += 1
+        callOrder.append("updateTrackingFromInitialize")
+        onUpdateTrackingFromInitialize?()
+    }
+
     func logOpenedAppConversion() {}
     func geofenceIds() -> [String]? { nil }
     func beaconIds() -> [String]? { nil }
     func placeId() -> String? { nil }
     var mockLastLocation: CLLocation?
     func lastLocation() -> CLLocation? { mockLastLocation }
-    func isStopped() -> Bool { false }
+    var mockStopped = false
+    func isStopped() -> Bool { mockStopped }
+    func setStopped(_ stopped: Bool) { mockStopped = stopped }
+    func setLastLocation(_ location: CLLocation?) { mockLastLocation = location }
+    var mockLastMovedLocation: CLLocation?
+    func lastMovedLocation() -> CLLocation? { mockLastMovedLocation }
+    func setLastMovedLocation(_ location: CLLocation?) { mockLastMovedLocation = location }
+    var mockLastMovedAt: Date?
+    func lastMovedAt() -> Date? { mockLastMovedAt }
+    func setLastMovedAt(_ date: Date) { mockLastMovedAt = date }
+    var mockLastFailedStoppedLocation: CLLocation?
+    func lastFailedStoppedLocation() -> CLLocation? { mockLastFailedStoppedLocation }
+    func setLastFailedStoppedLocation(_ location: CLLocation?) { mockLastFailedStoppedLocation = location }
+    var mockLastSentAt: Date?
+    func lastSentAt() -> Date? { mockLastSentAt }
+    func updateLastSentAt() { mockLastSentAt = Date() }
+    var mockCanExit = true
+    func canExit() -> Bool { mockCanExit }
     func getTripOptions() -> RadarTripOptions? { nil }
     func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?) {}
-    func createEvent(dict: [String: Any]) -> RadarEvent? { nil }
+    var createEventHandler: (([String: Any]) -> RadarEvent?)?
+    func createEvent(dict: [String: Any]) -> RadarEvent? { createEventHandler?(dict) }
     func createUser(dict: [String: Any]) -> RadarUser? { nil }
-    func createGeofence(dict: [String: Any]) -> RadarGeofence? { nil }
+    var createGeofenceHandler: (([String: Any]) -> RadarGeofence?)?
+    func createGeofence(dict: [String: Any]) -> RadarGeofence? { createGeofenceHandler?(dict) }
+    var createPlaceHandler: (([String: Any]) -> RadarPlace?)?
+    func createPlace(dict: [String: Any]) -> RadarPlace? { createPlaceHandler?(dict) }
     var mockIsForeground = false
     func isForeground() -> Bool { mockIsForeground }
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {}
@@ -47,9 +96,20 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     }
     private(set) var lastHandledLocation: CLLocation?
     private(set) var lastHandledSource: RadarLocationSource?
+    private(set) var lastHandledBeacons: [RadarBeacon]?
+    var onHandledLocation: (() -> Void)?
+
     func handleLocation(_ location: CLLocation, source: RadarLocationSource) {
         lastHandledLocation = location
         lastHandledSource = source
+        onHandledLocation?()
+    }
+
+    func handleLocation(_ location: CLLocation, source: RadarLocationSource, beacons: [RadarBeacon]?) {
+        lastHandledLocation = location
+        lastHandledSource = source
+        lastHandledBeacons = beacons
+        onHandledLocation?()
     }
     func radarUser() -> RadarUser? { nil }
     private(set) var lastFailStatus: RadarStatus?

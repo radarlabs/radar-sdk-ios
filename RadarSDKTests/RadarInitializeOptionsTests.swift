@@ -22,7 +22,7 @@ struct RadarInitializeOptionsTests {
         #expect(options.autoLogNotificationConversions == false)
         #expect(options.autoHandleNotificationDeepLinks == false)
         #expect(options.silentPush == false)
-        #expect(options.trackVerifiedAutoFailover == false)
+        #expect(options.trackVerifiedAutoFailover)
         #expect(options.networkTimeoutInterval == 10)
         #expect(options.ipChangeDebounceInterval == 10)
     }
@@ -34,7 +34,7 @@ struct RadarInitializeOptionsTests {
         #expect(options.autoLogNotificationConversions == false)
         #expect(options.autoHandleNotificationDeepLinks == false)
         #expect(options.silentPush == false)
-        #expect(options.trackVerifiedAutoFailover == false)
+        #expect(options.trackVerifiedAutoFailover)
         #expect(options.networkTimeoutInterval == 10)
         #expect(options.ipChangeDebounceInterval == 10)
     }
@@ -46,6 +46,7 @@ struct RadarInitializeOptionsTests {
         #expect(options.networkTimeoutInterval == 10)
         #expect(options.ipChangeDebounceInterval == 10)
         #expect(options.silentPush == false)
+        #expect(options.trackVerifiedAutoFailover)
     }
 
     // MARK: - Dictionary round trip
@@ -56,7 +57,7 @@ struct RadarInitializeOptionsTests {
         options.autoLogNotificationConversions = true
         options.autoHandleNotificationDeepLinks = true
         options.silentPush = true
-        options.trackVerifiedAutoFailover = true
+        options.trackVerifiedAutoFailover = false
         options.networkTimeoutInterval = 45
         options.ipChangeDebounceInterval = 2.5
 
@@ -65,7 +66,7 @@ struct RadarInitializeOptionsTests {
         #expect(restored.autoLogNotificationConversions)
         #expect(restored.autoHandleNotificationDeepLinks)
         #expect(restored.silentPush)
-        #expect(restored.trackVerifiedAutoFailover)
+        #expect(restored.trackVerifiedAutoFailover == false)
         #expect(restored.networkTimeoutInterval == 45)
         #expect(restored.ipChangeDebounceInterval == 2.5)
     }
@@ -87,7 +88,7 @@ struct RadarInitializeOptionsTests {
     @Test("A round trip through a property list preserves the values")
     func roundTripThroughPropertyList() throws {
         let options = RadarInitializeOptions()
-        options.trackVerifiedAutoFailover = true
+        options.trackVerifiedAutoFailover = false
         options.networkTimeoutInterval = 12.5
         options.ipChangeDebounceInterval = 0
 
@@ -96,7 +97,7 @@ struct RadarInitializeOptionsTests {
         let plist = try PropertyListSerialization.propertyList(from: data, format: nil)
         let restored = RadarInitializeOptions(dict: try #require(plist as? [String: Any]))
 
-        #expect(restored.trackVerifiedAutoFailover)
+        #expect(restored.trackVerifiedAutoFailover == false)
         #expect(restored.networkTimeoutInterval == 12.5)
         #expect(restored.ipChangeDebounceInterval == 0)
     }

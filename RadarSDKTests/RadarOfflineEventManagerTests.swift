@@ -31,13 +31,13 @@ extension RadarSerializedTests {
                 "_id": "test-user",
                 "location": ["coordinates": [testLng, testLat]],
             ])
-            RadarSyncTestHelper.setRadarUser(cachedUser)
+            RadarState.shared.radarUser = cachedUser
         }
 
         // MARK: - Helpers
 
         func makeCircleGeofence(id: String, lat: Double, lng: Double, radius: Double, tag: String = "test") -> RadarGeofenceSwift {
-            let center = RadarCoordinateSwift(latitude: lat, longitude: lng)
+            let center = RadarCoordinate(latitude: lat, longitude: lng)
             return RadarGeofenceSwift(
                 id: id, description: "Test Geofence", tag: tag, externalId: id,
                 geometry: .circle(center: center, radius: radius),

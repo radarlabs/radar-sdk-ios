@@ -24,6 +24,7 @@ struct TestsView: View {
                 TripsPanel()
                 VerifiedPanel()
                 SearchPanel()
+                RoutingPanel()
                 NotificationsPanel()
                 MessagingPanel()
             }
