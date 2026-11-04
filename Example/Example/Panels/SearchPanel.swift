@@ -113,17 +113,14 @@ struct SearchPanel: View {
                 }
             }
             ActionButton("validateAddress") {
-                let address: RadarAddress = RadarAddress(from: [
-                    "latitude": 0,
-                    "longitude": 0,
-                    "city": "New York",
-                    "stateCode": "NY",
-                    "postalCode": "10003",
-                    "countryCode": "US",
-                    "street": "Broadway",
-                    "number": "841",
-                ])!
-                Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                Radar.validateAddress(
+                    street: "Broadway",
+                    number: "841",
+                    city: "New York",
+                    stateCode: "NY",
+                    postalCode: "10003",
+                    countryCode: "US"
+                ) { (status, address, verificationStatus) in
                     let detail = """
                         country: \(String(describing: address?.countryCode))
                         city: \(String(describing: address?.city))
@@ -135,16 +132,13 @@ struct SearchPanel: View {
                         detail: detail
                     )
                 }
-                let addressLabel: RadarAddress = RadarAddress(from: [
-                    "latitude": 0,
-                    "longitude": 0,
-                    "city": "New York",
-                    "stateCode": "NY",
-                    "postalCode": "10003",
-                    "countryCode": "US",
-                    "addressLabel": "Broadway 841",
-                ])!
-                Radar.validateAddress(address: addressLabel) { (status, address, verificationStatus) in
+                Radar.validateAddress(
+                    addressLabel: "841 Broadway",
+                    city: "New York",
+                    stateCode: "NY",
+                    postalCode: "10003",
+                    countryCode: "US"
+                ) { (status, address, verificationStatus) in
                     let detail = """
                         country: \(String(describing: address?.countryCode))
                         city: \(String(describing: address?.city))
@@ -159,10 +153,12 @@ struct SearchPanel: View {
             }
             ActionButton("autocomplete") {
                 let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
+                // validateAddress needs a postal code plus a street and number or an address
+                // label, so the validating searches ask for street addresses, not localities.
                 Radar.autocomplete(
-                    query: "brooklyn",
+                    query: "20 jay st",
                     near: origin,
-                    layers: ["locality"],
+                    layers: ["address"],
                     limit: 10,
                     country: "US"
                 ) { (status, addresses) in
@@ -172,7 +168,15 @@ struct SearchPanel: View {
                         detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
                     )
                     if let address = addresses?.first {
-                        Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                        Radar.validateAddress(
+                            street: address.street ?? "",
+                            number: address.number ?? "",
+                            unit: address.unit,
+                            city: address.city ?? "",
+                            stateCode: address.stateCode ?? "",
+                            postalCode: address.postalCode ?? "",
+                            countryCode: address.countryCode ?? ""
+                        ) { (status, address, verificationStatus) in
                             logStream.write(
                                 status,
                                 summary: "validateAddress (from autocomplete): \(Radar.stringForStatus(status))",
@@ -182,9 +186,9 @@ struct SearchPanel: View {
                     }
                 }
                 Radar.autocomplete(
-                    query: "brooklyn",
+                    query: "20 jay st",
                     near: origin,
-                    layers: ["locality"],
+                    layers: ["address"],
                     limit: 10,
                     country: "US",
                     mailable: true
@@ -195,10 +199,17 @@ struct SearchPanel: View {
                         detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
                     )
                     if let address = addresses?.first {
-                        Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                        Radar.validateAddress(
+                            addressLabel: address.addressLabel ?? "",
+                            unit: address.unit,
+                            city: address.city ?? "",
+                            stateCode: address.stateCode ?? "",
+                            postalCode: address.postalCode ?? "",
+                            countryCode: address.countryCode ?? ""
+                        ) { (status, address, verificationStatus) in
                             logStream.write(
                                 status,
-                                summary: "validateAddress (from autocomplete): \(Radar.stringForStatus(status))",
+                                summary: "validateAddress (from mailable autocomplete): \(Radar.stringForStatus(status))",
                                 detail: "address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))"
                             )
                         }

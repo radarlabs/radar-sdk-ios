@@ -60,6 +60,8 @@ final class RadarAPIHelper: Sendable {
         }
         if !query.isEmpty {
             urlComponents.queryItems = query
+            // URLComponents leaves + as is, and the server reads it as a space.
+            urlComponents.percentEncodedQuery = urlComponents.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         }
         guard let url = urlComponents.url else {
             throw URLError(.badURL)

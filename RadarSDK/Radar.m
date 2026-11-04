@@ -6,6 +6,7 @@
 //
 
 #import "Radar.h"
+#import "Radar+Internal.h"
 #include "RadarSdkConfiguration.h"
 #import "RadarAPIClient.h"
 #import "RadarOneShotBeaconManager+Internal.h"
@@ -1378,12 +1379,7 @@ BOOL _initialized = NO;
 }
 
 + (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler {
-    [[RadarAPIClient sharedInstance] validateAddress:address
-                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus) {
-                                      [RadarUtilsDeprecated runOnMainThread:^{
-                                          completionHandler(status, address, verificationStatus);
-                                      }];
-                                  }];
+    [self validateRadarAddress:address completionHandler:completionHandler];
 }
 
 #pragma mark - Distance
