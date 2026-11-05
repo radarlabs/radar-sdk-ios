@@ -175,9 +175,9 @@ extension RadarSerializedTests {
                     "formattedAddress": "123 Main St, New York, NY 10001 US",
                     "locationDetails": [
                         "usage": "residential",
-                        "dwelling": "single_family",
-                        "grounds": ["driveway", "lawn"],
-                        "places": [["name": "Joe's Deli", "categories": ["food-beverage", "restaurant"]]],
+                        "dwelling": "apartment",
+                        "grounds": ["campus"],
+                        "places": [["name": "Joe's Deli", "categories": ["food-beverage", "deli"]]],
                     ],
                 ],
             ])
@@ -187,18 +187,18 @@ extension RadarSerializedTests {
             #expect(status == .success)
             #expect(selected?.formattedAddress == "123 Main St, New York, NY 10001 US")
             #expect(selected?.locationDetails.usage == "residential")
-            #expect(selected?.locationDetails.dwelling == "single_family")
-            #expect(selected?.locationDetails.grounds == ["driveway", "lawn"])
+            #expect(selected?.locationDetails.dwelling == "apartment")
+            #expect(selected?.locationDetails.grounds == ["campus"])
             #expect(selected?.locationDetails.places.count == 1)
             #expect(selected?.locationDetails.places.first?.name == "Joe's Deli")
-            #expect(selected?.locationDetails.places.first?.categories == ["food-beverage", "restaurant"])
+            #expect(selected?.locationDetails.places.first?.categories == ["food-beverage", "deli"])
         }
 
         // The selection was recorded, so the status stays success; only the enrichment is dropped.
         // A nil argument stands for a response with no locationDetails at all.
         @Test(
             "select returns no address when the enrichment is missing a required field",
-            arguments: [nil, ["dwelling": "single_family"], ["usage": "residential"]] as [[String: String]?]
+            arguments: [nil, ["dwelling": "apartment"], ["usage": "residential"]] as [[String: String]?]
         )
         func selectDropsIncompleteEnrichment(locationDetails: [String: String]?) async throws {
             var address: [String: Any] = ["formattedAddress": "123 Main St, New York, NY 10001 US"]
