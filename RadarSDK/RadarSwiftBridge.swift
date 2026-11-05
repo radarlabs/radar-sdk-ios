@@ -52,8 +52,7 @@ protocol RadarSwiftBridgeProtocol {
     func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon)
 
     @objc(autocompleteQuery:near:layers:limit:country:mailable:sessionToken:completionHandler:)
-    // swiftlint:disable:next function_parameter_count
-    func autocomplete(
+    func autocomplete(  // swiftlint:disable:this function_parameter_count
         query: String, near: CLLocation?, layers: [String]?, limit: Int32, country: String?,
         mailable: Bool, sessionToken: String,
         completionHandler: @escaping (RadarStatus, [RadarAddress]?) -> Void)

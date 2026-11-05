@@ -53,8 +53,7 @@ public final class RadarAutocompleteSession: NSObject, Sendable {
     ///
     /// - SeeAlso: https://radar.com/documentation/api#autocomplete
     @objc(autocompleteQuery:near:layers:limit:country:mailable:completionHandler:)
-    // swiftlint:disable:next function_parameter_count
-    public func autocomplete(
+    public func autocomplete(  // swiftlint:disable:this function_parameter_count
         query: String,
         near: CLLocation?,
         layers: [String]?,
