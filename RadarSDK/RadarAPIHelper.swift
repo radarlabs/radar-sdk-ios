@@ -278,8 +278,57 @@ final class RadarTraceDiagnostics: @unchecked Sendable {
             DispatchQueue.global().asyncAfter(deadline: .now() + 2) { continuation.resume() }
         }
         let waited = (clock_gettime_nsec_np(CLOCK_MONOTONIC) - start) / 1_000_000
+        let mainBlocked = mainQueue.describe(since: start) == "not run"
         return "probe waited \(waited)ms: mainActor \(mainActor.describe(since: start)), mainQueue \(mainQueue.describe(since: start)), "
             + "detachedTask \(detached.describe(since: start)), globalQueue \(globalQueue.describe(since: start)), "
             + "cpus \(ProcessInfo.processInfo.activeProcessorCount)"
+            + (mainBlocked ? " | MAIN STACK: \(mainThreadStack())" : "")
+    }
+
+    // Filled by the signal handler on the main thread. Preallocated, since a signal handler mustn't allocate.
+    nonisolated(unsafe) private static let stackBuffer = UnsafeMutablePointer<UnsafeMutableRawPointer?>.allocate(capacity: 64)
+    nonisolated(unsafe) private static var stackDepth: Int32 = -1
+    private static let stackLock = NSLock()
+
+    /// Interrupts the main thread with SIGUSR2, records its stack from the handler, and returns the frames.
+    private static func mainThreadStack() -> String {
+        stackLock.withLock { captureMainThreadStack() }
+    }
+
+    /// The main thread, the first thread the task lists.
+    private static func mainThread() -> pthread_t? {
+        var threads: thread_act_array_t?
+        var count: mach_msg_type_number_t = 0
+        guard task_threads(mach_task_self_, &threads, &count) == KERN_SUCCESS, let threads, count > 0 else { return nil }
+        defer {
+            vm_deallocate(
+                mach_task_self_, vm_address_t(UInt(bitPattern: threads)), vm_size_t(Int(count) * MemoryLayout<thread_t>.stride))
+        }
+        return pthread_from_mach_thread_np(threads[0])
+    }
+
+    private static func captureMainThreadStack() -> String {
+        guard let main = mainThread() else { return "main thread not found" }
+        stackDepth = -1
+        var action = sigaction()
+        action.__sigaction_u.__sa_handler = { _ in
+            RadarTraceDiagnostics.stackDepth = backtrace(RadarTraceDiagnostics.stackBuffer, 64)
+        }
+        sigaction(SIGUSR2, &action, nil)
+        pthread_kill(main, SIGUSR2)
+        for _ in 0..<50 where stackDepth < 0 {
+            usleep(10_000)
+        }
+        guard stackDepth > 0, let symbols = backtrace_symbols(stackBuffer, stackDepth) else {
+            return "not captured"
+        }
+        defer { free(symbols) }
+        // Skip the handler's own frames (backtrace, the handler, _sigtramp). Keep "image symbol + offset".
+        return (0..<Int(stackDepth)).compactMap { index -> String? in
+            guard let cString = symbols[index] else { return nil }
+            let parts = String(cString: cString).split(separator: " ", omittingEmptySubsequences: true)
+            guard parts.count >= 4 else { return nil }
+            return "#\(index) \(parts[1]) \(parts[3...].joined(separator: " "))"
+        }.joined(separator: " ; ")
     }
 }
