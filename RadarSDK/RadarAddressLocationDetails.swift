@@ -23,16 +23,15 @@ public final class RadarAddressLocationDetails: NSObject, Sendable {
     /// The places on the grounds of the location.
     public let places: [RadarAddressPlace]
 
+    // A missing field reads as an empty string rather than discarding the enrichment, matching
+    // Android. The server's own `unknown` stays distinct from a field it didn't send.
     init?(object: Any?) {
-        guard let dictionary = object as? NSDictionary,
-            let usage = dictionary["usage"] as? String,
-            let dwelling = dictionary["dwelling"] as? String
-        else {
+        guard let dictionary = object as? NSDictionary else {
             return nil
         }
 
-        self.usage = usage
-        self.dwelling = dwelling
+        usage = dictionary["usage"] as? String ?? ""
+        dwelling = dictionary["dwelling"] as? String ?? ""
         grounds = (dictionary["grounds"] as? NSArray)?.compactMap { $0 as? String } ?? []
         places = (dictionary["places"] as? NSArray)?.compactMap { RadarAddressPlace(object: $0) } ?? []
 

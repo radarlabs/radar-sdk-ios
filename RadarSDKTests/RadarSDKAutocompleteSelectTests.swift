@@ -194,21 +194,31 @@ extension RadarSerializedTests {
             #expect(selected?.locationDetails.places.first?.categories == ["food-beverage", "deli"])
         }
 
-        // The selection was recorded, so the status stays success; only the enrichment is dropped.
-        // A nil argument stands for a response with no locationDetails at all.
-        @Test(
-            "select returns no address when the enrichment is missing a required field",
-            arguments: [nil, ["dwelling": "apartment"], ["usage": "residential"]] as [[String: String]?]
-        )
-        func selectDropsIncompleteEnrichment(locationDetails: [String: String]?) async throws {
-            var address: [String: Any] = ["formattedAddress": "123 Main St, New York, NY 10001 US"]
-            address["locationDetails"] = locationDetails
-            try respond(["meta": ["code": 200], "address": address])
+        // The selection was recorded, so the status stays success; there is just nothing to enrich.
+        @Test("select returns no address when the enrichment has no locationDetails")
+        func selectWithoutLocationDetailsReturnsNoAddress() async throws {
+            try respond(["meta": ["code": 200], "address": ["formattedAddress": "123 Main St, New York, NY 10001 US"]])
 
             let (status, selected) = await select(resultId: Self.resultId)
 
             #expect(status == .success)
             #expect(selected == nil)
+        }
+
+        @Test("select keeps an enrichment with missing fields, reading them as empty strings")
+        func selectKeepsIncompleteEnrichment() async throws {
+            try respond([
+                "meta": ["code": 200],
+                "address": ["locationDetails": ["places": [["categories": ["parking"]]]]],
+            ])
+
+            let (status, selected) = await select(resultId: Self.resultId)
+
+            #expect(status == .success)
+            #expect(selected?.locationDetails.usage == "")
+            #expect(selected?.locationDetails.dwelling == "")
+            #expect(selected?.locationDetails.places.first?.name == "")
+            #expect(selected?.locationDetails.places.first?.categories == ["parking"])
         }
 
         @Test("select makes no request for a result with no handle")

@@ -18,13 +18,11 @@ public final class RadarAddressPlace: NSObject, Sendable {
     public let categories: [String]
 
     init?(object: Any) {
-        guard let dictionary = object as? NSDictionary,
-            let name = dictionary["name"] as? String
-        else {
+        guard let dictionary = object as? NSDictionary else {
             return nil
         }
 
-        self.name = name
+        name = dictionary["name"] as? String ?? ""
         categories = (dictionary["categories"] as? NSArray)?.compactMap { $0 as? String } ?? []
 
         super.init()
