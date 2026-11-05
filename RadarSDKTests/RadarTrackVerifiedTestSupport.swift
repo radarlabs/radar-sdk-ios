@@ -14,7 +14,42 @@ private final class TrackResultCallback: @unchecked Sendable {
     init(_ invoke: @escaping RadarTrackAPICompletionHandler) { self.invoke = invoke }
 }
 
+// Whether a `MainQueueAPIHelperMock` still delivers callbacks. Callbacks capture this rather
+// than the mock, which isn't `Sendable`.
+private final class CallbackGate: @unchecked Sendable {
+    private let lock = NSLock()
+    private var open = true
+
+    func close() {
+        lock.lock()
+        defer { lock.unlock() }
+        open = false
+    }
+
+    var isOpen: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return open
+    }
+}
+
 final class MainQueueAPIHelperMock: RadarAPIHelperMock {
+    private let gate = CallbackGate()
+
+    /// Drops every callback not yet delivered, and any later ones. Tests call this when they
+    /// end, so a response still in flight can't fulfill or fail a later test's expectations.
+    func invalidate() {
+        gate.close()
+    }
+
+    private func deliverOnMain(_ callback: TrackTestCallback) {
+        let gate = gate
+        DispatchQueue.main.async {
+            guard gate.isOpen else { return }
+            callback.invoke()
+        }
+    }
+
     override func request(
         withMethod method: String,
         url: String,
@@ -49,10 +84,7 @@ final class MainQueueAPIHelperMock: RadarAPIHelperMock {
                 completionHandler: completionHandler
             )
         } catch {
-            let callback = TrackTestCallback {
-                preparationFailureHandler?(error)
-            }
-            DispatchQueue.main.async { callback.invoke() }
+            deliverOnMain(TrackTestCallback { preparationFailureHandler?(error) })
         }
     }
 
@@ -71,8 +103,7 @@ final class MainQueueAPIHelperMock: RadarAPIHelperMock {
             withMethod: method, url: url, headers: headers, params: params,
             sleep: sleep, logPayload: logPayload, extendedTimeout: extendedTimeout
         ) { status, response, error in
-            let callback = TrackTestCallback { completionHandler?(status, response, error) }
-            DispatchQueue.main.async { callback.invoke() }
+            self.deliverOnMain(TrackTestCallback { completionHandler?(status, response, error) })
         }
     }
 }
@@ -90,9 +121,10 @@ extension RadarVerifiedHostOverrideTests {
         return RadarTrackVerifiedRequestPreparer(fraudSDK: fraudSDK, options: options)
     }
 
-    // Callers cancel the returned task once their wait ends. A wait that times out leaves the
-    // task running, and it would otherwise send its track through whichever API helper a later
-    // test has installed on the shared client.
+    // Callers cancel the returned task once their wait ends, and `tearDown` cancels any the test
+    // didn't. A wait that times out leaves the task running, and it would otherwise send its
+    // track through whichever API helper a later test has installed on the shared client.
+    @discardableResult
     func trackForEncryptionTest(
         _ preparer: RadarTrackVerifiedRequestPreparer,
         secondary: Bool = false,
@@ -101,7 +133,7 @@ extension RadarVerifiedHostOverrideTests {
         // Collect before the API call, as the verification manager now does.
         // This helper exercises the collector/API boundary, not location acquisition.
         let callback = TrackResultCallback(completion)
-        return Task { @MainActor in
+        let task = Task { @MainActor in
             guard RadarSettings.publishableKey != nil else {
                 callback.invoke(.errorPublishableKey, nil, nil, nil, nil, nil, nil)
                 return
@@ -120,6 +152,8 @@ extension RadarVerifiedHostOverrideTests {
                 completion: callback.invoke
             )
         }
+        pendingTrackTasks.append(task)
+        return task
     }
 }
 
@@ -173,12 +207,23 @@ final class TrackRetryProtocol: URLProtocol {
             }
             captured.httpBody = data
         }
+        // Only track requests count. Anything else the SDK sends through this session (such as
+        // a config request from an earlier `Radar.initialize`) gets a server error and isn't
+        // recorded, so it can't consume a scripted failure or change the request count.
+        guard captured.url?.path.hasSuffix("/v1/track") == true else {
+            respondWithServerError()
+            return
+        }
         if let code = Self.state.record(captured) {
             client?.urlProtocol(self, didFailWithError: URLError(code))
             return
         }
         // A real server response ends transport retries. Use an error response to avoid
         // unrelated success-path state updates and log flushing in this transport test.
+        respondWithServerError()
+    }
+
+    private func respondWithServerError() {
         guard let url = request.url,
             let response = HTTPURLResponse(url: url, statusCode: 500, httpVersion: nil, headerFields: nil)
         else {

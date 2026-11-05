@@ -83,7 +83,7 @@ extension RadarVerifiedHostOverrideTests {
                     finished.fulfill()
                 }
             )
-            wait(for: [finished], timeout: 5)
+            wait(for: [finished], timeout: Self.callbackTimeout)
             XCTAssertTrue(TrackRetryProtocol.state.recordedRequests().isEmpty)
         }
     }
@@ -128,7 +128,7 @@ extension RadarVerifiedHostOverrideTests {
                 XCTAssertEqual(status, expectedStatus)
                 finished.fulfill()
             }
-            wait(for: [finished], timeout: 5)
+            wait(for: [finished], timeout: Self.callbackTimeout)
             track.cancel()
 
             let requests = TrackRetryProtocol.state.recordedRequests()
@@ -157,7 +157,7 @@ extension RadarVerifiedHostOverrideTests {
                     XCTAssertEqual(status, .errorServer)
                     next.fulfill()
                 }
-                wait(for: [next], timeout: 5)
+                wait(for: [next], timeout: Self.callbackTimeout)
                 nextTrack.cancel()
                 XCTAssertEqual(TrackRetryProtocol.state.recordedRequests().count, 1)
             }

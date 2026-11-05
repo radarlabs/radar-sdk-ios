@@ -14,7 +14,7 @@ extension RadarVerifiedHostOverrideTests {
         }
         RadarSettings.publishableKey = nil
 
-        let helper = MainQueueAPIHelperMock()
+        let helper = makeMainQueueHelper()
         client.apiHelper = helper
 
         let finished = expectation(description: "Missing authorization")
@@ -29,7 +29,7 @@ extension RadarVerifiedHostOverrideTests {
             finished.fulfill()
         }
 
-        wait(for: [finished], timeout: 5)
+        wait(for: [finished], timeout: Self.callbackTimeout)
         XCTAssertNil(helper.lastMethod)
     }
 
@@ -38,7 +38,7 @@ extension RadarVerifiedHostOverrideTests {
         let originalHelper = client.apiHelper
         defer { client.apiHelper = originalHelper }
 
-        let helper = MainQueueAPIHelperMock()
+        let helper = makeMainQueueHelper()
         helper.mockStatus = .errorServer
         helper.mockResponse = ["meta": ["config": [:]]]
         client.apiHelper = helper
@@ -54,7 +54,7 @@ extension RadarVerifiedHostOverrideTests {
             finished.fulfill()
         }
 
-        wait(for: [finished], timeout: 5)
+        wait(for: [finished], timeout: Self.callbackTimeout)
 
         XCTAssertEqual(helper.lastMethod, "POST")
         XCTAssertEqual(helper.lastUrl, "\(RadarSettings.host)/v1/track")
@@ -69,7 +69,7 @@ extension RadarVerifiedHostOverrideTests {
         defer { client.apiHelper = originalHelper }
 
         for (secondary, hasCompatibilityMarker) in [(false, true), (true, true), (false, false), (true, false)] {
-            let helper = MainQueueAPIHelperMock()
+            let helper = makeMainQueueHelper()
             helper.mockStatus = .errorServer
             helper.mockResponse = ["meta": ["config": [:]]]
             client.apiHelper = helper
@@ -83,7 +83,7 @@ extension RadarVerifiedHostOverrideTests {
             let track = trackForEncryptionTest(preparer, secondary: secondary) { _, _, _, _, _, _, _ in
                 finished.fulfill()
             }
-            wait(for: [finished], timeout: 5)
+            wait(for: [finished], timeout: Self.callbackTimeout)
             track.cancel()
 
             let host = secondary ? RadarSettings.defaultVerifiedHostSecondary : RadarSettings.verifiedHost
@@ -115,49 +115,75 @@ extension RadarVerifiedHostOverrideTests {
         }
     }
 
-    func test_track_preparationFailures_neverReachHelper() throws {
-        let client = RadarAPIClient.sharedInstance()
-        let originalHelper = client.apiHelper
-        defer { client.apiHelper = originalHelper }
-        let scenarios: [(NSObject?, RadarStatus)] = [
-            (nil, .errorPlugin),
-            (MockLegacyFraudInstance(), .errorPlugin),
-            (MockCollectingFraudInstance(result: nil, missingSelectors: ["coreCompatibilityVersion"]), .errorBadRequest),
-            (MockCollectingFraudInstance(result: nil, compatibilityVersion: NSNumber(value: 0)), .errorPlugin),
-            (MockCollectingFraudInstance(result: nil, compatibilityVersion: NSNumber(value: 2)), .errorPlugin),
-            (MockCollectingFraudInstance(result: nil), .errorBadRequest),
-            (MockCollectingFraudInstance(result: ["payload": ""]), .errorBadRequest),
-            (MockCollectingFraudInstance(result: ["error": "failed", "payload": "must-not-send"]), .errorBadRequest),
-        ]
+    // Preparation runs before the API client is involved: the verification manager and
+    // `trackForEncryptionTest` call the track API only when it succeeds. So these await the
+    // preparer directly, with no API helper, main-actor hop, or wait timeout to go wrong.
 
-        for (instance, expectedStatus) in scenarios {
-            let helper = MainQueueAPIHelperMock()
-            client.apiHelper = helper
+    func test_preparePayload_noFraudSDK_failsWithPluginError() async {
+        await assertPreparationFails(instance: nil, expectedStatus: .errorPlugin)
+    }
 
-            let fraudSDK = instance.flatMap {
-                RadarSDKFraud(instance: $0)
-            }
-            if expectedStatus == .errorPlugin {
-                XCTAssertNil(fraudSDK)
-            } else {
-                XCTAssertNotNil(fraudSDK)
-            }
+    func test_preparePayload_legacyFraudSDK_failsWithPluginError() async {
+        await assertPreparationFails(instance: MockLegacyFraudInstance(), expectedStatus: .errorPlugin)
+    }
 
-            let preparer = RadarTrackVerifiedRequestPreparer(
-                fraudSDK: fraudSDK,
-                options: [:]
-            )
+    func test_preparePayload_missingCompatibilityVersion_failsWithBadRequest() async {
+        await assertPreparationFails(
+            instance: MockCollectingFraudInstance(result: nil, missingSelectors: ["coreCompatibilityVersion"]),
+            expectedStatus: .errorBadRequest
+        )
+    }
 
-            let finished = expectation(description: "One preparation failure callback")
-            finished.assertForOverFulfill = true
-            let track = trackForEncryptionTest(preparer) { status, _, _, _, _, _, _ in
-                XCTAssertTrue(Thread.isMainThread)
-                XCTAssertEqual(status, expectedStatus)
-                finished.fulfill()
-            }
-            wait(for: [finished], timeout: 5)
-            track.cancel()
-            XCTAssertNil(helper.lastMethod)
+    func test_preparePayload_compatibilityVersionZero_failsWithPluginError() async {
+        await assertPreparationFails(
+            instance: MockCollectingFraudInstance(result: nil, compatibilityVersion: NSNumber(value: 0)),
+            expectedStatus: .errorPlugin
+        )
+    }
+
+    func test_preparePayload_compatibilityVersionTwo_failsWithPluginError() async {
+        await assertPreparationFails(
+            instance: MockCollectingFraudInstance(result: nil, compatibilityVersion: NSNumber(value: 2)),
+            expectedStatus: .errorPlugin
+        )
+    }
+
+    func test_preparePayload_nilResult_failsWithBadRequest() async {
+        await assertPreparationFails(instance: MockCollectingFraudInstance(result: nil), expectedStatus: .errorBadRequest)
+    }
+
+    func test_preparePayload_emptyPayload_failsWithBadRequest() async {
+        await assertPreparationFails(
+            instance: MockCollectingFraudInstance(result: ["payload": ""]),
+            expectedStatus: .errorBadRequest
+        )
+    }
+
+    func test_preparePayload_errorWithPayload_failsWithBadRequest() async {
+        await assertPreparationFails(
+            instance: MockCollectingFraudInstance(result: ["error": "failed", "payload": "must-not-send"]),
+            expectedStatus: .errorBadRequest
+        )
+    }
+
+    private func assertPreparationFails(
+        instance: NSObject?,
+        expectedStatus: RadarStatus,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) async {
+        // A fraud SDK that can't prepare payloads at all is rejected when it's wrapped.
+        let fraudSDK = instance.flatMap { RadarSDKFraud(instance: $0) }
+        if expectedStatus == .errorPlugin {
+            XCTAssertNil(fraudSDK, file: file, line: line)
+        } else {
+            XCTAssertNotNil(fraudSDK, file: file, line: line)
         }
+        let preparer = RadarTrackVerifiedRequestPreparer(fraudSDK: fraudSDK, options: [:])
+
+        let (status, payload, _) = await preparer.preparePayload()
+
+        XCTAssertEqual(status, expectedStatus, file: file, line: line)
+        XCTAssertNil(payload, file: file, line: line)
     }
 }
