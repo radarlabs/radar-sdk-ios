@@ -218,6 +218,23 @@ extension RadarSerializedTests {
             #expect(selected?.locationDetails.places.first?.categories == ["food-beverage", "restaurant"])
         }
 
+        // The selection was recorded, so the status stays success; only the enrichment is dropped.
+        // A nil argument stands for a response with no locationDetails at all.
+        @Test(
+            "select returns no address when the enrichment is missing a required field",
+            arguments: [nil, ["dwelling": "single_family"], ["usage": "residential"]] as [[String: String]?]
+        )
+        func selectDropsIncompleteEnrichment(locationDetails: [String: String]?) async throws {
+            var address: [String: Any] = ["formattedAddress": "123 Main St, New York, NY 10001 US"]
+            address["locationDetails"] = locationDetails
+            try respond(["meta": ["code": 200], "address": address])
+
+            let (status, selected) = await select(resultId: Self.resultId)
+
+            #expect(status == .success)
+            #expect(selected == nil)
+        }
+
         @Test("select makes no request for a result with no handle")
         func selectWithoutResultIdMakesNoRequest() async {
             let (status, selected) = await select(resultId: "")

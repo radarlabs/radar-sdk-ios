@@ -23,12 +23,14 @@ public final class RadarAutocompleteEnrichedAddress: NSObject, Sendable {
     public let locationDetails: RadarAddressLocationDetails
 
     init?(object: Any?) {
-        guard let dictionary = object as? NSDictionary else {
+        guard let dictionary = object as? NSDictionary,
+            let locationDetails = RadarAddressLocationDetails(object: dictionary["locationDetails"])
+        else {
             return nil
         }
 
-        formattedAddress = dictionary["formattedAddress"] as? String
-        locationDetails = RadarAddressLocationDetails(object: dictionary["locationDetails"])
+        self.formattedAddress = dictionary["formattedAddress"] as? String
+        self.locationDetails = locationDetails
 
         super.init()
     }

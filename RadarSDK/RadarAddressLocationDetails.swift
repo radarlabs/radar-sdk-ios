@@ -23,12 +23,16 @@ public final class RadarAddressLocationDetails: NSObject, Sendable {
     /// The places on the grounds of the location.
     public let places: [RadarAddressPlace]
 
-    // The server fills every field, so these defaults only stand in for a malformed response.
-    init(object: Any?) {
-        let dictionary = object as? NSDictionary ?? NSDictionary()
+    init?(object: Any?) {
+        guard let dictionary = object as? NSDictionary,
+            let usage = dictionary["usage"] as? String,
+            let dwelling = dictionary["dwelling"] as? String
+        else {
+            return nil
+        }
 
-        usage = dictionary["usage"] as? String ?? "unknown"
-        dwelling = dictionary["dwelling"] as? String ?? "unknown"
+        self.usage = usage
+        self.dwelling = dwelling
         grounds = (dictionary["grounds"] as? NSArray)?.compactMap { $0 as? String } ?? []
         places = (dictionary["places"] as? NSArray)?.compactMap { RadarAddressPlace(object: $0) } ?? []
 

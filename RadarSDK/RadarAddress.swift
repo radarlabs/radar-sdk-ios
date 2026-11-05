@@ -75,12 +75,6 @@ public final class RadarAddress: NSObject {
     /// The street name of the address.
     public let street: String?
 
-    /// Identifies this result within the session that returned it, not the address itself.
-    ///
-    /// Short-lived; pass the whole address to `RadarAutocompleteSession.select` rather than
-    /// storing this.
-    public let resultId: String?
-
     /// The label of the address.
     public let addressLabel: String?
 
@@ -111,6 +105,12 @@ public final class RadarAddress: NSObject {
     /// The categories of the address.
     public let categories: [String]?
 
+    /// Identifies this result within the session that returned it, not the address itself.
+    ///
+    /// Short-lived; pass the whole address to `RadarAutocompleteSession.select` rather than
+    /// storing this.
+    public let resultId: String?
+
     // Public so `RadarAddress()` and `[RadarAddress new]` keep working as they did with the
     // old header. Matches Objective-C `-init`, which left every field zeroed.
     public override init() {
@@ -130,7 +130,6 @@ public final class RadarAddress: NSObject {
         neighborhood = nil
         number = nil
         street = nil
-        resultId = nil
         addressLabel = nil
         placeLabel = nil
         unit = nil
@@ -141,6 +140,7 @@ public final class RadarAddress: NSObject {
         confidence = .none
         timeZone = nil
         categories = nil
+        resultId = nil
         super.init()
     }
 
@@ -176,7 +176,6 @@ public final class RadarAddress: NSObject {
         neighborhood = dictionary["neighborhood"] as? String
         number = dictionary["number"] as? String
         street = dictionary["street"] as? String
-        resultId = dictionary["resultId"] as? String
         addressLabel = dictionary["addressLabel"] as? String
         placeLabel = dictionary["placeLabel"] as? String
         unit = dictionary["unit"] as? String
@@ -203,6 +202,7 @@ public final class RadarAddress: NSObject {
         }
 
         categories = (dictionary["categories"] as? NSArray)?.compactMap { $0 as? String }
+        resultId = dictionary["resultId"] as? String
 
         super.init()
     }
@@ -295,7 +295,6 @@ public final class RadarAddress: NSObject {
         dictionary["neighborhood"] = neighborhood
         dictionary["number"] = number
         dictionary["street"] = street
-        dictionary["resultId"] = resultId
         dictionary["addressLabel"] = addressLabel
         dictionary["placeLabel"] = placeLabel
         dictionary["unit"] = unit
@@ -305,6 +304,7 @@ public final class RadarAddress: NSObject {
         dictionary["metadata"] = metadata
         dictionary["timeZone"] = timeZone?.dictionaryValue()
         dictionary["categories"] = categories
+        dictionary["resultId"] = resultId
         return dictionary
     }
 }
