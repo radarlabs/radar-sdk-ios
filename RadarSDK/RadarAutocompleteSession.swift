@@ -90,7 +90,7 @@ public final class RadarAutocompleteSession: NSObject, Sendable {
     @objc(selectAddress:completionHandler:)
     public func select(
         address: RadarAddress,
-        completionHandler: (@Sendable (RadarStatus, RadarAutocompleteEnrichedAddress?) -> Void)?
+        completionHandler: (@Sendable (RadarStatus, RadarAutocompleteEnrichedAddress?) -> Void)? = nil
     ) {
         RadarLogger.shared.info("selectAddress()", type: .sdkCall)
         Self.select(resultId: address.resultId ?? "", completionHandler: completionHandler)
