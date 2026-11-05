@@ -36,6 +36,8 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     // Accessed only on the disk queue.
     private let store: RadarTraceStore
 
+    let diagnostics = RadarTraceDiagnostics()  // DIAGNOSTIC: remove
+
     private let lock = NSLock()
     // Guarded by lock.
     private var isStarted = false
@@ -191,12 +193,18 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
             return
         }
 
+        diagnostics.add("taskCreated")  // DIAGNOSTIC: remove
         Task(priority: .utility) {
+            self.diagnostics.add("taskStarted")  // DIAGNOSTIC: remove
             let outcome: UploadOutcome
             do {
-                let (data, response) = try await self.apiClient.postTraces(body: batch.body, publishableKey: publishableKey)
+                let (data, response) = try await RadarTraceDiagnostics.$current.withValue(self.diagnostics) {
+                    try await self.apiClient.postTraces(body: batch.body, publishableKey: publishableKey)
+                }
+                self.diagnostics.add("postTracesReturned \(response.statusCode)")  // DIAGNOSTIC: remove
                 outcome = Self.outcome(statusCode: response.statusCode, data: data)
             } catch {
+                self.diagnostics.add("postTracesThrew \(error)")  // DIAGNOSTIC: remove
                 outcome = .retry
             }
             self.disk.async {
@@ -365,9 +373,13 @@ extension RadarTraceManager {
         let deadline = Date().addingTimeInterval(60)
         while lock.withLock({ isFlushing }) {
             guard Date() < deadline else {
+                let probe = await RadarTraceDiagnostics.probe()  // DIAGNOSTIC: remove
                 throw NSError(
                     domain: "io.radar.traces", code: 1,
-                    userInfo: [NSLocalizedDescriptionKey: "Trace flush did not finish within 60 seconds"])
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "Trace flush did not finish within 60 seconds | DIAG upload: \(diagnostics.summary()) | \(probe)"
+                    ])
             }
             try await Task.sleep(nanoseconds: 10_000_000)
         }
