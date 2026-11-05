@@ -15,14 +15,13 @@ import Foundation
 /// - SeeAlso: https://radar.com/documentation/api#autocomplete
 @objc(RadarAutocompleteEnrichedAddress)
 @objcMembers
-public final class RadarAutocompleteEnrichedAddress: NSObject {
+public final class RadarAutocompleteEnrichedAddress: NSObject, Sendable {
     /// The formatted string representation of the address.
     public let formattedAddress: String?
 
     /// What address enrichment knows about the location.
     public let locationDetails: RadarAddressLocationDetails
 
-    @objc(initWithObject:)
     init?(object: Any?) {
         guard let dictionary = object as? NSDictionary else {
             return nil

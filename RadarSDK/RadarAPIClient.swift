@@ -304,6 +304,26 @@ extension RadarAPIClient {
     }
 }
 
+extension RadarAPIClient {
+    /// Returns nil when the project doesn't enrich addresses, which the API answers with 204 and no body.
+    func selectAutocompleteResult(_ resultId: String) async throws -> RadarAutocompleteEnrichedAddress? {
+        guard !resultId.isEmpty else {
+            throw RadarError(status: .errorBadRequest, message: "selectAddress() requires an address with a resultId")
+        }
+
+        let (data, response) = try await apiHelper.radarRequest(
+            method: "POST", url: "search/autocomplete/select", body: ["resultId": resultId])
+
+        try assertResponseCode(response.statusCode)
+
+        guard !data.isEmpty else {
+            return nil
+        }
+        let res = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        return RadarAutocompleteEnrichedAddress(object: res?["address"])
+    }
+}
+
 /// The fields `/v1/addresses/validate` takes. The API accepts a street and number or an address label, but not both.
 struct RadarValidateAddressRequest {
     enum Line {

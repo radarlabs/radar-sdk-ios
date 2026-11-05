@@ -139,11 +139,4 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     ) {
         completionHandler(.success, nil)
     }
-
-    func selectAutocompleteAddress(
-        _ address: RadarAddress,
-        completionHandler: @escaping (RadarStatus, RadarAutocompleteEnrichedAddress?) -> Void
-    ) {
-        completionHandler(.success, nil)
-    }
 }

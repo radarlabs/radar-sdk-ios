@@ -15,7 +15,7 @@ import Foundation
 /// - SeeAlso: https://radar.com/documentation/api#autocomplete
 @objc(RadarAutocompleteSession)
 @objcMembers
-public final class RadarAutocompleteSession: NSObject {
+public final class RadarAutocompleteSession: NSObject, Sendable {
     /// The token this session sends.
     public let sessionToken: String
 
@@ -49,7 +49,7 @@ public final class RadarAutocompleteSession: NSObject {
     ///   - limit: The max number of addresses to return. A number between 1 and 100.
     ///   - country: An optional country filter. A string, the unique 2-letter country code.
     ///   - mailable: Whether to only include mailable addresses.
-    ///   - completionHandler: A completion handler.
+    ///   - completionHandler: A completion handler, called on the main thread.
     ///
     /// - SeeAlso: https://radar.com/documentation/api#autocomplete
     @objc(autocompleteQuery:near:layers:limit:country:mailable:completionHandler:)
@@ -61,19 +61,19 @@ public final class RadarAutocompleteSession: NSObject {
         limit: Int32,
         country: String?,
         mailable: Bool,
-        completionHandler: @escaping RadarGeocodeCompletionHandler
+        completionHandler: @escaping @Sendable (RadarStatus, [RadarAddress]?) -> Void
     ) {
         RadarLogger.shared.info("autocomplete()", type: .sdkCall)
-        guard let bridge = RadarSwift.bridge else {
-            Self.finish { completionHandler(.errorPublishableKey, nil) }
-            return
-        }
+        Task { @MainActor in
+            guard let bridge = RadarSwift.bridge else {
+                completionHandler(.errorPublishableKey, nil)
+                return
+            }
 
-        bridge.autocomplete(
-            query: query, near: near, layers: layers, limit: limit, country: country,
-            mailable: mailable, sessionToken: sessionToken
-        ) { status, addresses in
-            Self.finish { completionHandler(status, addresses) }
+            bridge.autocomplete(
+                query: query, near: near, layers: layers, limit: limit, country: country,
+                mailable: mailable, sessionToken: sessionToken, completionHandler: completionHandler
+            )
         }
     }
 
@@ -85,30 +85,36 @@ public final class RadarAutocompleteSession: NSObject {
     /// - Parameters:
     ///   - address: The selected result, as returned by this session's `autocomplete`. An address
     ///     from anywhere else fails with `RadarStatusErrorBadRequest` and makes no request.
-    ///   - completionHandler: An optional completion handler.
+    ///   - completionHandler: An optional completion handler, called on the main thread.
     ///
     /// - SeeAlso: https://radar.com/documentation/api#autocomplete
     @objc(selectAddress:completionHandler:)
     public func select(
-        address: RadarAddress, completionHandler: RadarAutocompleteSelectCompletionHandler?
+        address: RadarAddress,
+        completionHandler: (@Sendable (RadarStatus, RadarAutocompleteEnrichedAddress?) -> Void)?
     ) {
         RadarLogger.shared.info("selectAddress()", type: .sdkCall)
-        guard let bridge = RadarSwift.bridge else {
-            Self.finish { completionHandler?(.errorPublishableKey, nil) }
-            return
-        }
-
-        bridge.selectAutocompleteAddress(address) { status, enrichedAddress in
-            Self.finish { completionHandler?(status, enrichedAddress) }
-        }
+        Self.select(resultId: address.resultId ?? "", completionHandler: completionHandler)
     }
 
-    // Matches `[RadarUtilsDeprecated runOnMainThread:]`, which the Objective-C callers use.
-    private static func finish(_ block: @escaping () -> Void) {
-        if Thread.isMainThread {
-            block()
-        } else {
-            DispatchQueue.main.async(execute: block)
+    static func select(
+        resultId: String,
+        apiClient: RadarAPIClient = .shared,
+        completionHandler: (@Sendable (RadarStatus, RadarAutocompleteEnrichedAddress?) -> Void)?
+    ) {
+        Task { @MainActor in
+            do {
+                let address = try await apiClient.selectAutocompleteResult(resultId)
+                completionHandler?(.success, address)
+            } catch let error as RadarError {
+                RadarLogger.shared.error("selectAddress() failed: \(error.message ?? Radar.stringForStatus(error.status))")
+                completionHandler?(error.status, nil)
+            } catch is URLError {
+                completionHandler?(.errorNetwork, nil)
+            } catch {
+                RadarLogger.shared.error("selectAddress() failed: \(error)")
+                completionHandler?(.errorServer, nil)
+            }
         }
     }
 }

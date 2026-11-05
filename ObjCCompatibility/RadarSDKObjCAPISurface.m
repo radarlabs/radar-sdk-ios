@@ -599,8 +599,8 @@ RADAR_API_SURFACE Class class_RadarAutocompleteSession(void) { return [RadarAuto
 RADAR_API_SURFACE NSString * _Nonnull get_RadarAutocompleteSession_sessionToken(RadarAutocompleteSession *obj) { return obj.sessionToken; }
 RADAR_API_SURFACE RadarAutocompleteSession * _Nonnull call_RadarAutocompleteSession_init(void) { return [[RadarAutocompleteSession alloc] init]; }
 RADAR_API_SURFACE RadarAutocompleteSession * _Nullable call_RadarAutocompleteSession_initWithSessionToken(NSString * _Nonnull a0) { return [[RadarAutocompleteSession alloc] initWithSessionToken:a0]; }
-RADAR_API_SURFACE void call_RadarAutocompleteSession_autocompleteQuery_near_layers_limit_country_mailable_completionHandler(RadarAutocompleteSession *obj, NSString * _Nonnull a0, CLLocation * _Nullable a1, NSArray<NSString *> * _Nullable a2, int32_t a3, NSString * _Nullable a4, BOOL a5, RadarGeocodeCompletionHandler _Nonnull a6) { [obj autocompleteQuery:a0 near:a1 layers:a2 limit:a3 country:a4 mailable:a5 completionHandler:a6]; }
-RADAR_API_SURFACE void call_RadarAutocompleteSession_selectAddress_completionHandler(RadarAutocompleteSession *obj, RadarAddress * _Nonnull a0, RadarAutocompleteSelectCompletionHandler _Nullable a1) { [obj selectAddress:a0 completionHandler:a1]; }
+RADAR_API_SURFACE void call_RadarAutocompleteSession_autocompleteQuery_near_layers_limit_country_mailable_completionHandler(RadarAutocompleteSession *obj, NSString * _Nonnull a0, CLLocation * _Nullable a1, NSArray<NSString *> * _Nullable a2, int32_t a3, NSString * _Nullable a4, BOOL a5, void (^ _Nonnull a6)(RadarStatus, NSArray<RadarAddress *> * _Nullable)) { [obj autocompleteQuery:a0 near:a1 layers:a2 limit:a3 country:a4 mailable:a5 completionHandler:a6]; }
+RADAR_API_SURFACE void call_RadarAutocompleteSession_selectAddress_completionHandler(RadarAutocompleteSession *obj, RadarAddress * _Nonnull a0, void (^ _Nullable a1)(RadarStatus, RadarAutocompleteEnrichedAddress * _Nullable)) { [obj selectAddress:a0 completionHandler:a1]; }
 
 #pragma mark - RadarUser
 

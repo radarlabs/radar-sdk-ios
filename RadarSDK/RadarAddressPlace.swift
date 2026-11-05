@@ -10,14 +10,13 @@ import Foundation
 /// A place on the grounds of an enriched address.
 @objc(RadarAddressPlace)
 @objcMembers
-public final class RadarAddressPlace: NSObject {
+public final class RadarAddressPlace: NSObject, Sendable {
     /// The name of the place.
     public let name: String
 
     /// The categories of the place.
     public let categories: [String]
 
-    @objc(initWithObject:)
     init?(object: Any) {
         guard let dictionary = object as? NSDictionary else {
             return nil

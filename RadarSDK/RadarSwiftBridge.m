@@ -232,11 +232,4 @@
                                      }];
 }
 
-- (void)selectAutocompleteAddress:(RadarAddress *)address completionHandler:(void (^)(RadarStatus, RadarAutocompleteEnrichedAddress *_Nullable))completionHandler {
-    [[RadarAPIClient sharedInstance] selectAutocompleteAddress:address
-                                             completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, RadarAutocompleteEnrichedAddress *_Nullable enrichedAddress) {
-                                                 completionHandler(status, enrichedAddress);
-                                             }];
-}
-
 @end

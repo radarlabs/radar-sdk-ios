@@ -57,11 +57,6 @@ protocol RadarSwiftBridgeProtocol {
         query: String, near: CLLocation?, layers: [String]?, limit: Int32, country: String?,
         mailable: Bool, sessionToken: String,
         completionHandler: @escaping (RadarStatus, [RadarAddress]?) -> Void)
-
-    @objc(selectAutocompleteAddress:completionHandler:)
-    func selectAutocompleteAddress(
-        _ address: RadarAddress,
-        completionHandler: @escaping (RadarStatus, RadarAutocompleteEnrichedAddress?) -> Void)
 }
 
 /// Builds Objective-C models whose parsers are internal. Matches `RadarModelFactoryProtocol` in

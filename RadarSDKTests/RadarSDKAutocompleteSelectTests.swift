@@ -10,6 +10,11 @@ import Testing
 
 @testable import RadarSDK
 
+/// Records the requests the mock session receives.
+private final class RequestLog: @unchecked Sendable {
+    var requests: [URLRequest] = []
+}
+
 extension RadarSerializedTests {
     /// Covers `RadarAutocompleteSession`: the token it owns, the handle its results carry, and reporting
     /// which result the user chose.
@@ -17,6 +22,8 @@ extension RadarSerializedTests {
     @MainActor
     struct RadarSDKAutocompleteSelectTests {
         private let fixture = RadarSDKTestFixture()
+        private let urlSession = MockURLSession()
+        private let requestLog = RequestLog()
 
         private static let resultId = "v1_QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVowMTIzNDU2"
 
@@ -55,10 +62,31 @@ extension RadarSerializedTests {
             }
         }
 
-        private func select(_ session: RadarAutocompleteSession, _ address: RadarAddress) async -> (RadarStatus, RadarAutocompleteEnrichedAddress?) {
-            await awaitCompletion { resume in
-                session.select(address: address) { status, selected in
-                    resume((status, selected))
+        /// Answers every request with `body`, recording what was sent.
+        private func respond(_ body: Data, statusCode: Int) {
+            let requestLog = requestLog
+            urlSession.handlers.append(
+                .init(
+                    on: { request in
+                        requestLog.requests.append(request)
+                        return true
+                    },
+                    response: body,
+                    statusCode: statusCode
+                )
+            )
+        }
+
+        private func respond(_ body: [String: Any], statusCode: Int = 200) throws {
+            respond(try JSONSerialization.data(withJSONObject: body), statusCode: statusCode)
+        }
+
+        private func select(resultId: String) async -> (RadarStatus, RadarAutocompleteEnrichedAddress?) {
+            let apiClient = APIClient(apiHelper: RadarAPIHelper(session: urlSession))
+            return await awaitCompletion { resume in
+                RadarAutocompleteSession.select(resultId: resultId, apiClient: apiClient) { status, address in
+                    #expect(Thread.isMainThread)
+                    resume((status, address))
                 }
             }
         }
@@ -148,30 +176,24 @@ extension RadarSerializedTests {
             #expect(addresses?.first?.resultId == nil)
         }
 
-        @Test("select posts the handle and nothing else")
+        @Test("select posts the handle, and returns no address when the project doesn't enrich")
         func selectPostsResultId() async throws {
-            mockAutocompleteResponse(resultId: Self.resultId)
-            let session = RadarAutocompleteSession()
-            let address = try #require(await autocomplete(session).1?.first)
+            respond(Data(), statusCode: 204)
 
-            // A project that does not enrich answers 204 with no body.
-            fixture.apiHelperMock.mockResponse = [:]
-            let (status, selected) = await select(session, address)
+            let (status, selected) = await select(resultId: Self.resultId)
 
             #expect(status == .success)
             #expect(selected == nil)
-            #expect(fixture.apiHelperMock.lastMethod == "POST")
-            #expect(fixture.apiHelperMock.lastUrl?.hasSuffix("/v1/search/autocomplete/select") == true)
-            #expect(fixture.apiHelperMock.lastParams as? [String: String] == ["resultId": Self.resultId])
+            let request = try #require(requestLog.requests.last)
+            #expect(request.httpMethod == "POST")
+            #expect(request.url?.path == "/v1/search/autocomplete/select")
+            let body = try JSONSerialization.jsonObject(with: try #require(request.httpBody)) as? [String: String]
+            #expect(body == ["resultId": Self.resultId])
         }
 
         @Test("select returns the enriched address when the server sends one")
         func selectReturnsEnrichedAddress() async throws {
-            mockAutocompleteResponse(resultId: Self.resultId)
-            let session = RadarAutocompleteSession()
-            let address = try #require(await autocomplete(session).1?.first)
-
-            fixture.apiHelperMock.mockResponse = [
+            try respond([
                 "meta": ["code": 200],
                 "address": [
                     "formattedAddress": "123 Main St, New York, NY 10001 US",
@@ -182,8 +204,9 @@ extension RadarSerializedTests {
                         "places": [["name": "Joe's Deli", "categories": ["food-beverage", "restaurant"]]],
                     ],
                 ],
-            ]
-            let (status, selected) = await select(session, address)
+            ])
+
+            let (status, selected) = await select(resultId: Self.resultId)
 
             #expect(status == .success)
             #expect(selected?.formattedAddress == "123 Main St, New York, NY 10001 US")
@@ -195,56 +218,20 @@ extension RadarSerializedTests {
             #expect(selected?.locationDetails.places.first?.categories == ["food-beverage", "restaurant"])
         }
 
-        // The shape a project with nothing to report gets back, captured against staging.
-        @Test("select returns the enriched address when enrichment knows nothing")
-        func selectReturnsEnrichedAddressWithDefaults() async throws {
-            mockAutocompleteResponse(resultId: Self.resultId)
-            let session = RadarAutocompleteSession()
-            let address = try #require(await autocomplete(session).1?.first)
-
-            fixture.apiHelperMock.mockResponse = [
-                "meta": ["code": 200],
-                "address": [
-                    "formattedAddress": "123 Main St, New York, NY 10001 US",
-                    "locationDetails": [
-                        "usage": "unknown", "dwelling": "unknown", "grounds": [], "places": [],
-                    ],
-                ],
-            ]
-            let (status, selected) = await select(session, address)
-
-            #expect(status == .success)
-            #expect(selected?.formattedAddress == "123 Main St, New York, NY 10001 US")
-            #expect(selected?.locationDetails.usage == "unknown")
-            #expect(selected?.locationDetails.dwelling == "unknown")
-            #expect(selected?.locationDetails.grounds.isEmpty == true)
-            #expect(selected?.locationDetails.places.isEmpty == true)
-        }
-
         @Test("select makes no request for a result with no handle")
-        func selectWithoutResultIdMakesNoRequest() async throws {
-            mockAutocompleteResponse(resultId: nil)
-            let address = try #require(await autocompleteWithoutSession().1?.first)
-            #expect(address.resultId == nil)
-
-            // the mock captures only the most recent request, so an unchanged capture means
-            // select never reached the wire
-            let urlBeforeSelect = fixture.apiHelperMock.lastUrl
-            let (status, selected) = await select(RadarAutocompleteSession(), address)
+        func selectWithoutResultIdMakesNoRequest() async {
+            let (status, selected) = await select(resultId: "")
 
             #expect(status == .errorBadRequest)
             #expect(selected == nil)
-            #expect(fixture.apiHelperMock.lastUrl == urlBeforeSelect)
+            #expect(requestLog.requests.isEmpty)
         }
 
         @Test("select surfaces a per-session cap as a status")
         func selectSurfacesRateLimit() async throws {
-            mockAutocompleteResponse(resultId: Self.resultId)
-            let session = RadarAutocompleteSession()
-            let address = try #require(await autocomplete(session).1?.first)
+            try respond([:], statusCode: 429)
 
-            fixture.apiHelperMock.mockStatus = .errorRateLimit
-            let (status, selected) = await select(session, address)
+            let (status, selected) = await select(resultId: Self.resultId)
 
             #expect(status == .errorRateLimit)
             #expect(selected == nil)

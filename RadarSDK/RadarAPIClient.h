@@ -20,7 +20,6 @@
 @class RadarVerifiedLocationToken;
 @class RadarContext;
 @class RadarUser;
-@class RadarAutocompleteEnrichedAddress;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,8 +53,6 @@ typedef void (^_Nonnull RadarSearchBeaconsAPICompletionHandler)(RadarStatus stat
                                                                 NSArray<NSString *> *_Nullable beaconUUIDs);
 
 typedef void (^_Nonnull RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses);
-
-typedef void (^_Nonnull RadarSelectAutocompleteAddressAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAutocompleteEnrichedAddress *_Nullable address);
 
 typedef void (^_Nonnull RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy, NSError *_Nullable error);
 
@@ -174,8 +171,6 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                     limit:(int)limit
                   country:(NSString *_Nullable)country
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
-
-- (void)selectAutocompleteAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarSelectAutocompleteAddressAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)geocodeAddress:(NSString *_Nonnull)query
                 layers:(NSArray<NSString *> *_Nullable)layers

@@ -11,7 +11,6 @@
 #import "Radar+Internal.h"
 #import "Radar.h"
 #import "RadarAddress+Internal.h"
-#import "RadarAutocompleteEnrichedAddress+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarOneShotBeaconManager+Internal.h"
 #import "RadarConfig.h"
@@ -1320,44 +1319,6 @@
 
 - (void)autocompleteQuery:(NSString *)query near:(CLLocation *_Nullable)near limit:(int)limit completionHandler:(RadarGeocodeAPICompletionHandler)completionHandler {
     [self autocompleteQuery:query near:near layers:nil limit:limit country:nil mailable:NO sessionToken:nil completionHandler:completionHandler];
-}
-
-- (void)selectAutocompleteAddress:(RadarAddress *)address completionHandler:(RadarSelectAutocompleteAddressAPICompletionHandler)completionHandler {
-    NSString *publishableKey = [RadarSettings publishableKey];
-    if (!publishableKey) {
-        return completionHandler(RadarStatusErrorPublishableKey, nil, nil);
-    }
-
-    // Only results from a RadarAutocompleteSession carry a handle.
-    NSString *resultId = address.resultId;
-    if (resultId.length == 0) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Autocomplete selection not reported | the address carries no resultId"];
-
-        return completionHandler(RadarStatusErrorBadRequest, nil, nil);
-    }
-
-    NSString *host = [RadarSettings host];
-    NSString *url = [NSString stringWithFormat:@"%@/v1/search/autocomplete/select", host];
-
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
-
-    [self.apiHelper requestWithMethod:@"POST"
-                                  url:url
-                              headers:headers
-                               params:@{@"resultId": resultId}
-                                sleep:NO
-                           logPayload:YES
-                      extendedTimeout:NO
-                    completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
-                        if (status != RadarStatusSuccess) {
-                            return completionHandler(status, res, nil);
-                        }
-
-                        // A project that does not enrich answers 204 with no body.
-                        RadarAutocompleteEnrichedAddress *enrichedAddress = [[RadarAutocompleteEnrichedAddress alloc] initWithObject:res[@"address"]];
-
-                        completionHandler(RadarStatusSuccess, res, enrichedAddress);
-                    }];
 }
 
 - (void)geocodeAddress:(NSString *)query 

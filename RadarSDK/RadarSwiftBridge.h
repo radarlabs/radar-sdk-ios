@@ -17,7 +17,6 @@
 #import "Radar.h"
 
 @class RadarTripOptions;
-@class RadarAutocompleteEnrichedAddress;
 
 @protocol RadarSwiftBridgeProtocol
 - (void)flushReplays;
@@ -70,8 +69,6 @@
                  mailable:(BOOL)mailable
              sessionToken:(NSString *_Nonnull)sessionToken
         completionHandler:(void (^_Nonnull)(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses))completionHandler;
-- (void)selectAutocompleteAddress:(RadarAddress *_Nonnull)address
-                completionHandler:(void (^_Nonnull)(RadarStatus status, RadarAutocompleteEnrichedAddress *_Nullable address))completionHandler;
 @end
 
 // Builds Objective-C models whose parsers are internal. Installed when the framework loads, so

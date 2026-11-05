@@ -35,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class RadarContext;
 @class RadarTrip;
 @class RadarUser;
-@class RadarAutocompleteEnrichedAddress;
 
 #pragma mark - Enums
 
@@ -288,15 +287,6 @@ typedef void (^_Nonnull RadarSearchGeofencesCompletionHandler)(RadarStatus statu
  @see https://radar.com/documentation/api#forward-geocode
  */
 typedef void (^_Nonnull RadarGeocodeCompletionHandler)(RadarStatus status, NSArray<RadarAddress *> *_Nullable addresses);
-
-/**
- Called when an autocomplete selection report succeeds, fails, or times out.
-
- Receives the request status and, where available, the enriched address.
-
- @see https://radar.com/documentation/api#autocomplete
- */
-typedef void (^_Nullable RadarAutocompleteSelectCompletionHandler)(RadarStatus status, RadarAutocompleteEnrichedAddress *_Nullable address);
 
 /**
  Called when an IP geocoding request succeeds, fails, or times out.
