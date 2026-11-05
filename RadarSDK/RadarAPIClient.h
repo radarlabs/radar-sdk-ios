@@ -12,7 +12,6 @@
 #import "RadarBeacon.h"
 #import "RadarConfig.h"
 #import "RadarEvent.h"
-#import "RadarUser.h"
 
 @class RadarAddress;
 @class RadarTripLeg;
@@ -20,6 +19,7 @@
 @class RadarRoutes;
 @class RadarVerifiedLocationToken;
 @class RadarContext;
+@class RadarUser;
 
 NS_ASSUME_NONNULL_BEGIN
 

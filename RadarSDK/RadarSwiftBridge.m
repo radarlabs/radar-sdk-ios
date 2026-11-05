@@ -13,7 +13,7 @@
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
-#import "RadarUser+Internal.h"
+#import "RadarSegment+Internal.h"
 #import "RadarReplayBuffer.h"
 #import "Radar+Internal.h"
 #import "RadarState.h"
@@ -24,6 +24,12 @@
 #import "RadarIndoors.h"
 #import "RadarLocationManager.h"
 
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
+
 @interface RadarLocationManager (SwiftBeaconLocation)
 - (void)handleLocation:(CLLocation *)location
                 source:(RadarLocationSource)source
@@ -31,6 +37,12 @@
 @end
 
 @implementation RadarSwiftBridge
+
++ (void)load {
+    // Runs before `main`, so the factory is in place before any Swift model parses and is never
+    // written again. The bridge itself is still installed by `Radar.initialize`.
+    RadarSwift.modelFactory = [[RadarSwiftBridge alloc] init];
+}
 
 - (void)flushReplays {
     [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
@@ -141,6 +153,14 @@
 
 - (RadarPlace * _Nullable)createPlaceWithDict:(NSDictionary *)dict {
     return [[RadarPlace alloc] initWithObject:dict];
+}
+
+- (RadarBeacon * _Nullable)createBeaconWithDict:(NSDictionary *)dict {
+    return [[RadarBeacon alloc] initWithObject:dict];
+}
+
+- (RadarSegment * _Nullable)createSegmentWithDict:(NSDictionary *)dict {
+    return [[RadarSegment alloc] initWithObject:dict];
 }
 
 - (BOOL)isForeground {

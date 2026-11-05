@@ -7,7 +7,8 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
-#import "RadarUser.h"
+
+@class RadarUser;
 
 NS_ASSUME_NONNULL_BEGIN
 

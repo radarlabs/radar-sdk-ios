@@ -12,4 +12,7 @@ import RadarSDK
 private func checkPublicInitializers() {
     // The old RadarAddress.h declared no init, so `RadarAddress()` and `[RadarAddress new]` were public.
     _ = RadarAddress()
+    // The old RadarUser.h declared no init for either class, so both were public.
+    _ = RadarUser()
+    _ = RadarUserLocationInsights()
 }

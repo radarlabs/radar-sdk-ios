@@ -10,7 +10,6 @@
 #import "RadarGeofence.h"
 #import "RadarPlace.h"
 #import "RadarTrip.h"
-#import "RadarUser.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 

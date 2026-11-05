@@ -52,7 +52,20 @@ protocol RadarSwiftBridgeProtocol {
     func setRssi(_ rssi: Int, onBeacon beacon: RadarBeacon)
 }
 
+/// Builds Objective-C models whose parsers are internal. Matches `RadarModelFactoryProtocol` in
+/// `RadarSwiftBridge.h`.
+@objc
+protocol RadarModelFactoryProtocol {
+    func createGeofence(dict: [String: Any]) -> RadarGeofence?
+    func createPlace(dict: [String: Any]) -> RadarPlace?
+    func createBeacon(dict: [String: Any]) -> RadarBeacon?
+    func createSegment(dict: [String: Any]) -> RadarSegment?
+}
+
 @objc(RadarSwift) @objcMembers
 class RadarSwift: NSObject {
     nonisolated(unsafe) static var bridge: RadarSwiftBridgeProtocol?
+    // Set once from `+[RadarSwiftBridge load]`, before `main`, and only read after that, so
+    // parsing works before `Radar.initialize` and doesn't race with it reinstalling `bridge`.
+    nonisolated(unsafe) static var modelFactory: RadarModelFactoryProtocol?
 }

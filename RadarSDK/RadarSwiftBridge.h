@@ -12,6 +12,7 @@
 #import "RadarState.h"
 #import "RadarBeacon.h"
 #import "RadarPlace.h"
+#import "RadarSegment.h"
 #import <CoreLocation/CoreLocation.h>
 #import "Radar.h"
 
@@ -62,7 +63,16 @@
 - (void)setRssi:(NSInteger)rssi onBeacon:(RadarBeacon * _Nonnull)beacon;
 @end
 
-@interface RadarSwiftBridge: NSObject<RadarSwiftBridgeProtocol>
+// Builds Objective-C models whose parsers are internal. Installed when the framework loads, so
+// Swift model parsing doesn't depend on `Radar.initialize` the way `RadarSwift.bridge` does.
+@protocol RadarModelFactoryProtocol
+- (RadarGeofence * _Nullable)createGeofenceWithDict:(NSDictionary * _Nonnull)dict;
+- (RadarPlace * _Nullable)createPlaceWithDict:(NSDictionary * _Nonnull)dict;
+- (RadarBeacon * _Nullable)createBeaconWithDict:(NSDictionary * _Nonnull)dict;
+- (RadarSegment * _Nullable)createSegmentWithDict:(NSDictionary * _Nonnull)dict;
+@end
+
+@interface RadarSwiftBridge: NSObject<RadarSwiftBridgeProtocol, RadarModelFactoryProtocol>
 @end
 
 @interface RadarSwift : NSObject
@@ -70,5 +80,6 @@
 
 + (id <RadarSwiftBridgeProtocol> _Nullable)bridge;
 + (void)setBridge:(id <RadarSwiftBridgeProtocol> _Nullable)value;
+@property (nonatomic, class, strong) id <RadarModelFactoryProtocol> _Nullable modelFactory;
 - (nonnull instancetype)init;
 @end
