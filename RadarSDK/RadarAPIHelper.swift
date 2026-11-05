@@ -34,7 +34,6 @@ final class RadarAPIHelper: Sendable {
         let firstRequest = try prepareRequest?(request) ?? request
 
         do {
-            RadarTraceDiagnostics.current?.add("sessionCalled")  // DIAGNOSTIC: remove
             return try await session.data(for: firstRequest)
         } catch {
             guard let error = error as? URLError,
@@ -134,9 +133,7 @@ final class RadarAPIHelper: Sendable {
         headers["X-Radar-Config"] = "true"
         headers["X-Radar-Device-Make"] = RadarUtils.deviceMake
         headers["X-Radar-Device-Model"] = RadarUtils.deviceModel
-        RadarTraceDiagnostics.current?.add("osVersionAwait")  // DIAGNOSTIC: remove
         headers["X-Radar-Device-OS"] = await RadarUtils.deviceOSVersion
-        RadarTraceDiagnostics.current?.add("osVersionRead")  // DIAGNOSTIC: remove
         headers["X-Radar-Device-Type"] = RadarUtils.deviceType
         headers["X-Radar-SDK-Version"] = RadarUtils.sdkVersion
         headers["X-Radar-Mobile-Origin"] = Bundle.main.bundleIdentifier
@@ -234,52 +231,5 @@ final class RadarAPIHelper: Sendable {
     static func networkErrorMessage(host: String?, error: Error, elapsedMs: Int) -> String {
         let nsError = error as NSError
         return "Network error | host = \(host ?? "unknown"); errorDomain = \(nsError.domain); errorCode = \(nsError.code); errorDescription = \(nsError.localizedDescription); elapsedMs = \(elapsedMs)"
-    }
-}
-
-// DIAGNOSTIC (temporary, remove after diagnosing): trace uploads stall on CI but not locally. Records how far each
-// upload gets, and when a flush wait times out, reports it with whether the main actor, the main queue, and a detached
-// task still run.
-final class RadarTraceDiagnostics: @unchecked Sendable {
-    @TaskLocal static var current: RadarTraceDiagnostics?
-
-    private let lock = NSLock()
-    private var events: [(name: String, nanos: UInt64)] = []
-
-    func add(_ name: String) {
-        let now = clock_gettime_nsec_np(CLOCK_MONOTONIC)
-        lock.withLock { events.append((name, now)) }
-    }
-
-    /// The last events, each with how long before now it happened.
-    func summary() -> String {
-        let now = clock_gettime_nsec_np(CLOCK_MONOTONIC)
-        let recent = lock.withLock { events.suffix(10) }
-        if recent.isEmpty { return "no events" }
-        return recent.map { "\($0.name) \((now - $0.nanos) / 1_000_000)ms ago" }.joined(separator: ", ")
-    }
-
-    /// Starts work on the main actor, the main queue, and a detached task, waits up to 2 seconds, and reports which ran.
-    static func probe() async -> String {
-        final class Flag: @unchecked Sendable {
-            private let lock = NSLock()
-            private var ranAt: UInt64?
-            func set() { lock.withLock { ranAt = ranAt ?? clock_gettime_nsec_np(CLOCK_MONOTONIC) } }
-            func describe(since start: UInt64) -> String { lock.withLock { ranAt.map { "\(($0 - start) / 1_000_000)ms" } ?? "not run" } }
-        }
-        let start = clock_gettime_nsec_np(CLOCK_MONOTONIC)
-        let mainActor = Flag(), mainQueue = Flag(), detached = Flag(), globalQueue = Flag()
-        Task { @MainActor in mainActor.set() }
-        DispatchQueue.main.async { mainQueue.set() }
-        Task.detached { detached.set() }
-        DispatchQueue.global().async { globalQueue.set() }
-        // Waits on a global queue rather than Task.sleep, so a starved task pool doesn't delay the report.
-        await withCheckedContinuation { continuation in
-            DispatchQueue.global().asyncAfter(deadline: .now() + 2) { continuation.resume() }
-        }
-        let waited = (clock_gettime_nsec_np(CLOCK_MONOTONIC) - start) / 1_000_000
-        return "probe waited \(waited)ms: mainActor \(mainActor.describe(since: start)), mainQueue \(mainQueue.describe(since: start)), "
-            + "detachedTask \(detached.describe(since: start)), globalQueue \(globalQueue.describe(since: start)), "
-            + "cpus \(ProcessInfo.processInfo.activeProcessorCount)"
     }
 }
