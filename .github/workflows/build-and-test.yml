@@ -48,21 +48,14 @@ jobs:
             exit 1
           fi
 
-  build:
-    name: Build and analyse default scheme using xcodebuild command
-    # This is the required check, so it carries the format result: it waits for the format job and
-    # fails if that failed. (A job skipped because a dependency failed would count as passing.)
-    needs: format
-    if: ${{ !cancelled() }}
+  # The macOS work runs as three jobs in parallel, balanced so each takes a similar time. Each job
+  # costs a macOS runner, and the org can run only a few at once, so keep the job count low.
+
+  sdk-tests:
+    name: Build, analyze, and test
     runs-on: macos-15
 
     steps:
-      - name: Require a passing format check
-        if: needs.format.result == 'failure'
-        run: |
-          echo "::error::The Format Swift job failed. See its log for the diff."
-          exit 1
-
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -70,8 +63,30 @@ jobs:
           # Org level secret
           token: ${{ secrets.SUBMODULESTOKEN }}
 
-      - name: Use Xcode 26.3
-        run: sudo xcode-select -switch /Applications/Xcode_26.3.app
+      - name: Set up Xcode and simulator
+        uses: ./.github/actions/setup-simulator
+
+      - name: Build and Analyze
+        run: make ci-build-analyze CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
+
+      # Reuses the build products from Build and Analyze.
+      - name: Test
+        run: make ci-test-pretty CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
+
+  swift-tests-and-lint:
+    name: Test swift and lint
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          # Org level secret
+          token: ${{ secrets.SUBMODULESTOKEN }}
+
+      - name: Set up Xcode and simulator
+        uses: ./.github/actions/setup-simulator
 
       - name: Lint Swift
         run: |
@@ -80,60 +95,54 @@ jobs:
           fi
           swiftlint lint --strict --baseline .swiftlint-baseline.json
 
-      - name: Pick an available iPhone simulator
-        id: pick_sim
-        run: |
-          # Get a UDID for a valid iPhone simulator only (exclude iPads, Apple Watch, tvOS, etc)
-          SIM_ID=$(xcrun simctl list devices --json \
-            | jq -r '
-                .devices
-                | to_entries
-                # Filter keys for iOS runtimes only (ignore tvOS/watchOS)
-                | map(select(.key | startswith("com.apple.CoreSimulator.SimRuntime.iOS")))
-                | .[]
-                .value[]
-                # Only devices available AND name contains "iPhone"
-                | select(.isAvailable == true and (.name | test("iPhone")))
-                .udid
-            ' | head -n 1)
-
-          if [ -z "$SIM_ID" ]; then
-            echo "No available iPhone simulator found"
-            exit 1
-          fi
-
-          echo "SIMULATOR_ID=$SIM_ID" >> $GITHUB_ENV
-          echo "Picked iPhone simulator UDID: $SIM_ID"
-
-      - name: Build and Analyze
-        env:
-          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
-          scheme: RadarSDK
-        run: |
-          make ci-build-analyze CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
-
-      - name: Test
-        env:
-          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
-          scheme: RadarSDK
-        run: |
-          make ci-test-pretty CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
-        
+      # The suites that `make ci-test-pretty` skips. They run in their own xcodebuild invocation,
+      # so a separate runner works too.
       - name: Test swift
-        env:
-          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
-          scheme: RadarSDK
-        run: |
-          make ci-test-swift CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
-
-      - name: Build example app
-        env:
-          SIMULATOR_ID: ${{ env.SIMULATOR_ID }}
-        run: |
-          make ci-build-example CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
-
-      - name: Check for async-import completion-handler thunks
-        run: make check-async-thunks
+        run: make ci-test-swift CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
 
       - name: Lint podspecs
         run: make lint
+
+  example:
+    name: Build example app
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          # Org level secret
+          token: ${{ secrets.SUBMODULESTOKEN }}
+
+      - name: Set up Xcode and simulator
+        uses: ./.github/actions/setup-simulator
+
+      - name: Build example app
+        run: make ci-build-example CI_DESTINATION="platform=iOS Simulator,id=${SIMULATOR_ID}"
+
+      # Reads the object files from the example build's DerivedData, so it must stay in this job.
+      - name: Check for async-import completion-handler thunks
+        run: make check-async-thunks
+
+  build:
+    # This is the required check. It keeps its old name so branch protection and the merge queue
+    # don't need updating, and it passes only if every job above passed. A job skipped because a
+    # dependency failed counts as passing, so check each result instead of relying on `needs`.
+    # Format is skipped in the merge queue, which is fine.
+    name: Build and analyse default scheme using xcodebuild command
+    needs: [format, sdk-tests, swift-tests-and-lint, example]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Require every job to pass
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          FAILED=$(echo "$RESULTS" | jq -r 'to_entries[] | select(.value.result != "success" and .value.result != "skipped") | .key')
+          if [ -n "$FAILED" ]; then
+            echo "::error::These jobs didn't pass: $(echo $FAILED)"
+            exit 1
+          fi
