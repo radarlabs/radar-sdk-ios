@@ -8,9 +8,9 @@
 
 import CoreTelephony
 import Foundation
+import OSLog
 import SystemConfiguration
 import UIKit
-import OSLog
 
 enum RadarConnectionType: String {
     case unknown = "unknown"
@@ -60,22 +60,24 @@ class RadarUtils: NSObject {
         get async {
             let service = "com.radar"
             let account = "com.radar.kDeviceId"
-            
-            let query = [
-                kSecClass as String: kSecClassGenericPassword,
-                kSecAttrService as String: service,
-                kSecAttrAccount as String: account,
-                kSecReturnData as String: true,
-                kSecAttrSynchronizable as String: false,
-            ] as CFDictionary
-            
+
+            let query =
+                [
+                    kSecClass as String: kSecClassGenericPassword,
+                    kSecAttrService as String: service,
+                    kSecAttrAccount as String: account,
+                    kSecReturnData as String: true,
+                    kSecAttrSynchronizable as String: false,
+                ] as CFDictionary
+
             var dataTypeREF: CFTypeRef?
-            
+
             let status = SecItemCopyMatching(query, &dataTypeREF)
-            
+
             if status == errSecSuccess, let data = dataTypeREF as? Data {
                 if let deviceId = String(data: data, encoding: .utf8),
-                   !deviceId.isEmpty {
+                    !deviceId.isEmpty
+                {
                     return deviceId
                 }
             } else {
@@ -83,28 +85,30 @@ class RadarUtils: NSObject {
                     Logger().log("Error reading from keychain | status = \(status)")
                 }
             }
-            
+
             let deviceId = await MainActor.run(resultType: String?.self) {
                 UIDevice.current.identifierForVendor?.uuidString
             }
             guard let deviceId,
-                  let data = deviceId.data(using: .utf8) else {
+                let data = deviceId.data(using: .utf8)
+            else {
                 if #available(iOS 14.0, *) {
                     Logger().log("Error getting deviceId")
                 }
                 return nil
             }
-            
-            let attributes = [
-                kSecClass: kSecClassGenericPassword,
-                kSecAttrService: service,
-                kSecAttrAccount: account,
-                kSecValueData: data,
-                kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock,
-                kSecAttrSynchronizable: false
-            ] as CFDictionary
+
+            let attributes =
+                [
+                    kSecClass: kSecClassGenericPassword,
+                    kSecAttrService: service,
+                    kSecAttrAccount: account,
+                    kSecValueData: data,
+                    kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock,
+                    kSecAttrSynchronizable: false,
+                ] as CFDictionary
             let addStatus = SecItemAdd(attributes, nil)
-            if (addStatus != errSecSuccess) {
+            if addStatus != errSecSuccess {
                 if #available(iOS 14.0, *) {
                     Logger().log("Error saving to keychain | addStatus = \(addStatus)")
                 }
