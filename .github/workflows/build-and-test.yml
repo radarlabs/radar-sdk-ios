@@ -48,8 +48,8 @@ jobs:
             exit 1
           fi
 
-  # The macOS work runs as three jobs in parallel, balanced so each takes a similar time. Each job
-  # costs a macOS runner, and the org can run only a few at once, so keep the job count low.
+  # The macOS work runs as three jobs in parallel, balanced so each takes a similar time. More jobs
+  # would save little: the Build, analyze, and test job is the long pole.
 
   sdk-tests:
     name: Build, analyze, and test
