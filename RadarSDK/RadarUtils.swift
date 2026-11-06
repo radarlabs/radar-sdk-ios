@@ -43,13 +43,15 @@ class RadarUtils: NSObject {
         }
     }
 
-    static var deviceOSVersion: String {
-        get async {
-            return await MainActor.run(resultType: String.self) {
-                UIDevice.current.systemVersion
-            }
+    /// The OS version, formatted like `UIDevice.systemVersion` ("17.4", "17.4.1"). Read from `ProcessInfo`, so
+    /// callers don't wait for the main actor (`UIDevice` is main-actor isolated).
+    static let deviceOSVersion: String = {
+        let version = ProcessInfo.processInfo.operatingSystemVersion
+        if version.patchVersion == 0 {
+            return "\(version.majorVersion).\(version.minorVersion)"
         }
-    }
+        return "\(version.majorVersion).\(version.minorVersion).\(version.patchVersion)"
+    }()
 
     static let country = Locale.current.regionCode
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())

@@ -116,6 +116,25 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
 
     // MARK: - Attributes
 
+    /// False for the no-op span, which ignores attributes and records nothing.
+    @objc var isRecording: Bool {
+        manager != nil
+    }
+
+    /// Calls `setAttributes` with this span only when it records. The no-op span ignores attributes, but their values
+    /// would still be computed.
+    ///
+    /// Unlike the Android SDK's `recording { }`, this can't catch errors from `setAttributes`: Swift can't catch
+    /// Objective-C exceptions. Keep the reads inside it to stored values and simple lookups, so tracing can't break
+    /// the work it measures.
+    @discardableResult
+    func recording(_ setAttributes: (RadarTraceSpan) -> Void) -> RadarTraceSpan {
+        if isRecording {
+            setAttributes(self)
+        }
+        return self
+    }
+
     @objc(setString:forKey:)
     func setString(_ value: String, forKey key: String) {
         setAttribute(key, .string(value))

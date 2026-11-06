@@ -8,11 +8,16 @@
 
 import Foundation
 import Testing
+import UIKit
 
 @testable import RadarSDK
 
 @Suite
 struct RadarUtilsTests {
+
+    @Test @MainActor func deviceOSVersionMatchesUIDevice() {
+        #expect(RadarUtils.deviceOSVersion == UIDevice.current.systemVersion)
+    }
 
     @Test func dictionaryToJsonReturnsEmptyForNil() {
         #expect(RadarUtils.dictionaryToJson(nil) == "{}")
