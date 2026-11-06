@@ -18,6 +18,11 @@ import Foundation
 /// Uploads go through the Swift `RadarAPIHelper`, which has its own `URLSession`, so they never wait behind or delay
 /// track requests on the Objective-C helper. Like log uploads, flushes are triggered after successful API calls, so
 /// failed batches stay on disk and are retried on the next trigger instead of on a timer.
+///
+/// The server decides sampling per session (see `RadarTraceManager+Sampling.swift`). Spans can end before that decision arrives, so
+/// they're written as pending, tagged with their session, and not uploaded until `onSamplingDecision` makes them
+/// uploadable or deletes them. A replaced session can still get its decision from a request that was in flight when
+/// the session changed, so its pending spans are kept until the next `start`.
 @objc(RadarTraceManager)
 final class RadarTraceManager: NSObject, @unchecked Sendable {
     static let maxBatchSpans = 100
@@ -29,16 +34,20 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     @objc(sharedInstance)
     static let shared = RadarTraceManager()
 
-    // TODO(jordan-nelson): use sampling decison from the server
-    private static let sampled = false
-
     let disk = DispatchQueue(label: "io.radar.traces", qos: .utility)
     let clock: RadarTraceClock
     private let apiClient: RadarAPIClient
     private let publishableKey: @Sendable () -> String?
+    private let sessionId: @Sendable () -> String
 
     // Accessed only on the disk queue.
-    private let store: RadarTraceStore
+    let store: RadarTraceStore
+
+    // Sampling decisions have their own lock, since `samplingState` runs whenever a span checks its traceparent.
+    let samplingLock = NSLock()
+    // Guarded by samplingLock. Oldest first.
+    var samplingDecisions: [(sessionId: String, sampled: Bool)] = []
+    var sampledOverride: Bool?
 
     private let lock = NSLock()
     // Guarded by lock.
@@ -46,20 +55,21 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     private var isFlushing = false
     private var pendingWrites = 0
     private var droppedWrites = 0
-    private var sampledOverride: Bool?
 
-    /// The defaults are what production uses. Tests inject a temporary directory, a mock API client, a key, and a
-    /// clock, so they don't share files or change global state.
+    /// The defaults are what production uses. Tests inject a temporary directory, a mock API client, a key, a session,
+    /// and a clock, so they don't share files or change global state.
     init(
         directory: URL = RadarTraceStore.defaultDirectory(),
         apiClient: RadarAPIClient = .shared,
         publishableKey: @escaping @Sendable () -> String? = { RadarSettings.publishableKey },
+        sessionId: @escaping @Sendable () -> String = { RadarSettings.sessionId },
         clock: RadarTraceClock = .system
     ) {
         self.store = RadarTraceStore(directory: directory)
         self.clock = clock
         self.apiClient = apiClient
         self.publishableKey = publishableKey
+        self.sessionId = sessionId
         super.init()
         disk.async {
             self.store.createDirectory()
@@ -69,29 +79,30 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
 
     // MARK: - Recording and flushing
 
-    /// Starts tracing for the process and uploads spans left from a previous one. Called from `initialize`; later
-    /// calls do nothing.
+    /// Starts tracing for the process: deletes pending spans from every session except the current one, then uploads
+    /// stored spans. Called from `initialize`; later calls do nothing.
     @objc
     func start() {
         let first = lock.withLock {
             defer { isStarted = true }
             return !isStarted
         }
-        if first {
-            flush()
-        }
+        guard first else { return }
+        let currentSessionId = currentSessionId()
+        disk.async { self.store.deletePending(exceptSessionId: currentSessionId) }
+        flush()
     }
 
     var started: Bool {
         lock.withLock { isStarted }
     }
 
-    /// Whether new traces are recorded. Spans of an unsampled trace are no-ops.
-    func isSampled() -> Bool { lock.withLock { sampledOverride } ?? Self.sampled }
+    /// The current session, which new traces are sampled under.
+    func currentSessionId() -> String { sessionId() }
 
     /// Queues a completed span to be written to disk. `project` is the fingerprint of the publishable key the span was
-    /// recorded under. Never throws into SDK call paths.
-    func record(_ span: RadarCompletedSpan, project: String) {
+    /// recorded under, and `sessionId` the session its trace started in. Never throws into SDK call paths.
+    func record(_ span: RadarCompletedSpan, project: String, sessionId: String) {
         let data: Data
         do {
             let record: [String: Any] = [
@@ -123,7 +134,14 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
 
         disk.async {
             defer { self.finishWrite() }
-            self.store.write(data)
+            // Checked on the disk queue, which runs tasks in order. onSamplingDecision stores the decision before
+            // queueing resolvePending, so this write either sees the decision or writes a pending file that
+            // resolvePending then handles.
+            switch self.samplingState(sessionId: sessionId) {
+            case .sampled: self.store.write(data)
+            case .pending: self.store.write(data, pendingSessionId: sessionId)
+            case .notSampled: break
+            }
         }
     }
 
@@ -158,37 +176,6 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     private struct Batch: Sendable {
         let names: [String]
         let body: Data
-    }
-
-    enum UploadOutcome: Equatable {
-        /// The server accepted the batch. `rejectedSpans` is set when it reported a partial success.
-        case accepted(rejectedSpans: String?)
-        /// Transient failure: keep the batch for the next flush.
-        case retry
-        /// Not retryable: drop the batch.
-        case drop(statusCode: Int, body: String)
-    }
-
-    /// Maps an upload response to what to do with the batch. A 2xx with a JSON envelope is accepted, including a
-    /// `partialSuccess` (rejected spans aren't retried). 429 and 5xx keep the batch for a later flush. Anything else
-    /// drops it.
-    static func outcome(statusCode: Int, data: Data) -> UploadOutcome {
-        switch statusCode {
-        case 200..<300:
-            // Every /v1/traces response has a JSON envelope. Without one, acknowledgement is ambiguous, so keep the batch.
-            guard let res = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                return .retry
-            }
-            guard let partialSuccess = res["partialSuccess"] as? [String: Any] else {
-                return .accepted(rejectedSpans: nil)
-            }
-            let rejectedSpans = partialSuccess["rejectedSpans"].map { "\($0)" } ?? "unknown"
-            return .accepted(rejectedSpans: rejectedSpans)
-        case 429, 500...599:
-            return .retry
-        default:
-            return .drop(statusCode: statusCode, body: String(bytes: data.prefix(1000), encoding: .utf8) ?? "")
-        }
     }
 
     /// Selects and uploads the next batch, continuing from the upload's completion. Runs on the disk queue.
@@ -327,35 +314,11 @@ extension RadarTraceManager {
             && selected.count < Self.maxBatchSpans
             && bytes + next.size <= Self.maxBatchBytes
     }
-
-    /// Wraps spans in an OTLP ExportTraceServiceRequest.
-    static func otlpPayload(spans: [[String: Any]], sdkVersion: String) -> [String: Any] {
-        let resource: [String: Any] = [
-            "attributes": [
-                attribute("service.name", "radar-client"),
-                attribute("os.type", "ios"),
-                attribute("radar.sdk.version", sdkVersion),
-            ]
-        ]
-        let scopeSpans: [String: Any] = [
-            "scope": ["name": "io.radar.sdk", "version": sdkVersion],
-            "spans": spans,
-        ]
-        return ["resourceSpans": [["resource": resource, "scopeSpans": [scopeSpans]]]]
-    }
-
-    /// An OTLP string attribute.
-    private static func attribute(_ key: String, _ value: String) -> [String: Any] {
-        ["key": key, "value": ["stringValue": value]]
-    }
 }
 
 // MARK: - Test hooks
 
 extension RadarTraceManager {
-
-    /// Forces `isSampled()` to return `sampled`, or restores the default when nil.
-    func overrideSampledForTesting(_ sampled: Bool?) { lock.withLock { sampledOverride = sampled } }
 
     /// Waits for queued disk work, including span writes, to finish. Suspends instead of blocking, so tests waiting
     /// on slow writes don't hold threads that other tests' uploads need.
