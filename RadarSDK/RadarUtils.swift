@@ -82,7 +82,7 @@ class RadarUtils: NSObject {  // swiftlint:disable:this type_body_length
         }
     }
 
-    private static func fetchDeviceId() async -> String? {
+    private static func fetchDeviceId() async -> String? {  // swiftlint:disable:this function_body_length
         let service = "com.radar"
         let account = "com.radar.kDeviceId"
 
