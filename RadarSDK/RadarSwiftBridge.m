@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "RadarSwiftBridge.h"
+#import "RadarAPIClient+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
@@ -192,8 +193,9 @@
 }
 
 - (void)flushReplaysRequest:(NSArray<NSDictionary *> *)replays
+                 parentSpan:(RadarTraceSpan *)parentSpan
           completionHandler:(void (^)(RadarStatus, NSDictionary * _Nullable))completionHandler {
-    [[RadarAPIClient sharedInstance] flushReplays:replays completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
+    [[RadarAPIClient sharedInstance] flushReplays:replays traceSpan:parentSpan completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
         if (completionHandler) {
             completionHandler(status, res);
         }

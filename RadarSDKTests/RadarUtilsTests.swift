@@ -19,6 +19,15 @@ struct RadarUtilsTests {
         #expect(RadarUtils.deviceOSVersion == UIDevice.current.systemVersion)
     }
 
+    @Test @MainActor func foregroundIfOnMainThreadReadsTheAppStateOnMain() {
+        #expect(RadarUtils.foregroundIfOnMainThread == (UIApplication.shared.applicationState != .background))
+    }
+
+    @Test func foregroundIfOnMainThreadIsNilOffMain() async {
+        let value = await Task.detached { RadarUtils.foregroundIfOnMainThread }.value
+        #expect(value == nil)
+    }
+
     @Test func dictionaryToJsonReturnsEmptyForNil() {
         #expect(RadarUtils.dictionaryToJson(nil) == "{}")
     }

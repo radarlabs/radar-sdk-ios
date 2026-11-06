@@ -18,10 +18,12 @@
 
 @class RadarConfig;
 @class RadarTripOptions;
+@class RadarTraceSpan;
 
 @protocol RadarSwiftBridgeProtocol
 - (void)flushReplays;
 - (void)flushReplaysRequest:(NSArray<NSDictionary *> * _Nonnull)replays
+                 parentSpan:(RadarTraceSpan * _Nullable)parentSpan
           completionHandler:(void (^_Nullable)(RadarStatus status, NSDictionary * _Nullable res))completionHandler;
 - (void)stopIndoorTracking;
 - (void)updateIndoorTrackingWithGeofences:(NSArray<RadarGeofence *> * _Nullable)geofences;

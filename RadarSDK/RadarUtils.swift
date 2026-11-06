@@ -188,6 +188,16 @@ class RadarUtils: NSObject {
         }
     }
 
+    /// Whether the app is in the foreground, or nil when called off the main thread, where `applicationState` can't be
+    /// read. Never waits for the main thread.
+    ///
+    /// Use this only when capturing the foreground state isn't a hard requirement, as in tracing, since callers off the
+    /// main thread get nil. Code that needs the state should read `foreground` instead.
+    static var foregroundIfOnMainThread: Bool? {
+        guard Thread.isMainThread else { return nil }
+        return MainActor.assumeIsolated { UIApplication.shared.applicationState != .background }
+    }
+
     static var backgroundTimeRemaining: TimeInterval {
         get async {
             return await MainActor.run(resultType: TimeInterval.self) {

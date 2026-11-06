@@ -25,9 +25,18 @@ final class MainQueueAPIHelperMock: RadarAPIHelperMock {
         extendedTimeout: Bool,
         prepareRequest: RadarAPIRequestPreparation?,
         preparationFailureHandler: ((Error) -> Void)?,
+        trace: (any RadarAPIRequestTrace)?,
         completionHandler: RadarAPICompletionHandler?
     ) {
+        guard prepareRequest != nil else {
+            super.request(
+                withMethod: method, url: url, headers: headers, params: params, sleep: sleep, logPayload: logPayload,
+                extendedTimeout: extendedTimeout, prepareRequest: nil, preparationFailureHandler: preparationFailureHandler,
+                trace: trace, completionHandler: completionHandler)
+            return
+        }
         do {
+            let headers = Self.headers(headers, tracedBy: trace)
             var request = URLRequest(url: try XCTUnwrap(URL(string: url)))
             request.httpMethod = method
             request.allHTTPHeaderFields = headers as? [String: String]
@@ -45,10 +54,13 @@ final class MainQueueAPIHelperMock: RadarAPIHelperMock {
             }
             self.request(
                 withMethod: method, url: url, headers: headers, params: preparedParams,
-                sleep: sleep, logPayload: logPayload, extendedTimeout: extendedTimeout,
-                completionHandler: completionHandler
-            )
+                sleep: sleep, logPayload: logPayload, extendedTimeout: extendedTimeout
+            ) { status, response, error in
+                trace?.end(with: status)
+                completionHandler?(status, response, error)
+            }
         } catch {
+            trace?.end(with: .errorBadRequest)
             let callback = TrackTestCallback {
                 preparationFailureHandler?(error)
             }
