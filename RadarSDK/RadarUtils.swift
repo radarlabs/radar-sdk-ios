@@ -6,8 +6,11 @@
 //  Copyright © 2025 Radar Labs, Inc. All rights reserved.
 //
 
+// swiftlint:disable file_length
+
 import CoreTelephony
 import Foundation
+import OSLog
 import SystemConfiguration
 import UIKit
 
@@ -22,7 +25,7 @@ enum RadarConnectionType: String {
 }
 
 @objc(RadarUtils) @objcMembers
-class RadarUtils: NSObject {
+class RadarUtils: NSObject {  // swiftlint:disable:this type_body_length
 
     static let deviceModel = {
         var systemInfo = utsname()
@@ -55,12 +58,90 @@ class RadarUtils: NSObject {
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
     static let sdkVersion = "3.45.0"
 
+    // Keeps the device ID lookup for the session once it succeeds. A nil result (e.g. before
+    // first unlock after a reboot) is dropped, so the next request retries.
+    private actor DeviceIdCache {
+        private var lookup: Task<String?, Never>?
+
+        func get() async -> String? {
+            let lookup = self.lookup ?? Task { await RadarUtils.fetchDeviceId() }
+            self.lookup = lookup
+            let deviceId = await lookup.value
+            if deviceId == nil, self.lookup == lookup {
+                self.lookup = nil
+            }
+            return deviceId
+        }
+    }
+
+    private static let deviceIdCache = DeviceIdCache()
+
     static var deviceId: String? {
         get async {
-            return await MainActor.run(resultType: String?.self) {
-                UIDevice.current.identifierForVendor?.uuidString
+            await deviceIdCache.get()
+        }
+    }
+
+    private static func fetchDeviceId() async -> String? {  // swiftlint:disable:this function_body_length
+        let service = "com.radar"
+        let account = "com.radar.kDeviceId"
+
+        let query =
+            [
+                kSecClass as String: kSecClassGenericPassword,
+                kSecAttrService as String: service,
+                kSecAttrAccount as String: account,
+                kSecReturnData as String: true,
+                kSecAttrSynchronizable as String: false,
+            ] as CFDictionary
+
+        var dataTypeREF: CFTypeRef?
+
+        let status = SecItemCopyMatching(query, &dataTypeREF)
+
+        if status == errSecSuccess, let data = dataTypeREF as? Data {
+            if let deviceId = String(data: data, encoding: .utf8), !deviceId.isEmpty {
+                return deviceId
+            }
+        } else {
+            Logger().log("Error reading from keychain | status = \(status)")
+        }
+
+        let deviceId = await MainActor.run(resultType: String?.self) {
+            UIDevice.current.identifierForVendor?.uuidString
+        }
+        guard let deviceId,
+            let data = deviceId.data(using: .utf8)
+        else {
+            Logger().log("Error getting deviceId")
+            return nil
+        }
+
+        let attributes =
+            [
+                kSecClass: kSecClassGenericPassword,
+                kSecAttrService: service,
+                kSecAttrAccount: account,
+                kSecValueData: data,
+                kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
+                kSecAttrSynchronizable: false,
+            ] as CFDictionary
+        let addStatus = SecItemAdd(attributes, nil)
+        if addStatus == errSecDuplicateItem {
+            var existingData: CFTypeRef?
+            if SecItemCopyMatching(query, &existingData) == errSecSuccess,
+                let data = existingData as? Data,
+                let storedDeviceId = String(data: data, encoding: .utf8),
+                !storedDeviceId.isEmpty
+            {
+                return storedDeviceId
             }
         }
+        if addStatus != errSecSuccess {
+            Logger().log("Error saving to keychain | addStatus = \(addStatus)")
+            return nil
+        }
+        return deviceId
     }
 
     static let deviceType: String = "iOS"
