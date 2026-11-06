@@ -44,6 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Ends the span and records it. Only the first call has an effect.
 - (void)endWithStatus:(RadarStatus)status;
 
+// Ends the span without recording it. Only discard a span with no children.
+- (void)discard;
+
 @end
 
 // RadarTrackTracing.swift
@@ -59,8 +62,19 @@ NS_ASSUME_NONNULL_BEGIN
 // precise, for a root that doesn't record the track attributes.
 - (void)recordAppContext;
 
+// Attributes of a radar.tracking_update root: the source, stopped and foreground values its track request sends,
+// whether it ranges beacons, and the quality of the location it sends.
+- (void)recordTrackingUpdateWithSource:(RadarLocationSource)source
+                               stopped:(BOOL)stopped
+                               beacons:(BOOL)beacons
+                              location:(CLLocation *)location
+                            foreground:(BOOL)foreground;
+
 // Set on the root when its track is sent as a replay flush instead.
 - (void)markReplayed;
+
+// Set on the root when its track is added to a batch, so no request is sent yet.
+- (void)markBatched;
 
 // Ends this span with the track's status, then calls handler. Returns handler unchanged when this span doesn't record.
 - (void (^_Nullable)(RadarStatus, CLLocation *_Nullable, NSArray<RadarEvent *> *_Nullable, RadarUser *_Nullable))endingTrackHandler:
@@ -82,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 // RadarBeaconTracing.swift
 @interface RadarTraceSpan (Beacon)
 
-// continuous or search.
+// continuous, search, or (tracking updates only) sync_region.
 - (void)setBeaconSource:(NSString *)source;
 
 // Traces one-shot ranging as a radar.beacon.range child, which starts now and ends before handler runs. mode is uuids or
