@@ -1265,7 +1265,8 @@
     if (mailable) {
         [queryString appendFormat:@"&mailable=true"];
     }
-    // Without a token the results come back with no resultId.
+    // Sessions only apply to autocomplete for now. RadarAutocompleteSession is the only caller
+    // that supplies a token.
     if (sessionToken) {
         [queryString appendFormat:@"&sessionToken=%@", sessionToken];
     }

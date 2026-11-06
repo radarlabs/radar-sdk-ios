@@ -17,7 +17,7 @@ public final class RadarAddressLocationDetails: NSObject, Sendable {
     /// The dwelling type, `n/a` for usages that have none, or `unknown`.
     public let dwelling: String
 
-    /// The grounds of the location.
+    /// The grounds of the location, like `campus` or `base`.
     public let grounds: [String]
 
     /// The places on the grounds of the location.
