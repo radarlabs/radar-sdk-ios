@@ -103,7 +103,7 @@ static NSDateFormatter *_isoDateFormatter;
         (__bridge id)kSecAttrService: service,
         (__bridge id)kSecAttrAccount: account,
         (__bridge id)kSecValueData: data,
-        (__bridge id)kSecAttrAccessible: (__bridge id)kSecAttrAccessibleAfterFirstUnlock,
+        (__bridge id)kSecAttrAccessible: (__bridge id)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
         (__bridge id)kSecAttrSynchronizable: @NO,
     };
     OSStatus addStatus = SecItemAdd((__bridge CFDictionaryRef)attributes, NULL);

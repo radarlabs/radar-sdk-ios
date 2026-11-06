@@ -123,7 +123,7 @@ class RadarUtils: NSObject {  // swiftlint:disable:this type_body_length
                 kSecAttrService: service,
                 kSecAttrAccount: account,
                 kSecValueData: data,
-                kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock,
+                kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
                 kSecAttrSynchronizable: false,
             ] as CFDictionary
         let addStatus = SecItemAdd(attributes, nil)
