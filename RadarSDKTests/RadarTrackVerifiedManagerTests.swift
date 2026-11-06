@@ -42,7 +42,7 @@ extension RadarVerifiedHostOverrideTests {
         let delegate = MockRadarDelegate()
         logger.setDelegate(delegate)
         logger.logLevelOverride = .error
-        let helper = MainQueueAPIHelperMock()
+        let helper = makeMainQueueHelper()
         helper.mockStatus = .success
         helper.mockResponse = ["meta": ["config": [:]]]
         client.apiHelper = helper
@@ -97,7 +97,7 @@ extension RadarVerifiedHostOverrideTests {
         }
         RadarSettings.anonymousTrackingEnabled = anonymous
 
-        let helper = MainQueueAPIHelperMock()
+        let helper = makeMainQueueHelper()
         helper.mockStatus = .success
         helper.mockResponse = [
             "meta": ["config": [:]],
@@ -145,7 +145,7 @@ extension RadarVerifiedHostOverrideTests {
         RadarSettings.product = "manager-test-product"
         buffer.mutableReplayBuffer = []
 
-        let helper = MainQueueAPIHelperMock()
+        let helper = makeMainQueueHelper()
         helper.mockStatus = .success
         helper.mockResponse = [
             "meta": ["config": [:]],
@@ -198,7 +198,7 @@ extension RadarVerifiedHostOverrideTests {
             NSSelectorFromString("trackVerifiedWithCompletionHandler:"),
             with: completion as AnyObject
         )
-        wait(for: [finished], timeout: 5)
+        wait(for: [finished], timeout: Self.callbackTimeout)
     }
 
     private func assertMatchingEncryptionContext(

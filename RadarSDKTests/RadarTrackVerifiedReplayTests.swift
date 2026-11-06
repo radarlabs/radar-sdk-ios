@@ -83,7 +83,7 @@ extension RadarVerifiedHostOverrideTests {
         let originalHelper = client.apiHelper
         defer { client.apiHelper = originalHelper }
 
-        let helper = MainQueueAPIHelperMock()
+        let helper = makeMainQueueHelper()
         helper.mockStatus = .errorNetwork
         helper.mockError = URLError(.networkConnectionLost)
         client.apiHelper = helper
@@ -114,7 +114,7 @@ extension RadarVerifiedHostOverrideTests {
             finished.fulfill()
         }
 
-        wait(for: [finished], timeout: 5.0)
+        wait(for: [finished], timeout: Self.callbackTimeout)
         track.cancel()
         XCTAssertEqual(delegate.recordedStatuses, preparationFails ? [] : [.errorNetwork])
         XCTAssertEqual(instance.recordedOptions().count, 1)
