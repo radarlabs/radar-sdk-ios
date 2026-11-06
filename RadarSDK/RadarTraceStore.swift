@@ -11,8 +11,8 @@ import Foundation
 ///
 /// Not thread-safe: `RadarTraceManager` calls it only on its serial disk queue.
 final class RadarTraceStore {
-    static let maxFiles = 500
-    static let maxBytes = 512 * 1024
+    static let maxFiles = 1000
+    static let maxBytes = 1024 * 1024
     static let maxAge: TimeInterval = 72 * 60 * 60
     static let staleTempFileAge: TimeInterval = 60
 

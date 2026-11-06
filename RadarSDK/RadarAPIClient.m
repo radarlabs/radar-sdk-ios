@@ -708,7 +708,7 @@
                             if (sessionId) {
                                 [self applySamplingDecisionForSessionId:sessionId response:res settingsKey:@"featureSettings"];
                             }
-                            [[RadarTraceManager sharedInstance] flush];
+                            [[RadarTraceManager sharedInstance] flushWithForce:NO];
                             [RadarSettings updateLastTrackedTime];
 
                             RadarConfig *config = [RadarConfig fromDictionary:res];

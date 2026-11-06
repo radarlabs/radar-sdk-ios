@@ -15,27 +15,31 @@ final class RadarTraceStorageTests {
     private let harness = TraceTestHarness()
     private var manager: RadarTraceManager { harness.manager }
     private var session: TraceURLSession { harness.session }
+    private let maxFiles = RadarTraceStore.maxFiles
 
     @Test("The file limit evicts the oldest spans")
     func fileLimitEvictsOldestSpans() async throws {
-        // Record in two steps so the write queue (also 500) never fills; this test is about the file limit.
-        try await harness.recordSpans(500)
-        try await harness.recordSpans(10, firstId: 501)
+        // Record in two steps so the write queue (the same size as the file limit) never fills; this test is about the
+        // file limit.
+        try await harness.recordSpans(maxFiles)
+        try await harness.recordSpans(10, firstId: maxFiles + 1)
 
-        #expect(harness.traceFiles().count == 500)
-        #expect(harness.persistedSpanIds() == Set((11...510).map(spanId)))
+        #expect(harness.traceFiles().count == maxFiles)
+        #expect(harness.persistedSpanIds() == Set((11...maxFiles + 10).map(spanId)))
     }
 
     @Test("The byte limit evicts the oldest spans")
     func byteLimitEvictsOldestSpans() async throws {
-        try await harness.recordSpans(30, attributes: ["payload": .string(String(repeating: "x", count: 20_000))])
+        // About 20 KB each, so these exceed the byte limit by about 10 spans.
+        let count = RadarTraceStore.maxBytes / 20_000 + 10
+        try await harness.recordSpans(count, attributes: ["payload": .string(String(repeating: "x", count: 20_000))])
 
         let files = harness.traceFiles()
         let bytes = files.reduce(0) { $0 + ((try? $1.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0) }
-        #expect(bytes <= 512 * 1024)
-        #expect(files.count < 30)
+        #expect(bytes <= RadarTraceStore.maxBytes)
+        #expect(files.count < count)
         // Whatever survives must be the newest spans.
-        #expect(harness.persistedSpanIds() == Set((1...30).map(spanId).suffix(files.count)))
+        #expect(harness.persistedSpanIds() == Set((1...count).map(spanId).suffix(files.count)))
     }
 
     @Test("Expired spans are dropped before upload")
@@ -61,7 +65,7 @@ final class RadarTraceStorageTests {
         #expect(TraceTestHarness.spanIds(session.payloads[0]) == (1...100).map(spanId))
         // The flush continued with the rest of the queue, so no span was lost.
         #expect(harness.traceFiles().isEmpty)
-        #expect(session.payloads.dropFirst().flatMap(TraceTestHarness.spanIds) == (101...600).map(spanId))
+        #expect(session.payloads.dropFirst().flatMap(TraceTestHarness.spanIds) == (101...maxFiles + 100).map(spanId))
     }
 
     @Test("A retry after the batch being uploaded was evicted continues with the remaining spans")
@@ -73,21 +77,21 @@ final class RadarTraceStorageTests {
         try await manager.waitForFlushForTesting()
 
         // The evicted batch is gone, so the next flush starts with the oldest remaining span.
-        #expect(harness.persistedSpanIds() == Set((101...600).map(spanId)))
+        #expect(harness.persistedSpanIds() == Set((101...maxFiles + 100).map(spanId)))
         try await manager.flushAndWaitForTesting()
         #expect(harness.traceFiles().isEmpty)
-        #expect(session.payloads.dropFirst().flatMap(TraceTestHarness.spanIds) == (101...600).map(spanId))
+        #expect(session.payloads.dropFirst().flatMap(TraceTestHarness.spanIds) == (101...maxFiles + 100).map(spanId))
     }
 
-    /// Holds an upload of spans 1–100, then records 101–600, which exceeds the file limit and evicts the batch.
+    /// Holds an upload of spans 1–100, then records a file limit's worth more, which evicts the batch.
     private func evictInFlightBatch() async throws {
         session.hold()
         try await harness.recordSpans(100)
-        manager.flush()
+        manager.flush(force: true)
         try await session.waitForHeldRequests(1)
 
-        try await harness.recordSpans(500, firstId: 101)
-        #expect(harness.persistedSpanIds() == Set((101...600).map(spanId)))
+        try await harness.recordSpans(maxFiles, firstId: 101)
+        #expect(harness.persistedSpanIds() == Set((101...maxFiles + 100).map(spanId)))
     }
 
     @Test("Corrupt records are deleted and valid records uploaded")
@@ -134,24 +138,25 @@ final class RadarTraceStorageTests {
         let release = DispatchSemaphore(value: 0)
         manager.disk.async { release.wait() }
 
-        // The queue holds 500 writes, so the newest 100 spans are dropped. Without the limit, all 600 would be
-        // written and the storage limits would evict the oldest 100 instead.
+        // The queue holds as many writes as the file limit, so the newest 100 spans are dropped. Without the limit,
+        // all of them would be written and the storage limits would evict the oldest 100 instead.
         let project = try harness.project()
-        for id in 1...600 {
+        for id in 1...RadarTraceManager.maxPendingWrites + 100 {
             manager.record(TraceTestHarness.span(spanId(id)), project: project, sessionId: manager.currentSessionId())
         }
         release.signal()
-        // Let the 500 writes finish before timing the flush; they're slow on CI runners.
+        // Let the writes finish before timing the flush; they're slow on CI runners.
         await manager.awaitDiskForTesting()
         try await manager.flushAndWaitForTesting()
 
-        #expect(session.payloads.flatMap(TraceTestHarness.spanIds) == (1...500).map(spanId))
+        #expect(session.payloads.flatMap(TraceTestHarness.spanIds) == (1...RadarTraceManager.maxPendingWrites).map(spanId))
 
         // Once the queue drains, new spans are accepted again.
-        try await harness.recordSpans(1, firstId: 601)
+        let nextId = RadarTraceManager.maxPendingWrites + 101
+        try await harness.recordSpans(1, firstId: nextId)
         try await manager.flushAndWaitForTesting()
 
-        #expect(session.payloads.flatMap(TraceTestHarness.spanIds).last == spanId(601))
+        #expect(session.payloads.flatMap(TraceTestHarness.spanIds).last == spanId(nextId))
     }
 
     // MARK: - Encoding

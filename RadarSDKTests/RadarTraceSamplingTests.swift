@@ -187,10 +187,10 @@ final class RadarTraceSamplingTests {
 
     @Test("Pending spans count toward the storage limits")
     func pendingSpansCountTowardStorageLimits() async throws {
-        try await harness.recordSpans(500)
-        try await harness.recordSpans(10, firstId: 501)
+        try await harness.recordSpans(RadarTraceStore.maxFiles)
+        try await harness.recordSpans(10, firstId: RadarTraceStore.maxFiles + 1)
 
-        #expect(harness.pendingFiles().count == 500)
+        #expect(harness.pendingFiles().count == RadarTraceStore.maxFiles)
     }
 
     @Test("Only the 5 most recent decisions are kept")
