@@ -41,6 +41,13 @@ enum RadarLocationManagerSwiftTestHelpers {
         RadarLocationManagerSwift.bootstrapIndoorTracking = {}
         defer { RadarLocationManagerSwift.bootstrapIndoorTracking = originalBootstrapIndoorTracking }
 
+        // Record what `handleLocation` sends on the test host instead of calling the track API.
+        let originalSendLocationHandler = RadarLocationManagerSwift.sendLocationHandler
+        RadarLocationManagerSwift.sendLocationHandler = { host, send in
+            (host as? TrackingRadarLocationManagerHost)?.recordSentLocation(send)
+        }
+        defer { RadarLocationManagerSwift.sendLocationHandler = originalSendLocationHandler }
+
         try body(bridge)
     }
 

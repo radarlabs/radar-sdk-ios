@@ -38,6 +38,14 @@ NS_ASSUME_NONNULL_BEGIN
                         source:(RadarLocationSource)source
                        beacons:(nullable NSArray<RadarBeacon *> *)beacons;
 
++ (void)sendLocationWithHost:(id<RadarLocationManagerSwiftHost>)host
+                    location:(CLLocation *)location
+                     stopped:(BOOL)stopped
+                      source:(RadarLocationSource)source
+                    replayed:(BOOL)replayed
+                     beacons:(nullable NSArray<RadarBeacon *> *)beacons
+                  forceTrack:(BOOL)forceTrack;
+
 + (void)restartPreviousTrackingOptions;
 + (void)stopTrackingOnLocationManager:(CLLocationManager *)locationManager
                       activityManager:(nullable id)activityManager;
