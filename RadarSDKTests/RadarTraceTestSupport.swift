@@ -19,6 +19,7 @@ final class TraceTestHarness {
     let directory: URL
     let session = TraceURLSession()
     let key = TraceKey(TraceTestHarness.publishableKey)
+    let clock = TraceTestClock()
     var manager: RadarTraceManager!
 
     /// `start: false` leaves the manager unstarted, for tests of `start` itself.
@@ -38,14 +39,15 @@ final class TraceTestHarness {
         }
     }
 
-    /// A new manager on the same directory, session, and key, as after a process restart. Started by default, like
-    /// the shared manager after `initialize`. Pass `start: false` to test `start` itself.
+    /// A new manager on the same directory, session, key, and clock, as after a process restart. Started by default,
+    /// like the shared manager after `initialize`. Pass `start: false` to test `start` itself.
     func makeManager(start: Bool = true) -> RadarTraceManager {
         let key = key
         let manager = RadarTraceManager(
             directory: directory,
             apiClient: RadarAPIClient(apiHelper: RadarAPIHelper(session: session)),
-            publishableKey: { key.value }
+            publishableKey: { key.value },
+            clock: clock.radarClock
         )
         if start {
             manager.start()
@@ -134,6 +136,33 @@ final class TraceTestHarness {
         let attributes = ((resourceSpans?["resource"] as? [String: Any])?["attributes"] as? [[String: Any]]) ?? []
         let attribute = attributes.first { $0["key"] as? String == key }
         return (attribute?["value"] as? [String: Any])?["stringValue"] as? String
+    }
+}
+
+/// Wall and monotonic clocks a test sets and advances. Starts at a fixed time.
+final class TraceTestClock: @unchecked Sendable {
+    private let lock = NSLock()
+    private var wallMillis: UInt64 = 1_780_000_000_000
+    private var monotonicNanos: UInt64 = 5_000_000_000
+
+    var radarClock: RadarTraceClock {
+        RadarTraceClock(
+            wallMillis: { self.lock.withLock { self.wallMillis } },
+            monotonicNanos: { self.lock.withLock { self.monotonicNanos } }
+        )
+    }
+
+    /// Advances both clocks, as time passing does.
+    func advance(milliseconds: UInt64) {
+        lock.withLock {
+            wallMillis += milliseconds
+            monotonicNanos += milliseconds * 1_000_000
+        }
+    }
+
+    /// Changes only the wall clock, as a user or network time update does.
+    func setWallClock(milliseconds: UInt64) {
+        lock.withLock { wallMillis = milliseconds }
     }
 }
 
