@@ -53,6 +53,18 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)deviceId {
+    // Caches the device ID for the rest of the session once a lookup succeeds. A nil result
+    // (e.g. before first unlock after a reboot) isn't cached, so the next call retries.
+    static NSString *deviceId;
+    @synchronized(self) {
+        if (!deviceId) {
+            deviceId = [self fetchDeviceId];
+        }
+        return deviceId;
+    }
+}
+
++ (NSString *)fetchDeviceId {
     NSString *service = @"com.radar";
     NSString *account = @"com.radar.kDeviceId";
 
@@ -95,6 +107,18 @@ static NSDateFormatter *_isoDateFormatter;
         (__bridge id)kSecAttrSynchronizable: @NO,
     };
     OSStatus addStatus = SecItemAdd((__bridge CFDictionaryRef)attributes, NULL);
+    if (addStatus == errSecDuplicateItem) {
+        CFTypeRef existingDataRef = NULL;
+        if (SecItemCopyMatching((__bridge CFDictionaryRef)query, &existingDataRef) == errSecSuccess) {
+            NSData *existingData = (__bridge_transfer NSData *)existingDataRef;
+            if ([existingData isKindOfClass:[NSData class]]) {
+                NSString *storedDeviceId = [[NSString alloc] initWithData:existingData encoding:NSUTF8StringEncoding];
+                if (storedDeviceId.length > 0) {
+                    return storedDeviceId;
+                }
+            }
+        }
+    }
     if (addStatus != errSecSuccess) {
         os_log(OS_LOG_DEFAULT, "Error saving to keychain | addStatus = %d", (int)addStatus);
         return nil;
