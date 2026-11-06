@@ -23,7 +23,7 @@ enum RadarConnectionType: String {
 }
 
 @objc(RadarUtils) @objcMembers
-class RadarUtils: NSObject {
+class RadarUtils: NSObject {  // swiftlint:disable:this type_body_length
 
     static let deviceModel = {
         var systemInfo = utsname()
