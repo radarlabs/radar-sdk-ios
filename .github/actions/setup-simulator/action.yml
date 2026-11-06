@@ -1,0 +1,34 @@
+name: Set up Xcode and simulator
+description: Selects Xcode 26.3 and exports SIMULATOR_ID for an available iPhone simulator.
+
+runs:
+  using: composite
+  steps:
+    - name: Use Xcode 26.3
+      shell: bash
+      run: sudo xcode-select -switch /Applications/Xcode_26.3.app
+
+    - name: Pick an available iPhone simulator
+      shell: bash
+      run: |
+        # Get a UDID for a valid iPhone simulator only (exclude iPads, Apple Watch, tvOS, etc)
+        SIM_ID=$(xcrun simctl list devices --json \
+          | jq -r '
+              .devices
+              | to_entries
+              # Filter keys for iOS runtimes only (ignore tvOS/watchOS)
+              | map(select(.key | startswith("com.apple.CoreSimulator.SimRuntime.iOS")))
+              | .[]
+              .value[]
+              # Only devices available AND name contains "iPhone"
+              | select(.isAvailable == true and (.name | test("iPhone")))
+              .udid
+          ' | head -n 1)
+
+        if [ -z "$SIM_ID" ]; then
+          echo "No available iPhone simulator found"
+          exit 1
+        fi
+
+        echo "SIMULATOR_ID=$SIM_ID" >> "$GITHUB_ENV"
+        echo "Picked iPhone simulator UDID: $SIM_ID"
