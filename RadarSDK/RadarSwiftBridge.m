@@ -250,4 +250,24 @@
     [beacon setRssi:rssi];
 }
 
+- (void)autocompleteQuery:(NSString *)query
+                     near:(CLLocation *)near
+                   layers:(NSArray<NSString *> *)layers
+                    limit:(int)limit
+                  country:(NSString *)country
+                 mailable:(BOOL)mailable
+             sessionToken:(NSString *)sessionToken
+        completionHandler:(void (^)(RadarStatus, NSArray<RadarAddress *> *_Nullable))completionHandler {
+    [[RadarAPIClient sharedInstance] autocompleteQuery:query
+                                                  near:near
+                                                layers:layers
+                                                 limit:limit
+                                               country:country
+                                              mailable:mailable
+                                          sessionToken:sessionToken
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
+                                         completionHandler(status, addresses);
+                                     }];
+}
+
 @end
