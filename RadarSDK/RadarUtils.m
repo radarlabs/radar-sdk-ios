@@ -10,6 +10,8 @@
 #import <sys/utsname.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#import <Security/Security.h>
+#import <os/log.h>
 
 #import "RadarUtils.h"
 
@@ -51,11 +53,53 @@ static NSDateFormatter *_isoDateFormatter;
 }
 
 + (NSString *)deviceId {
-    NSUUID *idfv = [[UIDevice currentDevice] identifierForVendor];
-    if (idfv) {
-        return idfv.UUIDString;
+    NSString *service = @"com.radar";
+    NSString *account = @"com.radar.kDeviceId";
+
+    NSDictionary *query = @{
+        (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrService: service,
+        (__bridge id)kSecAttrAccount: account,
+        (__bridge id)kSecReturnData: @YES,
+        (__bridge id)kSecAttrSynchronizable: @NO,
+    };
+
+    CFTypeRef dataTypeRef = NULL;
+    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &dataTypeRef);
+
+    if (status == errSecSuccess) {
+        NSData *data = (__bridge_transfer NSData *)dataTypeRef;
+        if ([data isKindOfClass:[NSData class]]) {
+            NSString *deviceId = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            if (deviceId.length > 0) {
+                return deviceId;
+            }
+        }
+    } else {
+        os_log(OS_LOG_DEFAULT, "Error reading from keychain | status = %d", (int)status);
     }
-    return nil;
+
+    NSString *deviceId = [[UIDevice currentDevice] identifierForVendor].UUIDString;
+    NSData *data = [deviceId dataUsingEncoding:NSUTF8StringEncoding];
+    if (!deviceId || !data) {
+        os_log(OS_LOG_DEFAULT, "Error getting deviceId");
+        return nil;
+    }
+
+    NSDictionary *attributes = @{
+        (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrService: service,
+        (__bridge id)kSecAttrAccount: account,
+        (__bridge id)kSecValueData: data,
+        (__bridge id)kSecAttrAccessible: (__bridge id)kSecAttrAccessibleAfterFirstUnlock,
+        (__bridge id)kSecAttrSynchronizable: @NO,
+    };
+    OSStatus addStatus = SecItemAdd((__bridge CFDictionaryRef)attributes, NULL);
+    if (addStatus != errSecSuccess) {
+        os_log(OS_LOG_DEFAULT, "Error saving to keychain | addStatus = %d", (int)addStatus);
+        return nil;
+    }
+    return deviceId;
 }
 
 + (NSString *)deviceType {
