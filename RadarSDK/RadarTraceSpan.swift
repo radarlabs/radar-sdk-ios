@@ -182,7 +182,8 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
     }
 
     private static func hex(_ value: UInt64) -> String {
-        String(format: "%016llx", value)
+        let digits = String(value, radix: 16)
+        return String(repeating: "0", count: 16 - digits.count) + digits
     }
 }
 
