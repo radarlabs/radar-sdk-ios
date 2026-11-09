@@ -101,7 +101,73 @@ extension RadarSerializedTests {
             #expect(spans["radar.tracking_update"]?["status"] == nil)
         }
 
+        // MARK: - Updates that send no track
+
+        // The Swift path's ranging can be replaced, so it covers updates that end without a track request. The
+        // Objective-C path ranges with RadarOneShotBeaconManager directly.
+
+        @Test("An update with no synced beacons to range and no forced track is discarded")
+        func trackingUpdateWithNothingToRangeIsDiscarded() async throws {
+            try await SendFixtures.withDependencies(SendFixtures.syncRegionWithModifiedBeacons, beacons: true) { bridge, _ in
+                SendFixtures.writeSyncedRegion()
+                let farAway = HandleLocationFixtures.location(latitude: HandleLocationFixtures.origin.latitude + 0.005)
+
+                let spans = try await sendWithoutTrack(location: farAway)
+
+                #expect(bridge.trackRequests.isEmpty)
+                #expect(spans.isEmpty)
+            }
+        }
+
+        @Test("An update whose ranging fails ends the root with the ranging status")
+        func trackingUpdateRangingFailure() async throws {
+            try await SendFixtures.withDependencies(SendFixtures.syncRegion, beacons: true) { bridge, ranger in
+                SendFixtures.writeSyncedRegion()
+                ranger.status = .errorBluetooth
+                ranger.rangedBeacons = nil
+
+                let spans = try await sendWithoutTrack()
+
+                #expect(bridge.trackRequests.isEmpty)
+                #expect(Set(spans.keys) == ["radar.tracking_update", "radar.beacon.range"])
+                #expect(TraceTestHarness.errorType(spans["radar.tracking_update"]) == "ERROR_BLUETOOTH")
+                #expect(TraceTestHarness.stringAttribute(spans["radar.tracking_update"], "radar.beacon.source") == "sync_region")
+                #expect(TraceTestHarness.errorType(spans["radar.beacon.range"]) == "ERROR_BLUETOOTH")
+            }
+        }
+
+        @Test("An update whose ranging leaves the beacon state unchanged ends the root without a track")
+        func trackingUpdateWithUnchangedBeaconState() async throws {
+            try await SendFixtures.withDependencies(SendFixtures.syncRegion, beacons: true) { bridge, ranger in
+                SendFixtures.writeSyncedRegion(lastSyncedBeaconIds: ["beacon1"])
+                ranger.rangedBeacons = [SendFixtures.rangedSyncedBeacon()]
+
+                let spans = try await sendWithoutTrack()
+
+                #expect(bridge.trackRequests.isEmpty)
+                #expect(Set(spans.keys) == ["radar.tracking_update", "radar.beacon.range"])
+                #expect(spans["radar.tracking_update"]?["status"] == nil)
+                #expect(TraceTestHarness.stringAttribute(spans["radar.tracking_update"], "radar.beacon.source") == "sync_region")
+                #expect(TraceTestHarness.intAttribute(spans["radar.beacon.range"], "radar.beacon.ranged_count") == 1)
+            }
+        }
+
         // MARK: - Helpers
+
+        /// Sends an unforced update through the Swift path with `SendFixtures`' seams, and returns the uploaded spans by
+        /// name once it finishes. Every path clears `sending` after ending or discarding the root, so this waits for
+        /// that rather than for an uploaded root.
+        private func sendWithoutTrack(
+            location: CLLocation = HandleLocationFixtures.location()
+        ) async throws -> [String: [String: Any]] {
+            RadarTraceSpan.defaultManager = harness.manager
+            defer { RadarTraceSpan.defaultManager = .shared }
+
+            await SendFixtures.send(host: TrackingRadarLocationManagerHost(), location: location, forceTrack: false)
+
+            try await harness.manager.flushAndWaitForTesting()
+            return harness.spansByName()
+        }
 
         private func useTrackResponse() throws {
             fixture.apiHelperMock.mockStatus = .success
