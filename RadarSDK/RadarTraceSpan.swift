@@ -211,13 +211,15 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
     /// Calls `callback` after this span's record has been queued or the span has been discarded. It runs right away if
     /// the span has already ended or doesn't record.
     func onEnded(_ callback: @escaping () -> Void) {
-        let runNow =
-            manager == nil
-            || lock.withLock {
-                if ended { return true }
-                endCallbacks.append(callback)
-                return false
-            }
+        guard manager != nil else {
+            callback()
+            return
+        }
+        let runNow = lock.withLock {
+            if ended { return true }
+            endCallbacks.append(callback)
+            return false
+        }
         if runNow {
             callback()
         }
