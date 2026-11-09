@@ -8,6 +8,9 @@
 import CoreLocation
 import Foundation
 
+// Keep sendLocation's steps private to this file, next to the entry point that runs them.
+// swiftlint:disable file_length
+
 // Swift port of `sendLocation:stopped:source:replayed:beacons:forceTrack:` in
 // RadarLocationManager.m. It ranges nearby beacons when the tracking options ask for them, sends
 // the location to the track API, and applies the response. The track and beacon search requests
@@ -73,8 +76,20 @@ extension RadarLocationManagerSwift {
             return
         }
 
-        let pending = PendingSend(host: host, bridge: bridge, send: send)
         let options = Radar.getTrackingOptions()
+
+        let trace = RadarTraceSpan.start("radar.tracking_update")
+        trace.recording { span in
+            span.recordTrackingUpdate(
+                source: send.source,
+                stopped: send.stopped,
+                beacons: options.beacons && searchesBeacons(for: send.source),
+                location: send.location,
+                foreground: bridge.isForeground()
+            )
+        }
+
+        let pending = PendingSend(host: host, bridge: bridge, send: send, trace: trace)
 
         if RadarSettings.useRadarModifiedBeacon {
             sendWithModifiedBeacons(pending, options: options)
@@ -101,15 +116,19 @@ extension RadarLocationManagerSwift {
         return RadarSyncManager.getObjCBeacons(for: location)
     }
 
-    private static func range(_ beacons: [RadarBeacon], completionHandler: @escaping RadarBeaconCompletionHandler) {
-        let box = RangeRequest(beacons: beacons, completionHandler: completionHandler)
+    private static func range(
+        _ beacons: [RadarBeacon], tracedBy trace: RadarTraceSpan, completionHandler: @escaping RadarBeaconCompletionHandler
+    ) {
+        let box = RangeRequest(beacons: beacons, completionHandler: trace.tracingBeaconHandler(completionHandler, mode: "beacons"))
         Task { @MainActor in
             rangeBeacons(box.beacons, box.completionHandler)
         }
     }
 
-    private static func range(uuids: [String], completionHandler: @escaping RadarBeaconCompletionHandler) {
-        let box = RangeRequest(beacons: [], completionHandler: completionHandler)
+    private static func range(
+        uuids: [String], tracedBy trace: RadarTraceSpan, completionHandler: @escaping RadarBeaconCompletionHandler
+    ) {
+        let box = RangeRequest(beacons: [], completionHandler: trace.tracingBeaconHandler(completionHandler, mode: "uuids"))
         Task { @MainActor in
             rangeBeaconUUIDs(uuids, box.completionHandler)
         }
@@ -144,8 +163,10 @@ extension RadarLocationManagerSwift {
         RadarLogger.shared.debug("🦅 Searching for nearby beacons")
 
         if let syncedBeacons = syncedRegionBeacons(near: send.location) {
+            pending.trace.setBeaconSource("sync_region")
             rangeSyncedBeaconsForModifiedBeacons(pending, syncedBeacons: syncedBeacons)
         } else {
+            pending.trace.setBeaconSource("search")
             searchAndRangeBeaconsForModifiedBeacons(pending)
         }
     }
@@ -156,17 +177,20 @@ extension RadarLocationManagerSwift {
             if forceTrack {
                 track(pending, beacons: [], response: .always)
             } else {
+                // Nothing to range and no track to send, so there's nothing to trace.
+                pending.trace.discard()
                 pending.host.setSending(false)
             }
             return
         }
 
         replaceSyncedBeacons(locationManager: pending.host.locationManager, beacons: syncedBeacons)
-        range(syncedBeacons) { status, beacons in
+        range(syncedBeacons, tracedBy: pending.trace) { status, beacons in
             guard status == .success, let beacons else {
                 if forceTrack {
                     track(pending, beacons: nil, response: .always)
                 } else {
+                    pending.trace.end(status: status)
                     pending.host.setSending(false)
                 }
                 return
@@ -183,6 +207,7 @@ extension RadarLocationManagerSwift {
             if recordBeaconStateIfChanged(rangedIds, savedIds: Array(rangedIds), bridge: pending.bridge) {
                 track(pending, beacons: beacons, response: .always)
             } else {
+                pending.trace.end(status: status)
                 pending.host.setSending(false)
             }
         }
@@ -192,7 +217,8 @@ extension RadarLocationManagerSwift {
         pending.bridge.searchBeacons(
             near: pending.send.location,
             radius: RadarNearbyBeaconSearch.radius,
-            limit: RadarNearbyBeaconSearch.limit
+            limit: RadarNearbyBeaconSearch.limit,
+            traceSpan: pending.trace
         ) { _, beacons, beaconUUIDs in
             let trackRanged: RadarBeaconCompletionHandler = { status, rangedBeacons in
                 track(pending, beacons: status == .success ? rangedBeacons : nil, response: .always)
@@ -200,10 +226,10 @@ extension RadarLocationManagerSwift {
 
             if let beaconUUIDs, !beaconUUIDs.isEmpty {
                 replaceSyncedBeaconUUIDs(locationManager: pending.host.locationManager, uuids: beaconUUIDs)
-                range(uuids: beaconUUIDs, completionHandler: trackRanged)
+                range(uuids: beaconUUIDs, tracedBy: pending.trace, completionHandler: trackRanged)
             } else if let beacons, !beacons.isEmpty {
                 replaceSyncedBeacons(locationManager: pending.host.locationManager, beacons: beacons)
-                range(beacons, completionHandler: trackRanged)
+                range(beacons, tracedBy: pending.trace, completionHandler: trackRanged)
             } else {
                 track(pending, beacons: [], response: .always)
             }
@@ -241,8 +267,10 @@ extension RadarLocationManagerSwift {
     }
 
     private static func rangeSyncedBeaconsBeforeTracking(_ pending: PendingSend, syncedBeacons: [RadarBeacon]) {
-        range(syncedBeacons) { status, rangedBeacons in
+        pending.trace.setBeaconSource("sync_region")
+        range(syncedBeacons, tracedBy: pending.trace) { status, rangedBeacons in
             guard status == .success, let rangedBeacons else {
+                pending.trace.end(status: status)
                 pending.host.setSending(false)
                 return
             }
@@ -251,17 +279,20 @@ extension RadarLocationManagerSwift {
             if recordBeaconStateIfChanged(Set(matchedIds), savedIds: matchedIds, bridge: pending.bridge) {
                 track(pending, beacons: rangedBeacons, response: .requiresConfig)
             } else {
+                pending.trace.end(status: status)
                 pending.host.setSending(false)
             }
         }
     }
 
-    /// Registers nearby beacons for region monitoring. The location is sent without waiting for it.
+    /// Registers nearby beacons for region monitoring. The location is sent without waiting for it, so the search
+    /// isn't part of the update's trace, which can end first.
     private static func replaceSyncedBeaconsFromSearch(_ pending: PendingSend) {
         pending.bridge.searchBeacons(
             near: pending.send.location,
             radius: RadarNearbyBeaconSearch.radius,
-            limit: RadarNearbyBeaconSearch.limit
+            limit: RadarNearbyBeaconSearch.limit,
+            traceSpan: nil
         ) { _, beacons, beaconUUIDs in
             if let beaconUUIDs, !beaconUUIDs.isEmpty {
                 replaceSyncedBeaconUUIDs(locationManager: pending.host.locationManager, uuids: beaconUUIDs)
@@ -291,8 +322,10 @@ extension RadarLocationManagerSwift {
                 source: send.source,
                 replayed: send.replayed,
                 beacons: beaconsBox.beacons,
-                indoorLocation: indoorLocation
+                indoorLocation: indoorLocation,
+                traceSpan: pending.trace
             ) { status, events, user, nearbyGeofences, config in
+                pending.trace.end(status: status)
                 pending.host.setSending(false)
                 reconcileSyncState(status: status, events: events, user: user)
 
@@ -351,17 +384,19 @@ struct LocationToSend {
     let forceTrack: Bool
 }
 
-/// The host, bridge, and location for one send, shared by the callbacks that finish it. The host
-/// and bridge are Objective-C objects that the send only calls on, so they're `@unchecked Sendable`.
+/// The host, bridge, location, and trace for one send, shared by the callbacks that finish it. The
+/// host and bridge are Objective-C objects that the send only calls on, so they're `@unchecked Sendable`.
 private final class PendingSend: @unchecked Sendable {
     let host: RadarLocationManagerSwiftHost
     let bridge: RadarSwiftBridgeProtocol
     let send: LocationToSend
+    let trace: RadarTraceSpan
 
-    init(host: RadarLocationManagerSwiftHost, bridge: RadarSwiftBridgeProtocol, send: LocationToSend) {
+    init(host: RadarLocationManagerSwiftHost, bridge: RadarSwiftBridgeProtocol, send: LocationToSend, trace: RadarTraceSpan) {
         self.host = host
         self.bridge = bridge
         self.send = send
+        self.trace = trace
     }
 }
 

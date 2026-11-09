@@ -52,7 +52,8 @@ protocol RadarSwiftBridgeProtocol {
     func radarUser() -> RadarUser?
     func didFail(status: RadarStatus)
     // Calls the Objective-C `RadarAPIClient`, which `sendLocation` still uses to track and search beacons.
-    @objc(trackWithLocation:stopped:source:replayed:beacons:indoorLocation:completionHandler:)
+    // `traceSpan` is the tracking update's root span, which the request's client span is a child of.
+    @objc(trackWithLocation:stopped:source:replayed:beacons:indoorLocation:traceSpan:completionHandler:)
     func track(  // swiftlint:disable:this function_parameter_count
         location: CLLocation,
         stopped: Bool,
@@ -60,13 +61,15 @@ protocol RadarSwiftBridgeProtocol {
         replayed: Bool,
         beacons: [RadarBeacon]?,
         indoorLocation: CLLocation?,
+        traceSpan: RadarTraceSpan?,
         completionHandler: @escaping (RadarStatus, [RadarEvent]?, RadarUser?, [RadarGeofence]?, RadarConfig?) -> Void
     )
-    @objc(searchBeaconsNear:radius:limit:completionHandler:)
+    @objc(searchBeaconsNear:radius:limit:traceSpan:completionHandler:)
     func searchBeacons(
         near location: CLLocation,
         radius: Int32,
         limit: Int32,
+        traceSpan: RadarTraceSpan?,
         completionHandler: @escaping (RadarStatus, [RadarBeacon]?, [String]?) -> Void
     )
     func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon

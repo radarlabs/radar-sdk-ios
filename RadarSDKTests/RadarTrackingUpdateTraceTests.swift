@@ -11,21 +11,44 @@ import Testing
 
 @testable import RadarSDK
 
+/// The `sendLocation` implementation a tracking update runs: the Objective-C one in RadarLocationManager.m, or the Swift
+/// port it dispatches to when `useSwiftLocationManager` is on.
+enum TrackingUpdateSendPath: CaseIterable, Sendable, CustomTestStringConvertible {
+    case objectiveC
+    case swift
+
+    var testDescription: String { self == .objectiveC ? "Objective-C" : "Swift" }
+}
+
+/// Calls `sendLocation:stopped:source:replayed:beacons:forceTrack:` in RadarLocationManager.m, which no header declares.
+@MainActor
+private func invokeSendLocation(
+    on manager: RadarLocationManager, location: CLLocation, stopped: Bool, source: RadarLocationSource, forceTrack: Bool
+) {
+    typealias SendLocationFunction = @convention(c) (AnyObject, Selector, CLLocation, Bool, RadarLocationSource, Bool, NSArray?, Bool) -> Void
+
+    let selector = NSSelectorFromString("sendLocation:stopped:source:replayed:beacons:forceTrack:")
+    guard let implementation = manager.method(for: selector) else {
+        preconditionFailure("RadarLocationManager does not respond to sendLocation:stopped:source:replayed:beacons:forceTrack:")
+    }
+    unsafeBitCast(implementation, to: SendLocationFunction.self)(manager, selector, location, stopped, source, false, nil, forceTrack)
+}
+
 extension RadarSerializedTests {
-    /// Traces of tracking updates sent by `RadarLocationManager.sendLocation`. Root spans record into an isolated
-    /// manager through `RadarTraceSpan.defaultManager`.
+    /// Traces of tracking updates sent by `RadarLocationManager.sendLocation`, on both the Objective-C and Swift paths.
+    /// Root spans record into an isolated manager through `RadarTraceSpan.defaultManager`.
     @Suite(.serialized)
     @MainActor
     struct RadarTrackingUpdateTraceTests {
         private let fixture = RadarSDKTestFixture()
         private let harness = TraceTestHarness()
 
-        @Test("A tracking update traces its track request")
-        func trackingUpdateSpanTree() async throws {
+        @Test("A tracking update traces its track request", arguments: TrackingUpdateSendPath.allCases)
+        func trackingUpdateSpanTree(path: TrackingUpdateSendPath) async throws {
             try useTrackResponse()
             let location = RadarSDKTestResources.manhattanLocation()
 
-            let spans = try await sendLocation(location, source: .backgroundLocation, stopped: true)
+            let spans = try await sendLocation(location, source: .backgroundLocation, stopped: true, path: path)
 
             #expect(Set(spans.keys) == ["radar.tracking_update", "POST /v1/track"])
             let root = try #require(spans["radar.tracking_update"])
@@ -40,20 +63,21 @@ extension RadarSerializedTests {
             #expect(spans["POST /v1/track"]?["parentSpanId"] as? String == root["spanId"] as? String)
         }
 
-        @Test("A failed tracking update ends the root with the track's status")
-        func trackingUpdateFailure() async throws {
+        @Test("A failed tracking update ends the root with the track's status", arguments: TrackingUpdateSendPath.allCases)
+        func trackingUpdateFailure(path: TrackingUpdateSendPath) async throws {
             fixture.apiHelperMock.mockStatus = .errorServer
             fixture.apiHelperMock.mockResponse = [:]
 
-            let spans = try await sendLocation(RadarSDKTestResources.manhattanLocation(), source: .geofenceExit, stopped: false)
+            let spans = try await sendLocation(
+                RadarSDKTestResources.manhattanLocation(), source: .geofenceExit, stopped: false, path: path)
 
             #expect(TraceTestHarness.errorType(spans["radar.tracking_update"]) == "ERROR_SERVER")
             #expect(TraceTestHarness.stringAttribute(spans["radar.tracking_update"], "radar.location.source") == "geofence_exit")
             #expect(TraceTestHarness.errorType(spans["POST /v1/track"]) == "ERROR_SERVER")
         }
 
-        @Test("A batched tracking update is marked, and has no request span")
-        func batchedTrackingUpdate() async throws {
+        @Test("A batched tracking update is marked, and has no request span", arguments: TrackingUpdateSendPath.allCases)
+        func batchedTrackingUpdate(path: TrackingUpdateSendPath) async throws {
             try useTrackResponse()
             let buffer = RadarReplayBuffer.sharedInstance
             let originalOptions = RadarSettings.trackingOptions
@@ -69,7 +93,8 @@ extension RadarSerializedTests {
             RadarSettings.trackingOptions = options
             RadarSettings.remoteTrackingOptions = nil
 
-            let spans = try await sendLocation(RadarSDKTestResources.manhattanLocation(), source: .backgroundLocation, stopped: false)
+            let spans = try await sendLocation(
+                RadarSDKTestResources.manhattanLocation(), source: .backgroundLocation, stopped: false, path: path)
 
             #expect(Set(spans.keys) == ["radar.tracking_update"])
             #expect(TraceTestHarness.boolAttribute(spans["radar.tracking_update"], "radar.track.batched") == true)
@@ -83,16 +108,21 @@ extension RadarSerializedTests {
             fixture.apiHelperMock.mockResponse = try RadarSDKTestResources.jsonDictionary(fromResource: "track")
         }
 
-        /// Sends a tracking update with root spans recording into the harness's manager, and returns the uploaded
-        /// spans by name once its root has been recorded.
+        /// Sends a tracking update on `path`, with root spans recording into the harness's manager, and returns the
+        /// uploaded spans by name once its root has been recorded.
         private func sendLocation(
-            _ location: CLLocation, source: RadarLocationSource, stopped: Bool
+            _ location: CLLocation, source: RadarLocationSource, stopped: Bool, path: TrackingUpdateSendPath
         ) async throws -> [String: [String: Any]] {
-            let host = try #require(RadarLocationManager.sharedInstance() as? RadarLocationManagerSwiftHost)
+            let originalConfiguration = RadarSettings.sdkConfiguration
+            RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": path == .swift])
             RadarTraceSpan.defaultManager = harness.manager
-            defer { RadarTraceSpan.defaultManager = .shared }
+            defer {
+                RadarTraceSpan.defaultManager = .shared
+                RadarSettings.sdkConfiguration = originalConfiguration
+            }
 
-            host.sendLocation(location, stopped: stopped, source: source, replayed: false, beacons: nil, forceTrack: true)
+            invokeSendLocation(
+                on: RadarLocationManager.sharedInstance(), location: location, stopped: stopped, source: source, forceTrack: true)
 
             // The update has no completion handler, so wait for its root to be uploaded.
             for _ in 0..<200 {
