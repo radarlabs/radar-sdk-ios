@@ -243,6 +243,40 @@ extension RadarSerializedTests {
             }
         }
 
+        @Test("concurrent relative and absolute altitude updates keep each other's values")
+        func concurrentAltitudeUpdatesKeepBothValues() {
+            withMotionState { _ in
+                DispatchQueue.concurrentPerform(iterations: 200) { index in
+                    if index.isMultiple(of: 2) {
+                        RadarLocationManagerSwift.recordRelativeAltitude(StubAltitudeData(pressure: 100, relativeAltitude: 1))
+                    } else {
+                        RadarLocationManagerSwift.recordAbsoluteAltitude(
+                            StubAbsoluteAltitudeData(altitude: 10, accuracy: 1, precision: 1))
+                    }
+                }
+
+                let stored = RadarState.shared.lastRelativeAltitudeData
+                #expect(stored?["pressure"] != nil)
+                #expect(stored?["altitude"] != nil)
+            }
+        }
+
+        @Test("without the bridge, usePressure keeps the stored motion authorization")
+        func usePressureWithoutBridgeKeepsAuthorization() {
+            withMotionState { _ in
+                let originalBridge = RadarSwift.bridge
+                RadarSwift.bridge = nil
+                defer { RadarSwift.bridge = originalBridge }
+                RadarState.shared.motionAuthorizationString = "AUTHORIZED"
+                let host = TrackingRadarLocationManagerHost()
+
+                RadarLocationManagerSwift.startMotionUpdates(host: host, options: options { $0.usePressure = true })
+
+                #expect(RadarState.shared.motionAuthorizationString == "AUTHORIZED")
+                #expect(host.relativeAltitudeHandlers.count == 1)
+            }
+        }
+
         @Test("nil altitude data leaves the stored altitude unchanged")
         func nilAltitudeDataIsIgnored() {
             withMotionState { _ in

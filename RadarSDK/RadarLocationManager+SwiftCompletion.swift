@@ -15,7 +15,8 @@ import Foundation
 // calls every waiting handler.
 //
 // The Objective-C methods dispatch to these twins when `useSwiftLocationManager` is on. Each
-// store times out its own handlers, so a handler added before the flag changes still gets a call.
+// store's timeouts call only that store's handlers. A handler that waits in the Objective-C store
+// when the flag turns on still gets a call: from the Objective-C call method, or from its timeout.
 extension RadarLocationManagerSwift {
 
     /// Holds the waiting completion handlers. Tests replace it to record calls or to control timeouts.

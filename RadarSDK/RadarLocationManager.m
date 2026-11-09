@@ -129,9 +129,16 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift callCompletionHandlersWithStatus:status location:location];
-        return;
     }
 
+    // Also call handlers that this store got before useSwiftLocationManager turned on. When the
+    // flag is off, the Swift store is empty.
+    [self callObjCCompletionHandlersWithStatus:status location:location];
+}
+
+// Calls only the handlers in the Objective-C store. Its timeouts call this directly, so a timeout
+// never calls the Swift store's handlers after useSwiftLocationManager changes.
+- (void)callObjCCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
     @synchronized(self) {
         if (!self.completionHandlers.count){
             return;
@@ -170,19 +177,19 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (NSInteger)completionHandlerCount {
+    NSInteger swiftCount = 0;
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        return [RadarLocationManagerSwift completionHandlerCount];
+        swiftCount = [RadarLocationManagerSwift completionHandlerCount];
     }
 
     @synchronized(self) {
-        return self.completionHandlers.count;
+        return swiftCount + (NSInteger)self.completionHandlers.count;
     }
 }
 
 - (void)cancelTimeouts {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift cancelTimeouts];
-        return;
     }
 
     @synchronized(self) {
@@ -196,7 +203,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     @synchronized(self) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Location timeout"];
 
-        [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+        [self callObjCCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
     }
 }
 
@@ -1457,7 +1464,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        [RadarLocationManagerSwift didUpdateLocations:locations completionHandlerCount:(NSUInteger)[RadarLocationManagerSwift completionHandlerCount]];
+        [RadarLocationManagerSwift didUpdateLocations:locations completionHandlerCount:(NSUInteger)[self completionHandlerCount]];
         return;
     }
 

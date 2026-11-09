@@ -88,7 +88,6 @@ extension RadarSerializedTests {
                     host: host, location: HandleLocationFixtures.location(horizontalAccuracy: -1), source: .backgroundLocation,
                     beacons: nil)
 
-                #expect(RadarLocationManagerSwiftTestHelpers.completions.cancelTimeoutsCallCount == 1)
                 #expect(RadarLocationManagerSwiftTestHelpers.completions.statuses == [.errorLocation])
                 #expect(host.sentLocations.isEmpty)
                 #expect(bridge.lastLocation() == nil)
@@ -109,6 +108,8 @@ extension RadarSerializedTests {
 
                 #expect(host.updateTrackingLocations.count == 1)
                 #expect(host.updateTrackingLocations.first??.timestamp == location.timestamp)
+                // The handlers aren't called here, so their timeouts must stay armed.
+                #expect(RadarLocationManagerSwiftTestHelpers.completions.cancelTimeoutsCallCount == 0)
                 #expect(RadarLocationManagerSwiftTestHelpers.completions.statuses.isEmpty)
                 #expect(host.sentLocations.isEmpty)
                 #expect(bridge.lastLocation() == nil)

@@ -208,5 +208,39 @@ extension RadarSerializedTests {
                 #expect(count(manager, countSelector) == 0)
             }
         }
+
+        @Test("after useSwiftLocationManager turns on, an Objective-C timeout calls only the Objective-C store")
+        func objcTimeoutAfterFlagChangeCallsOnlyObjCStore() throws {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            defer { RadarLocationManagerSwiftTestHelpers.clearState() }
+
+            try RadarLocationManagerSwiftTestHelpers.withRecordingCompletionStore { completions in
+                let manager = RadarLocationManager.sharedInstance()
+                let addSelector = NSSelectorFromString("addCompletionHandler:")
+                let countSelector = NSSelectorFromString("completionHandlerCount")
+                let timeoutSelector = NSSelectorFromString("timeoutWithCompletionHandler:")
+                try #require(manager.responds(to: addSelector))
+                try #require(manager.responds(to: timeoutSelector))
+                let add = unsafeBitCast(manager.method(for: addSelector), to: ObjCAddCompletionHandler.self)
+                let count = unsafeBitCast(manager.method(for: countSelector), to: ObjCCompletionHandlerCount.self)
+
+                // Start with an empty Objective-C store.
+                manager.perform(timeoutSelector, with: nil)
+
+                var objcStatuses: [RadarStatus] = []
+                RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": false])
+                add(manager, addSelector, { status, _, _ in objcStatuses.append(status) })
+
+                RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": true])
+                RadarLocationManagerSwift.addCompletionHandler { _, _, _ in }
+                #expect(count(manager, countSelector) == 2)
+
+                manager.perform(timeoutSelector, with: nil)
+
+                #expect(objcStatuses == [.errorLocation])
+                #expect(completions.statuses.isEmpty)
+                #expect(count(manager, countSelector) == 1)
+            }
+        }
     }
 }

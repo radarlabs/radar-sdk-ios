@@ -19,6 +19,10 @@ extension RadarLocationManagerSwift {
     /// is fully ported.
     private static let motionHeadingFilter: CLLocationDegrees = 5
 
+    /// Relative and absolute altitude updates arrive on different Core Motion queues. Both read,
+    /// change, and write the same stored dictionary, so this lock keeps one from losing the other's keys.
+    private static let altitudeLock = NSLock()
+
     /// Starts a track after the motion activity changes. Tests replace it so they don't call the track API.
     nonisolated(unsafe) static var trackOnceAfterActivityChange: () -> Void = {
         Radar.trackOnce(completionHandler: nil)
@@ -36,8 +40,11 @@ extension RadarLocationManagerSwift {
         }
 
         if options.usePressure {
+            // Without the bridge (before `Radar.initialize`), keep the stored value instead of clearing it.
             let authorization = RadarSwift.bridge?.motionAuthorizationString()
-            RadarState.shared.motionAuthorizationString = authorization
+            if let authorization {
+                RadarState.shared.motionAuthorizationString = authorization
+            }
             let authorizationDescription = authorization ?? "unknown"
 
             RadarLogger.shared.debug(
@@ -107,12 +114,11 @@ extension RadarLocationManagerSwift {
         let pressure = altitudeData.pressure.doubleValue * 10
         let relativeAltitude = altitudeData.relativeAltitude.doubleValue
 
-        let state = RadarState.shared
-        var altitude = state.lastRelativeAltitudeData ?? [:]
-        altitude["pressure"] = pressure
-        altitude["relativeAltitude"] = relativeAltitude
-        altitude["relativeAltitudeTimestamp"] = Date().timeIntervalSince1970
-        state.lastRelativeAltitudeData = altitude
+        updateStoredAltitude { altitude in
+            altitude["pressure"] = pressure
+            altitude["relativeAltitude"] = relativeAltitude
+            altitude["relativeAltitudeTimestamp"] = Date().timeIntervalSince1970
+        }
 
         RadarLogger.shared.debug(
             "🦅 Stored relative altitude: pressure=\(String(format: "%.1f", pressure)) hPa, "
@@ -126,18 +132,28 @@ extension RadarLocationManagerSwift {
             return
         }
 
-        let state = RadarState.shared
-        var altitude = state.lastRelativeAltitudeData ?? [:]
-        altitude["altitude"] = altitudeData.altitude
-        altitude["accuracy"] = altitudeData.accuracy
-        altitude["precision"] = altitudeData.precision
-        altitude["absoluteAltitudeTimestamp"] = Date().timeIntervalSince1970
-        state.lastRelativeAltitudeData = altitude
+        updateStoredAltitude { altitude in
+            altitude["altitude"] = altitudeData.altitude
+            altitude["accuracy"] = altitudeData.accuracy
+            altitude["precision"] = altitudeData.precision
+            altitude["absoluteAltitudeTimestamp"] = Date().timeIntervalSince1970
+        }
 
         RadarLogger.shared.debug(
             "🦅 Stored absolute altitude: altitude=\(String(format: "%.3f", altitudeData.altitude)) m, "
                 + "accuracy=\(String(format: "%.3f", altitudeData.accuracy)) m, "
                 + "precision=\(String(format: "%.3f", altitudeData.precision)) m"
         )
+    }
+
+    /// Changes the stored altitude dictionary as one step, under `altitudeLock`.
+    private static func updateStoredAltitude(_ change: (inout [String: Any]) -> Void) {
+        altitudeLock.lock()
+        defer { altitudeLock.unlock() }
+
+        let state = RadarState.shared
+        var altitude = state.lastRelativeAltitudeData ?? [:]
+        change(&altitude)
+        state.lastRelativeAltitudeData = altitude
     }
 }
