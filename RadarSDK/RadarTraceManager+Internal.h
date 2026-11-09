@@ -9,6 +9,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class RadarTraceSpan;
+
 // Declares the internal Swift RadarTraceManager for Objective-C callers, since internal Swift classes are not emitted
 // into RadarSDK-Swift.h.
 @interface RadarTraceManager : NSObject
@@ -22,9 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 // Uploads persisted spans, if any. Does nothing before -start.
 - (void)flush;
 
+// Flushes when span ends, so the upload includes it, or now if span is nil, doesn't record, or has ended.
+- (void)flushAfterSpan:(RadarTraceSpan *_Nullable)span;
+
 // Applies the server's sampling decision for sessionId, which must be the session sent with the request, not the
-// current one. Only a session's first decision counts.
-- (void)onSamplingDecisionForSessionId:(NSString *)sessionId sampled:(BOOL)sampled;
+// current one. Only a session's first decision counts. A sampled decision flushes after flushAfterSpan ends.
+- (void)onSamplingDecisionForSessionId:(NSString *)sessionId sampled:(BOOL)sampled flushAfter:(RadarTraceSpan *_Nullable)span;
 
 @end
 

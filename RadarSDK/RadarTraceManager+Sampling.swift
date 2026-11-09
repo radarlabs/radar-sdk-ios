@@ -38,9 +38,10 @@ extension RadarTraceManager {
     /// Applies the server's sampling decision for `sessionId`, which must be the session sent with the request, not the
     /// current one: the session can change while a request is in flight. Pending spans from that session become
     /// uploadable if sampled and are deleted otherwise. Only a session's first decision counts, so a session's sampling
-    /// can't change partway through, for example if the sampling rate changes.
-    @objc(onSamplingDecisionForSessionId:sampled:)
-    func onSamplingDecision(sessionId: String, sampled: Bool) {
+    /// can't change partway through, for example if the sampling rate changes. A sampled decision flushes them, or with
+    /// `flushAfter`, flushes when that span ends, so a trace that's still open uploads whole.
+    @objc(onSamplingDecisionForSessionId:sampled:flushAfter:)
+    func onSamplingDecision(sessionId: String, sampled: Bool, flushAfter: RadarTraceSpan? = nil) {
         let isFirst = samplingLock.withLock {
             guard !samplingDecisions.contains(where: { $0.sessionId == sessionId }) else { return false }
             samplingDecisions.append((sessionId, sampled))
@@ -52,7 +53,7 @@ extension RadarTraceManager {
         guard isFirst else { return }
         disk.async { self.store.resolvePending(sessionId: sessionId, sampled: sampled) }
         if sampled {
-            flush()
+            flush(after: flushAfter)
         }
     }
 

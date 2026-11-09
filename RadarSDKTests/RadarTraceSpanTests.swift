@@ -327,3 +327,71 @@ final class RadarTraceSpanTests {
         return attributes.first { $0["key"] as? String == key }?["value"] as? [String: Any]
     }
 }
+
+// MARK: - Flushing when a span ends
+
+extension RadarTraceSpanTests {
+    @Test("flush(after:) waits for the span to end, so one upload holds the whole trace")
+    func flushAfterWaitsForSpanToEnd() async throws {
+        try await manager.waitForFlushForTesting()
+        let root = RadarTraceSpan.start("root", manager: manager)
+        root.child("POST /v1/track", kind: .client).end(status: .success)
+
+        manager.flush(after: root)
+        await manager.awaitDiskForTesting()
+        try await manager.waitForFlushForTesting()
+        #expect(session.requests.isEmpty)
+
+        root.end(status: .success)
+        #expect(try await uploadsAfterFlush() == [["root", "POST /v1/track"]])
+    }
+
+    @Test("flush(after:) flushes now when the span has ended or doesn't record")
+    func flushAfterFlushesNowWhenSpanCantWait() async throws {
+        try await manager.waitForFlushForTesting()
+        let root = RadarTraceSpan.start("root", manager: manager)
+        root.end(status: .success)
+
+        manager.flush(after: root)
+        #expect(try await uploadsAfterFlush() == [["root"]])
+
+        try await harness.recordSpans(1)
+        manager.flush(after: .noop)
+        #expect(try await uploadsAfterFlush().count == 2)
+    }
+
+    @Test("A sampled decision with flushAfter flushes when that span ends")
+    func samplingDecisionFlushesWhenSpanEnds() async throws {
+        try await manager.waitForFlushForTesting()
+        harness.useServerSampling(sessionId: "1000")
+        let root = RadarTraceSpan.start("root", manager: manager)
+        root.child("POST /v1/track", kind: .client).end(status: .success)
+
+        manager.onSamplingDecision(sessionId: "1000", sampled: true, flushAfter: root)
+        await manager.awaitDiskForTesting()
+        try await manager.waitForFlushForTesting()
+        #expect(session.requests.isEmpty)
+
+        root.end(status: .success)
+        #expect(try await uploadsAfterFlush() == [["root", "POST /v1/track"]])
+    }
+
+    @Test("Discarding a span runs the flush that was waiting for it")
+    func discardRunsWaitingFlush() async throws {
+        try await manager.waitForFlushForTesting()
+        try await harness.recordSpans(1)
+        let root = RadarTraceSpan.start("root", manager: manager)
+
+        manager.flush(after: root)
+        root.discard()
+
+        #expect(try await uploadsAfterFlush().count == 1)
+    }
+
+    /// Waits for queued writes and the flush they started, without starting one, then returns each upload's span names.
+    private func uploadsAfterFlush() async throws -> [Set<String>] {
+        await manager.awaitDiskForTesting()
+        try await manager.waitForFlushForTesting()
+        return session.payloads.map { Set(Self.spans($0).compactMap { $0["name"] as? String }) }
+    }
+}

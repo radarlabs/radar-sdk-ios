@@ -159,6 +159,17 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
         disk.async { self.uploadNextBatch() }
     }
 
+    /// Flushes when `span` ends, so the upload includes it, or now if `span` is nil, doesn't record, or has ended. A
+    /// request's response is handled before its trace's root span ends, so flushing right away would upload the trace
+    /// without its root.
+    @objc(flushAfterSpan:)
+    func flush(after span: RadarTraceSpan?) {
+        if span?.flushWhenEnded() == true {
+            return
+        }
+        flush()
+    }
+
     /// Fingerprint of the current publishable key, or nil if none is set.
     func currentProjectFingerprint() -> String? {
         publishableKey().map(Self.fingerprint)
