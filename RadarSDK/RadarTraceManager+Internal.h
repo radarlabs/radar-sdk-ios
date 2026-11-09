@@ -21,10 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 // stored spans. Later calls do nothing.
 - (void)start;
 
-// Uploads persisted spans, if any. Does nothing before -start.
-- (void)flush;
-
-// Flushes when span ends, so the upload includes it, or now if span is nil, doesn't record, or has ended.
+// Uploads persisted spans, if any. Does nothing before -start. With span, waits until it ends so the upload includes
+// it; flushes now if span is nil, doesn't record, or has ended.
 - (void)flushAfterSpan:(RadarTraceSpan *_Nullable)span;
 
 // Applies the server's sampling decision for sessionId, which must be the session sent with the request, not the
