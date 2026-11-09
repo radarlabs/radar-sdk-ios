@@ -28,11 +28,6 @@ extension RadarLocationManagerSwift {
 
         let bypassDeviceLocationState = shouldBypassDeviceLocationState(for: source)
 
-        // Unlike the Objective-C method, don't cancel the waiting timeouts here. Several steps
-        // below return without calling the waiting handlers, and a cancelled timeout would leave
-        // those location requests waiting with no end. The store cancels a handler's timeout when
-        // it calls the handler.
-
         guard location.isValid else {
             RadarLogger.shared.debug("🦅 Invalid location | source = \(sourceString); location = \(location)")
             callCompletionHandlers(status: .errorLocation, location: nil)
