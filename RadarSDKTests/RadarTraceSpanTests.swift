@@ -376,16 +376,16 @@ extension RadarTraceSpanTests {
         #expect(try await uploadsAfterFlush() == [["root", "POST /v1/track"]])
     }
 
-    @Test("Discarding a span runs the flush that was waiting for it")
+    @Test("Discarding a span runs the flush that was waiting for it, which uploads earlier spans")
     func discardRunsWaitingFlush() async throws {
         try await manager.waitForFlushForTesting()
-        try await harness.recordSpans(1)
-        let root = RadarTraceSpan.start("root", manager: manager)
+        RadarTraceSpan.start("earlier", manager: manager).end(status: .success)
+        let root = RadarTraceSpan.start("discarded", manager: manager)
 
         manager.flush(after: root)
         root.discard()
 
-        #expect(try await uploadsAfterFlush().count == 1)
+        #expect(try await uploadsAfterFlush() == [["earlier"]])
     }
 
     /// Waits for queued writes and the flush they started, without starting one, then returns each upload's span names.

@@ -46,10 +46,10 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
     private let startMonotonicNanos: UInt64
 
     private let lock = NSLock()
-    // Guarded by lock.
+    // Guarded by lock. ended is set after the record is queued or the span is discarded.
     private var attributes: [String: RadarTraceAttributeValue] = [:]
     private var ended = false
-    private var flushOnEnd = false
+    private var endCallbacks: [() -> Void] = []
 
     /// Shared span returned when tracing is off. It records nothing, so one instance serves every caller.
     static let noop = RadarTraceSpan(
@@ -185,58 +185,60 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
     @objc(endWithStatus:)
     func end(status: RadarStatus) {
         guard let manager else { return }
-        let ending: (attributes: [String: RadarTraceAttributeValue], flush: Bool)? = lock.withLock {
+        let callbacks: [() -> Void]? = lock.withLock {
             if ended { return nil }
-            ended = true
-            return (attributes, flushOnEnd)
+            // Duration comes from the monotonic clock, so a wall-clock change while the span is open doesn't skew it.
+            let now = manager.clock.monotonicNanos()
+            let elapsedMillis = (now > startMonotonicNanos ? now - startMonotonicNanos : 0) / 1_000_000
+            let completed = RadarCompletedSpan(
+                name: name,
+                traceId: traceId,
+                spanId: spanId,
+                parentSpanId: parentSpanId,
+                kind: kind,
+                startUnixNanos: startUnixMillis * 1_000_000,
+                endUnixNanos: (startUnixMillis + elapsedMillis) * 1_000_000,
+                status: status,
+                attributes: attributes
+            )
+            // Record before marking the span ended, so a flush queued by an end listener uploads this span.
+            manager.record(completed, project: project, sessionId: sessionId)
+            return takeEndCallbacks()
         }
-        guard let ending else { return }
-
-        // Duration comes from the monotonic clock, so a wall-clock change while the span is open doesn't skew it.
-        let now = manager.clock.monotonicNanos()
-        let elapsedMillis = (now > startMonotonicNanos ? now - startMonotonicNanos : 0) / 1_000_000
-        let completed = RadarCompletedSpan(
-            name: name,
-            traceId: traceId,
-            spanId: spanId,
-            parentSpanId: parentSpanId,
-            kind: kind,
-            startUnixNanos: startUnixMillis * 1_000_000,
-            endUnixNanos: (startUnixMillis + elapsedMillis) * 1_000_000,
-            status: status,
-            attributes: ending.attributes
-        )
-        manager.record(completed, project: project, sessionId: sessionId)
-        // After record(_:), which queues the write, so the upload that flush() queues on the same disk queue sees
-        // this span.
-        if ending.flush {
-            manager.flush()
-        }
+        callbacks?.forEach { $0() }
     }
 
-    /// Sets `flushOnEnd` to true, which is used as a flag to flush traces as part of `end(status:)`. Returns false, and changes nothing,
-    /// if the span doesn't record or has already ended.
-    func flushWhenEnded() -> Bool {
-        guard manager != nil else { return false }
-        return lock.withLock {
-            guard !ended else { return false }
-            flushOnEnd = true
-            return true
+    /// Calls `callback` after this span's record has been queued or the span has been discarded. It runs right away if
+    /// the span has already ended or doesn't record.
+    func onEnded(_ callback: @escaping () -> Void) {
+        let runNow =
+            manager == nil
+            || lock.withLock {
+                if ended { return true }
+                endCallbacks.append(callback)
+                return false
+            }
+        if runNow {
+            callback()
         }
     }
 
     /// Ends the span without recording it, for work that turned out not to be worth a trace. Child spans that already
-    /// ended are still recorded, so only discard a span with no children.
+    /// ended are still recorded, so only discard a span with no children. End listeners still run.
     @objc func discard() {
-        guard let manager else { return }
-        // A flush that was waiting for this span still runs, so its spans don't wait for a later flush.
-        let flush = lock.withLock { () -> Bool in
-            defer { ended = true }
-            return !ended && flushOnEnd
+        guard manager != nil else { return }
+        let callbacks: [() -> Void]? = lock.withLock {
+            if ended { return nil }
+            return takeEndCallbacks()
         }
-        if flush {
-            manager.flush()
-        }
+        callbacks?.forEach { $0() }
+    }
+
+    /// Marks the span ended and returns its end listeners. Call with lock held.
+    private func takeEndCallbacks() -> [() -> Void] {
+        ended = true
+        defer { endCallbacks.removeAll() }
+        return endCallbacks
     }
 
     // MARK: - IDs

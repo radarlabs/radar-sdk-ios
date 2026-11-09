@@ -164,10 +164,11 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     /// without its root.
     @objc(flushAfterSpan:)
     func flush(after span: RadarTraceSpan?) {
-        if span?.flushWhenEnded() == true {
+        guard let span else {
+            flush()
             return
         }
-        flush()
+        span.onEnded { self.flush() }
     }
 
     /// Fingerprint of the current publishable key, or nil if none is set.
