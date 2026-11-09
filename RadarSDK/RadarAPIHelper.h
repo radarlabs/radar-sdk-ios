@@ -15,6 +15,27 @@ typedef void (^_Nullable RadarAPICompletionHandler)(RadarStatus status, NSDictio
 
 typedef NSURLRequest *_Nullable (^RadarAPIRequestPreparation)(NSURLRequest *request, NSError *_Nullable *_Nullable error);
 
+// The client span of a traced request, which RadarAPIHelper starts, propagates, and ends. RadarTraceSpan implements it.
+// It's a protocol rather than RadarTraceSpan because the test bridging header imports this header: Swift tests would
+// otherwise see both an Objective-C declaration and the internal Swift class under the same name. It also lets tests
+// drive the helper with a fake trace.
+@protocol RadarAPIRequestTrace <NSObject>
+
+// The W3C traceparent header to send, or nil when the trace's session isn't sampled.
+@property (nonatomic, readonly, copy, nullable) NSString *traceparent;
+
+// Called when the request starts on the API queue. queueNanos is the time since the request was enqueued.
+- (void)requestStartedWithURL:(NSString *)url headers:(NSDictionary *_Nullable)headers queueNanos:(uint64_t)queueNanos;
+
+- (void)setResendCount:(NSInteger)count;
+
+// Ends the span for a request that failed without a response.
+- (void)endWithNetworkError:(NSError *)error;
+
+- (void)endWithStatus:(RadarStatus)status;
+
+@end
+
 @interface RadarAPIHelper : NSObject
 
 - (void)requestWithMethod:(NSString *)method
@@ -35,6 +56,20 @@ typedef NSURLRequest *_Nullable (^RadarAPIRequestPreparation)(NSURLRequest *requ
           extendedTimeout:(BOOL)extendedTimeout
            prepareRequest:(RadarAPIRequestPreparation _Nullable)prepareRequest
 preparationFailureHandler:(void (^_Nullable)(NSError *error))preparationFailureHandler
+        completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;
+
+// Every other overload calls this one. trace is the request's client span: it sends trace's traceparent, and ends trace
+// before calling completionHandler, so the hop to the main queue counts toward the caller's span instead.
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *_Nullable)headers
+                   params:(NSDictionary *_Nullable)params
+                    sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+           prepareRequest:(RadarAPIRequestPreparation _Nullable)prepareRequest
+preparationFailureHandler:(void (^_Nullable)(NSError *error))preparationFailureHandler
+                    trace:(id<RadarAPIRequestTrace> _Nullable)trace
         completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;
 
 @end

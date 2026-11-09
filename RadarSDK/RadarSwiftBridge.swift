@@ -13,7 +13,9 @@ import Foundation
 @objc
 protocol RadarSwiftBridgeProtocol {
     func flushReplays()
-    func flushReplaysRequest(_ replays: [[AnyHashable: Any]], completionHandler: ((RadarStatus, [AnyHashable: Any]?) -> Void)?)
+    func flushReplaysRequest(
+        _ replays: [[AnyHashable: Any]], parentSpan: RadarTraceSpan?, completionHandler: ((RadarStatus, [AnyHashable: Any]?) -> Void)?
+    )
     func stopIndoorTracking()
     @objc(updateIndoorTrackingWithGeofences:)
     func updateIndoorTracking(geofences: [RadarGeofence]?)
