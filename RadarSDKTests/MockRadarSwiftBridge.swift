@@ -153,6 +153,7 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
         replayed: Bool,
         beacons: [RadarBeacon]?,
         indoorLocation: CLLocation?,
+        traceSpan: RadarTraceSpan?,
         completionHandler: @escaping (RadarStatus, [RadarEvent]?, RadarUser?, [RadarGeofence]?, RadarSDK.RadarConfig?) -> Void
     ) {
         trackRequests.append(
@@ -172,6 +173,7 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
         near location: CLLocation,
         radius: Int32,
         limit: Int32,
+        traceSpan: RadarTraceSpan?,
         completionHandler: @escaping (RadarStatus, [RadarBeacon]?, [String]?) -> Void
     ) {
         searchBeaconsLocations.append(location)

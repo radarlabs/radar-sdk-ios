@@ -112,6 +112,47 @@ final class RadarTraceInstrumentationTests {
         #expect(called)
     }
 
+    @Test("recordTrackingUpdate sets the tracking update attributes")
+    func recordTrackingUpdateSetsAttributes() async throws {
+        let root = RadarTraceSpan.start("root", manager: manager)
+        let location = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 1, longitude: 2), altitude: 0, horizontalAccuracy: 30,
+            verticalAccuracy: -1, timestamp: Date())
+
+        root.recordTrackingUpdate(source: .beaconEnter, stopped: true, beacons: false, location: location, foreground: false)
+        root.markBatched()
+        root.end(status: .success)
+
+        let json = try await harness.uploadedSpans()["root"]
+        #expect(TraceTestHarness.stringAttribute(json, "radar.location.source") == "beacon_enter")
+        #expect(TraceTestHarness.boolAttribute(json, "radar.track.stopped") == true)
+        #expect(TraceTestHarness.boolAttribute(json, "radar.beacons") == false)
+        #expect(TraceTestHarness.boolAttribute(json, "radar.app.foreground") == false)
+        #expect(TraceTestHarness.doubleAttribute(json, "radar.location.accuracy_m") == 30)
+        #expect(TraceTestHarness.intAttribute(json, "radar.location.age_ms") != nil)
+        #expect(TraceTestHarness.boolAttribute(json, "radar.track.batched") == true)
+    }
+
+    @Test("A discarded span isn't recorded, and its ended children still are")
+    func discardedSpanIsNotRecorded() async throws {
+        let discarded = RadarTraceSpan.start("discarded", manager: manager)
+        discarded.discard()
+        discarded.end(status: .success)
+        let parent = RadarTraceSpan.start("parent", manager: manager)
+        parent.child("child").end(status: .success)
+        parent.discard()
+
+        let spans = try await harness.uploadedSpans()
+        #expect(Set(spans.keys) == ["child"])
+    }
+
+    @Test("Discarding the no-op span does nothing")
+    func discardingNoopDoesNothing() {
+        RadarTraceSpan.noop.discard()
+
+        #expect(!RadarTraceSpan.noop.isRecording)
+    }
+
     @Test("markReplayed sets radar.track.replayed")
     func markReplayed() async throws {
         let root = RadarTraceSpan.start("root", manager: manager)
@@ -267,8 +308,9 @@ final class RadarTraceInstrumentationTests {
     func objectiveCSurface() {
         let selectors = [
             "recordTrackWithDesiredAccuracy:beacons:", "recordTrackWithDesiredAccuracy:beacons:foreground:",
-            "recordAppContext", "markReplayed", "endingTrackHandler:", "tracingLocationHandler:",
-            "recordLocationQuality:", "setBeaconSource:", "tracingBeaconHandler:mode:", "setVerifiedFailover:", "endingTrackVerifiedHandler:",
+            "recordAppContext", "markReplayed", "recordTrackingUpdateWithSource:stopped:beacons:location:foreground:",
+            "markBatched", "discard", "endingTrackHandler:", "tracingLocationHandler:", "recordLocationQuality:",
+            "setBeaconSource:", "tracingBeaconHandler:mode:", "setVerifiedFailover:", "endingTrackVerifiedHandler:",
             "tracingFraudPrepareHandler:", "requestStartedWithURL:headers:queueNanos:", "setResendCount:",
             "endWithNetworkError:",
         ]

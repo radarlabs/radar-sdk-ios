@@ -68,6 +68,7 @@
                  replayed:(BOOL)replayed
                   beacons:(NSArray<RadarBeacon *> * _Nullable)beacons
            indoorLocation:(CLLocation * _Nullable)indoorLocation
+                traceSpan:(RadarTraceSpan * _Nullable)traceSpan
         completionHandler:(void (^_Nonnull)(RadarStatus status,
                                             NSArray<RadarEvent *> * _Nullable events,
                                             RadarUser * _Nullable user,
@@ -76,6 +77,7 @@
 - (void)searchBeaconsNear:(CLLocation * _Nonnull)location
                    radius:(int)radius
                     limit:(int)limit
+                traceSpan:(RadarTraceSpan * _Nullable)traceSpan
         completionHandler:(void (^_Nonnull)(RadarStatus status,
                                             NSArray<RadarBeacon *> * _Nullable beacons,
                                             NSArray<NSString *> * _Nullable beaconUUIDs))completionHandler;

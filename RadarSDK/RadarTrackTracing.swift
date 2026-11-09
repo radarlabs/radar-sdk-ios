@@ -8,8 +8,8 @@
 import CoreLocation
 import Foundation
 
-// Track instrumentation: `radar.track.*` and other attributes of trackOnce() and trackVerified() root spans, and the
-// completion handler wrapper that ends them.
+// Track instrumentation: `radar.track.*` and other attributes of trackOnce(), trackVerified(), and tracking update root
+// spans, and the completion handler wrapper that ends them.
 extension RadarTraceSpan {
     /// Attributes of a `radar.track_once` root. The app state is only readable on the main thread, so it's omitted
     /// when this is called from another thread.
@@ -53,9 +53,29 @@ extension RadarTraceSpan {
         }
     }
 
+    /// Attributes of a `radar.tracking_update` root: the update's `source` and `stopped` values, whether the tracking
+    /// options ask for beacons, the quality of the location it sends, and whether the app was in the foreground when the
+    /// update started. The beacon work the update did is in `radar.beacon.source` and its `radar.beacon.range` child,
+    /// and the track request reads the foreground state again when it's sent.
+    @objc(recordTrackingUpdateWithSource:stopped:beacons:location:foreground:)
+    func recordTrackingUpdate(source: RadarLocationSource, stopped: Bool, beacons: Bool, location: CLLocation, foreground: Bool) {
+        recording { span in
+            span.setString(Radar.stringForLocationSource(source).lowercased(), forKey: "radar.location.source")
+            span.setBool(stopped, forKey: "radar.track.stopped")
+            span.setBool(beacons, forKey: "radar.beacons")
+            span.recordLocationQuality(location)
+            span.recordAppContext(foreground: foreground)
+        }
+    }
+
     /// Set on the root when its track is sent as a replay flush instead.
     @objc func markReplayed() {
         setBool(true, forKey: "radar.track.replayed")
+    }
+
+    /// Set on the root when its track is added to a batch, so no request is sent yet.
+    @objc func markBatched() {
+        setBool(true, forKey: "radar.track.batched")
     }
 
     /// Ends this span with the track's status, then calls `handler`. Returns `handler` unchanged when this span

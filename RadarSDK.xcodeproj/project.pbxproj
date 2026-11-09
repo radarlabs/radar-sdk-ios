@@ -251,6 +251,7 @@
 		8A30A99D03FD4BB98CC20913 /* RadarTraceTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A67DAD150A9943F815EFEC /* RadarTraceTestSupport.swift */; };
 		99FF5423A282EE9BCAC8B605 /* RadarTraceStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D21B48B14C4B8AF74E0378 /* RadarTraceStorageTests.swift */; };
 		5CB25E6C0620FCE7A524FEE0 /* RadarTraceSpanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B44A6003E1F281C15460A4 /* RadarTraceSpanTests.swift */; };
+		93C546BFA360430DA994AD20 /* RadarTrackingUpdateTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD31BCABC664F8C8DC2F442 /* RadarTrackingUpdateTraceTests.swift */; };
 		3869E36BE30A41719A5D08AB /* RadarTrackVerifiedTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9224EFA2894E4912AC1DE7C7 /* RadarTrackVerifiedTraceTests.swift */; };
 		04E5A3E4C695423CB5582C3D /* RadarTrackTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3111B7B2488E4E12B51970C3 /* RadarTrackTraceTests.swift */; };
 		A0468AB6A70B41A1ABA8FCE2 /* RadarAPIHelperTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1928EFFCBE140D0866E6CEE /* RadarAPIHelperTraceTests.swift */; };
@@ -599,6 +600,7 @@
 		51A67DAD150A9943F815EFEC /* RadarTraceTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceTestSupport.swift; sourceTree = "<group>"; };
 		66D21B48B14C4B8AF74E0378 /* RadarTraceStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceStorageTests.swift; sourceTree = "<group>"; };
 		01B44A6003E1F281C15460A4 /* RadarTraceSpanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceSpanTests.swift; sourceTree = "<group>"; };
+		FAD31BCABC664F8C8DC2F442 /* RadarTrackingUpdateTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackingUpdateTraceTests.swift; sourceTree = "<group>"; };
 		9224EFA2894E4912AC1DE7C7 /* RadarTrackVerifiedTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackVerifiedTraceTests.swift; sourceTree = "<group>"; };
 		3111B7B2488E4E12B51970C3 /* RadarTrackTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackTraceTests.swift; sourceTree = "<group>"; };
 		E1928EFFCBE140D0866E6CEE /* RadarAPIHelperTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelperTraceTests.swift; sourceTree = "<group>"; };
@@ -1090,6 +1092,7 @@
 				E355B78ED8E3A027D1D1F855 /* RadarTraceSamplingAPIClientTests.swift */,
 				48A32D155CDF9811388CDA85 /* RadarTraceSamplingTests.swift */,
 				01B44A6003E1F281C15460A4 /* RadarTraceSpanTests.swift */,
+				FAD31BCABC664F8C8DC2F442 /* RadarTrackingUpdateTraceTests.swift */,
 				9224EFA2894E4912AC1DE7C7 /* RadarTrackVerifiedTraceTests.swift */,
 				3111B7B2488E4E12B51970C3 /* RadarTrackTraceTests.swift */,
 				E1928EFFCBE140D0866E6CEE /* RadarAPIHelperTraceTests.swift */,
@@ -1705,6 +1708,7 @@
 				8A30A99D03FD4BB98CC20913 /* RadarTraceTestSupport.swift in Sources */,
 				99FF5423A282EE9BCAC8B605 /* RadarTraceStorageTests.swift in Sources */,
 				5CB25E6C0620FCE7A524FEE0 /* RadarTraceSpanTests.swift in Sources */,
+				93C546BFA360430DA994AD20 /* RadarTrackingUpdateTraceTests.swift in Sources */,
 				3869E36BE30A41719A5D08AB /* RadarTrackVerifiedTraceTests.swift in Sources */,
 				04E5A3E4C695423CB5582C3D /* RadarTrackTraceTests.swift in Sources */,
 				A0468AB6A70B41A1ABA8FCE2 /* RadarAPIHelperTraceTests.swift in Sources */,

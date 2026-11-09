@@ -208,6 +208,13 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
         manager.record(completed, project: project, sessionId: sessionId)
     }
 
+    /// Ends the span without recording it, for work that turned out not to be worth a trace. Child spans that already
+    /// ended are still recorded, so only discard a span with no children.
+    @objc func discard() {
+        guard manager != nil else { return }
+        lock.withLock { ended = true }
+    }
+
     // MARK: - IDs
 
     /// A random, non-zero 8-byte span ID as 16 lowercase hex characters. All-zero IDs are invalid in W3C Trace
