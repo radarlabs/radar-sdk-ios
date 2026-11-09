@@ -80,7 +80,7 @@ extension RadarSerializedTests {
                 RadarSettings.trackingOptions = HandleLocationFixtures.trackingOptions(desiredSyncInterval: 600)
                 bridge.mockLastSentAt = Date()
                 let host = TrackingRadarLocationManagerHost()
-                host.pendingCompletionHandlerCount = 1
+                RadarLocationManagerSwiftTestHelpers.completions.extraPendingCount = 1
 
                 RadarLocationManagerSwift.handleLocation(
                     host: host, location: HandleLocationFixtures.location(), source: .backgroundLocation, beacons: nil)
@@ -133,8 +133,8 @@ extension RadarSerializedTests {
                 RadarLocationManagerSwift.handleLocation(
                     host: host, location: HandleLocationFixtures.location(), source: .indoors, beacons: nil)
 
-                #expect(host.cancelTimeoutsCallCount == 0)
-                #expect(host.completionStatuses.isEmpty)
+                #expect(RadarLocationManagerSwiftTestHelpers.completions.cancelTimeoutsCallCount == 0)
+                #expect(RadarLocationManagerSwiftTestHelpers.completions.statuses.isEmpty)
                 #expect(host.updateTrackingLocations.isEmpty)
                 #expect(bridge.lastLocation() == nil)
                 #expect(bridge.lastMovedLocation() == nil)

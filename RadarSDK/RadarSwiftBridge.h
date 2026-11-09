@@ -52,6 +52,7 @@
 - (RadarGeofence * _Nullable)createGeofenceWithDict:(NSDictionary * _Nonnull)dict;
 - (RadarPlace * _Nullable)createPlaceWithDict:(NSDictionary * _Nonnull)dict;
 - (BOOL)isForeground;
+- (NSString * _Nonnull)motionAuthorizationString;
 - (RadarTripOptions * _Nullable)getTripOptions;
 - (RadarUser * _Nullable)radarUser;
 - (void)didReceiveEvents:(NSArray<RadarEvent *> * _Nonnull)events user:(RadarUser * _Nonnull)user;

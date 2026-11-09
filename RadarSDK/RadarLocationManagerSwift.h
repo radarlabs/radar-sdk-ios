@@ -86,6 +86,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable CLLocation *)effectiveLocationForLocationManager:(CLLocationManager *)locationManager;
 
++ (void)addCompletionHandler:(nullable RadarLocationCompletionHandler)completionHandler;
++ (void)cancelTimeouts;
++ (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(nullable CLLocation *)location;
++ (NSInteger)completionHandlerCount;
+
 + (void)applyRemoteTrackingOptions:(nullable RadarMeta *)meta;
 + (void)updateTrackingFromMeta:(nullable RadarMeta *)meta;
 

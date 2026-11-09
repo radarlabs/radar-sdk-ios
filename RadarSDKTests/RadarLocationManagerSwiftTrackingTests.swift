@@ -205,16 +205,16 @@ extension RadarSerializedTests {
             }
         }
 
-        @Test("Motion and pressure options call the host motion callback")
-        func motionOptionsCallHost() {
+        @Test("Motion and pressure options start the matching motion updates")
+        func motionOptionsStartMotionUpdates() {
             runUpdateTracking(options: trackingOptions { $0.useMotion = true }, tracking: true) { host, _, _ in
-                #expect(host.startMotionUpdatesOptions.count == 1)
+                #expect([host.activityHandlers.count, host.relativeAltitudeHandlers.count, host.absoluteAltitudeHandlers.count] == [1, 0, 0] as [Int])
             }
             runUpdateTracking(options: trackingOptions { $0.usePressure = true }, tracking: true) { host, _, _ in
-                #expect(host.startMotionUpdatesOptions.count == 1)
+                #expect([host.activityHandlers.count, host.relativeAltitudeHandlers.count, host.absoluteAltitudeHandlers.count] == [0, 1, 1] as [Int])
             }
             runUpdateTracking(options: trackingOptions { _ in }, tracking: true) { host, _, _ in
-                #expect(host.startMotionUpdatesOptions.isEmpty)
+                #expect([host.activityHandlers.count, host.relativeAltitudeHandlers.count, host.absoluteAltitudeHandlers.count] == [0, 0, 0] as [Int])
             }
         }
 

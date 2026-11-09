@@ -77,7 +77,7 @@ extension RadarLocationManagerSwift {
         lowPowerLocationManager.pausesLocationUpdatesAutomatically = false
 
         if options.useMotion || options.usePressure {
-            host.startMotionUpdates(options: options)
+            startMotionUpdates(host: host, options: options)
         }
 
         locationManager.desiredAccuracy = clLocationAccuracy(for: options.desiredAccuracy)

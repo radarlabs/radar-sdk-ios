@@ -127,6 +127,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift callCompletionHandlersWithStatus:status location:location];
+        return;
+    }
+
     @synchronized(self) {
         if (!self.completionHandlers.count){
             return;
@@ -151,6 +156,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift addCompletionHandler:completionHandler];
+        return;
+    }
+
     @synchronized(self) {
         RadarLocationCompletionHandler completionHandlerCopy = [completionHandler copy];
         [self.completionHandlers addObject:completionHandlerCopy];
@@ -159,15 +169,22 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 }
 
-// Temporary callback used by the Swift handleLocation twin, which needs to know whether a
-// location request is waiting. Completion storage stays in Objective-C until it is ported.
 - (NSInteger)completionHandlerCount {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        return [RadarLocationManagerSwift completionHandlerCount];
+    }
+
     @synchronized(self) {
         return self.completionHandlers.count;
     }
 }
 
 - (void)cancelTimeouts {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift cancelTimeouts];
+        return;
+    }
+
     @synchronized(self) {
         for (RadarLocationCompletionHandler completionHandler in self.completionHandlers) {
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
@@ -412,8 +429,26 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self updateTracking:location fromInitialize:NO];
 }
 
-// Temporary callback used by the Swift updateTracking twin. Motion and pressure setup stays in
-// Objective-C until RadarActivityManager and the RadarState motion storage are reachable from Swift.
+// Temporary callbacks used by the Swift motion twin in RadarLocationManager+SwiftMotion.swift.
+// RadarActivityManager stays in Objective-C until it is ported. Keep the shared instance in
+// `activityManager`, so `stopTracking` stops the same instance.
+- (void)startActivityUpdatesWithHandler:(void (^)(CMMotionActivity *activity))handler {
+    self.activityManager = [RadarActivityManager sharedInstance];
+    [self.activityManager startActivityUpdatesWithHandler:handler];
+}
+
+- (void)startRelativeAltitudeWithHandler:(void (^)(CMAltitudeData *_Nullable altitudeData))handler {
+    self.activityManager = [RadarActivityManager sharedInstance];
+    [self.activityManager startRelativeAltitudeWithHandler:handler];
+}
+
+- (void)startAbsoluteAltitudeWithHandler:(void (^)(CMAbsoluteAltitudeData *_Nullable altitudeData))handler {
+    self.activityManager = [RadarActivityManager sharedInstance];
+    [self.activityManager startAbsoluteAltitudeWithHandler:handler];
+}
+
+// The Objective-C path of `updateTracking:fromInitialize:` calls this. With useSwiftLocationManager,
+// the Swift updateTracking twin calls RadarLocationManagerSwift.startMotionUpdates(host:options:).
 - (void)startMotionUpdatesWithOptions:(RadarTrackingOptions *)options {
     if (options.useMotion) {
         self.activityManager = [RadarActivityManager sharedInstance];
@@ -1422,7 +1457,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        [RadarLocationManagerSwift didUpdateLocations:locations completionHandlerCount:self.completionHandlers.count];
+        [RadarLocationManagerSwift didUpdateLocations:locations completionHandlerCount:(NSUInteger)[RadarLocationManagerSwift completionHandlerCount]];
         return;
     }
 
