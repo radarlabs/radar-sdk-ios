@@ -80,8 +80,7 @@ public final class RadarVerifiedLocationToken: NSObject {
 
     // Keeps the Objective-C parser declared in RadarVerifiedLocationToken+Internal.h working.
     // `user`, `events`, `token`, and `expiresAt` are required; the rest fall back to defaults.
-    // Events are built through `RadarSwift.bridge`, because `RadarEvent`'s parser is internal
-    // Objective-C. The bridge is installed by `Radar.initialize`, which runs before any
+    // Events are built through `RadarSwift.bridge`, which `Radar.initialize` installs before any
     // verified track.
     @objc(initWithObject:)
     convenience init?(object: Any) {

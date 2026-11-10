@@ -17,6 +17,7 @@
 #import "Radar.h"
 
 @class RadarConfig;
+@class RadarEvent;
 @class RadarTripOptions;
 @class RadarTraceSpan;
 

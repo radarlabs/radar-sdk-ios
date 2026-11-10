@@ -14,6 +14,7 @@
 #import "RadarEvent.h"
 
 @class RadarAddress;
+@class RadarEvent;
 @class RadarTripLeg;
 @class RadarRouteMatrix;
 @class RadarRoutes;
