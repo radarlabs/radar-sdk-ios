@@ -48,7 +48,6 @@
 - (NSDate * _Nullable)lastSentAt;
 - (void)updateLastSentAt;
 - (BOOL)canExit;
-- (RadarEvent * _Nullable)createEventWithDict:(NSDictionary * _Nonnull)dict;
 - (RadarUser * _Nullable)createUserWithDict:(NSDictionary * _Nonnull)dict;
 - (RadarGeofence * _Nullable)createGeofenceWithDict:(NSDictionary * _Nonnull)dict;
 - (RadarPlace * _Nullable)createPlaceWithDict:(NSDictionary * _Nonnull)dict;

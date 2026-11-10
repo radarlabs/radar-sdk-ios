@@ -108,8 +108,7 @@ extension RadarSerializedTests {
                 // If handleTrackFailure had run, offlineGeofenceIds would contain "test"
                 // and this second call would detect no state change (empty events).
                 // Since it didn't run, we're still using baseline IDs, so entry is detected.
-                // Bridge is nil so events array is empty, but we can verify no crash
-                // and that the completion handler is called.
+                // Verify no crash and that the completion handler is called.
                 #expect(true)
             }
         }
@@ -258,8 +257,8 @@ extension RadarSerializedTests {
             let location = CLLocation(latitude: testLat, longitude: testLng)
 
             await withCheckedContinuation { continuation in
-                RadarOfflineEventManager.generateEvents(location: location) { events, user, _ in
-                    #expect(events.count > 0 || user == nil)  // events generated but user/event creation depends on bridge
+                RadarOfflineEventManager.generateEvents(location: location) { events, _, _ in
+                    #expect(events.map(\.type) == [.userEnteredGeofence])
                     continuation.resume()
                 }
             }
@@ -328,8 +327,7 @@ extension RadarSerializedTests {
 
             // After reset, offlineGeofenceIds is empty, so generateEvents falls back to
             // lastSyncedGeofenceIds (also empty). geo1 is detected as entry again.
-            // Bridge is nil so no RadarEvent objects are created, but we can verify
-            // the exit/entry detection ran by checking offlineGeofenceIds was repopulated.
+            // Verify the exit/entry detection ran by checking offlineGeofenceIds was repopulated.
             // Call generateEvents twice: first repopulates, second should show no change.
             RadarOfflineEventManager.generateEvents(location: location) { _, _, _ in }
 
