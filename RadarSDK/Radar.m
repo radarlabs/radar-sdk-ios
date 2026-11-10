@@ -684,7 +684,7 @@ BOOL _initialized = NO;
                                 metadata:(NSDictionary * _Nullable) metadata
                                 campaign:(NSString *_Nullable)campaign
                        completionHandler:(RadarLogConversionCompletionHandler) completionHandler {
-    [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata withCampaign:campaign completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarEvent * _Nullable event) {
+    [[RadarAPIClient sharedInstance] sendEvent:name withMetadata:metadata withCampaign:campaign completionHandler:^(RadarStatus status, NSDictionary * _Nullable res, RadarConversion * _Nullable conversion) {
         if (status != RadarStatusSuccess) {
             if (completionHandler) {
                 [RadarUtilsDeprecated runOnMainThread:^{
@@ -697,7 +697,7 @@ BOOL _initialized = NO;
         
         if (completionHandler) {
             [RadarUtilsDeprecated runOnMainThread:^{
-                completionHandler(status, event);
+                completionHandler(status, conversion);
             }];
         }
     }];
@@ -716,8 +716,8 @@ BOOL _initialized = NO;
         if (lastAppOpenTimeInterval > 2) {
             [RadarSettings updateLastAppOpenTime];
             // metadata not needed as app is not opened by notification.
-            [self sendLogConversionRequestWithName:@"opened_app" metadata:nil campaign:nil completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
-                NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
+            [self sendLogConversionRequestWithName:@"opened_app" metadata:nil campaign:nil completionHandler:^(RadarStatus status, RadarConversion * _Nullable conversion) {
+                NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; conversion = %@", conversion.name, [Radar stringForStatus:status], conversion];
                 [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
             }];
         }
@@ -781,8 +781,8 @@ BOOL _initialized = NO;
     }
     NSString* campaign = metadata[@"campaignId"];
     
-    [self sendLogConversionRequestWithName:eventName metadata:metadata campaign:campaign completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
-        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
+    [self sendLogConversionRequestWithName:eventName metadata:metadata campaign:campaign completionHandler:^(RadarStatus status, RadarConversion * _Nullable conversion) {
+        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; conversion = %@", conversion.name, [Radar stringForStatus:status], conversion];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];
 }

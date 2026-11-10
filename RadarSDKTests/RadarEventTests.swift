@@ -49,10 +49,12 @@ private func placeObject(id: String) -> [String: Any] {
     ]
 }
 
+// The fields every event needs: `_id`, `createdAt`, and `location`.
 private func baseEventObject() -> [String: Any] {
     [
         "_id": "event-id",
         "createdAt": createdAtString,
+        "location": ["type": "Point", "coordinates": [-73.9, 40.7]],
     ]
 }
 
@@ -117,7 +119,7 @@ struct RadarEventTests {
         #expect(event.metadata["campaign"] as? String == "spring")
     }
 
-    @Test("Defaults optional fields when only _id and createdAt are present")
+    @Test("Defaults optional fields when only _id, createdAt, and location are present")
     func defaultsOptionalFields() throws {
         let event = try parse(baseEventObject())
 
@@ -139,8 +141,9 @@ struct RadarEventTests {
         // Nonnull properties the parser can't fill fall back instead of returning nil.
         #expect(event.actualCreatedAt == event.createdAt)
         #expect(event.metadata.isEmpty)
-        #expect(event.location.coordinate.latitude == 0)
-        #expect(event.location.coordinate.longitude == 0)
+        #expect(event.location.coordinate.latitude == 40.7)
+        #expect(event.location.coordinate.longitude == -73.9)
+        #expect(event.location.horizontalAccuracy == -1)
     }
 
     @Test("Returns nil for a non-dictionary, or without _id or a valid createdAt")
@@ -161,6 +164,17 @@ struct RadarEventTests {
         #expect(RadarEvent(object: badCreatedAt) == nil)
     }
 
+    @Test("Returns nil for a missing or non-dictionary location")
+    func rejectsMissingLocation() {
+        var noLocation = baseEventObject()
+        noLocation["location"] = nil
+        #expect(RadarEvent(object: noLocation) == nil)
+
+        var stringLocation = baseEventObject()
+        stringLocation["location"] = "not-a-dictionary"
+        #expect(RadarEvent(object: stringLocation) == nil)
+    }
+
     @Test("Returns nil for a malformed location")
     func rejectsMalformedLocation() {
         let locations: [[String: Any]] = [
@@ -177,7 +191,7 @@ struct RadarEventTests {
         }
     }
 
-    @Test("Ignores a non-numeric altitude and a non-dictionary location")
+    @Test("Ignores a non-numeric altitude and location accuracy")
     func lenientLocationFields() throws {
         var object = baseEventObject()
         object["location"] = ["coordinates": [-73.9, 40.7, "high"]]
@@ -185,10 +199,6 @@ struct RadarEventTests {
         let event = try parse(object)
         #expect(event.location.altitude == -1)
         #expect(event.location.horizontalAccuracy == -1)
-
-        object["location"] = "not-a-dictionary"
-        let withoutLocation = try parse(object)
-        #expect(withoutLocation.location.coordinate.latitude == 0)
     }
 
     @Test("Returns nil if an alternate place fails to parse")
@@ -306,7 +316,7 @@ struct RadarEventTests {
         #expect(dict["type"] as? String == "unknown")
         #expect(dict["confidence"] as? Int == 0)
         let location = try #require(dict["location"] as? [String: Any])
-        #expect(location["coordinates"] as? [Double] == [0, 0])
+        #expect(location["coordinates"] as? [Double] == [-73.9, 40.7])
     }
 
     @Test("A serialized event parses back to the same values")

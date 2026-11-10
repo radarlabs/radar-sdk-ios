@@ -18,6 +18,7 @@
 #import "RadarContext+Internal.h"
 #import "RadarCoordinate+Internal.h"
 #import "RadarDelegateHolder.h"
+#import "RadarConversion+Internal.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarInAppMessageManager+Internal.h"
@@ -1758,15 +1759,15 @@ completionHandler:(RadarSendEventAPICompletionHandler _Nonnull)completionHandler
                         }
 
                         id eventObj = res[@"event"];
-                        RadarEvent *customEvent = [[RadarEvent alloc] initWithObject:eventObj];
+                        RadarConversion *conversion = [[RadarConversion alloc] initWithObject:eventObj];
 
-                        if (!customEvent) {
+                        if (!conversion) {
                             [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelError message:@"POST /events did not return a new event"];
 
                             return completionHandler(RadarStatusErrorServer, nil, nil);
                         }
 
-                        return completionHandler(RadarStatusSuccess, res, customEvent);
+                        return completionHandler(RadarStatusSuccess, res, conversion);
                     }];
 }
 @end

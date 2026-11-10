@@ -40,11 +40,10 @@ struct MessagingPanel: View {
                     ])!)
             }
             ActionButton("logConversion") {
-                Radar.logConversion(name: "conversion_event", metadata: ["data": "test"]) { (status, event) in
-                    let conversionName = (event?.type == .conversion) ? event?.conversionName : nil
+                Radar.logConversion(name: "conversion_event", metadata: ["data": "test"]) { (status, conversion) in
                     let detail = """
-                        conversionName: \(conversionName ?? "—")
-                        event: \(String(describing: event))
+                        name: \(conversion?.name ?? "—")
+                        metadata: \(conversion?.metadata.map { String(describing: $0) } ?? "—")
                         """
                     logStream.write(
                         status,

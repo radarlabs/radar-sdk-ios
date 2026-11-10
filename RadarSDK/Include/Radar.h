@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarIndoorsProtocol;
 
 @class RadarAddress;
+@class RadarConversion;
 @class RadarEvent;
 @class RadarTripOptions;
 @class RadarInAppMessage;
@@ -337,11 +338,11 @@ typedef void (^_Nonnull RadarRouteMatrixCompletionHandler)(RadarStatus status, R
 /**
  Called when a request to log a conversion succeeds, fails, or times out.
 
- Receives the request status and, if successful, the conversion event generated.
+ Receives the request status and, if successful, the conversion logged.
 
  @see https://radar.com/documentation/api#send-a-custom-event
  */
-typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarEvent *_Nullable event);
+typedef void (^_Nullable RadarLogConversionCompletionHandler)(RadarStatus status, RadarConversion *_Nullable conversion);
 
 typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable result, CLLocation *_Nullable locationAtStartOfScan);
 
