@@ -173,8 +173,37 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
 
     /// Tags each span record with its project so spans are only uploaded under the key they were recorded with,
     /// without writing the key (or an auth token) to disk.
+    ///
+    /// An auth token is fingerprinted by its signing key's ID (`kid`), so spans recorded before the app refreshes its
+    /// token are still uploaded with the new one. A `kid` belongs to one project and environment, so tokens with the
+    /// same `kid` belong to the same project.
     static func fingerprint(_ key: String) -> String {
-        SHA256.hash(data: Data(key.utf8)).prefix(8).map { String(format: "%02x", $0) }.joined()
+        let identity = authTokenKid(key).map { "kid:\($0)" } ?? key
+        return SHA256.hash(data: Data(identity.utf8)).prefix(8).map { String(format: "%02x", $0) }.joined()
+    }
+
+    // How Radar.initialize stores an auth token in place of the publishable key.
+    private static let authTokenPrefix = "Bearer "
+
+    /// The `kid` from an auth token's JWT header, or nil if `key` isn't an auth token or the header can't be read.
+    /// The signature isn't verified; the server does that, and this is only used to group spans.
+    static func authTokenKid(_ key: String) -> String? {
+        guard key.hasPrefix(authTokenPrefix) else { return nil }
+        let token = key.dropFirst(authTokenPrefix.count)
+        // A JWT is `header.payload.signature`, each part base64url-encoded. The `kid` is in the header.
+        guard let header = token.split(separator: ".").first,
+            let data = base64URLDecode(header),
+            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let kid = json["kid"] as? String, !kid.isEmpty
+        else { return nil }
+        return kid
+    }
+
+    /// Decodes base64url (`-` and `_`, no padding), which Foundation's base64 decoder doesn't support.
+    private static func base64URLDecode(_ value: Substring) -> Data? {
+        var base64 = value.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+        base64 += String(repeating: "=", count: (4 - base64.count % 4) % 4)
+        return Data(base64Encoded: base64)
     }
 
     // MARK: - Upload

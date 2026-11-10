@@ -221,6 +221,75 @@ final class RadarTraceManagerTests {
         #expect(session.requests.count == 1)
     }
 
+    @Test("Spans recorded before an auth token refresh with the same kid are uploaded with the new token")
+    func refreshedAuthTokenWithSameKidUploadsEarlierSpans() async throws {
+        harness.key.value = Self.authToken(kid: "kid-a", exp: 1)
+        try await harness.recordSpans(1)
+
+        let refreshed = Self.authToken(kid: "kid-a", exp: 2)
+        harness.key.value = refreshed
+        try await manager.flushAndWaitForTesting()
+
+        #expect(harness.traceFiles().isEmpty)
+        #expect(session.requests.count == 1)
+        #expect(session.requests.first?.value(forHTTPHeaderField: "Authorization") == refreshed)
+    }
+
+    @Test("Spans recorded under an auth token aren't uploaded with a token that has a different kid")
+    func authTokenWithDifferentKidDoesNotUploadEarlierSpans() async throws {
+        harness.key.value = Self.authToken(kid: "kid-a")
+        try await harness.recordSpans(1)
+
+        harness.key.value = Self.authToken(kid: "kid-b")
+        try await manager.flushAndWaitForTesting()
+
+        #expect(harness.traceFiles().count == 1)
+        #expect(session.requests.isEmpty)
+    }
+
+    @Test("An auth token without a readable kid is fingerprinted by its whole value")
+    func unreadableAuthTokenFallsBackToWholeValue() async throws {
+        let malformed = "Bearer not-a-jwt"
+        harness.key.value = malformed
+        try await harness.recordSpans(1)
+
+        // A different token without a readable kid doesn't match.
+        harness.key.value = "Bearer \(Self.base64URL(#"{"alg":"RS256"}"#)).e30.sig"
+        try await manager.flushAndWaitForTesting()
+        #expect(session.requests.isEmpty)
+
+        // The same value does.
+        harness.key.value = malformed
+        try await manager.flushAndWaitForTesting()
+        #expect(session.requests.count == 1)
+    }
+
+    @Test("An auth token's fingerprint differs from a publishable key equal to its kid")
+    func authTokenFingerprintDiffersFromPublishableKey() {
+        let publishableKeyFingerprint = manager.currentProjectFingerprint()
+
+        harness.key.value = Self.authToken(kid: TraceTestHarness.publishableKey)
+
+        #expect(manager.currentProjectFingerprint() != publishableKeyFingerprint)
+    }
+
+    @Test(
+        "Reads the kid from an auth token's JWT header",
+        arguments: [
+            ("prj_test_pk_trace", nil),
+            ("Bearer not-a-jwt", nil),
+            ("Bearer \(base64URL(#"{"alg":"RS256"}"#)).e30.sig", nil),
+            ("Bearer \(base64URL(#"{"kid":""}"#)).e30.sig", nil),
+            // Headers that need two, one, and no padding characters.
+            ("Bearer \(base64URL(#"{"kid":"abc"}"#)).e30.sig", "abc"),
+            ("Bearer \(base64URL(#"{"kid":"abcd"}"#)).e30.sig", "abcd"),
+            ("Bearer \(base64URL(#"{"kid":"abcde"}"#)).e30.sig", "abcde"),
+        ] as [(String, String?)]
+    )
+    func authTokenKid(key: String, expected: String?) {
+        #expect(RadarTraceManager.authTokenKid(key) == expected)
+    }
+
     @Test(
         "Upload responses map to batch outcomes",
         arguments: [
@@ -239,6 +308,19 @@ final class RadarTraceManagerTests {
     )
     func uploadOutcome(statusCode: Int, body: String, expected: RadarTraceManager.UploadOutcome) {
         #expect(RadarTraceManager.outcome(statusCode: statusCode, data: Data(body.utf8)) == expected)
+    }
+
+    /// An unsigned auth token as `Radar.initialize` stores it. Only the header is read.
+    private static func authToken(kid: String, exp: Int = 1) -> String {
+        let header = base64URL(#"{"alg":"RS256","typ":"JWT","kid":"\#(kid)"}"#)
+        return "Bearer \(header).\(base64URL(#"{"exp":\#(exp)}"#)).signature"
+    }
+
+    private static func base64URL(_ json: String) -> String {
+        Data(json.utf8).base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 
     private func spanId(_ index: Int) -> String {
