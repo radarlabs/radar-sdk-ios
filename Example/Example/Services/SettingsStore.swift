@@ -49,6 +49,14 @@ final class SettingsStore: ObservableObject {
         static func publishableKey(_ environment: RadarEnvironment) -> String {
             "settings.publishableKey.\(environment.rawValue)"
         }
+
+        static func useAuthToken(_ environment: RadarEnvironment) -> String {
+            "settings.useAuthToken.\(environment.rawValue)"
+        }
+
+        static func authToken(_ environment: RadarEnvironment) -> String {
+            "settings.authToken.\(environment.rawValue)"
+        }
     }
 
     // MARK: - SDK-backed (read/write)
@@ -141,6 +149,28 @@ final class SettingsStore: ObservableObject {
         publishableKey(for: environment)
     }
 
+    /// Whether `environment` initializes with an auth token instead of the publishable key.
+    var useAuthToken: Bool {
+        useAuthToken(for: environment)
+    }
+
+    /// The auth token to pass to `Radar.initialize(authToken:)`, or nil when `environment` uses
+    /// the publishable key or has no token set.
+    var resolvedAuthToken: String? {
+        guard useAuthToken else { return nil }
+        let token = authToken(for: environment)
+        return token.isEmpty ? nil : token
+    }
+
+    func useAuthToken(for environment: RadarEnvironment) -> Bool {
+        UserDefaults.standard.bool(forKey: Keys.useAuthToken(environment))
+    }
+
+    /// The saved auth token (a JWT) for `environment`, or "" if none is set.
+    func authToken(for environment: RadarEnvironment) -> String {
+        UserDefaults.standard.string(forKey: Keys.authToken(environment)) ?? ""
+    }
+
     /// The saved key for `environment`, falling back to its default in `AppDelegate`
     /// (placeholders count as unset).
     func publishableKey(for environment: RadarEnvironment) -> String {
@@ -157,19 +187,37 @@ final class SettingsStore: ObservableObject {
     }
 
     /// Persists the environment settings. Takes effect on the next launch.
-    func saveEnvironment(_ environment: RadarEnvironment, publishableKey: String, localURL: String) {
+    func saveEnvironment(
+        _ environment: RadarEnvironment,
+        publishableKey: String,
+        localURL: String,
+        useAuthToken: Bool,
+        authToken: String
+    ) {
         let defaults = UserDefaults.standard
         defaults.set(environment.rawValue, forKey: Keys.environment)
         defaults.set(publishableKey.trimmingCharacters(in: .whitespaces), forKey: Keys.publishableKey(environment))
+        defaults.set(useAuthToken, forKey: Keys.useAuthToken(environment))
+        defaults.set(authToken.trimmingCharacters(in: .whitespacesAndNewlines), forKey: Keys.authToken(environment))
         defaults.set(localURL.trimmingCharacters(in: .whitespaces), forKey: Keys.localURL)
     }
 
-    /// Checks which environments `resolvedPublishableKey` is valid on, and logs an error if it
+    /// The value the SDK sends as `Authorization`: `Bearer <token>` in auth-token mode, otherwise
+    /// the publishable key. "" if the selected credential isn't set.
+    var resolvedAuthorization: String {
+        if useAuthToken {
+            return resolvedAuthToken.map { "Bearer \($0)" } ?? ""
+        }
+        return resolvedPublishableKey
+    }
+
+    /// Checks which environments the selected credential is valid on, and logs an error if it
     /// isn't valid on the selected one.
     func runKeyCheck(logStream: LogStream) {
-        let key = resolvedPublishableKey
+        let key = resolvedAuthorization
         guard !key.isEmpty else {
-            logStream.write(error: "No publishable key set for \(environment.label)", detail: "Set one in Settings → Environment.")
+            let what = useAuthToken ? "auth token" : "publishable key"
+            logStream.write(error: "No \(what) set for \(environment.label)", detail: "Set one in Settings → Environment.")
             return
         }
         keyCheck = .checking
@@ -188,7 +236,14 @@ final class SettingsStore: ObservableObject {
 
     /// Where requests go, e.g. `env = Staging; host = https://…; key = prj_test_pk_ab12…; key check = …`.
     var environmentSummary: String {
-        "env = \(environment.label); host = \(environment.host(localURL: localURL)); key = \(Self.keyPrefix(resolvedPublishableKey)); key check = \(keyCheck.summary)"
+        "env = \(environment.label); host = \(environment.host(localURL: localURL)); \(credentialSummary); key check = \(keyCheck.summary)"
+    }
+
+    /// `key = prj_…` or `auth token = kid …, expires …`.
+    var credentialSummary: String {
+        guard useAuthToken else { return "key = \(Self.keyPrefix(resolvedPublishableKey))" }
+        guard let token = resolvedAuthToken else { return "auth token = (none)" }
+        return "auth token = \(AuthTokenInfo.describe(token))"
     }
 
     /// A key shortened for display, e.g. `prj_live_pk_76b8…`.
@@ -408,5 +463,45 @@ extension SettingsStore {
         let rtoCount = (config["remoteTrackingOptions"] as? [Any])?.count ?? 0
         fields.append(.text("remoteTrackingOptions", "\(rtoCount) preset(s)"))
         return fields
+    }
+}
+
+// MARK: - Auth token display
+
+/// Reads the unverified header and payload of an auth token (a JWT), for display only.
+enum AuthTokenInfo {
+    /// e.g. `kid 65f0…, expires 14:05:12 (in 9m)`, or why the token can't be read.
+    static func describe(_ token: String, now: Date = Date()) -> String {
+        let parts = token.split(separator: ".", omittingEmptySubsequences: false)
+        guard parts.count == 3 else { return "not a JWT" }
+        guard let header = decode(parts[0]) else { return "unreadable header" }
+        let payload = decode(parts[1])
+        let kid = (header["kid"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? "(no kid)"
+        guard let exp = (payload?["exp"] as? NSNumber)?.doubleValue, exp != 0 else { return "kid \(kid), no exp" }
+        let expiry = Date(timeIntervalSince1970: exp)
+        let remaining = Int(expiry.timeIntervalSince(now))
+        let relative = remaining >= 0 ? "in \(duration(remaining))" : "expired \(duration(-remaining)) ago"
+        return "kid \(kid), expires \(timeFormatter.string(from: expiry)) (\(relative))"
+    }
+
+    private static let timeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "HH:mm:ss"
+        return formatter
+    }()
+
+    /// Decodes one base64url segment (no padding) into a JSON object.
+    private static func decode(_ segment: Substring) -> [String: Any]? {
+        var base64 = segment.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+        base64 += String(repeating: "=", count: (4 - base64.count % 4) % 4)
+        guard let data = Data(base64Encoded: base64) else { return nil }
+        return (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+    }
+
+    private static func duration(_ seconds: Int) -> String {
+        if seconds < 60 { return "\(seconds)s" }
+        if seconds < 3600 { return "\(seconds / 60)m" }
+        return "\(seconds / 3600)h"
     }
 }
