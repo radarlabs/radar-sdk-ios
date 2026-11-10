@@ -146,6 +146,22 @@ final class RadarTraceInstrumentationTests {
         #expect(Set(spans.keys) == ["child"])
     }
 
+    @Test("onEnded runs once when the span ends, and right away when it has ended or doesn't record")
+    func onEndedRunsOnceAfterEnd() {
+        let root = RadarTraceSpan.start("root", manager: manager)
+        var calls: [String] = []
+
+        root.onEnded { calls.append("before") }
+        #expect(calls.isEmpty)
+        root.end(status: .success)
+        root.end(status: .success)
+        #expect(calls == ["before"])
+
+        root.onEnded { calls.append("after") }
+        RadarTraceSpan.noop.onEnded { calls.append("noop") }
+        #expect(calls == ["before", "after", "noop"])
+    }
+
     @Test("Discarding the no-op span does nothing")
     func discardingNoopDoesNothing() {
         RadarTraceSpan.noop.discard()

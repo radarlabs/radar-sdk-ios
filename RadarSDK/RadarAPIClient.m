@@ -103,13 +103,17 @@
 }
 
 // Applies tracingEnabled from meta.<settingsKey> in a successful response. sessionId must be the session sent with the
-// request, not the current one. A missing or non-boolean value means not sampled.
-- (void)applySamplingDecisionForSessionId:(NSString *)sessionId response:(NSDictionary *)res settingsKey:(NSString *)settingsKey {
+// request, not the current one. A missing or non-boolean value means not sampled. When traceSpan is provided, a sampled
+// decision's flush waits until it ends, so the upload includes the request's trace.
+- (void)applySamplingDecisionForSessionId:(NSString *)sessionId
+                                 response:(NSDictionary *)res
+                              settingsKey:(NSString *)settingsKey
+                                traceSpan:(RadarTraceSpan *_Nullable)traceSpan {
     NSDictionary *meta = [res[@"meta"] isKindOfClass:[NSDictionary class]] ? res[@"meta"] : nil;
     NSDictionary *settings = [meta[settingsKey] isKindOfClass:[NSDictionary class]] ? meta[settingsKey] : nil;
     id tracingEnabled = settings[@"tracingEnabled"];
     BOOL sampled = [tracingEnabled isKindOfClass:[NSNumber class]] && [tracingEnabled boolValue];
-    [[RadarTraceManager sharedInstance] onSamplingDecisionForSessionId:sessionId sampled:sampled];
+    [[RadarTraceManager sharedInstance] onSamplingDecisionForSessionId:sessionId sampled:sampled flushAfter:traceSpan];
 }
 
 - (void)getConfigForUsage:(NSString *_Nullable)usage verified:(BOOL)verified completionHandler:(RadarConfigAPICompletionHandler _Nonnull)completionHandler {
@@ -178,7 +182,7 @@
 
                         [Radar flushLogs];
                         if (status == RadarStatusSuccess) {
-                            [self applySamplingDecisionForSessionId:sessionId response:res settingsKey:@"sdkConfiguration"];
+                            [self applySamplingDecisionForSessionId:sessionId response:res settingsKey:@"sdkConfiguration" traceSpan:traceSpan];
                         }
 
                         RadarConfig *config = [RadarConfig fromDictionary:res];
@@ -706,9 +710,9 @@
                             [RadarState.shared setLastFailedStoppedLocation:nil];
                             [Radar flushLogs];
                             if (sessionId) {
-                                [self applySamplingDecisionForSessionId:sessionId response:res settingsKey:@"featureSettings"];
+                                [self applySamplingDecisionForSessionId:sessionId response:res settingsKey:@"featureSettings" traceSpan:traceSpan];
                             }
-                            [[RadarTraceManager sharedInstance] flush];
+                            [[RadarTraceManager sharedInstance] flushAfterSpan:traceSpan];
                             [RadarSettings updateLastTrackedTime];
 
                             RadarConfig *config = [RadarConfig fromDictionary:res];
