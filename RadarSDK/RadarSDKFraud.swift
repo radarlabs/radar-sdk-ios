@@ -13,9 +13,17 @@ final class RadarSDKFraud: @unchecked Sendable {
 
     let instance: NSObject
 
+    /// Whether prepared payloads can return an App Attest assertion with the sealed body. Detected by
+    /// selector so fraud SDKs can add it without changing the compatibility version.
+    var supportsAppAttestAssertions: Bool {
+        instance.responds(to: Self.supportsAppAttestAssertionsSelector)
+    }
+
     private static let requiredCoreCompatibilityVersion = 1
     private static let coreCompatibilityVersionSelector =
         NSSelectorFromString("coreCompatibilityVersion")
+    private static let supportsAppAttestAssertionsSelector =
+        NSSelectorFromString("supportsAppAttestAssertions")
 
     init?(instance: NSObject) {
         guard instance.responds(to: Self.initializeSelector),
@@ -139,6 +147,17 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
     private static let sealSelector = NSSelectorFromString(
         "sealWithOptions:"
     )
+    private static let assertSelector = NSSelectorFromString(
+        "assertWithOptions:completionHandler:"
+    )
+
+    static let appAttestKeyIdHeader = "X-Radar-App-Attest-Key-Id"
+    static let appAttestAssertionHeader = "X-Radar-App-Attest-Assertion"
+
+    struct AppAttestAssertion: Equatable {
+        let keyId: String
+        let assertion: String
+    }
 
     init?(instance: NSObject) {
         guard instance.responds(to: Self.sealSelector) else {
@@ -169,14 +188,42 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
         return payload
     }
 
-    func getEncryptedPayload(
+    /// Asserts over a sealed body when the fraud SDK supports it. Returns nil when it doesn't, has no
+    /// key to assert with, or fails; the request then goes out without App Attest headers.
+    func assert(payload: String, method: String, canonicalRoute: String) async -> AppAttestAssertion? {
+        guard instance.responds(to: Self.assertSelector) else {
+            return nil
+        }
+
+        let options: [String: Any] = ["payload": payload, "method": method, "canonicalRoute": canonicalRoute]
+        return await withCheckedContinuation { (continuation: CheckedContinuation<AppAttestAssertion?, Never>) in
+            let completionHandler: @convention(block) ([String: Any]?) -> Void = { result in
+                guard
+                    let keyId = result?["appAttestKeyId"] as? String,
+                    let assertion = result?["appAttestAssertion"] as? String
+                else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                continuation.resume(returning: AppAttestAssertion(keyId: keyId, assertion: assertion))
+            }
+
+            instance.perform(
+                Self.assertSelector,
+                with: options,
+                with: completionHandler
+            )
+        }
+    }
+
+    static func sealOptions(
         coreBody: Data,
         canonicalRoute: String,
         origin: String? = nil,
         product: String? = nil,
         sdkVersion: String?,
         authorization: String?
-    ) throws -> String {
+    ) throws -> [String: Any] {
         var options: [String: Any] = [
             "body": coreBody,
             "method": "POST",
@@ -189,12 +236,32 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
         options["product"] = product
         options["sdkVersion"] = sdkVersion
         options["authorization"] = authorization
-
-        return try seal(options: options)
+        return options
     }
 
-    @objc(prepareRequest:error:)
-    func prepareRequest(_ request: URLRequest) throws -> URLRequest {
+    func getEncryptedPayload(
+        coreBody: Data,
+        canonicalRoute: String,
+        origin: String? = nil,
+        product: String? = nil,
+        sdkVersion: String?,
+        authorization: String?
+    ) throws -> String {
+        try seal(
+            options: Self.sealOptions(
+                coreBody: coreBody,
+                canonicalRoute: canonicalRoute,
+                origin: origin,
+                product: product,
+                sdkVersion: sdkVersion,
+                authorization: authorization
+            )
+        )
+    }
+
+    /// Replaces the body with a freshly sealed envelope and, when the fraud SDK asserts, adds the
+    /// App Attest headers. Call once per attempt: every retry needs a new envelope and assertion.
+    func prepareRequest(_ request: URLRequest) async throws -> URLRequest {
         guard
             request.httpMethod == "POST",
             let route = request.url?.path,
@@ -206,7 +273,7 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
             )
         }
 
-        let encryptedPayload = try getEncryptedPayload(
+        let options = try Self.sealOptions(
             coreBody: coreBody,
             canonicalRoute: route,
             origin: request.value(
@@ -222,10 +289,30 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
                 forHTTPHeaderField: "Authorization"
             )
         )
+        let payload = try seal(options: options)
+        let assertion = await assert(payload: payload, method: "POST", canonicalRoute: route)
 
         var preparedRequest = request
-        preparedRequest.httpBody = Data(encryptedPayload.utf8)
+        preparedRequest.httpBody = Data(payload.utf8)
+        if let assertion {
+            preparedRequest.setValue(assertion.keyId, forHTTPHeaderField: Self.appAttestKeyIdHeader)
+            preparedRequest.setValue(assertion.assertion, forHTTPHeaderField: Self.appAttestAssertionHeader)
+        }
         return preparedRequest
+    }
+
+    @objc(prepareRequest:completionHandler:)
+    func prepareRequest(
+        _ request: URLRequest,
+        completionHandler: @escaping @Sendable (URLRequest?, Error?) -> Void
+    ) {
+        Task {
+            do {
+                completionHandler(try await self.prepareRequest(request), nil)
+            } catch {
+                completionHandler(nil, error)
+            }
+        }
     }
 
     static func makeFraudEncryptionAttemptId() throws -> String {

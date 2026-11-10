@@ -27,11 +27,13 @@ final class RadarAPIHelper: Sendable {
         }
     }
 
+    typealias RequestPreparation = (URLRequest) async throws -> URLRequest
+
     func retryingRequest(
         for request: URLRequest,
-        prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
+        prepareRequest: RequestPreparation? = nil
     ) async throws -> (Data, URLResponse) {
-        let firstRequest = try prepareRequest?(request) ?? request
+        let firstRequest = try await Self.prepared(request, with: prepareRequest)
 
         do {
             return try await session.data(for: firstRequest)
@@ -42,9 +44,16 @@ final class RadarAPIHelper: Sendable {
                 throw error
             }
 
-            let retryRequest = try prepareRequest?(request) ?? request
+            let retryRequest = try await Self.prepared(request, with: prepareRequest)
             return try await session.data(for: retryRequest)
         }
+    }
+
+    private static func prepared(_ request: URLRequest, with prepareRequest: RequestPreparation?) async throws -> URLRequest {
+        guard let prepareRequest else {
+            return request
+        }
+        return try await prepareRequest(request)
     }
 
     func request(
@@ -53,7 +62,7 @@ final class RadarAPIHelper: Sendable {
         query: [URLQueryItem] = [],
         headers: [String: String] = [:],
         body: [String: Any?] = [:],
-        prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
+        prepareRequest: RequestPreparation? = nil
     ) async throws -> (Data, HTTPURLResponse) {
         guard var urlComponents = URLComponents(string: url) else {
             throw URLError(.badURL)
@@ -137,7 +146,7 @@ final class RadarAPIHelper: Sendable {
         query: [URLQueryItem] = [],
         headers: [String: String] = [:],
         body: [String: Any?] = [:],
-        prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
+        prepareRequest: RequestPreparation? = nil
     ) async throws -> (Data, HTTPURLResponse) {
         let hostUrl =
             switch host {

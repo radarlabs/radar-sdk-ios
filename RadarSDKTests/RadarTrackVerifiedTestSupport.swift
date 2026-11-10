@@ -27,6 +27,19 @@ final class MainQueueAPIHelperMock: RadarAPIHelperMock {
         preparationFailureHandler: ((Error) -> Void)?,
         completionHandler: RadarAPICompletionHandler?
     ) {
+        let fail: (Error) -> Void = { error in
+            let callback = TrackTestCallback {
+                preparationFailureHandler?(error)
+            }
+            DispatchQueue.main.async { callback.invoke() }
+        }
+        let send: ([AnyHashable: Any]?) -> Void = { preparedParams in
+            self.request(
+                withMethod: method, url: url, headers: headers, params: preparedParams,
+                sleep: sleep, logPayload: logPayload, extendedTimeout: extendedTimeout,
+                completionHandler: completionHandler
+            )
+        }
         do {
             var request = URLRequest(url: try XCTUnwrap(URL(string: url)))
             request.httpMethod = method
@@ -34,25 +47,21 @@ final class MainQueueAPIHelperMock: RadarAPIHelperMock {
             if let params {
                 request.httpBody = try JSONSerialization.data(withJSONObject: params)
             }
-            var preparedParams = params
-            if let prepareRequest {
-                var error: NSError?
-                let prepared = prepareRequest(request, &error)
-                if let error { throw error }
-                let preparedRequest = try XCTUnwrap(prepared)
-                let body = try XCTUnwrap(preparedRequest.httpBody)
-                preparedParams = try JSONSerialization.jsonObject(with: body) as? [AnyHashable: Any]
+            guard let prepareRequest else {
+                send(params)
+                return
             }
-            self.request(
-                withMethod: method, url: url, headers: headers, params: preparedParams,
-                sleep: sleep, logPayload: logPayload, extendedTimeout: extendedTimeout,
-                completionHandler: completionHandler
-            )
+            prepareRequest(request) { prepared, error in
+                do {
+                    if let error { throw error }
+                    let body = try XCTUnwrap(prepared?.httpBody)
+                    send(try JSONSerialization.jsonObject(with: body) as? [AnyHashable: Any])
+                } catch {
+                    fail(error)
+                }
+            }
         } catch {
-            let callback = TrackTestCallback {
-                preparationFailureHandler?(error)
-            }
-            DispatchQueue.main.async { callback.invoke() }
+            fail(error)
         }
     }
 

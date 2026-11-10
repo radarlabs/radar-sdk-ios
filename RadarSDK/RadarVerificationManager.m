@@ -193,6 +193,10 @@
                 options[@"nonce"] = config.nonce;
             }
 
+            if (config.appAttestKeyId) {
+                options[@"appAttestKeyId"] = config.appAttestKeyId;
+            }
+
             RadarTrackVerifiedRequestPreparer *requestPreparer =
                 self.trackVerifiedPayloadFactory
                     ? self.trackVerifiedPayloadFactory(options)

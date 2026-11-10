@@ -71,4 +71,18 @@ struct RadarConfigTests {
         #expect(config?.meta?.sdkConfiguration?.logLevel == .info)
         #expect(config?.nonce == "test-nonce")
     }
+
+    @Test("registered App Attest key id is parsed from aak")
+    func appAttestKeyId() {
+        let config = RadarConfig.from(dictionary: ["nonce": "test-nonce", "aak": "test-key-id"])
+
+        #expect(config?.nonce == "test-nonce")
+        #expect(config?.appAttestKeyId == "test-key-id")
+    }
+
+    @Test("missing or mistyped aak leaves the App Attest key id nil")
+    func appAttestKeyIdMissingOrWrongType() {
+        #expect(RadarConfig.from(dictionary: ["nonce": "test-nonce"])?.appAttestKeyId == nil)
+        #expect(RadarConfig.from(dictionary: ["aak": 42])?.appAttestKeyId == nil)
+    }
 }

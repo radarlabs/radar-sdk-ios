@@ -247,46 +247,48 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                 }
             };
 
-            NSURLRequest *(^requestForAttempt)(void) = ^NSURLRequest *{
+            // Prepares the request for one attempt and sends it; reports preparation failures itself.
+            void (^sendAttempt)(void (^)(NSURLRequest *)) = ^(void (^send)(NSURLRequest *)) {
                 if (!prepareRequest) {
-                    return req;
+                    send(req);
+                    return;
                 }
-                NSError *error = nil;
-                NSURLRequest *prepared = prepareRequest(req, &error);
-                if (!prepared || error) {
-                    NSError *preparationError = error ?: [NSError errorWithDomain:@"RadarRequestPreparation" code:0 userInfo:nil];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (preparationFailureHandler) {
-                            preparationFailureHandler(preparationError);
-                        } else {
-                            completionHandler(RadarStatusErrorBadRequest, nil, preparationError);
+                prepareRequest(req, ^(NSURLRequest *_Nullable prepared, NSError *_Nullable error) {
+                    if (!prepared || error) {
+                        NSError *preparationError = error ?: [NSError errorWithDomain:@"RadarRequestPreparation" code:0 userInfo:nil];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if (preparationFailureHandler) {
+                                preparationFailureHandler(preparationError);
+                            } else {
+                                completionHandler(RadarStatusErrorBadRequest, nil, preparationError);
+                            }
+                        });
+                        if (sleep) {
+                            dispatch_semaphore_signal(self.semaphore);
                         }
-                    });
-                    if (sleep) {
-                        dispatch_semaphore_signal(self.semaphore);
+                        return;
                     }
-                    return nil;
-                }
-                return prepared;
+                    send(prepared);
+                });
             };
 
             void (^dataTaskRetryHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
                 if (error && [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNetworkConnectionLost) {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                        message:[NSString stringWithFormat:@"📍 Radar API retrying after lost connection | url = %@", url]];
-                    NSURLRequest *retryRequest = requestForAttempt();
-                    if (!retryRequest) { return; }
-                    NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:retryRequest completionHandler:dataTaskCompletionHandler];
-                    [retryTask resume];
+                    sendAttempt(^(NSURLRequest *retryRequest) {
+                        NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:retryRequest completionHandler:dataTaskCompletionHandler];
+                        [retryTask resume];
+                    });
                 } else {
                     dataTaskCompletionHandler(data, response, error);
                 }
             };
 
-            NSURLRequest *firstRequest = requestForAttempt();
-            if (!firstRequest) { return; }
-            NSURLSessionDataTask *task = [session dataTaskWithRequest:firstRequest completionHandler:dataTaskRetryHandler];
-            [task resume];
+            sendAttempt(^(NSURLRequest *firstRequest) {
+                NSURLSessionDataTask *task = [session dataTaskWithRequest:firstRequest completionHandler:dataTaskRetryHandler];
+                [task resume];
+            });
         } @catch (NSException *exception) {
             if (sleep) {
                 dispatch_semaphore_signal(self.semaphore);

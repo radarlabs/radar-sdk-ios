@@ -13,7 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^_Nullable RadarAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error);
 
-typedef NSURLRequest *_Nullable (^RadarAPIRequestPreparation)(NSURLRequest *request, NSError *_Nullable *_Nullable error);
+typedef void (^RadarAPIRequestPreparationCompletion)(NSURLRequest *_Nullable request, NSError *_Nullable error);
+
+// Called once per attempt, so each retry gets a freshly sealed body. Must call completion exactly once.
+typedef void (^RadarAPIRequestPreparation)(NSURLRequest *request, RadarAPIRequestPreparationCompletion completion);
 
 @interface RadarAPIHelper : NSObject
 

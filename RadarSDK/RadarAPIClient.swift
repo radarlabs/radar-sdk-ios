@@ -173,7 +173,7 @@ public final class RadarAPIClient: Sendable {
             url: "reveal/risk",
             body: params,
             prepareRequest: { request in
-                try preparedPayload.prepareRequest(request)
+                try await preparedPayload.prepareRequest(request)
             }
         )
 
@@ -200,7 +200,7 @@ public final class RadarAPIClient: Sendable {
             value != nil ? URLQueryItem(name: key, value: value) : nil
         }
 
-        let (data, response) = try await apiHelper.radarRequest(host: host, method: "GET", url: "config")
+        let (data, response) = try await apiHelper.radarRequest(host: host, method: "GET", url: "config", query: params)
 
         try assertResponseCode(response.statusCode)
 

@@ -24,7 +24,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarPreparedFraudPayloadWrapper : NSObject
-- (NSURLRequest *_Nullable)prepareRequest:(NSURLRequest *)request error:(NSError *_Nullable *_Nullable)error;
+- (void)prepareRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest *_Nullable request, NSError *_Nullable error))completionHandler;
 @end
 
 typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
