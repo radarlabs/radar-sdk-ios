@@ -45,17 +45,13 @@ extension RadarLocationManagerSwift {
             if let authorization {
                 RadarState.shared.motionAuthorizationString = authorization
             }
-            let authorizationDescription = authorization ?? "unknown"
 
             RadarLogger.shared.debug(
-                "🦅 usePressure enabled: starting relative altitude updates, auth status: \(authorizationDescription)")
+                "🦅 usePressure enabled: starting relative and absolute altitude updates, "
+                    + "auth status: \(authorization ?? "unknown")")
             host.startRelativeAltitude { altitudeData in
                 recordRelativeAltitude(altitudeData)
             }
-
-            RadarLogger.shared.debug(
-                "🦅 usePressure enabled: starting absolute altitude updates (iOS 15+), auth status: \(authorizationDescription)"
-            )
             host.startAbsoluteAltitude { altitudeData in
                 recordAbsoluteAltitude(altitudeData)
             }
@@ -148,12 +144,11 @@ extension RadarLocationManagerSwift {
 
     /// Changes the stored altitude dictionary as one step, under `altitudeLock`.
     private static func updateStoredAltitude(_ change: (inout [String: Any]) -> Void) {
-        altitudeLock.lock()
-        defer { altitudeLock.unlock() }
-
-        let state = RadarState.shared
-        var altitude = state.lastRelativeAltitudeData ?? [:]
-        change(&altitude)
-        state.lastRelativeAltitudeData = altitude
+        altitudeLock.withLock {
+            let state = RadarState.shared
+            var altitude = state.lastRelativeAltitudeData ?? [:]
+            change(&altitude)
+            state.lastRelativeAltitudeData = altitude
+        }
     }
 }

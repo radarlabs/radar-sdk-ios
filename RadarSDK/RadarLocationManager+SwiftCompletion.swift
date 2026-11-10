@@ -88,9 +88,7 @@ final class RadarLocationCompletionStore: RadarLocationCompletionStoring, @unche
     }
 
     var count: Int {
-        lock.lock()
-        defer { lock.unlock() }
-        return pending.count
+        lock.withLock { pending.count }
     }
 
     func add(_ completionHandler: @escaping RadarLocationCompletionHandler) {
@@ -99,24 +97,25 @@ final class RadarLocationCompletionStore: RadarLocationCompletionStoring, @unche
             self?.call(status: .errorLocation, location: nil)
         }
 
-        lock.lock()
-        pending.append(Pending(completionHandler: completionHandler, timeout: timeout))
-        lock.unlock()
+        lock.withLock {
+            pending.append(Pending(completionHandler: completionHandler, timeout: timeout))
+        }
 
         scheduleTimeout(Self.timeout, timeout)
     }
 
     func cancelTimeouts() {
-        lock.lock()
-        defer { lock.unlock() }
-        pending.forEach { $0.timeout.cancel() }
+        lock.withLock {
+            pending.forEach { $0.timeout.cancel() }
+        }
     }
 
     func call(status: RadarStatus, location: CLLocation?) {
-        lock.lock()
-        let waiting = pending
-        pending.removeAll()
-        lock.unlock()
+        let waiting = lock.withLock {
+            let waiting = pending
+            pending.removeAll()
+            return waiting
+        }
 
         guard !waiting.isEmpty else {
             return
