@@ -94,6 +94,8 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func createPlace(dict: [String: Any]) -> RadarPlace? { createPlaceHandler?(dict) }
     var mockIsForeground = false
     func isForeground() -> Bool { mockIsForeground }
+    var mockMotionAuthorizationString = "NOT_DETERMINED"
+    func motionAuthorizationString() -> String { mockMotionAuthorizationString }
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {}
     private(set) var lastClientLocation: CLLocation?
     private(set) var lastClientLocationSource: RadarLocationSource?

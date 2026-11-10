@@ -88,8 +88,7 @@ extension RadarSerializedTests {
                     host: host, location: HandleLocationFixtures.location(horizontalAccuracy: -1), source: .backgroundLocation,
                     beacons: nil)
 
-                #expect(host.cancelTimeoutsCallCount == 1)
-                #expect(host.completionStatuses == [.errorLocation])
+                #expect(RadarLocationManagerSwiftTestHelpers.completions.statuses == [.errorLocation])
                 #expect(host.sentLocations.isEmpty)
                 #expect(bridge.lastLocation() == nil)
             }
@@ -109,7 +108,9 @@ extension RadarSerializedTests {
 
                 #expect(host.updateTrackingLocations.count == 1)
                 #expect(host.updateTrackingLocations.first??.timestamp == location.timestamp)
-                #expect(host.completionStatuses.isEmpty)
+                // The handlers aren't called here, so their timeouts must stay armed.
+                #expect(RadarLocationManagerSwiftTestHelpers.completions.cancelTimeoutsCallCount == 0)
+                #expect(RadarLocationManagerSwiftTestHelpers.completions.statuses.isEmpty)
                 #expect(host.sentLocations.isEmpty)
                 #expect(bridge.lastLocation() == nil)
             }
@@ -126,7 +127,7 @@ extension RadarSerializedTests {
                     host: host, location: HandleLocationFixtures.location(), source: .backgroundLocation, beacons: nil)
 
                 #expect(host.sentLocations.isEmpty)
-                #expect(host.completionStatuses.isEmpty)
+                #expect(RadarLocationManagerSwiftTestHelpers.completions.statuses.isEmpty)
                 #expect(bridge.lastLocation() == nil)
                 #expect(bridge.lastSentAt() == nil)
             }
@@ -151,7 +152,7 @@ extension RadarSerializedTests {
                 #expect(!sent.replayed)
                 // Manual locations don't restart tracking.
                 #expect(host.updateTrackingLocations.isEmpty)
-                #expect(host.completionStatuses == [.success])
+                #expect(RadarLocationManagerSwiftTestHelpers.completions.statuses == [.success])
                 #expect(bridge.lastLocation() === location)
                 #expect(bridge.lastSentAt() != nil)
             }
@@ -170,7 +171,7 @@ extension RadarSerializedTests {
 
                 #expect(host.sentLocations.isEmpty)
                 #expect(host.updateTrackingLocations.count == 1)
-                #expect(host.completionStatuses == [.success])
+                #expect(RadarLocationManagerSwiftTestHelpers.completions.statuses == [.success])
                 #expect(bridge.lastClientLocation === location)
                 #expect(bridge.lastLocation() === location)
                 #expect(bridge.lastSentAt() != nil)
@@ -256,7 +257,7 @@ extension RadarSerializedTests {
                     source: .backgroundLocation, beacons: nil)
 
                 #expect(host.sentLocations.isEmpty)
-                #expect(host.completionStatuses.isEmpty)
+                #expect(RadarLocationManagerSwiftTestHelpers.completions.statuses.isEmpty)
                 #expect(bridge.lastLocation() == nil)
             }
         }

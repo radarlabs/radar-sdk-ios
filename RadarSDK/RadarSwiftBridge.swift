@@ -44,6 +44,8 @@ protocol RadarSwiftBridgeProtocol {
     func createGeofence(dict: [String: Any]) -> RadarGeofence?
     func createPlace(dict: [String: Any]) -> RadarPlace?
     func isForeground() -> Bool
+    // `Radar.stringForMotionAuthorizationStatus` is declared in Radar+Internal.h, which Swift can't see.
+    func motionAuthorizationString() -> String
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser)
     func didUpdateClientLocation(_ location: CLLocation, stopped: Bool, source: RadarLocationSource)
     func handleLocation(_ location: CLLocation, source: RadarLocationSource)

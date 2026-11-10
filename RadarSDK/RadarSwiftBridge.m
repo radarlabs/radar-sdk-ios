@@ -172,6 +172,10 @@
     return [RadarUtilsDeprecated foreground];
 }
 
+- (NSString *)motionAuthorizationString {
+    return [Radar stringForMotionAuthorizationStatus];
+}
+
 - (void)didReceiveEvents:(NSArray<RadarEvent *> *)events user:(RadarUser *)user {
     [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
 }

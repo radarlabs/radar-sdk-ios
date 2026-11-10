@@ -87,11 +87,17 @@ struct RadarSDKTestFixture {
     }
 
     /// Simulates a location timeout without waiting for the real 20 second timer.
+    /// Each completion store has its own timeouts, so fail the waiting handlers in both: the
+    /// Objective-C store through `timeoutWithCompletionHandler:` (it ignores its argument), and the
+    /// Swift store directly.
     func simulateLocationTimeout(sourceLocation: SourceLocation = #_sourceLocation) {
-        guard let host = RadarLocationManager.sharedInstance() as? RadarLocationManagerSwiftHost else {
-            Issue.record("RadarLocationManager doesn't conform to RadarLocationManagerSwiftHost", sourceLocation: sourceLocation)
+        let selector = NSSelectorFromString("timeoutWithCompletionHandler:")
+        let locationManager = RadarLocationManager.sharedInstance()
+        guard locationManager.responds(to: selector) else {
+            Issue.record("RadarLocationManager doesn't respond to timeoutWithCompletionHandler:", sourceLocation: sourceLocation)
             return
         }
-        host.callCompletionHandlers(status: .errorLocation, location: nil)
+        locationManager.perform(selector, with: nil)
+        RadarLocationManagerSwift.callCompletionHandlers(status: .errorLocation, location: nil)
     }
 }

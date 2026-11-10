@@ -28,13 +28,9 @@ extension RadarLocationManagerSwift {
 
         let bypassDeviceLocationState = shouldBypassDeviceLocationState(for: source)
 
-        if !bypassDeviceLocationState {
-            host.cancelTimeouts()
-        }
-
         guard location.isValid else {
             RadarLogger.shared.debug("🦅 Invalid location | source = \(sourceString); location = \(location)")
-            host.callCompletionHandlers(status: .errorLocation, location: nil)
+            callCompletionHandlers(status: .errorLocation, location: nil)
             return
         }
 
@@ -69,7 +65,7 @@ extension RadarLocationManagerSwift {
 
         let outgoing = outgoingLocation(context, movement: movement, bridge: bridge)
 
-        if shouldSkipSync(context, movement: movement, outgoing: outgoing, host: host, bridge: bridge) {
+        if shouldSkipSync(context, movement: movement, outgoing: outgoing, bridge: bridge) {
             return
         }
 
@@ -191,7 +187,7 @@ extension RadarLocationManagerSwift {
             host.updateTracking(context.location)
         }
 
-        host.callCompletionHandlers(status: .success, location: context.location)
+        callCompletionHandlers(status: .success, location: context.location)
     }
 
     /// Fetches the sync region when there isn't one yet, or when offline events are on and the
@@ -241,12 +237,11 @@ extension RadarLocationManagerSwift {
         _ context: HandledLocation,
         movement: LocationMovement,
         outgoing: OutgoingLocation,
-        host: RadarLocationManagerSwiftHost,
         bridge: RadarSwiftBridgeProtocol?
     ) -> Bool {
         let lastSentAt = bridge?.lastSentAt()
         let ignoreSync =
-            lastSentAt == nil || host.completionHandlerCount() > 0 || movement.justStopped || outgoing.replayed
+            lastSentAt == nil || completionHandlerCount() > 0 || movement.justStopped || outgoing.replayed
             || context.source == .beaconEnter || context.source == .beaconExit
         guard !ignoreSync, let lastSentAt else {
             return false

@@ -48,7 +48,28 @@ enum RadarLocationManagerSwiftTestHelpers {
         }
         defer { RadarLocationManagerSwift.sendLocationHandler = originalSendLocationHandler }
 
-        try body(bridge)
+        // Record completion handler calls instead of starting real 20 second timeouts.
+        try withRecordingCompletionStore { _ in
+            try body(bridge)
+        }
+    }
+
+    /// The completion store `withRecordingCompletionStore` installed. Valid only inside its body.
+    nonisolated(unsafe) private(set) static var completions = RecordingCompletionStore()
+
+    /// Replaces the Swift completion store with a recording store for the body, then restores it.
+    static func withRecordingCompletionStore<T>(_ body: (RecordingCompletionStore) throws -> T) rethrows -> T {
+        let store = RecordingCompletionStore()
+        let originalStore = RadarLocationManagerSwift.completionStore
+        let originalCompletions = completions
+        RadarLocationManagerSwift.completionStore = store
+        completions = store
+        defer {
+            RadarLocationManagerSwift.completionStore = originalStore
+            completions = originalCompletions
+        }
+
+        return try body(store)
     }
 
     /// Reset every `RadarSettings` key the seam tests write so each test starts
@@ -129,5 +150,33 @@ enum RadarLocationManagerSwiftTestHelpers {
         let options = RadarTrackingOptions.presetResponsive
         options.beacons = beacons
         return options
+    }
+}
+
+/// Records calls to the Swift completion store. It keeps the added handlers but never times them out.
+final class RecordingCompletionStore: RadarLocationCompletionStoring, @unchecked Sendable {
+    private(set) var addCallCount = 0
+    private(set) var cancelTimeoutsCallCount = 0
+    private(set) var statuses: [RadarStatus] = []
+    /// Handlers that `count` reports in addition to the added ones.
+    var extraPendingCount = 0
+    private var handlers: [RadarLocationCompletionHandler] = []
+
+    var count: Int { handlers.count + extraPendingCount }
+
+    func add(_ completionHandler: @escaping RadarLocationCompletionHandler) {
+        addCallCount += 1
+        handlers.append(completionHandler)
+    }
+
+    func cancelTimeouts() {
+        cancelTimeoutsCallCount += 1
+    }
+
+    func call(status: RadarStatus, location: CLLocation?) {
+        statuses.append(status)
+        let waiting = handlers
+        handlers.removeAll()
+        waiting.forEach { $0(status, location, false) }
     }
 }
