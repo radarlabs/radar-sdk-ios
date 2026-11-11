@@ -152,7 +152,7 @@ final class LogStream: NSObject, ObservableObject {
         return "\(lat), \(lng)  ±\(acc)m"
     }
 
-    fileprivate static func prettyJSON(_ raw: [AnyHashable: Any]?) -> String? {
+    static func prettyJSON(_ raw: [AnyHashable: Any]?) -> String? {
         guard let raw = raw, JSONSerialization.isValidJSONObject(raw) else { return nil }
         let data = try? JSONSerialization.data(
             withJSONObject: raw,
