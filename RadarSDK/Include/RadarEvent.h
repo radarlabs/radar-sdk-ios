@@ -28,8 +28,8 @@
 typedef NS_ENUM(NSInteger, RadarEventType) {
     /// Unknown
     RadarEventTypeUnknown NS_SWIFT_NAME(unknown),
-    // A conversion type, created by calling `Radar.sendEvent()`. The type value
-    // will be assigned to the `conversionName` property.
+    /// An event type that this SDK version doesn't recognize. The type string is in
+    /// `conversionName`. `Radar.logConversion` returns a `RadarConversion`, not a `RadarEvent`.
     RadarEventTypeConversion NS_SWIFT_NAME(conversion),
     /// `user.entered_geofence`
     RadarEventTypeUserEnteredGeofence NS_SWIFT_NAME(userEnteredGeofence),

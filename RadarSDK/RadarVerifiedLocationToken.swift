@@ -92,7 +92,7 @@ public final class RadarVerifiedLocationToken: NSObject {
         let expiresIn = (dict["expiresIn"] as? NSNumber).map { TimeInterval($0.floatValue) } ?? 0
         let passed = (dict["passed"] as? NSNumber)?.boolValue ?? false
         let user = (dict["user"] as? NSDictionary).flatMap { RadarUser(object: $0) }
-        // Any event that fails to parse fails the whole token.
+        // An event that fails to parse is dropped; a non-array `events` fails the token.
         let events = RadarEvent.events(from: dict["events"])
         let failureReasons = (dict["failureReasons"] as? NSArray)?.compactMap { $0 as? String } ?? []
         let id = dict["_id"] as? String

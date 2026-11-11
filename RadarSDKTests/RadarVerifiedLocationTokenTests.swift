@@ -252,11 +252,12 @@ extension RadarSerializedTests {
         }
 
         @Test
-        func anyUnparseableEventReturnsNil() {
+        func unparseableEventsAreDropped() throws {
             var object = tokenObject()
             object["events"] = [eventObject(id: "event-1"), "not an event"]
 
-            #expect(withoutBridge { RadarVerifiedLocationToken(object: object) } == nil)
+            let token = try #require(withoutBridge { RadarVerifiedLocationToken(object: object) })
+            #expect(token.events?.map(\._id) == ["event-1"])
         }
 
         @Test

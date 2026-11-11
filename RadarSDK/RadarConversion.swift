@@ -67,3 +67,35 @@ public final class RadarConversion: NSObject {
         return dict
     }
 }
+
+// MARK: - Migration from RadarEvent
+
+// `logConversion` passed `RadarEvent` before it passed `RadarConversion`. Without these overloads, a
+// Swift closure typed `(RadarStatus, RadarEvent?)` fails with an argument-label error that doesn't
+// mention the type change. Swift prefers available overloads, so other callers are not affected.
+extension Radar {
+    @available(
+        *, unavailable,
+        message: "logConversion now passes RadarConversion. Change the closure's RadarEvent? parameter to RadarConversion?, and use name instead of conversionName."
+    )
+    public static func logConversion(
+        name: String,
+        metadata: [AnyHashable: Any]?,
+        completionHandler: @escaping (RadarStatus, RadarEvent?) -> Void
+    ) {
+        fatalError("unavailable")
+    }
+
+    @available(
+        *, unavailable,
+        message: "logConversion now passes RadarConversion. Change the closure's RadarEvent? parameter to RadarConversion?, and use name instead of conversionName."
+    )
+    public static func logConversion(
+        name: String,
+        revenue: NSNumber,
+        metadata: [AnyHashable: Any]?,
+        completionHandler: @escaping (RadarStatus, RadarEvent?) -> Void
+    ) {
+        fatalError("unavailable")
+    }
+}

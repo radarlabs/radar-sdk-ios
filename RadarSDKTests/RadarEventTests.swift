@@ -346,12 +346,16 @@ struct RadarEventCompatibilityTests {
         try #require(RadarEvent(object: object))
     }
 
-    @Test("eventsFromObject parses arrays and fails the whole array on one bad event")
+    @Test("eventsFromObject parses arrays and drops events that fail to parse")
     func parsesEventArrays() throws {
         let events = try #require(RadarEvent.events(from: [baseEventObject(), fullEventObject()]))
         #expect(events.count == 2)
 
-        #expect(RadarEvent.events(from: [baseEventObject(), ["_id": "missing-created-at"]]) == nil)
+        var noLocation = fullEventObject()
+        noLocation["_id"] = "no-location"
+        noLocation["location"] = nil
+        let kept = try #require(RadarEvent.events(from: [baseEventObject(), noLocation, "not an event"]))
+        #expect(kept.map(\._id) == ["event-id"])
         #expect(RadarEvent.events(from: baseEventObject()) == nil)
         #expect(RadarEvent.events(from: nil) == nil)
         #expect(RadarEvent.events(from: [Any]())?.isEmpty == true)

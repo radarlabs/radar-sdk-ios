@@ -30,7 +30,8 @@ public final class RadarEvent: NSObject {
     /// The type of the event.
     public let type: RadarEventType
 
-    /// The name of the conversion event. This will only be set if the `type` is `RadarEventTypeConversion`.
+    /// The type string of an event that this SDK version doesn't recognize. Set only when `type` is
+    /// `RadarEventTypeConversion`. For `Radar.logConversion` results, use `RadarConversion.name`.
     public let conversionName: String?
 
     /// The geofence for which the event was generated. May be `nil` for non-geofence events.
@@ -153,7 +154,9 @@ public final class RadarEvent: NSObject {
         super.init()
     }
 
-    // Returns nil for a non-array, or if any event fails to parse.
+    // Returns nil for a non-array. An event that fails to parse, for example because it has no
+    // `location` or `actualCreatedAt`, is dropped and logged, so the other events and the rest of
+    // the response still go through. The Android SDK does the same.
     @objc(eventsFromObject:)
     static func events(from object: Any?) -> [RadarEvent]? {
         guard let array = object as? NSArray else {
@@ -163,7 +166,9 @@ public final class RadarEvent: NSObject {
         var events: [RadarEvent] = []
         for element in array {
             guard let event = RadarEvent(object: element) else {
-                return nil
+                let id = ((element as? NSDictionary)?["_id"] as? String) ?? "unknown"
+                RadarLogger.shared.warning("Dropped an event that failed to parse | _id = \(id)")
+                continue
             }
             events.append(event)
         }
