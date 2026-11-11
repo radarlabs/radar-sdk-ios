@@ -70,9 +70,13 @@ public final class RadarConversion: NSObject {
 
 // MARK: - Migration from RadarEvent
 
-// `logConversion` passed `RadarEvent` before it passed `RadarConversion`. Without these overloads, a
-// Swift closure typed `(RadarStatus, RadarEvent?)` fails with an argument-label error that doesn't
-// mention the type change. Swift prefers available overloads, so other callers are not affected.
+// These overloads only make a compile error clearer. They add no API and never run: code that calls
+// them doesn't compile, so the `fatalError` bodies are unreachable.
+//
+// `logConversion` passed `RadarEvent` before it passed `RadarConversion`. Old Swift code that uses
+// `RadarEvent` in the closure fails to compile with or without these overloads. Without them, the
+// error is a confusing argument-label error. With them, the error says to use `RadarConversion`.
+// Swift prefers available overloads, so code that compiles with the new API is not affected.
 extension Radar {
     @available(
         *, unavailable,
