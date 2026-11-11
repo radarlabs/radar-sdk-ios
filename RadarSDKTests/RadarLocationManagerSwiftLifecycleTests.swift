@@ -23,6 +23,27 @@ final class TrackingRadarActivityManager: RadarActivityManager, @unchecked Senda
     private(set) var stopActivityUpdatesCallCount = 0
     private(set) var stopRelativeAltitudeUpdatesCallCount = 0
     private(set) var stopAbsoluteAltitudeUpdatesCallCount = 0
+    private(set) var activityHandlers: [(CMMotionActivity) -> Void] = []
+    private(set) var relativeAltitudeHandlers: [(CMAltitudeData?) -> Void] = []
+    private(set) var absoluteAltitudeHandlers: [(CMAbsoluteAltitudeData?) -> Void] = []
+
+    override func startActivityUpdates(handler: ((CMMotionActivity) -> Void)?) {
+        if let handler {
+            activityHandlers.append(handler)
+        }
+    }
+
+    override func startRelativeAltitude(handler: ((CMAltitudeData?) -> Void)?) {
+        if let handler {
+            relativeAltitudeHandlers.append(handler)
+        }
+    }
+
+    override func startAbsoluteAltitude(handler: ((CMAbsoluteAltitudeData?) -> Void)?) {
+        if let handler {
+            absoluteAltitudeHandlers.append(handler)
+        }
+    }
 
     override func stopActivityUpdates() {
         stopActivityUpdatesCallCount += 1
@@ -45,13 +66,24 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
     private(set) var cancelPendingShutdownCallCount = 0
     private(set) var scheduledShutdownDelays: [TimeInterval] = []
     private(set) var requestLocationCallCount = 0
-    private(set) var activityHandlers: [(CMMotionActivity) -> Void] = []
-    private(set) var relativeAltitudeHandlers: [(CMAltitudeData?) -> Void] = []
-    private(set) var absoluteAltitudeHandlers: [(CMAbsoluteAltitudeData?) -> Void] = []
+    // `startMotionUpdates(host:options:)` uses the host's activity manager when it has one, so the
+    // motion twins start this one in place of the shared instance.
+    let trackingActivityManager = TrackingRadarActivityManager()
+    var activityManager: AnyObject?
+    var activityHandlers: [(CMMotionActivity) -> Void] { trackingActivityManager.activityHandlers }
+    var relativeAltitudeHandlers: [(CMAltitudeData?) -> Void] { trackingActivityManager.relativeAltitudeHandlers }
+    var absoluteAltitudeHandlers: [(CMAbsoluteAltitudeData?) -> Void] {
+        trackingActivityManager.absoluteAltitudeHandlers
+    }
     let trackingLocationManager = TrackingCLLocationManager()
     let trackingLowPowerLocationManager = TrackingCLLocationManager()
     var locationManager: CLLocationManager { trackingLocationManager }
     var lowPowerLocationManager: CLLocationManager { trackingLowPowerLocationManager }
+
+    override init() {
+        super.init()
+        activityManager = trackingActivityManager
+    }
 
     func started() -> Bool { startedValue }
 
@@ -93,18 +125,6 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
 
     func scheduleShutdown(after delay: TimeInterval) {
         scheduledShutdownDelays.append(delay)
-    }
-
-    func startActivityUpdates(handler: @escaping (CMMotionActivity) -> Void) {
-        activityHandlers.append(handler)
-    }
-
-    func startRelativeAltitude(handler: @escaping (CMAltitudeData?) -> Void) {
-        relativeAltitudeHandlers.append(handler)
-    }
-
-    func startAbsoluteAltitude(handler: @escaping (CMAbsoluteAltitudeData?) -> Void) {
-        absoluteAltitudeHandlers.append(handler)
     }
 
     struct SentLocation {

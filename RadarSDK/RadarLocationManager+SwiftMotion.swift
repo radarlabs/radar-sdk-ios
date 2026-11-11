@@ -11,8 +11,8 @@ import Foundation
 
 // Swift port of `startMotionUpdatesWithOptions:` in RadarLocationManager.m. With `useMotion`, it
 // starts heading updates and stores each new motion activity, then starts a track. With
-// `usePressure`, it stores relative and absolute altitude data. The Objective-C
-// `RadarActivityManager` still reads Core Motion, through the host.
+// `usePressure`, it stores relative and absolute altitude data. `RadarActivityManager` reads Core
+// Motion.
 extension RadarLocationManagerSwift {
 
     /// Mirror of the heading filter in RadarLocationManager.m. Kept in sync by hand until that file
@@ -29,12 +29,21 @@ extension RadarLocationManagerSwift {
     }
 
     static func startMotionUpdates(host: RadarLocationManagerSwiftHost, options: RadarTrackingOptions) {
+        guard options.useMotion || options.usePressure else {
+            return
+        }
+
+        // Keep the activity manager on the host, so `stopTracking` stops the same instance. The host
+        // only ever holds the shared instance, except in tests.
+        let activityManager = host.activityManager as? RadarActivityManager ?? RadarActivityManager.shared
+        host.activityManager = activityManager
+
         if options.useMotion {
             let locationManager = host.locationManager
             locationManager.headingFilter = motionHeadingFilter
             locationManager.startUpdatingHeading()
 
-            host.startActivityUpdates { activity in
+            activityManager.startActivityUpdates { activity in
                 recordMotionActivity(activity, options: options)
             }
         }
@@ -49,10 +58,10 @@ extension RadarLocationManagerSwift {
             RadarLogger.shared.debug(
                 "🦅 usePressure enabled: starting relative and absolute altitude updates, "
                     + "auth status: \(authorization ?? "unknown")")
-            host.startRelativeAltitude { altitudeData in
+            activityManager.startRelativeAltitude { altitudeData in
                 recordRelativeAltitude(altitudeData)
             }
-            host.startAbsoluteAltitude { altitudeData in
+            activityManager.startAbsoluteAltitude { altitudeData in
                 recordAbsoluteAltitude(altitudeData)
             }
         }
