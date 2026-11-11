@@ -727,9 +727,12 @@
         if (verified && preparedFraudPayload) {
             [self.apiHelper requestWithMethod:@"POST" url:url headers:headers params:requestParams
                                         sleep:YES logPayload:YES extendedTimeout:NO
-                               prepareRequest:^(NSURLRequest *request, RadarAPIRequestPreparationCompletion completion) {
-                                   [preparedFraudPayload prepareRequest:request completionHandler:completion];
+                               prepareRequest:^NSURLRequest *(NSURLRequest *request, NSError **error) {
+                                   return [preparedFraudPayload prepareRequest:request error:error];
                                }
+                                assertRequest:^(NSURLRequest *request, void (^completion)(NSURLRequest *)) {
+                                    [preparedFraudPayload assertRequest:request completionHandler:completion];
+                                }
                     preparationFailureHandler:^(NSError *error) {
                         completionHandler(RadarStatusErrorBadRequest, nil, nil, nil, nil, nil, nil);
                     }

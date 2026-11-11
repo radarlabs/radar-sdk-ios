@@ -173,7 +173,7 @@ public final class RadarAPIClient: Sendable {
             url: "reveal/risk",
             body: params,
             prepareRequest: { request in
-                try await preparedPayload.prepareRequest(request)
+                try preparedPayload.prepareRequest(request)
             }
         )
 

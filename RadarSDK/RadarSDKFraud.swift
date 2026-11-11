@@ -180,6 +180,65 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
         return payload
     }
 
+    func getEncryptedPayload(
+        coreBody: Data,
+        canonicalRoute: String,
+        origin: String? = nil,
+        product: String? = nil,
+        sdkVersion: String?,
+        authorization: String?
+    ) throws -> String {
+        var options: [String: Any] = [
+            "body": coreBody,
+            "method": "POST",
+            "canonicalRoute": canonicalRoute,
+            "encryptionAttemptId":
+                try Self.makeFraudEncryptionAttemptId(),
+            "issuedAt": Int(Date().timeIntervalSince1970),
+        ]
+        options["origin"] = origin
+        options["product"] = product
+        options["sdkVersion"] = sdkVersion
+        options["authorization"] = authorization
+
+        return try seal(options: options)
+    }
+
+    @objc(prepareRequest:error:)
+    func prepareRequest(_ request: URLRequest) throws -> URLRequest {
+        guard
+            request.httpMethod == "POST",
+            let route = request.url?.path,
+            let coreBody = request.httpBody
+        else {
+            throw RadarError(
+                status: .errorBadRequest,
+                message: "Request encryption requires a POST request with a URL and body"
+            )
+        }
+
+        let encryptedPayload = try getEncryptedPayload(
+            coreBody: coreBody,
+            canonicalRoute: route,
+            origin: request.value(
+                forHTTPHeaderField: "X-Radar-Mobile-Origin"
+            ),
+            product: request.value(
+                forHTTPHeaderField: "X-Radar-Product"
+            ),
+            sdkVersion: request.value(
+                forHTTPHeaderField: "X-Radar-SDK-Version"
+            ),
+            authorization: request.value(
+                forHTTPHeaderField: "Authorization"
+            )
+        )
+
+        var preparedRequest = request
+        preparedRequest.httpBody = Data(encryptedPayload.utf8)
+        return preparedRequest
+    }
+
     /// Asserts over a sealed body when the fraud SDK supports it. Returns nil when it doesn't, has no
     /// key to assert with, or fails; the request then goes out without App Attest headers.
     func assert(payload: String, method: String, canonicalRoute: String) async -> AppAttestAssertion? {
@@ -208,102 +267,30 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
         }
     }
 
-    static func sealOptions(
-        coreBody: Data,
-        canonicalRoute: String,
-        origin: String? = nil,
-        product: String? = nil,
-        sdkVersion: String?,
-        authorization: String?
-    ) throws -> [String: Any] {
-        var options: [String: Any] = [
-            "body": coreBody,
-            "method": "POST",
-            "canonicalRoute": canonicalRoute,
-            "encryptionAttemptId":
-                try Self.makeFraudEncryptionAttemptId(),
-            "issuedAt": Int(Date().timeIntervalSince1970),
-        ]
-        options["origin"] = origin
-        options["product"] = product
-        options["sdkVersion"] = sdkVersion
-        options["authorization"] = authorization
-        return options
-    }
-
-    func getEncryptedPayload(
-        coreBody: Data,
-        canonicalRoute: String,
-        origin: String? = nil,
-        product: String? = nil,
-        sdkVersion: String?,
-        authorization: String?
-    ) throws -> String {
-        try seal(
-            options: Self.sealOptions(
-                coreBody: coreBody,
-                canonicalRoute: canonicalRoute,
-                origin: origin,
-                product: product,
-                sdkVersion: sdkVersion,
-                authorization: authorization
-            )
-        )
-    }
-
-    /// Replaces the body with a freshly sealed envelope and, when the fraud SDK asserts, adds the
-    /// App Attest headers. Call once per attempt: every retry needs a new envelope and assertion.
-    func prepareRequest(_ request: URLRequest) async throws -> URLRequest {
+    /// Adds App Attest headers to a request already sealed by `prepareRequest(_:)`, asserting over its
+    /// exact body. Returns the request unchanged when there's no assertion. Call once per attempt,
+    /// after `prepareRequest(_:)`, so every retry gets a new assertion.
+    func assertRequest(_ request: URLRequest) async -> URLRequest {
         guard
-            request.httpMethod == "POST",
+            let method = request.httpMethod,
             let route = request.url?.path,
-            let coreBody = request.httpBody
+            let body = request.httpBody,
+            let payload = String(data: body, encoding: .utf8),
+            let assertion = await assert(payload: payload, method: method, canonicalRoute: route)
         else {
-            throw RadarError(
-                status: .errorBadRequest,
-                message: "Request encryption requires a POST request with a URL and body"
-            )
+            return request
         }
 
-        let options = try Self.sealOptions(
-            coreBody: coreBody,
-            canonicalRoute: route,
-            origin: request.value(
-                forHTTPHeaderField: "X-Radar-Mobile-Origin"
-            ),
-            product: request.value(
-                forHTTPHeaderField: "X-Radar-Product"
-            ),
-            sdkVersion: request.value(
-                forHTTPHeaderField: "X-Radar-SDK-Version"
-            ),
-            authorization: request.value(
-                forHTTPHeaderField: "Authorization"
-            )
-        )
-        let payload = try seal(options: options)
-        let assertion = await assert(payload: payload, method: "POST", canonicalRoute: route)
-
-        var preparedRequest = request
-        preparedRequest.httpBody = Data(payload.utf8)
-        if let assertion {
-            preparedRequest.setValue(assertion.keyId, forHTTPHeaderField: Self.appAttestKeyIdHeader)
-            preparedRequest.setValue(assertion.assertion, forHTTPHeaderField: Self.appAttestAssertionHeader)
-        }
-        return preparedRequest
+        var assertedRequest = request
+        assertedRequest.setValue(assertion.keyId, forHTTPHeaderField: Self.appAttestKeyIdHeader)
+        assertedRequest.setValue(assertion.assertion, forHTTPHeaderField: Self.appAttestAssertionHeader)
+        return assertedRequest
     }
 
-    @objc(prepareRequest:completionHandler:)
-    func prepareRequest(
-        _ request: URLRequest,
-        completionHandler: @escaping @Sendable (URLRequest?, Error?) -> Void
-    ) {
+    @objc(assertRequest:completionHandler:)
+    func assertRequest(_ request: URLRequest, completionHandler: @escaping @Sendable (URLRequest) -> Void) {
         Task {
-            do {
-                completionHandler(try await self.prepareRequest(request), nil)
-            } catch {
-                completionHandler(nil, error)
-            }
+            completionHandler(await self.assertRequest(request))
         }
     }
 

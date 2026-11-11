@@ -13,10 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^_Nullable RadarAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error);
 
-typedef void (^RadarAPIRequestPreparationCompletion)(NSURLRequest *_Nullable request, NSError *_Nullable error);
+typedef NSURLRequest *_Nullable (^RadarAPIRequestPreparation)(NSURLRequest *request, NSError *_Nullable *_Nullable error);
 
-// Called once per attempt, so each retry gets a freshly sealed body. Must call completion exactly once.
-typedef void (^RadarAPIRequestPreparation)(NSURLRequest *request, RadarAPIRequestPreparationCompletion completion);
+// Runs after preparation on every attempt, with the exact request that will be sent. Must call completion
+// exactly once, passing the request to send (the prepared request itself if there's nothing to add).
+typedef void (^RadarAPIRequestAssertion)(NSURLRequest *request, void (^completion)(NSURLRequest *request));
 
 @interface RadarAPIHelper : NSObject
 
@@ -37,6 +38,18 @@ typedef void (^RadarAPIRequestPreparation)(NSURLRequest *request, RadarAPIReques
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
            prepareRequest:(RadarAPIRequestPreparation _Nullable)prepareRequest
+preparationFailureHandler:(void (^_Nullable)(NSError *error))preparationFailureHandler
+        completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;
+
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *_Nullable)headers
+                   params:(NSDictionary *_Nullable)params
+                    sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+           prepareRequest:(RadarAPIRequestPreparation _Nullable)prepareRequest
+            assertRequest:(RadarAPIRequestAssertion _Nullable)assertRequest
 preparationFailureHandler:(void (^_Nullable)(NSError *error))preparationFailureHandler
         completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;
 

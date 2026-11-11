@@ -298,7 +298,7 @@ extension RadarSerializedTests.RadarFraudBridgeTests {
         "Request preparation sends only the envelope and preserves the original request",
         arguments: ["/v1/track", "/v1/reveal/risk"]
     )
-    func requestPreparationReplacesEntireBody(route: String) async throws {
+    func requestPreparationReplacesEntireBody(route: String) throws {
         let instance = MockPreparedFraudPayloadInstance(result: nil) {
             MockFraudEnvelope.result(for: $0)
         }
@@ -318,7 +318,7 @@ extension RadarSerializedTests.RadarFraudBridgeTests {
         ]
 
         for _ in 0..<2 {
-            let sent = try await prepared.prepareRequest(request)
+            let sent = try prepared.prepareRequest(request)
             let options = try #require(instance.capturedOptions.last)
             let payload = try #require(MockFraudEnvelope.result(for: options)["payload"] as? String)
             var expected = request
@@ -348,7 +348,7 @@ extension RadarSerializedTests.RadarFraudBridgeTests {
     }
 
     @Test("Request preparation rejects a missing URL, missing body, or non-POST method before sealing")
-    func requestPreparationRejectsMissingInputs() async throws {
+    func requestPreparationRejectsMissingInputs() throws {
         let instance = MockPreparedFraudPayloadInstance(result: ["payload": MockFraudEnvelope.payload])
         let prepared = try #require(RadarPreparedFraudPayload(instance: instance))
         var request = URLRequest(url: try #require(URL(string: "https://example.test/v1/track")))
@@ -362,8 +362,8 @@ extension RadarSerializedTests.RadarFraudBridgeTests {
         get.httpMethod = "GET"
 
         for invalid in [noURL, noBody, get] {
-            await #expect {
-                try await prepared.prepareRequest(invalid)
+            #expect {
+                try prepared.prepareRequest(invalid)
             } throws: { error in
                 let radarError = error as? RadarError
                 return radarError?.status == .errorBadRequest
@@ -374,7 +374,7 @@ extension RadarSerializedTests.RadarFraudBridgeTests {
     }
 
     @Test("Request preparation propagates sealing failures without returning a plaintext request")
-    func requestPreparationPropagatesFailure() async throws {
+    func requestPreparationPropagatesFailure() throws {
         let results: [[String: Any]?] = [nil, [:], ["error": "Seal failed"], ["payload": ""]]
         var request = URLRequest(url: try #require(URL(string: "https://example.test/v1/track")))
         request.httpMethod = "POST"
@@ -382,8 +382,8 @@ extension RadarSerializedTests.RadarFraudBridgeTests {
         for result in results {
             let instance = MockPreparedFraudPayloadInstance(result: result)
             let prepared = try #require(RadarPreparedFraudPayload(instance: instance))
-            await #expect {
-                try await prepared.prepareRequest(request)
+            #expect {
+                try prepared.prepareRequest(request)
             } throws: { error in
                 let radarError = error as? RadarError
                 return radarError?.status == .errorBadRequest

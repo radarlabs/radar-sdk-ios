@@ -66,8 +66,9 @@ extension RadarVerifiedHostOverrideTests {
             helper.request(
                 withMethod: "POST", url: "https://example.test/v1/track",
                 headers: nil, params: [:], sleep: false, logPayload: false, extendedTimeout: false,
-                prepareRequest: { _, completion in
-                    completion(nil, suppliesError ? originalError : nil)
+                prepareRequest: { _, error in
+                    if suppliesError { error?.pointee = originalError }
+                    return nil
                 },
                 preparationFailureHandler: nil,
                 completionHandler: { status, response, error in
