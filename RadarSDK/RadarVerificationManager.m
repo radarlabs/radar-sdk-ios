@@ -480,20 +480,14 @@
     }
 
     NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
-    double lastDistanceToStateBorder = -1;
-    if (self.lastToken.user && self.lastToken.user.state) {
-        lastDistanceToStateBorder = self.lastToken.user.state.distanceToBorder;
-    }
-
     BOOL lastTokenValid =
         (lastTokenElapsed < self.lastToken.expiresIn) &&
-        self.lastToken.passed &&
-        (lastDistanceToStateBorder > 1609);
+        self.lastToken.passed;
 
     if (lastTokenValid) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d; lastDistanceToStateBorder = %f", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed, lastDistanceToStateBorder]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed]];
     } else {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d; lastDistanceToStateBorder = %f", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed, lastDistanceToStateBorder]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed]];
     }
 
     return lastTokenValid;

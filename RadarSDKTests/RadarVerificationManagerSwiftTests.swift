@@ -36,18 +36,67 @@ struct RadarVerificationManagerSwiftTests {
         let expiresIn: TimeInterval
         let distanceToStateBorder: Double?
         let elapsed: TimeInterval
+        let expectedValid: Bool
     }
 
-    /// The three token fields `isLastTokenValid` reads, plus the boundaries of the
-    /// 1609 m and `expiresIn` comparisons.
+    /// Cache validity depends on the verdict and lifetime, independent of border distance.
     static let tokenCases: [TokenCase] = [
-        TokenCase(description: "valid token", passed: true, expiresIn: 90, distanceToStateBorder: 5000, elapsed: 0),
-        TokenCase(description: "expired token", passed: true, expiresIn: 90, distanceToStateBorder: 5000, elapsed: 120),
-        TokenCase(description: "token that did not pass", passed: false, expiresIn: 90, distanceToStateBorder: 5000, elapsed: 0),
-        TokenCase(description: "inside the state border buffer", passed: true, expiresIn: 90, distanceToStateBorder: 1000, elapsed: 0),
-        TokenCase(description: "exactly on the state border buffer", passed: true, expiresIn: 90, distanceToStateBorder: 1609, elapsed: 0),
-        TokenCase(description: "no state on the user", passed: true, expiresIn: 90, distanceToStateBorder: nil, elapsed: 0),
-        TokenCase(description: "zero lifetime", passed: true, expiresIn: 0, distanceToStateBorder: 5000, elapsed: 0),
+        TokenCase(
+            description: "valid token", passed: true, expiresIn: 90,
+            distanceToStateBorder: 5000, elapsed: 0, expectedValid: true
+        ),
+        TokenCase(
+            description: "expired token", passed: true, expiresIn: 90,
+            distanceToStateBorder: 5000, elapsed: 120, expectedValid: false
+        ),
+        TokenCase(
+            description: "token that did not pass", passed: false, expiresIn: 90,
+            distanceToStateBorder: 5000, elapsed: 0, expectedValid: false
+        ),
+        TokenCase(
+            description: "at the state border", passed: true, expiresIn: 90,
+            distanceToStateBorder: 0, elapsed: 0, expectedValid: true
+        ),
+        TokenCase(
+            description: "inside the former state border buffer", passed: true, expiresIn: 90,
+            distanceToStateBorder: 1000, elapsed: 0, expectedValid: true
+        ),
+        TokenCase(
+            description: "at the former buffer boundary", passed: true, expiresIn: 90,
+            distanceToStateBorder: 1609, elapsed: 0, expectedValid: true
+        ),
+        TokenCase(
+            description: "outside the former buffer boundary", passed: true, expiresIn: 90,
+            distanceToStateBorder: 1610, elapsed: 0, expectedValid: true
+        ),
+        TokenCase(
+            description: "no state on the user", passed: true, expiresIn: 90,
+            distanceToStateBorder: nil, elapsed: 0, expectedValid: true
+        ),
+        TokenCase(
+            description: "near border but expired", passed: true, expiresIn: 90,
+            distanceToStateBorder: 1000, elapsed: 120, expectedValid: false
+        ),
+        TokenCase(
+            description: "near border but did not pass", passed: false, expiresIn: 90,
+            distanceToStateBorder: 1000, elapsed: 0, expectedValid: false
+        ),
+        TokenCase(
+            description: "before expiration", passed: true, expiresIn: 90,
+            distanceToStateBorder: nil, elapsed: 89, expectedValid: true
+        ),
+        TokenCase(
+            description: "at expiration", passed: true, expiresIn: 90,
+            distanceToStateBorder: nil, elapsed: 90, expectedValid: false
+        ),
+        TokenCase(
+            description: "zero lifetime", passed: true, expiresIn: 0,
+            distanceToStateBorder: nil, elapsed: 0, expectedValid: false
+        ),
+        TokenCase(
+            description: "negative lifetime", passed: true, expiresIn: -1,
+            distanceToStateBorder: nil, elapsed: 0, expectedValid: false
+        ),
     ]
 
     // MARK: Implemented methods run and agree with Objective-C
@@ -57,7 +106,7 @@ struct RadarVerificationManagerSwiftTests {
 
     // MARK: isLastTokenValid
 
-    @Test("isLastTokenValid matches the ObjC implementation", arguments: tokenCases)
+    @Test("cache validity uses the verdict and lifetime on both implementations", arguments: tokenCases)
     func isLastTokenValidMatchesObjC(tokenCase: TokenCase) throws {
         let objcManager = try #require(ObjCVerificationManager.makeFresh())
         let token = Helpers.makeToken(
@@ -75,7 +124,8 @@ struct RadarVerificationManagerSwiftTests {
         objcManager.lastToken = token
         objcManager.lastTokenSystemUptime = uptime
 
-        #expect(swiftManager.isLastTokenValid() == objcManager.isLastTokenValid())
+        #expect(swiftManager.isLastTokenValid() == tokenCase.expectedValid)
+        #expect(objcManager.isLastTokenValid() == tokenCase.expectedValid)
     }
 
     @Test("isLastTokenValid is false with no token, on both implementations")

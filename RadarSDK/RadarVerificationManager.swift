@@ -146,14 +146,13 @@ final class RadarVerificationManager: NSObject, @unchecked Sendable {
             return false
         }
 
-        let lastDistanceToStateBorder = lastToken.user?.state?.distanceToBorder ?? -1
         let timeElapsed = ProcessInfo.processInfo.systemUptime - lastTokenSystemUptime
         let tokenPassed = lastToken.passed
 
-        let tokenValid = lastDistanceToStateBorder > 1609 && timeElapsed < lastToken.expiresIn && tokenPassed
+        let tokenValid = timeElapsed < lastToken.expiresIn && tokenPassed
 
         RadarLogger.debug(
-            "Last token \(tokenValid ? "valid" : "invalid") | lastToken.expiresIn = \(lastToken.expiresIn); lastTokenElapsed = \(timeElapsed); lastToken.passed = \(lastToken.passed); lastDistanceToStateBorder = \(lastDistanceToStateBorder)"
+            "Last token \(tokenValid ? "valid" : "invalid") | lastToken.expiresIn = \(lastToken.expiresIn); lastTokenElapsed = \(timeElapsed); lastToken.passed = \(lastToken.passed)"
         )
 
         return tokenValid
