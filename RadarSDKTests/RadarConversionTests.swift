@@ -14,13 +14,12 @@ import Testing
 private let createdAtString = "2026-07-20T12:00:00.000Z"
 private let actualCreatedAtString = "2026-07-20T12:00:01.000Z"
 
-// The fields every conversion needs: `_id`, `type`, `createdAt`, and `actualCreatedAt`.
+// The fields every conversion needs: `_id`, `type`, and `createdAt`.
 private func baseConversionObject() -> [String: Any] {
     [
         "_id": "conversion-id",
         "type": "opened_app",
         "createdAt": createdAtString,
-        "actualCreatedAt": actualCreatedAtString,
     ]
 }
 
@@ -33,6 +32,7 @@ struct RadarConversionTests {
     @Test("Parses every field")
     func parsesEveryField() throws {
         var object = baseConversionObject()
+        object["actualCreatedAt"] = actualCreatedAtString
         object["live"] = true
         object["metadata"] = ["campaign": "spring"]
 
@@ -50,6 +50,7 @@ struct RadarConversionTests {
     func defaultsOptionalFields() throws {
         let conversion = try parse(baseConversionObject())
 
+        #expect(conversion.actualCreatedAt == nil)
         #expect(!conversion.live)
         #expect(conversion.metadata == nil)
     }
@@ -57,11 +58,13 @@ struct RadarConversionTests {
     @Test("Ignores wrongly typed optional fields")
     func ignoresWronglyTypedFields() throws {
         var object = baseConversionObject()
+        object["actualCreatedAt"] = 12
         object["live"] = "yes"
         object["metadata"] = ["not", "a", "dictionary"]
 
         let conversion = try parse(object)
 
+        #expect(conversion.actualCreatedAt == nil)
         #expect(!conversion.live)
         #expect(conversion.metadata == nil)
     }
@@ -74,12 +77,12 @@ struct RadarConversionTests {
         #expect(try parse(object).metadata?["revenue"] as? Double == 0.2)
     }
 
-    @Test("Returns nil for a non-dictionary, or without _id, type, or a valid createdAt or actualCreatedAt")
+    @Test("Returns nil for a non-dictionary, or without _id, type, or a valid createdAt")
     func rejectsMissingRequiredFields() {
         #expect(RadarConversion(object: "conversion") == nil)
         #expect(RadarConversion(object: nil) == nil)
 
-        for key in ["_id", "type", "createdAt", "actualCreatedAt"] {
+        for key in ["_id", "type", "createdAt"] {
             var object = baseConversionObject()
             object[key] = nil
             #expect(RadarConversion(object: object) == nil, "missing \(key)")
@@ -89,10 +92,6 @@ struct RadarConversionTests {
         badCreatedAt["createdAt"] = "yesterday"
         #expect(RadarConversion(object: badCreatedAt) == nil)
 
-        var badActualCreatedAt = baseConversionObject()
-        badActualCreatedAt["actualCreatedAt"] = 12
-        #expect(RadarConversion(object: badActualCreatedAt) == nil)
-
         var numericType = baseConversionObject()
         numericType["type"] = 3
         #expect(RadarConversion(object: numericType) == nil)
@@ -101,6 +100,7 @@ struct RadarConversionTests {
     @Test("Serializes the keys hybrid SDKs read, plus name")
     func serializes() throws {
         var object = baseConversionObject()
+        object["actualCreatedAt"] = actualCreatedAtString
         object["live"] = true
         object["metadata"] = ["campaign": "spring"]
 
@@ -118,12 +118,28 @@ struct RadarConversionTests {
         }
     }
 
-    @Test("Omits metadata when absent")
-    func serializationOmitsMissingMetadata() throws {
+    @Test("Omits metadata and actualCreatedAt when absent")
+    func serializationOmitsMissingFields() throws {
         let dict = try parse(baseConversionObject()).dictionaryValue()
 
         #expect(dict["metadata"] == nil)
-        #expect(dict["actualCreatedAt"] as? String == "2026-07-20T12:00:01.000+0000")
+        #expect(dict["actualCreatedAt"] == nil)
+    }
+
+    @Test("Parses the documented sample response, which has no actualCreatedAt")
+    func parsesDocumentedSampleResponse() throws {
+        let conversion = try parse([
+            "_id": "56db1f4613012711002229f6",
+            "createdAt": "2016-06-10T13:44:10.535Z",
+            "live": true,
+            "type": "conversion",
+            "confidence": 3,
+            "user": ["_id": "56db1f4613012711002229f4", "userId": "user123"],
+        ])
+
+        #expect(conversion.name == "conversion")
+        #expect(conversion.actualCreatedAt == nil)
+        #expect(conversion.live)
     }
 
     @Test("Keeps the Objective-C runtime name and selectors")

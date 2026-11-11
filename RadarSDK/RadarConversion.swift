@@ -20,8 +20,8 @@ public final class RadarConversion: NSObject {
     /// The datetime of the conversion. The server sets it when it receives the conversion.
     public let createdAt: Date
 
-    /// The datetime when the conversion was created on the server.
-    public let actualCreatedAt: Date
+    /// The datetime when the conversion was created on the server. May be `nil` if the server did not return it.
+    public let actualCreatedAt: Date?
 
     /// A boolean indicating whether the conversion was logged with your live API key.
     public let live: Bool
@@ -32,15 +32,14 @@ public final class RadarConversion: NSObject {
     // There is no `init()`, so `RadarConversion()` and `[RadarConversion new]` aren't public API.
 
     // Parses the `event` object of a `POST /v1/events` response. Returns nil for a non-dictionary,
-    // or a missing `_id`, `type`, `createdAt`, or `actualCreatedAt`. Wrongly typed optional fields
-    // are ignored.
+    // or a missing `_id`, `type`, or `createdAt`. Wrongly typed optional fields are ignored. The API
+    // docs' sample conversion response has no `actualCreatedAt`, so it is optional here.
     @objc(initWithObject:)
     init?(object: Any?) {
         guard let dict = object as? NSDictionary,
             let id = dict["_id"] as? String,
             let name = dict["type"] as? String,
-            let createdAt = RadarEventParsing.date(from: dict["createdAt"]),
-            let actualCreatedAt = RadarEventParsing.date(from: dict["actualCreatedAt"])
+            let createdAt = RadarEventParsing.date(from: dict["createdAt"])
         else {
             return nil
         }
@@ -48,7 +47,7 @@ public final class RadarConversion: NSObject {
         _id = id
         self.name = name
         self.createdAt = createdAt
-        self.actualCreatedAt = actualCreatedAt
+        actualCreatedAt = RadarEventParsing.date(from: dict["actualCreatedAt"])
         live = (dict["live"] as? NSNumber)?.boolValue ?? false
         metadata = RadarEventParsing.metadata(from: dict["metadata"])
         super.init()
@@ -64,7 +63,7 @@ public final class RadarConversion: NSObject {
         dict["live"] = live
         dict["metadata"] = metadata
         dict["createdAt"] = RadarUtils.isoDateFormatter.string(from: createdAt)
-        dict["actualCreatedAt"] = RadarUtils.isoDateFormatter.string(from: actualCreatedAt)
+        dict["actualCreatedAt"] = actualCreatedAt.map { RadarUtils.isoDateFormatter.string(from: $0) }
         return dict
     }
 }

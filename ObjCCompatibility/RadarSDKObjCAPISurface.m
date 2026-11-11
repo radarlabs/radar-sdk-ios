@@ -680,7 +680,7 @@ RADAR_API_SURFACE Class class_RadarConversion(void) { return [RadarConversion cl
 RADAR_API_SURFACE NSString * _Nonnull get_RadarConversion__id(RadarConversion *obj) { return obj._id; }
 RADAR_API_SURFACE NSString * _Nonnull get_RadarConversion_name(RadarConversion *obj) { return obj.name; }
 RADAR_API_SURFACE NSDate * _Nonnull get_RadarConversion_createdAt(RadarConversion *obj) { return obj.createdAt; }
-RADAR_API_SURFACE NSDate * _Nonnull get_RadarConversion_actualCreatedAt(RadarConversion *obj) { return obj.actualCreatedAt; }
+RADAR_API_SURFACE NSDate * _Nullable get_RadarConversion_actualCreatedAt(RadarConversion *obj) { return obj.actualCreatedAt; }
 RADAR_API_SURFACE BOOL get_RadarConversion_live(RadarConversion *obj) { return obj.live; }
 RADAR_API_SURFACE NSDictionary * _Nullable get_RadarConversion_metadata(RadarConversion *obj) { return obj.metadata; }
 RADAR_API_SURFACE NSDictionary * _Nonnull call_RadarConversion_dictionaryValue(RadarConversion *obj) { return [obj dictionaryValue]; }
