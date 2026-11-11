@@ -138,8 +138,8 @@
 }
 
 - (void)logCampaignConversionWithName:(NSString *)name metadata:(NSDictionary<NSString *, id> * _Nonnull)metadata campaign:(NSString * _Nullable)campaign {
-    [Radar sendLogConversionRequestWithName:name metadata:metadata campaign:campaign completionHandler:^(RadarStatus status, RadarConversion * _Nullable conversion) {
-        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; conversion = %@", conversion.name, [Radar stringForStatus:status], conversion];
+    [Radar sendLogConversionRequestWithName:name metadata:metadata campaign:campaign completionHandler:^(RadarStatus status, RadarEvent * _Nullable event) {
+        NSString *message = [NSString stringWithFormat:@"Conversion name = %@: status = %@; event = %@", event.conversionName, [Radar stringForStatus:status], event];
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:message];
     }];
 }

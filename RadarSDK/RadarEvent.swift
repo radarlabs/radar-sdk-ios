@@ -21,8 +21,9 @@ public final class RadarEvent: NSObject {
     /// The datetime when the event occurred on the device.
     public let createdAt: Date
 
-    /// The datetime when the event was created on the server.
-    public let actualCreatedAt: Date
+    /// The datetime when the event was created on the server. May be `nil` if the server did not return it,
+    /// for example for conversion events.
+    public let actualCreatedAt: Date?
 
     /// A boolean indicating whether the event was generated with your live API key.
     public let live: Bool
@@ -30,8 +31,7 @@ public final class RadarEvent: NSObject {
     /// The type of the event.
     public let type: RadarEventType
 
-    /// The type string of an event that this SDK version doesn't recognize. Set only when `type` is
-    /// `RadarEventTypeConversion`. For `Radar.logConversion` results, use `RadarConversion.name`.
+    /// The name of the conversion event. This will only be set if the `type` is `RadarEventTypeConversion`.
     public let conversionName: String?
 
     /// The geofence for which the event was generated. May be `nil` for non-geofence events.
@@ -67,8 +67,9 @@ public final class RadarEvent: NSObject {
     /// The duration between entry and exit events, in minutes, for exit events. 0 for entry events.
     public let duration: Float
 
-    /// The location of the event.
-    public let location: CLLocation
+    /// The location of the event. May be `nil` if the event has no location, for example for conversion
+    /// events logged with `Radar.logConversion`.
+    public let location: CLLocation?
 
     /// A boolean indicating whether the event came from a replayed location.
     public let replayed: Bool
@@ -81,13 +82,12 @@ public final class RadarEvent: NSObject {
     public var metadata: [AnyHashable: Any] { metadataValue ?? [:] }
 
     // Public so `RadarEvent()` and `[RadarEvent new]` keep working as they did with the old header.
-    // Matches Objective-C `-init`, which left every field zeroed. The nonnull `_id`, `createdAt`,
-    // `actualCreatedAt`, and `location` get an empty string, the 1970 epoch, and a zero location
-    // instead of nil.
+    // Matches Objective-C `-init`, which left every field zeroed. The nonnull `_id` and `createdAt`
+    // get an empty string and the 1970 epoch instead of nil.
     public override init() {
         _id = ""
         createdAt = Date(timeIntervalSince1970: 0)
-        actualCreatedAt = Date(timeIntervalSince1970: 0)
+        actualCreatedAt = nil
         live = false
         type = .unknown
         conversionName = nil
@@ -102,27 +102,33 @@ public final class RadarEvent: NSObject {
         verification = .unverify
         confidence = .none
         duration = 0
-        location = CLLocation()
+        location = nil
         replayed = false
         metadataValue = nil
         super.init()
     }
 
     // Parsing matches the Objective-C implementation: wrongly typed fields are ignored, but a
-    // missing `_id`, `createdAt`, or `actualCreatedAt`, a missing or malformed `location`, or an
-    // alternate place that fails to parse returns nil. Conversions have no location; they parse as
-    // `RadarConversion`. Geofences, places, and beacons are Objective-C models with internal
+    // missing `_id` or `createdAt`, a `location` that is present but malformed, or an alternate
+    // place that fails to parse returns nil. A missing `location` or `actualCreatedAt` is nil;
+    // conversion events have neither. Geofences, places, and beacons are Objective-C models with internal
     // parsers, so they're built through `RadarSwift.modelFactory`, which is installed when the
     // framework loads.
     @objc(initWithObject:)
     init?(object: Any?) {
         guard let dict = object as? NSDictionary,
             let id = dict["_id"] as? String,
-            let createdAt = RadarEventParsing.date(from: dict["createdAt"]),
-            let actualCreatedAt = RadarEventParsing.date(from: dict["actualCreatedAt"]),
-            let location = Self.location(in: dict, timestamp: createdAt)
+            let createdAt = Self.date(from: dict["createdAt"])
         else {
             return nil
+        }
+
+        var location: CLLocation?
+        if let locationObject = dict["location"], !(locationObject is NSNull) {
+            guard let parsed = Self.location(from: locationObject, in: dict, timestamp: createdAt) else {
+                return nil
+            }
+            location = parsed
         }
 
         let factory = RadarSwift.modelFactory
@@ -134,7 +140,7 @@ public final class RadarEvent: NSObject {
 
         _id = id
         self.createdAt = createdAt
-        self.actualCreatedAt = actualCreatedAt
+        actualCreatedAt = Self.date(from: dict["actualCreatedAt"])
         live = (dict["live"] as? NSNumber)?.boolValue ?? false
         (type, conversionName) = Self.typeAndConversionName(from: dict["type"])
         geofence = (dict["geofence"] as? [String: Any]).flatMap { factory?.createGeofence(dict: $0) }
@@ -150,12 +156,12 @@ public final class RadarEvent: NSObject {
         duration = (dict["duration"] as? NSNumber)?.floatValue ?? 0
         self.location = location
         replayed = (dict["replayed"] as? NSNumber)?.boolValue ?? false
-        metadataValue = RadarEventParsing.metadata(from: dict["metadata"])
+        metadataValue = Self.metadata(from: dict["metadata"])
         super.init()
     }
 
     // Returns nil for a non-array. An event that fails to parse, for example because it has no
-    // `location` or `actualCreatedAt`, is dropped and logged, so the other events and the rest of
+    // `_id` or a malformed `location`, is dropped and logged, so the other events and the rest of
     // the response still go through. The Android SDK does the same.
     @objc(eventsFromObject:)
     static func events(from object: Any?) -> [RadarEvent]? {
@@ -204,14 +210,16 @@ public final class RadarEvent: NSObject {
         dict["trip"] = trip?.dictionaryValue()
         dict["fraud"] = fraud?.dictionaryValue()
         dict["alternatePlaces"] = RadarPlace.array(for: alternatePlaces)
-        dict["location"] = [
-            "type": "Point",
-            "coordinates": [location.coordinate.longitude, location.coordinate.latitude],
-        ]
+        if let location {
+            dict["location"] = [
+                "type": "Point",
+                "coordinates": [location.coordinate.longitude, location.coordinate.latitude],
+            ]
+        }
         dict["replayed"] = replayed
         dict["metadata"] = metadataValue
         dict["createdAt"] = RadarUtils.isoDateFormatter.string(from: createdAt)
-        dict["actualCreatedAt"] = RadarUtils.isoDateFormatter.string(from: actualCreatedAt)
+        dict["actualCreatedAt"] = actualCreatedAt.map { RadarUtils.isoDateFormatter.string(from: $0) }
         return dict
     }
 }
@@ -298,11 +306,11 @@ extension RadarEvent {
         }
     }
 
-    // Returns nil unless `location` is a dictionary whose `coordinates` hold a numeric longitude and
+    // Returns nil unless `object` is a dictionary whose `coordinates` hold a numeric longitude and
     // latitude and, optionally, an altitude. A missing or non-numeric altitude or `locationAccuracy`
     // becomes -1.
-    private static func location(in dict: NSDictionary, timestamp: Date) -> CLLocation? {
-        guard let locationDict = dict["location"] as? NSDictionary,
+    private static func location(from object: Any, in dict: NSDictionary, timestamp: Date) -> CLLocation? {
+        guard let locationDict = object as? NSDictionary,
             let coordinates = locationDict["coordinates"] as? NSArray,
             coordinates.count == 2 || coordinates.count == 3,
             let longitude = coordinates[0] as? NSNumber,
@@ -326,18 +334,13 @@ extension RadarEvent {
             timestamp: timestamp
         )
     }
-}
 
-// MARK: - Shared parsing
-
-// Field parsers shared by `RadarEvent` and `RadarConversion`.
-enum RadarEventParsing {
-    static func date(from object: Any?) -> Date? {
+    private static func date(from object: Any?) -> Date? {
         (object as? String).flatMap { RadarUtils.isoDateFormatter.date(from: $0) }
     }
 
     // Accepts a dictionary, or a string holding a JSON object. Anything else is nil.
-    static func metadata(from object: Any?) -> [AnyHashable: Any]? {
+    private static func metadata(from object: Any?) -> [AnyHashable: Any]? {
         if let dict = object as? NSDictionary {
             return dict as? [AnyHashable: Any]
         }

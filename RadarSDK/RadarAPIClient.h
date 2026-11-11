@@ -14,7 +14,6 @@
 #import "RadarEvent.h"
 
 @class RadarAddress;
-@class RadarConversion;
 @class RadarEvent;
 @class RadarTripLeg;
 @class RadarRouteMatrix;
@@ -64,7 +63,7 @@ typedef void (^_Nonnull RadarMatrixAPICompletionHandler)(RadarStatus status, NSD
 
 typedef void (^_Nonnull RadarConfigAPICompletionHandler)(RadarStatus status, RadarConfig *_Nullable config);
 
-typedef void (^_Nonnull RadarSendEventAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarConversion *_Nullable conversion);
+typedef void (^_Nonnull RadarSendEventAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarEvent *_Nullable event);
 
 typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 

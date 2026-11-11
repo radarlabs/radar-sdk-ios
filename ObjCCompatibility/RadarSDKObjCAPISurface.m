@@ -651,7 +651,7 @@ RADAR_API_SURFACE NSDictionary * _Nonnull call_RadarUserLocationInsights_diction
 RADAR_API_SURFACE Class class_RadarEvent(void) { return [RadarEvent class]; }
 RADAR_API_SURFACE NSString * _Nonnull get_RadarEvent__id(RadarEvent *obj) { return obj._id; }
 RADAR_API_SURFACE NSDate * _Nonnull get_RadarEvent_createdAt(RadarEvent *obj) { return obj.createdAt; }
-RADAR_API_SURFACE NSDate * _Nonnull get_RadarEvent_actualCreatedAt(RadarEvent *obj) { return obj.actualCreatedAt; }
+RADAR_API_SURFACE NSDate * _Nullable get_RadarEvent_actualCreatedAt(RadarEvent *obj) { return obj.actualCreatedAt; }
 RADAR_API_SURFACE BOOL get_RadarEvent_live(RadarEvent *obj) { return obj.live; }
 RADAR_API_SURFACE RadarEventType get_RadarEvent_type(RadarEvent *obj) { return obj.type; }
 RADAR_API_SURFACE NSString * _Nullable get_RadarEvent_conversionName(RadarEvent *obj) { return obj.conversionName; }
@@ -666,21 +666,10 @@ RADAR_API_SURFACE RadarPlace * _Nullable get_RadarEvent_verifiedPlace(RadarEvent
 RADAR_API_SURFACE RadarEventVerification get_RadarEvent_verification(RadarEvent *obj) { return obj.verification; }
 RADAR_API_SURFACE RadarEventConfidence get_RadarEvent_confidence(RadarEvent *obj) { return obj.confidence; }
 RADAR_API_SURFACE float get_RadarEvent_duration(RadarEvent *obj) { return obj.duration; }
-RADAR_API_SURFACE CLLocation * _Nonnull get_RadarEvent_location(RadarEvent *obj) { return obj.location; }
+RADAR_API_SURFACE CLLocation * _Nullable get_RadarEvent_location(RadarEvent *obj) { return obj.location; }
 RADAR_API_SURFACE BOOL get_RadarEvent_replayed(RadarEvent *obj) { return obj.replayed; }
 RADAR_API_SURFACE NSDictionary * _Nonnull get_RadarEvent_metadata(RadarEvent *obj) { return obj.metadata; }
 RADAR_API_SURFACE RadarEvent * _Nonnull call_RadarEvent_init(void) { return [[RadarEvent alloc] init]; }
 RADAR_API_SURFACE NSString * _Nullable call_RadarEvent_class_stringForType(RadarEventType a0) { return [RadarEvent stringForType:a0]; }
 RADAR_API_SURFACE NSArray<NSDictionary *> * _Nullable call_RadarEvent_class_arrayForEvents(NSArray<RadarEvent *> * _Nullable a0) { return [RadarEvent arrayForEvents:a0]; }
 RADAR_API_SURFACE NSDictionary * _Nonnull call_RadarEvent_dictionaryValue(RadarEvent *obj) { return [obj dictionaryValue]; }
-
-#pragma mark - RadarConversion
-
-RADAR_API_SURFACE Class class_RadarConversion(void) { return [RadarConversion class]; }
-RADAR_API_SURFACE NSString * _Nonnull get_RadarConversion__id(RadarConversion *obj) { return obj._id; }
-RADAR_API_SURFACE NSString * _Nonnull get_RadarConversion_name(RadarConversion *obj) { return obj.name; }
-RADAR_API_SURFACE NSDate * _Nonnull get_RadarConversion_createdAt(RadarConversion *obj) { return obj.createdAt; }
-RADAR_API_SURFACE NSDate * _Nullable get_RadarConversion_actualCreatedAt(RadarConversion *obj) { return obj.actualCreatedAt; }
-RADAR_API_SURFACE BOOL get_RadarConversion_live(RadarConversion *obj) { return obj.live; }
-RADAR_API_SURFACE NSDictionary * _Nullable get_RadarConversion_metadata(RadarConversion *obj) { return obj.metadata; }
-RADAR_API_SURFACE NSDictionary * _Nonnull call_RadarConversion_dictionaryValue(RadarConversion *obj) { return [obj dictionaryValue]; }

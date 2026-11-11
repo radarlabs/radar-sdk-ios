@@ -32,10 +32,10 @@ extension RadarSerializedTests {
             )
         }
 
-        private func logConversion(revenue: NSNumber? = nil, metadata: [String: Any]?) async -> (RadarStatus, RadarConversion?) {
+        private func logConversion(revenue: NSNumber? = nil, metadata: [String: Any]?) async -> (RadarStatus, RadarEvent?) {
             await awaitCompletion { resume in
-                let completion: @Sendable (RadarStatus, RadarConversion?) -> Void = { status, conversion in
-                    resume((status, conversion))
+                let completion: @Sendable (RadarStatus, RadarEvent?) -> Void = { status, event in
+                    resume((status, event))
                 }
                 if let revenue {
                     Radar.logConversion(name: "conversion4", revenue: revenue, metadata: metadata, completionHandler: completion)
@@ -68,27 +68,28 @@ extension RadarSerializedTests {
             Radar.rejectEventId("eventId")
         }
 
-        @Test("logConversion returns the conversion with its name and metadata")
+        @Test("logConversion returns the event with its metadata")
         func logConversion() async throws {
             try mockConversion(eventsResource: "conversion_event")
 
-            let (status, conversion) = await logConversion(metadata: ["foo": "bar"])
+            let (status, event) = await logConversion(metadata: ["foo": "bar"])
 
             #expect(status == .success)
-            let result = try #require(conversion)
-            #expect(result.name == "settings_opened")
-            let metadata = try #require(result.metadata)
-            #expect(metadata["foo"] as? String == "bar")
+            let conversion = try #require(event)
+            #expect(conversion.type == .conversion)
+            #expect(conversion.conversionName == "settings_opened")
+            #expect(conversion.location == nil)
+            #expect(conversion.metadata["foo"] as? String == "bar")
         }
 
         @Test("logConversion with revenue adds it to the metadata")
         func logConversionRevenue() async throws {
             try mockConversion(eventsResource: "conversion_event")
 
-            let (status, conversion) = await logConversion(revenue: 0.2, metadata: ["foo": "bar"])
+            let (status, event) = await logConversion(revenue: 0.2, metadata: ["foo": "bar"])
 
             #expect(status == .success)
-            let metadata = try #require(conversion?.metadata)
+            let metadata = try #require(event).metadata
             #expect(metadata["foo"] as? String == "bar")
             #expect(metadata["revenue"] as? Double == 0.2)
         }
@@ -97,10 +98,10 @@ extension RadarSerializedTests {
         func logConversionStatusOkButEventIsNilFails() async throws {
             try mockConversion(eventsResource: "conversion_event_nil_event")
 
-            let (status, conversion) = await logConversion(metadata: nil)
+            let (status, event) = await logConversion(metadata: nil)
 
             #expect(status == .errorServer)
-            #expect(conversion == nil)
+            #expect(event == nil)
         }
     }
 }

@@ -49,18 +49,16 @@ private func placeObject(id: String) -> [String: Any] {
     ]
 }
 
-// The fields every event needs: `_id`, `createdAt`, `actualCreatedAt`, and `location`.
 private func baseEventObject() -> [String: Any] {
     [
         "_id": "event-id",
         "createdAt": createdAtString,
-        "actualCreatedAt": actualCreatedAtString,
-        "location": ["type": "Point", "coordinates": [-73.9, 40.7]],
     ]
 }
 
 private func fullEventObject() -> [String: Any] {
     var object = baseEventObject()
+    object["actualCreatedAt"] = actualCreatedAtString
     object["live"] = true
     object["type"] = "user.entered_place"
     object["geofence"] = geofenceObject()
@@ -109,17 +107,18 @@ struct RadarEventTests {
         #expect(event.verification == .accept)
         #expect(event.confidence == .high)
         #expect(event.duration == 12.5)
-        #expect(event.location.coordinate.latitude == 40.7356)
-        #expect(event.location.coordinate.longitude == -73.9906)
-        #expect(event.location.altitude == 12.5)
-        #expect(event.location.horizontalAccuracy == 8)
-        #expect(event.location.verticalAccuracy == -1)
-        #expect(event.location.timestamp == event.createdAt)
+        let location = try #require(event.location)
+        #expect(location.coordinate.latitude == 40.7356)
+        #expect(location.coordinate.longitude == -73.9906)
+        #expect(location.altitude == 12.5)
+        #expect(location.horizontalAccuracy == 8)
+        #expect(location.verticalAccuracy == -1)
+        #expect(location.timestamp == event.createdAt)
         #expect(event.replayed)
         #expect(event.metadata["campaign"] as? String == "spring")
     }
 
-    @Test("Defaults optional fields when only the required fields are present")
+    @Test("Defaults optional fields when only _id and createdAt are present")
     func defaultsOptionalFields() throws {
         let event = try parse(baseEventObject())
 
@@ -138,20 +137,20 @@ struct RadarEventTests {
         #expect(event.fraud == nil)
         #expect(event.alternatePlaces == nil)
         #expect(event.verifiedPlace == nil)
-        #expect(event.actualCreatedAt == RadarUtils.isoDateFormatter.date(from: actualCreatedAtString))
+        #expect(event.actualCreatedAt == nil)
+        #expect(event.location == nil)
+        let withNulls = try parse(baseEventObject().merging(["location": NSNull(), "actualCreatedAt": 12]) { $1 })
+        #expect(withNulls.location == nil && withNulls.actualCreatedAt == nil)
         // `metadata` is nonnull, so a missing value is empty instead of nil.
         #expect(event.metadata.isEmpty)
-        #expect(event.location.coordinate.latitude == 40.7)
-        #expect(event.location.coordinate.longitude == -73.9)
-        #expect(event.location.horizontalAccuracy == -1)
     }
 
-    @Test("Returns nil for a non-dictionary, or without _id or a valid createdAt or actualCreatedAt")
+    @Test("Returns nil for a non-dictionary, or without _id or a valid createdAt")
     func rejectsMissingRequiredFields() {
         #expect(RadarEvent(object: "event") == nil)
         #expect(RadarEvent(object: nil) == nil)
 
-        for key in ["_id", "createdAt", "actualCreatedAt"] {
+        for key in ["_id", "createdAt"] {
             var object = baseEventObject()
             object[key] = nil
             #expect(RadarEvent(object: object) == nil, "missing \(key)")
@@ -160,26 +159,12 @@ struct RadarEventTests {
         var badCreatedAt = baseEventObject()
         badCreatedAt["createdAt"] = "yesterday"
         #expect(RadarEvent(object: badCreatedAt) == nil)
-
-        var badActualCreatedAt = baseEventObject()
-        badActualCreatedAt["actualCreatedAt"] = 12
-        #expect(RadarEvent(object: badActualCreatedAt) == nil)
-    }
-
-    @Test("Returns nil for a missing or non-dictionary location")
-    func rejectsMissingLocation() {
-        var noLocation = baseEventObject()
-        noLocation["location"] = nil
-        #expect(RadarEvent(object: noLocation) == nil)
-
-        var stringLocation = baseEventObject()
-        stringLocation["location"] = "not-a-dictionary"
-        #expect(RadarEvent(object: stringLocation) == nil)
     }
 
     @Test("Returns nil for a malformed location")
     func rejectsMalformedLocation() {
-        let locations: [[String: Any]] = [
+        let locations: [Any] = [
+            "not-a-dictionary",
             ["type": "Point"],
             ["coordinates": "not-an-array"],
             ["coordinates": [1.0]],
@@ -198,9 +183,25 @@ struct RadarEventTests {
         var object = baseEventObject()
         object["location"] = ["coordinates": [-73.9, 40.7, "high"]]
         object["locationAccuracy"] = "precise"
-        let event = try parse(object)
-        #expect(event.location.altitude == -1)
-        #expect(event.location.horizontalAccuracy == -1)
+        let location = try #require(try parse(object).location)
+        #expect(location.altitude == -1)
+        #expect(location.horizontalAccuracy == -1)
+    }
+
+    @Test("Parses the documented conversion response, which has no location or actualCreatedAt")
+    func parsesDocumentedConversionResponse() throws {
+        let event = try parse([
+            "_id": "56db1f4613012711002229f6",
+            "createdAt": "2016-06-10T13:44:10.535Z",
+            "live": true,
+            "type": "conversion",
+        ])
+
+        #expect(event.type == .conversion)
+        #expect(event.conversionName == "conversion")
+        #expect(event.location == nil)
+        #expect(event.actualCreatedAt == nil)
+        #expect(event.live)
     }
 
     @Test("Returns nil if an alternate place fails to parse")
@@ -311,13 +312,12 @@ struct RadarEventTests {
 
         for key in [
             "geofence", "place", "duration", "region", "beacon", "trip", "fraud", "alternatePlaces", "metadata",
+            "actualCreatedAt", "location",
         ] {
             #expect(dict[key] == nil, "\(key) should be omitted")
         }
         #expect(dict["type"] as? String == "unknown")
         #expect(dict["confidence"] as? Int == 0)
-        let location = try #require(dict["location"] as? [String: Any])
-        #expect(location["coordinates"] as? [Double] == [-73.9, 40.7])
     }
 
     @Test("A serialized event parses back to the same values")
@@ -331,8 +331,8 @@ struct RadarEventTests {
         #expect(reparsed.type == original.type)
         #expect(reparsed.confidence == original.confidence)
         #expect(reparsed.duration == original.duration)
-        #expect(reparsed.location.coordinate.latitude == original.location.coordinate.latitude)
-        #expect(reparsed.location.coordinate.longitude == original.location.coordinate.longitude)
+        #expect(reparsed.location?.coordinate.latitude == original.location?.coordinate.latitude)
+        #expect(reparsed.location?.coordinate.longitude == original.location?.coordinate.longitude)
         #expect(reparsed.alternatePlaces?.count == 2)
     }
 
@@ -351,10 +351,8 @@ struct RadarEventCompatibilityTests {
         let events = try #require(RadarEvent.events(from: [baseEventObject(), fullEventObject()]))
         #expect(events.count == 2)
 
-        var noLocation = fullEventObject()
-        noLocation["_id"] = "no-location"
-        noLocation["location"] = nil
-        let kept = try #require(RadarEvent.events(from: [baseEventObject(), noLocation, "not an event"]))
+        let kept = try #require(
+            RadarEvent.events(from: [baseEventObject(), ["_id": "missing-created-at"], "not an event"]))
         #expect(kept.map(\._id) == ["event-id"])
         #expect(RadarEvent.events(from: baseEventObject()) == nil)
         #expect(RadarEvent.events(from: nil) == nil)
@@ -376,6 +374,8 @@ struct RadarEventCompatibilityTests {
         #expect(event.type == .unknown)
         #expect(event.metadata.isEmpty)
         #expect(event.alternatePlaces == nil)
+        #expect(event.location == nil)
+        #expect(event.actualCreatedAt == nil)
     }
 
     @Test("Keeps the Objective-C runtime name and selectors")
