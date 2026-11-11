@@ -92,14 +92,10 @@ final class MockCollectingFraudInstance: NSObject, @unchecked Sendable {
     init(
         result: [String: Any]?,
         missingSelectors: Set<String> = [],
-        compatibilityVersion: NSObject? = NSNumber(value: 1),
-        supportsAppAttestAssertions: Bool = false
+        compatibilityVersion: NSObject? = NSNumber(value: 1)
     ) {
         self.result = result
-        self.missingSelectors =
-            supportsAppAttestAssertions
-            ? missingSelectors
-            : missingSelectors.union(["supportsAppAttestAssertions"])
+        self.missingSelectors = missingSelectors
         self.compatibilityVersion = compatibilityVersion
     }
 
@@ -111,11 +107,6 @@ final class MockCollectingFraudInstance: NSObject, @unchecked Sendable {
     @objc(coreCompatibilityVersion)
     func coreCompatibilityVersion() -> NSObject? {
         compatibilityVersion
-    }
-
-    @objc(supportsAppAttestAssertions)
-    func supportsAppAttestAssertions() -> Bool {
-        true
     }
 
     @objc(initializeWithOptions:)

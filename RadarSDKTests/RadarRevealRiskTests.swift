@@ -15,7 +15,7 @@ extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarRevealRiskTests {
 
-        static let revealRiskURL = "\(RadarSettings.verifiedHost)/v1/reveal/risk"
+        private static let revealRiskURL = "\(RadarSettings.verifiedHost)/v1/reveal/risk"
 
         /// A fully-populated reveal/risk response mirroring the server's `RevealRiskResponse` shape.
         static var revealRiskResponse: [String: Any] {
@@ -74,7 +74,7 @@ extension RadarSerializedTests {
             ]
         }
 
-        func makeManager(
+        private func makeManager(
             sealResult: [String: Any]?,
             session: MockURLSession,
             hasCompatibilityMarker: Bool = true

@@ -13,17 +13,9 @@ final class RadarSDKFraud: @unchecked Sendable {
 
     let instance: NSObject
 
-    /// Whether prepared payloads can return an App Attest assertion with the sealed body. Detected by
-    /// selector so fraud SDKs can add it without changing the compatibility version.
-    var supportsAppAttestAssertions: Bool {
-        instance.responds(to: Self.supportsAppAttestAssertionsSelector)
-    }
-
     private static let requiredCoreCompatibilityVersion = 1
     private static let coreCompatibilityVersionSelector =
         NSSelectorFromString("coreCompatibilityVersion")
-    private static let supportsAppAttestAssertionsSelector =
-        NSSelectorFromString("supportsAppAttestAssertions")
 
     init?(instance: NSObject) {
         guard instance.responds(to: Self.initializeSelector),

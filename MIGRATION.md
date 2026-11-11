@@ -2,7 +2,7 @@
 
 ## 3.45.x to 3.46.0
 
-- Verified tracking and reveal-risk requests can authenticate with an App Attest assertion from a key the device attested once, instead of attesting on every request. This requires both this `RadarSDK` version and a `RadarSDKFraud` version that supports App Attest assertions.
+- Verified tracking requests can authenticate with an App Attest assertion from a key the device attested once, instead of attesting on every request. This requires both this `RadarSDK` version and a `RadarSDKFraud` version that supports App Attest assertions.
 - `RadarSDKFraud` can still be updated without updating `RadarSDK`. With an older `RadarSDK`, requests are encrypted as before but carry no assertion, so they only pass projects that still use per-request App Attest.
 
 ## 3.43.x to 3.44.0

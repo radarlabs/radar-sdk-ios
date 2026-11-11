@@ -29,31 +29,6 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
         self.fraudSDK = fraudSDK
     }
 
-    /// Adds the App Attest challenge and registered key from a verified config, so the fraud SDK can
-    /// assert over the request. Without a config the request still goes out, and the server decides
-    /// whether App Attest is required.
-    private func fraudPayloadOptions(
-        fraudSDK: RadarSDKFraud,
-        useSecondaryVerifiedHost: Bool
-    ) async -> [String: Any] {
-        var options = RadarSettings.sdkConfiguration?.dictionaryValue() ?? [:]
-        guard fraudSDK.supportsAppAttestAssertions else {
-            return options
-        }
-
-        do {
-            let config = try await apiClient.getConfig(
-                usage: "revealRisk",
-                host: useSecondaryVerifiedHost ? .verifiedSecondaryHost : .verifiedHost
-            )
-            options["nonce"] = config?.nonce
-            options["appAttestKeyId"] = config?.appAttestKeyId
-        } catch {
-            RadarLogger.shared.warning("RadarRevealRiskManager: config request failed; continuing without App Attest")
-        }
-        return options
-    }
-
     private let sharingLock = NSLock()
     private var _revealRiskId: String?
 
@@ -84,11 +59,9 @@ final class RadarRevealRiskManager: NSObject, @unchecked Sendable {
             throw RadarError(status: .errorPublishableKey)
         }
 
-        let options = await fraudPayloadOptions(
-            fraudSDK: fraudSDK,
-            useSecondaryVerifiedHost: useSecondaryVerifiedHost
+        let preparedPayload = try await fraudSDK.prepareFraudPayload(
+            options: RadarSettings.sdkConfiguration?.dictionaryValue() ?? [:]
         )
-        let preparedPayload = try await fraudSDK.prepareFraudPayload(options: options)
 
         return try await apiClient.revealRisk(
             preparedPayload: preparedPayload,

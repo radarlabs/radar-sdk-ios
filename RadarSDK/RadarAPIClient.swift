@@ -200,7 +200,7 @@ public final class RadarAPIClient: Sendable {
             value != nil ? URLQueryItem(name: key, value: value) : nil
         }
 
-        let (data, response) = try await apiHelper.radarRequest(host: host, method: "GET", url: "config", query: params)
+        let (data, response) = try await apiHelper.radarRequest(host: host, method: "GET", url: "config")
 
         try assertResponseCode(response.statusCode)
 
