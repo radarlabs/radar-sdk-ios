@@ -56,7 +56,9 @@ final class RadarSdkConfiguration: NSObject {
         skipForegroundCheck = dict?["skipForegroundCheck"] as? Bool ?? true
         useOfflineRTOUpdates = dict?["useOfflineRTOUpdates"] as? Bool ?? false
         offlineEventGenerationEnabled = dict?["offlineEventGenerationEnabled"] as? Bool ?? false
-        useSwiftLocationManager = dict?["useSwiftLocationManager"] as? Bool ?? false
+        // The Swift location manager runs by default. The server can send `false` to use the
+        // Objective-C path until that path is removed (FENCE-2804).
+        useSwiftLocationManager = dict?["useSwiftLocationManager"] as? Bool ?? true
         startUpdatesWhileInUse = dict?["startUpdatesWhileInUse"] as? Bool ?? false
         remoteTrackingOptions = RadarRemoteTrackingOptions.from(
             array: dict?["remoteTrackingOptions"] as? [[String: Any]]

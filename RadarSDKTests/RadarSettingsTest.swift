@@ -127,13 +127,14 @@ extension RadarSerializedTests {
         @Test("RadarSdkConfiguration handles useSwiftLocationManager")
         func sdkConfigurationHandlesUseSwiftLocationManager() {
             let defaultConfiguration = RadarSdkConfiguration(dict: nil)
-            let enabledConfiguration = RadarSdkConfiguration(dict: [
-                "useSwiftLocationManager": true
+            let disabledConfiguration = RadarSdkConfiguration(dict: [
+                "useSwiftLocationManager": false
             ])
 
-            #expect(defaultConfiguration.useSwiftLocationManager == false)
-            #expect(enabledConfiguration.useSwiftLocationManager == true)
-            #expect(enabledConfiguration.dictionaryValue()["useSwiftLocationManager"] as? Bool == true)
+            #expect(defaultConfiguration.useSwiftLocationManager == true)
+            #expect(RadarSdkConfiguration(dict: [:]).useSwiftLocationManager == true)
+            #expect(disabledConfiguration.useSwiftLocationManager == false)
+            #expect(disabledConfiguration.dictionaryValue()["useSwiftLocationManager"] as? Bool == false)
         }
 
         @Test("RadarSettings persists sdkConfiguration useSwiftLocationManager")

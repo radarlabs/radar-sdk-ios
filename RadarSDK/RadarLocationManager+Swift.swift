@@ -93,9 +93,15 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     // one, so `updateTracking(host:location:fromInitialize:)` replaces the bubble back to back.
     nonisolated(unsafe) static var bubbleGeofenceRegion: CLRegion?
 
-    @objc(startTrackingWithOptions:)
     static func startTracking(options: RadarTrackingOptions) {
-        let authorizationStatus = permissionsHelper.locationAuthorizationStatus()
+        startTracking(options: options, authorizationStatus: permissionsHelper.locationAuthorizationStatus())
+    }
+
+    // The Objective-C manager passes the status from its own `permissionsHelper`, like
+    // `getLocation(host:authorizationStatus:locationManager:completionHandler:)`, so both paths
+    // read permission from the same helper.
+    @objc(startTrackingWithOptions:authorizationStatus:)
+    static func startTracking(options: RadarTrackingOptions, authorizationStatus: CLAuthorizationStatus) {
         guard authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways else {
             RadarSwift.bridge?.didFail(status: .errorPermissions)
             return

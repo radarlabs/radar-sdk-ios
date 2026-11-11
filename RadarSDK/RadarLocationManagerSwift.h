@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (CLLocationAccuracy)clLocationAccuracyForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
 + (BOOL)shouldBypassDeviceLocationStateForSource:(RadarLocationSource)source;
 
-+ (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions;
++ (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions authorizationStatus:(CLAuthorizationStatus)authorizationStatus;
 
 + (void)updateTrackingWithHost:(id<RadarLocationManagerSwiftHost>)host
                       location:(nullable CLLocation *)location

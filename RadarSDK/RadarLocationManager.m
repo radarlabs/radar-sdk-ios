@@ -267,7 +267,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        [RadarLocationManagerSwift startTrackingWithOptions:trackingOptions];
+        [RadarLocationManagerSwift startTrackingWithOptions:trackingOptions authorizationStatus:[self.permissionsHelper locationAuthorizationStatus]];
         return;
     }
 

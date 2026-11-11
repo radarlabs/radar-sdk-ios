@@ -63,6 +63,20 @@ extension RadarSerializedTests {
             }
         }
 
+        @Test("start tracking uses the authorization status the Objective-C manager passes")
+        @MainActor
+        func startTrackingUsesPassedAuthorizationStatus() {
+            RadarLocationManagerSwiftTestHelpers.withMockedSwiftTrackingDependencies(authorizationStatus: .denied) { bridge in
+                let options = RadarTrackingOptions.presetResponsive
+
+                RadarLocationManagerSwift.startTracking(options: options, authorizationStatus: .authorizedAlways)
+
+                #expect(bridge.lastFailStatus == nil)
+                #expect(RadarSettings.tracking == true)
+                #expect(RadarSettings.trackingOptions == options)
+            }
+        }
+
         @Test("public start tracking method routes to the Swift twin when enabled")
         @MainActor
         func publicStartTrackingRoutesToSwiftTwinWhenFlagEnabled() {

@@ -37,6 +37,12 @@ enum RadarLocationManagerSwiftTestHelpers {
         RadarLocationManagerSwift.permissionsHelper = permissionsHelper
         defer { RadarLocationManagerSwift.permissionsHelper = originalPermissionsHelper }
 
+        // The Objective-C manager passes the status from its own helper to the Swift twins, so it
+        // must report the same status. `clearState()` restores a real helper.
+        let objCPermissionsHelper = RadarPermissionsHelperMock()
+        objCPermissionsHelper.mockLocationAuthorizationStatus = authorizationStatus
+        RadarLocationManager.sharedInstance().permissionsHelper = objCPermissionsHelper
+
         let originalBootstrapIndoorTracking = RadarLocationManagerSwift.bootstrapIndoorTracking
         RadarLocationManagerSwift.bootstrapIndoorTracking = {}
         defer { RadarLocationManagerSwift.bootstrapIndoorTracking = originalBootstrapIndoorTracking }
