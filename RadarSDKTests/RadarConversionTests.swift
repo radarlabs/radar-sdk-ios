@@ -14,12 +14,13 @@ import Testing
 private let createdAtString = "2026-07-20T12:00:00.000Z"
 private let actualCreatedAtString = "2026-07-20T12:00:01.000Z"
 
-// The fields every conversion needs: `_id`, `type`, and `createdAt`.
+// The fields every conversion needs: `_id`, `type`, `createdAt`, and `actualCreatedAt`.
 private func baseConversionObject() -> [String: Any] {
     [
         "_id": "conversion-id",
         "type": "opened_app",
         "createdAt": createdAtString,
+        "actualCreatedAt": actualCreatedAtString,
     ]
 }
 
@@ -32,7 +33,6 @@ struct RadarConversionTests {
     @Test("Parses every field")
     func parsesEveryField() throws {
         var object = baseConversionObject()
-        object["actualCreatedAt"] = actualCreatedAtString
         object["live"] = true
         object["metadata"] = ["campaign": "spring"]
 
@@ -46,11 +46,10 @@ struct RadarConversionTests {
         #expect(conversion.metadata?["campaign"] as? String == "spring")
     }
 
-    @Test("Leaves optional fields empty when only _id, type, and createdAt are present")
+    @Test("Leaves optional fields empty when only the required fields are present")
     func defaultsOptionalFields() throws {
         let conversion = try parse(baseConversionObject())
 
-        #expect(conversion.actualCreatedAt == nil)
         #expect(!conversion.live)
         #expect(conversion.metadata == nil)
     }
@@ -58,13 +57,11 @@ struct RadarConversionTests {
     @Test("Ignores wrongly typed optional fields")
     func ignoresWronglyTypedFields() throws {
         var object = baseConversionObject()
-        object["actualCreatedAt"] = 12
         object["live"] = "yes"
         object["metadata"] = ["not", "a", "dictionary"]
 
         let conversion = try parse(object)
 
-        #expect(conversion.actualCreatedAt == nil)
         #expect(!conversion.live)
         #expect(conversion.metadata == nil)
     }
@@ -77,12 +74,12 @@ struct RadarConversionTests {
         #expect(try parse(object).metadata?["revenue"] as? Double == 0.2)
     }
 
-    @Test("Returns nil for a non-dictionary, or without _id, type, or a valid createdAt")
+    @Test("Returns nil for a non-dictionary, or without _id, type, or a valid createdAt or actualCreatedAt")
     func rejectsMissingRequiredFields() {
         #expect(RadarConversion(object: "conversion") == nil)
         #expect(RadarConversion(object: nil) == nil)
 
-        for key in ["_id", "type", "createdAt"] {
+        for key in ["_id", "type", "createdAt", "actualCreatedAt"] {
             var object = baseConversionObject()
             object[key] = nil
             #expect(RadarConversion(object: object) == nil, "missing \(key)")
@@ -92,6 +89,10 @@ struct RadarConversionTests {
         badCreatedAt["createdAt"] = "yesterday"
         #expect(RadarConversion(object: badCreatedAt) == nil)
 
+        var badActualCreatedAt = baseConversionObject()
+        badActualCreatedAt["actualCreatedAt"] = 12
+        #expect(RadarConversion(object: badActualCreatedAt) == nil)
+
         var numericType = baseConversionObject()
         numericType["type"] = 3
         #expect(RadarConversion(object: numericType) == nil)
@@ -100,7 +101,6 @@ struct RadarConversionTests {
     @Test("Serializes the keys hybrid SDKs read, plus name")
     func serializes() throws {
         var object = baseConversionObject()
-        object["actualCreatedAt"] = actualCreatedAtString
         object["live"] = true
         object["metadata"] = ["campaign": "spring"]
 
@@ -118,12 +118,12 @@ struct RadarConversionTests {
         }
     }
 
-    @Test("Omits metadata and actualCreatedAt when absent")
-    func serializationOmitsMissingFields() throws {
+    @Test("Omits metadata when absent")
+    func serializationOmitsMissingMetadata() throws {
         let dict = try parse(baseConversionObject()).dictionaryValue()
 
         #expect(dict["metadata"] == nil)
-        #expect(dict["actualCreatedAt"] == nil)
+        #expect(dict["actualCreatedAt"] as? String == "2026-07-20T12:00:01.000+0000")
     }
 
     @Test("Keeps the Objective-C runtime name and selectors")

@@ -49,18 +49,18 @@ private func placeObject(id: String) -> [String: Any] {
     ]
 }
 
-// The fields every event needs: `_id`, `createdAt`, and `location`.
+// The fields every event needs: `_id`, `createdAt`, `actualCreatedAt`, and `location`.
 private func baseEventObject() -> [String: Any] {
     [
         "_id": "event-id",
         "createdAt": createdAtString,
+        "actualCreatedAt": actualCreatedAtString,
         "location": ["type": "Point", "coordinates": [-73.9, 40.7]],
     ]
 }
 
 private func fullEventObject() -> [String: Any] {
     var object = baseEventObject()
-    object["actualCreatedAt"] = actualCreatedAtString
     object["live"] = true
     object["type"] = "user.entered_place"
     object["geofence"] = geofenceObject()
@@ -119,7 +119,7 @@ struct RadarEventTests {
         #expect(event.metadata["campaign"] as? String == "spring")
     }
 
-    @Test("Defaults optional fields when only _id, createdAt, and location are present")
+    @Test("Defaults optional fields when only the required fields are present")
     func defaultsOptionalFields() throws {
         let event = try parse(baseEventObject())
 
@@ -138,30 +138,32 @@ struct RadarEventTests {
         #expect(event.fraud == nil)
         #expect(event.alternatePlaces == nil)
         #expect(event.verifiedPlace == nil)
-        // Nonnull properties the parser can't fill fall back instead of returning nil.
-        #expect(event.actualCreatedAt == event.createdAt)
+        #expect(event.actualCreatedAt == RadarUtils.isoDateFormatter.date(from: actualCreatedAtString))
+        // `metadata` is nonnull, so a missing value is empty instead of nil.
         #expect(event.metadata.isEmpty)
         #expect(event.location.coordinate.latitude == 40.7)
         #expect(event.location.coordinate.longitude == -73.9)
         #expect(event.location.horizontalAccuracy == -1)
     }
 
-    @Test("Returns nil for a non-dictionary, or without _id or a valid createdAt")
+    @Test("Returns nil for a non-dictionary, or without _id or a valid createdAt or actualCreatedAt")
     func rejectsMissingRequiredFields() {
         #expect(RadarEvent(object: "event") == nil)
         #expect(RadarEvent(object: nil) == nil)
 
-        var noId = baseEventObject()
-        noId["_id"] = nil
-        #expect(RadarEvent(object: noId) == nil)
-
-        var noCreatedAt = baseEventObject()
-        noCreatedAt["createdAt"] = nil
-        #expect(RadarEvent(object: noCreatedAt) == nil)
+        for key in ["_id", "createdAt", "actualCreatedAt"] {
+            var object = baseEventObject()
+            object[key] = nil
+            #expect(RadarEvent(object: object) == nil, "missing \(key)")
+        }
 
         var badCreatedAt = baseEventObject()
         badCreatedAt["createdAt"] = "yesterday"
         #expect(RadarEvent(object: badCreatedAt) == nil)
+
+        var badActualCreatedAt = baseEventObject()
+        badActualCreatedAt["actualCreatedAt"] = 12
+        #expect(RadarEvent(object: badActualCreatedAt) == nil)
     }
 
     @Test("Returns nil for a missing or non-dictionary location")
@@ -309,7 +311,6 @@ struct RadarEventTests {
 
         for key in [
             "geofence", "place", "duration", "region", "beacon", "trip", "fraud", "alternatePlaces", "metadata",
-            "actualCreatedAt",
         ] {
             #expect(dict[key] == nil, "\(key) should be omitted")
         }

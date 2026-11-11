@@ -21,13 +21,8 @@ public final class RadarEvent: NSObject {
     /// The datetime when the event occurred on the device.
     public let createdAt: Date
 
-    // The Objective-C parser left `actualCreatedAt` nil when the server omitted it, even though the
-    // header declared it nonnull. Keep that nil for `dictionaryValue()`, and return `createdAt`
-    // from the nonnull property instead of nil.
-    private let actualCreatedAtValue: Date?
-
     /// The datetime when the event was created on the server.
-    public var actualCreatedAt: Date { actualCreatedAtValue ?? createdAt }
+    public let actualCreatedAt: Date
 
     /// A boolean indicating whether the event was generated with your live API key.
     public let live: Bool
@@ -86,11 +81,12 @@ public final class RadarEvent: NSObject {
 
     // Public so `RadarEvent()` and `[RadarEvent new]` keep working as they did with the old header.
     // Matches Objective-C `-init`, which left every field zeroed. The nonnull `_id`, `createdAt`,
-    // and `location` get an empty string, the 1970 epoch, and a zero location instead of nil.
+    // `actualCreatedAt`, and `location` get an empty string, the 1970 epoch, and a zero location
+    // instead of nil.
     public override init() {
         _id = ""
         createdAt = Date(timeIntervalSince1970: 0)
-        actualCreatedAtValue = nil
+        actualCreatedAt = Date(timeIntervalSince1970: 0)
         live = false
         type = .unknown
         conversionName = nil
@@ -112,15 +108,17 @@ public final class RadarEvent: NSObject {
     }
 
     // Parsing matches the Objective-C implementation: wrongly typed fields are ignored, but a
-    // missing `_id` or `createdAt`, a missing or malformed `location`, or an alternate place that
-    // fails to parse returns nil. Conversions have no location; they parse as `RadarConversion`. Geofences, places, and beacons are
-    // Objective-C models with internal parsers, so they're built through `RadarSwift.modelFactory`,
-    // which is installed when the framework loads.
+    // missing `_id`, `createdAt`, or `actualCreatedAt`, a missing or malformed `location`, or an
+    // alternate place that fails to parse returns nil. Conversions have no location; they parse as
+    // `RadarConversion`. Geofences, places, and beacons are Objective-C models with internal
+    // parsers, so they're built through `RadarSwift.modelFactory`, which is installed when the
+    // framework loads.
     @objc(initWithObject:)
     init?(object: Any?) {
         guard let dict = object as? NSDictionary,
             let id = dict["_id"] as? String,
             let createdAt = RadarEventParsing.date(from: dict["createdAt"]),
+            let actualCreatedAt = RadarEventParsing.date(from: dict["actualCreatedAt"]),
             let location = Self.location(in: dict, timestamp: createdAt)
         else {
             return nil
@@ -135,7 +133,7 @@ public final class RadarEvent: NSObject {
 
         _id = id
         self.createdAt = createdAt
-        actualCreatedAtValue = RadarEventParsing.date(from: dict["actualCreatedAt"])
+        self.actualCreatedAt = actualCreatedAt
         live = (dict["live"] as? NSNumber)?.boolValue ?? false
         (type, conversionName) = Self.typeAndConversionName(from: dict["type"])
         geofence = (dict["geofence"] as? [String: Any]).flatMap { factory?.createGeofence(dict: $0) }
@@ -208,7 +206,7 @@ public final class RadarEvent: NSObject {
         dict["replayed"] = replayed
         dict["metadata"] = metadataValue
         dict["createdAt"] = RadarUtils.isoDateFormatter.string(from: createdAt)
-        dict["actualCreatedAt"] = actualCreatedAtValue.map { RadarUtils.isoDateFormatter.string(from: $0) }
+        dict["actualCreatedAt"] = RadarUtils.isoDateFormatter.string(from: actualCreatedAt)
         return dict
     }
 }
