@@ -386,7 +386,7 @@
 - (void)scheduleNextIntervalWithLastToken {
     NSTimeInterval minInterval = self.startedInterval;
     
-    if (self.lastToken) {
+    if (self.lastToken && self.lastToken.format != RadarResponseFormatId) {
         NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
         
         // if expiresIn - lastTokenElapsed is shorter than interval, override interval
