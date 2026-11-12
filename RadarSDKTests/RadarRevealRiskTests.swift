@@ -6,6 +6,7 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+// swiftlint:disable file_length
 import Foundation
 import Testing
 
@@ -13,7 +14,7 @@ import Testing
 
 extension RadarSerializedTests {
     @Suite(.serialized)
-    struct RadarRevealRiskTests {
+    struct RadarRevealRiskTests {  // swiftlint:disable:this type_body_length
 
         private static let revealRiskURL = "\(RadarSettings.verifiedHost)/v1/reveal/risk"
 
@@ -308,7 +309,7 @@ extension RadarSerializedTests {
 
             #expect(instance.recordedOptions().count == 1)
         }
-        
+
         @Test(
             "Reveal preserves legacy and explicit JWS responses",
             arguments: [false, true]
@@ -348,9 +349,10 @@ extension RadarSerializedTests {
             #expect(token.network == nil)
             #expect(token.device == nil)
             #expect(
-                Set(token.dictionaryValue().keys) == Set<AnyHashable>([
-                    "format", "_id", "token", "expiresAt", "expiresIn",
-                ])
+                Set(token.dictionaryValue().keys)
+                    == Set<AnyHashable>([
+                        "format", "_id", "token", "expiresAt", "expiresIn",
+                    ])
             )
         }
 
@@ -435,7 +437,7 @@ extension RadarSerializedTests {
             let data = try JSONSerialization.data(withJSONObject: response)
             #expect(RadarRevealRiskToken.fromData(data) == nil)
         }
-        
+
         @Test(
             "Reveal delivers reduced responses and updates the shared Reveal ID",
             arguments: ["jwe", "id"]
@@ -483,9 +485,10 @@ extension RadarSerializedTests {
                 #expect(token.expiresAt != nil)
                 #expect(token.expiresIn == 90)
                 #expect(
-                    Set(token.dictionaryValue().keys) == Set<AnyHashable>([
-                        "format", "_id", "token", "expiresAt", "expiresIn",
-                    ])
+                    Set(token.dictionaryValue().keys)
+                        == Set<AnyHashable>([
+                            "format", "_id", "token", "expiresAt", "expiresIn",
+                        ])
                 )
             } else {
                 #expect(token.token == nil)
@@ -497,7 +500,7 @@ extension RadarSerializedTests {
                 )
             }
         }
-        
+
         @Test("Reveal reports malformed responses through the completion handler")
         func revealRiskRejectsMalformedResponses() async {
             let responses: [[String: Any]] = [

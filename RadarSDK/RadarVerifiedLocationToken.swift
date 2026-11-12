@@ -40,7 +40,7 @@ public final class RadarVerifiedLocationToken: NSObject {
     public let failureReasons: [String]?
 
     /// The Radar ID of the location check.
-    public let _id: String?
+    public let _id: String?  // swiftlint:disable:this identifier_name
 
     /// The response dictionary.
     public let fullDict: [AnyHashable: Any]?
@@ -69,7 +69,7 @@ public final class RadarVerifiedLocationToken: NSObject {
         expiresIn: TimeInterval,
         passed: Bool,
         failureReasons: [String],
-        _id: String?,
+        _id: String?,  // swiftlint:disable:this identifier_name
         fullDict: [AnyHashable: Any]
     ) {
         format = .jws
@@ -109,7 +109,7 @@ public final class RadarVerifiedLocationToken: NSObject {
     }
 
     private struct JWEData: Decodable {
-        let _id: String
+        let _id: String  // swiftlint:disable:this identifier_name
         let token: String
         let expiresAt: String
         let expiresIn: TimeInterval
@@ -117,7 +117,7 @@ public final class RadarVerifiedLocationToken: NSObject {
     }
 
     @objc(initWithObject:)
-    convenience init?(object: Any) {
+    convenience init?(object: Any) {  // swiftlint:disable:this function_body_length
         guard let dict = object as? NSDictionary,
             let format = RadarResponseFormat(responseValue: dict["format"])
         else {
@@ -132,15 +132,17 @@ public final class RadarVerifiedLocationToken: NSObject {
             }
 
             // Preserve the legacy parser's float precision and defaults.
-            let expiresIn = (dict["expiresIn"] as? NSNumber).map {
-                TimeInterval($0.floatValue)
-            } ?? 0
+            let expiresIn =
+                (dict["expiresIn"] as? NSNumber).map {
+                    TimeInterval($0.floatValue)
+                } ?? 0
             let passed = (dict["passed"] as? NSNumber)?.boolValue ?? false
             let user = (dict["user"] as? NSDictionary).flatMap {
                 RadarUser(object: $0)
             }
             let events = (dict["events"] as? NSArray).flatMap(Self.events(from:))
-            let failureReasons = (dict["failureReasons"] as? NSArray)?
+            let failureReasons =
+                (dict["failureReasons"] as? NSArray)?
                 .compactMap { $0 as? String } ?? []
             let id = dict["_id"] as? String
 

@@ -21,6 +21,7 @@
 //  `RadarSettings.sdkConfiguration`, so it can only be exercised on the singletons.
 //
 
+// swiftlint:disable file_length
 import Foundation
 import Testing
 

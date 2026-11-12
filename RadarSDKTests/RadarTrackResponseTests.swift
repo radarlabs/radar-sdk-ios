@@ -161,6 +161,7 @@ final class RadarTrackResponseTests: XCTestCase {
         )
     }
 
+    // swiftlint:disable:next function_body_length
     private func assertResponse(
         _ response: [AnyHashable: Any],
         verified: Bool = true,

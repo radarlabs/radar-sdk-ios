@@ -24,23 +24,25 @@ final class RadarTrackResponseHandler: NSObject {
         guard verified else {
             return false
         }
-        
-        guard let format = RadarResponseFormat(
-            responseValue: response["format"]
-        ) else {
+
+        guard
+            let format = RadarResponseFormat(
+                responseValue: response["format"]
+            )
+        else {
             completionHandler(.errorServer, nil, nil)
             return true
         }
-        
+
         guard format != .jws else {
             return false
         }
-        
+
         guard let token = RadarVerifiedLocationToken(object: response) else {
             completionHandler(.errorServer, nil, nil)
             return true
         }
-        
+
         completionHandler(.success, token.dictionaryValue(), token)
         return true
     }
