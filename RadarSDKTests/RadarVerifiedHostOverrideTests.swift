@@ -21,6 +21,7 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
         let originalKey = RadarSettings.publishableKey
         restoreState = {
             RadarAPIClient.sharedInstance().apiHelper = originalAPIHelper
+            RadarAPIClient.sharedInstance().appAttestKeyIdProvider = nil
             RadarSettings.publishableKey = originalKey
         }
         // Configure authentication without starting asynchronous SDK initialization.
@@ -81,6 +82,32 @@ final class RadarVerifiedHostOverrideTests: XCTestCase {
         let url = apiHelperMock.lastUrl ?? ""
         XCTAssertFalse(url.hasPrefix(RadarSettings.defaultVerifiedHostSecondary), "non-verified request must not use secondary; got \(url)")
         XCTAssertTrue(url.hasPrefix(RadarSettings.DefaultHost), "expected standard host for non-verified, got \(url)")
+    }
+
+    func test_getConfig_verified_sendsStoredAppAttestKeyId() {
+        RadarAPIClient.sharedInstance().appAttestKeyIdProvider = { "stored+key/id=" }
+
+        for verified in [true, false] {
+            let exp = expectation(description: "getConfig completes")
+            RadarAPIClient.sharedInstance().getConfigForUsage("verify", verified: verified) { _, _ in
+                exp.fulfill()
+            }
+            wait(for: [exp], timeout: 1)
+
+            let keyId = apiHelperMock.lastHeaders?["X-Radar-App-Attest-Key-Id"] as? String
+            XCTAssertEqual(keyId, verified ? "stored+key/id=" : nil)
+        }
+    }
+
+    func test_getConfig_verified_withoutStoredKey_omitsAppAttestKeyId() {
+        RadarAPIClient.sharedInstance().appAttestKeyIdProvider = { nil }
+        let exp = expectation(description: "getConfig completes")
+        RadarAPIClient.sharedInstance().getConfigForUsage("verify", verified: true) { _, _ in
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1)
+
+        XCTAssertNil(apiHelperMock.lastHeaders?["X-Radar-App-Attest-Key-Id"])
     }
 
     // MARK: - trackWithLocation

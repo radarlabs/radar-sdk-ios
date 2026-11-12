@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RadarPreparedFraudPayloadWrapper : NSObject
 - (NSURLRequest *_Nullable)prepareRequest:(NSURLRequest *)request error:(NSError *_Nullable *_Nullable)error;
+- (void)assertRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest *request))completionHandler;
 @end
 
 typedef void (^_Nonnull RadarTrackAPICompletionHandler)(RadarStatus status,
@@ -69,6 +70,8 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 @interface RadarAPIClient : NSObject
 
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
+// Returns the App Attest key ID sent on verified /config. Nil asks the installed fraud SDK.
+@property (nonatomic, copy, nullable) NSString *_Nullable (^appAttestKeyIdProvider)(void);
 
 + (instancetype)sharedInstance;
 

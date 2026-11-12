@@ -88,6 +88,55 @@ extension RadarVerifiedHostOverrideTests {
         }
     }
 
+    func test_trackVerified_lostConnection_sendsFreshAppAttestAssertion() throws {
+        try withIsolatedReplayState {
+            let client = RadarAPIClient.sharedInstance()
+            let originalHelper = client.apiHelper
+            TrackRetryProtocol.state.reset(failures: [.networkConnectionLost])
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.protocolClasses = [TrackRetryProtocol.self]
+            let session = URLSession(configuration: configuration)
+            let helper = RadarAPIHelper()
+            helper.setValue(session, forKey: "standardSession")
+            client.apiHelper = helper
+            defer {
+                client.apiHelper = originalHelper
+                session.invalidateAndCancel()
+                TrackRetryProtocol.state.reset(failures: [])
+            }
+
+            let prepared = MockPreparedFraudPayloadInstance(
+                result: nil,
+                resultForOptions: { MockFraudEnvelope.result(for: $0) },
+                assertionForOptions: { options in
+                    [
+                        "appAttestKeyId": "test-key-id",
+                        "appAttestAssertion": "assertion-\(options["payload"] as? String ?? "")",
+                    ]
+                }
+            )
+            let instance = MockCollectingFraudInstance(result: ["preparedPayload": prepared])
+            let preparer = try makeTrackPreparer(instance: instance, options: ["nonce": "test-nonce"])
+            let finished = expectation(description: "One final track callback")
+            finished.assertForOverFulfill = true
+            let track = trackForEncryptionTest(preparer) { _, _, _, _, _, _, _ in
+                finished.fulfill()
+            }
+            wait(for: [finished], timeout: 5)
+            track.cancel()
+
+            let requests = TrackRetryProtocol.state.recordedRequests()
+            XCTAssertEqual(requests.count, 2)
+            let payloads = prepared.capturedOptions.compactMap { MockFraudEnvelope.result(for: $0)["payload"] as? String }
+            XCTAssertEqual(payloads.count, 2)
+            XCTAssertEqual(Set(payloads).count, 2)
+            for (request, payload) in zip(requests, payloads) {
+                XCTAssertEqual(request.value(forHTTPHeaderField: "X-Radar-App-Attest-Key-Id"), "test-key-id")
+                XCTAssertEqual(request.value(forHTTPHeaderField: "X-Radar-App-Attest-Assertion"), "assertion-\(payload)")
+            }
+        }
+    }
+
     // Keep the request, retry, and semaphore-release assertions in one transport scenario.
     // swiftlint:disable:next function_body_length
     private func assertTrackTransport(

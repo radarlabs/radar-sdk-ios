@@ -25,7 +25,96 @@ private final class TrackVerifiedLocationManagerMock: RadarLocationManager {
     }
 }
 
+/// Answers `/v1/config` per verified host. A nil response is a non-Radar response, which makes `trackVerified`
+/// fail over to the secondary host. Every other request fails with `errorServer`.
+private final class ConfigByHostAPIHelperMock: MainQueueAPIHelperMock {
+    var primaryConfig: [String: Any]?
+    var secondaryConfig: [String: Any]?
+
+    override func request(
+        withMethod method: String,
+        url: String,
+        headers: [AnyHashable: Any]?,
+        params: [AnyHashable: Any]?,
+        sleep: Bool,
+        logPayload: Bool,
+        extendedTimeout: Bool,
+        completionHandler: RadarAPICompletionHandler?
+    ) {
+        let response: [String: Any]?
+        if url.hasPrefix("\(RadarSettings.verifiedHost)/v1/config") {
+            response = primaryConfig
+        } else if url.hasPrefix("\(RadarSettings.defaultVerifiedHostSecondary)/v1/config") {
+            response = secondaryConfig
+        } else {
+            super.request(
+                withMethod: method, url: url, headers: headers, params: params, sleep: sleep, logPayload: logPayload,
+                extendedTimeout: extendedTimeout, completionHandler: completionHandler)
+            return
+        }
+        completionHandler?(response == nil ? .errorServer : .success, response ?? [:], nil)
+    }
+}
+
 extension RadarVerifiedHostOverrideTests {
+    func test_trackVerifiedManager_forwardsRegisteredAppAttestKeyFromConfig() throws {
+        let options = try collectionOptions(
+            primaryConfig: ["meta": ["config": [:]], "nonce": "primary-nonce", "aak": "primary-key-id"]
+        )
+
+        XCTAssertEqual(options["nonce"] as? String, "primary-nonce")
+        XCTAssertEqual(options["appAttestKeyId"] as? String, "primary-key-id")
+    }
+
+    func test_trackVerifiedManager_forwardsRegisteredAppAttestKeyFromSecondaryConfig() throws {
+        let options = try collectionOptions(
+            primaryConfig: nil,
+            secondaryConfig: ["meta": ["config": [:]], "nonce": "secondary-nonce", "aak": "secondary-key-id"]
+        )
+
+        XCTAssertEqual(options["nonce"] as? String, "secondary-nonce")
+        XCTAssertEqual(options["appAttestKeyId"] as? String, "secondary-key-id")
+    }
+
+    func test_trackVerifiedManager_omitsAppAttestKeyWhenConfigHasNone() throws {
+        let options = try collectionOptions(primaryConfig: ["meta": ["config": [:]], "nonce": "primary-nonce"])
+
+        XCTAssertEqual(options["nonce"] as? String, "primary-nonce")
+        XCTAssertNil(options["appAttestKeyId"])
+    }
+
+    /// Runs `trackVerified` against the given config responses and returns the options passed to fraud collection.
+    private func collectionOptions(
+        primaryConfig: [String: Any]?, secondaryConfig: [String: Any]? = nil
+    ) throws -> [String: Any] {
+        let client = RadarAPIClient.sharedInstance()
+        let originalHelper = client.apiHelper
+        let originalAnonymous = RadarSettings.anonymousTrackingEnabled
+        let buffer = RadarReplayBuffer.sharedInstance
+        let originalReplays = buffer.mutableReplayBuffer
+        defer {
+            client.apiHelper = originalHelper
+            RadarSettings.anonymousTrackingEnabled = originalAnonymous
+            buffer.mutableReplayBuffer = originalReplays
+        }
+        RadarSettings.anonymousTrackingEnabled = false
+        buffer.mutableReplayBuffer = []
+
+        let helper = ConfigByHostAPIHelperMock()
+        helper.primaryConfig = primaryConfig
+        helper.secondaryConfig = secondaryConfig
+        helper.mockStatus = .errorServer
+        client.apiHelper = helper
+
+        let instance = makeCollectedFraudInstance(result: ["payload": MockFraudEnvelope.payload])
+        let manager = try makeVerificationManager(instance: instance)
+        runVerificationManager(manager, expectedStatus: .errorServer)
+
+        let options = instance.recordedOptions()
+        XCTAssertEqual(options.count, 1)
+        return try XCTUnwrap(options.first)
+    }
+
     @MainActor
     func test_trackVerifiedManager_missingFraudSDKLogsPluginError() async throws {
         XCTAssertNil(NSClassFromString("RadarSDKFraud"))

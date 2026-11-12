@@ -11,6 +11,8 @@ import Foundation
 class RadarConfig: NSObject {
     var meta: RadarMeta?
     var nonce: String?
+    /// The App Attest key the server has registered for this install (`aak`)
+    var appAttestKeyId: String?
 
     static func from(dictionary dict: [String: Any]?) -> RadarConfig? {
         let config = RadarConfig()
@@ -21,6 +23,9 @@ class RadarConfig: NSObject {
             }
             if let nonce = dict["nonce"] as? String {
                 config.nonce = nonce
+            }
+            if let appAttestKeyId = dict["aak"] as? String {
+                config.appAttestKeyId = appAttestKeyId
             }
         }
 

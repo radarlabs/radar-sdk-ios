@@ -112,6 +112,23 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
 preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                     trace:(id<RadarAPIRequestTrace>)trace
         completionHandler:(RadarAPICompletionHandler)completionHandler {
+    [self requestWithMethod:method url:url headers:headers params:params sleep:sleep logPayload:logPayload
+            extendedTimeout:extendedTimeout prepareRequest:prepareRequest assertRequest:nil
+  preparationFailureHandler:preparationFailureHandler trace:trace completionHandler:completionHandler];
+}
+
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *)headers
+                   params:(NSDictionary *)params
+                    sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+           prepareRequest:(RadarAPIRequestPreparation)prepareRequest
+            assertRequest:(RadarAPIRequestAssertion)assertRequest
+preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
+                    trace:(id<RadarAPIRequestTrace>)trace
+        completionHandler:(RadarAPICompletionHandler)completionHandler {
     uint64_t enqueuedNanos = clock_gettime_nsec_np(CLOCK_MONOTONIC);
     dispatch_async(self.queue, ^{
         if (sleep) {
@@ -300,6 +317,14 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                 return prepared;
             };
 
+            void (^assertAttempt)(NSURLRequest *, void (^)(NSURLRequest *)) = ^(NSURLRequest *prepared, void (^start)(NSURLRequest *)) {
+                if (!assertRequest) {
+                    start(prepared);
+                    return;
+                }
+                assertRequest(prepared, start);
+            };
+
             void (^dataTaskRetryHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
                 if (error && [error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorNetworkConnectionLost) {
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
@@ -307,8 +332,10 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                     [trace setResendCount:1];
                     NSURLRequest *retryRequest = requestForAttempt();
                     if (!retryRequest) { return; }
-                    NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:retryRequest completionHandler:dataTaskCompletionHandler];
-                    [retryTask resume];
+                    assertAttempt(retryRequest, ^(NSURLRequest *assertedRequest) {
+                        NSURLSessionDataTask *retryTask = [session dataTaskWithRequest:assertedRequest completionHandler:dataTaskCompletionHandler];
+                        [retryTask resume];
+                    });
                 } else {
                     dataTaskCompletionHandler(data, response, error);
                 }
@@ -316,8 +343,10 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
 
             NSURLRequest *firstRequest = requestForAttempt();
             if (!firstRequest) { return; }
-            NSURLSessionDataTask *task = [session dataTaskWithRequest:firstRequest completionHandler:dataTaskRetryHandler];
-            [task resume];
+            assertAttempt(firstRequest, ^(NSURLRequest *assertedRequest) {
+                NSURLSessionDataTask *task = [session dataTaskWithRequest:assertedRequest completionHandler:dataTaskRetryHandler];
+                [task resume];
+            });
         } @catch (NSException *exception) {
             if (sleep) {
                 dispatch_semaphore_signal(self.semaphore);

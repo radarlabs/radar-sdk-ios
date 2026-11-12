@@ -142,16 +142,34 @@ final class MockCollectingFraudInstance: NSObject, @unchecked Sendable {
 final class MockPreparedFraudPayloadInstance: NSObject {
     let result: [String: Any]?
     private let resultForOptions: (([String: Any]) -> [String: Any]?)?
+    // Set to stand in for a fraud SDK whose prepared payloads can assert over the sealed body.
+    private let assertionForOptions: (([String: Any]) -> [String: Any])?
 
     private(set) var capturedOptions: [[String: Any]] = []
+    private(set) var capturedAssertOptions: [[String: Any]] = []
 
     init(
         result: [String: Any]?,
-        resultForOptions: (([String: Any]) -> [String: Any]?)? = nil
+        resultForOptions: (([String: Any]) -> [String: Any]?)? = nil,
+        assertionForOptions: (([String: Any]) -> [String: Any])? = nil
     ) {
         self.result = result
         self.resultForOptions = resultForOptions
+        self.assertionForOptions = assertionForOptions
         super.init()
+    }
+
+    override func responds(to selector: Selector!) -> Bool {
+        if NSStringFromSelector(selector) == "assertWithOptions:completionHandler:" {
+            return assertionForOptions != nil
+        }
+        return super.responds(to: selector)
+    }
+
+    @objc(assertWithOptions:completionHandler:)
+    func assert(options: [String: Any], completionHandler: @escaping ([String: Any]) -> Void) {
+        capturedAssertOptions.append(options)
+        completionHandler(assertionForOptions?(options) ?? [:])
     }
 
     @objc(sealWithOptions:)

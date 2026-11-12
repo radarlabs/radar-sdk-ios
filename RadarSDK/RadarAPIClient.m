@@ -66,6 +66,21 @@
     return self;
 }
 
+- (NSString *_Nullable)appAttestKeyId {
+    if (self.appAttestKeyIdProvider) {
+        return self.appAttestKeyIdProvider();
+    }
+    Class RadarSDKFraud = NSClassFromString(@"RadarSDKFraud");
+    if (!RadarSDKFraud || ![RadarSDKFraud respondsToSelector:@selector(sharedInstance)]) {
+        return nil;
+    }
+    id<RadarSDKFraudProtocol> radarSDKFraud = [RadarSDKFraud sharedInstance];
+    if (![radarSDKFraud respondsToSelector:@selector(appAttestKeyId)]) {
+        return nil;
+    }
+    return [radarSDKFraud appAttestKeyId];
+}
+
 + (NSDictionary *)headersWithPublishableKey:(NSString *)publishableKey {
     NSDictionary *appInfo = [RadarUtils appInfo];
     NSString *appInfoJSON = [RadarUtils escapeNonAsciiCharacters:[RadarUtils dictionaryToJson:appInfo]];
@@ -162,7 +177,14 @@
     NSString *url = [NSString stringWithFormat:@"%@/v1/config?%@", host, queryString];
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
-    NSDictionary *headers = [RadarAPIClient headersWithPublishableKey:publishableKey];
+    NSMutableDictionary *headers = [[RadarAPIClient headersWithPublishableKey:publishableKey] mutableCopy];
+    if (verified) {
+        // The server echoes the key back as `aak` when it's registered to this install.
+        NSString *appAttestKeyId = [self appAttestKeyId];
+        if (appAttestKeyId) {
+            headers[@"X-Radar-App-Attest-Key-Id"] = appAttestKeyId;
+        }
+    }
 
     [self.apiHelper requestWithMethod:@"GET"
                                   url:url
@@ -843,6 +865,9 @@
                                prepareRequest:^NSURLRequest *(NSURLRequest *request, NSError **error) {
                                    return [preparedFraudPayload prepareRequest:request error:error];
                                }
+                                assertRequest:^(NSURLRequest *request, void (^completion)(NSURLRequest *)) {
+                                    [preparedFraudPayload assertRequest:request completionHandler:completion];
+                                }
                     preparationFailureHandler:^(NSError *error) {
                         completionHandler(RadarStatusErrorBadRequest, nil, nil, nil, nil, nil, nil);
                     }

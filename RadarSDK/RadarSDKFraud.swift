@@ -139,6 +139,17 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
     private static let sealSelector = NSSelectorFromString(
         "sealWithOptions:"
     )
+    private static let assertSelector = NSSelectorFromString(
+        "assertWithOptions:completionHandler:"
+    )
+
+    static let appAttestKeyIdHeader = "X-Radar-App-Attest-Key-Id"
+    static let appAttestAssertionHeader = "X-Radar-App-Attest-Assertion"
+
+    struct AppAttestAssertion: Equatable {
+        let keyId: String
+        let assertion: String
+    }
 
     init?(instance: NSObject) {
         guard instance.responds(to: Self.sealSelector) else {
@@ -226,6 +237,61 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
         var preparedRequest = request
         preparedRequest.httpBody = Data(encryptedPayload.utf8)
         return preparedRequest
+    }
+
+    /// Asserts over a sealed body when the fraud SDK supports it. Returns nil when it doesn't, has no
+    /// key to assert with, or fails; the request then goes out without App Attest headers.
+    func assert(payload: String, method: String, canonicalRoute: String) async -> AppAttestAssertion? {
+        guard instance.responds(to: Self.assertSelector) else {
+            return nil
+        }
+
+        let options: [String: Any] = ["payload": payload, "method": method, "canonicalRoute": canonicalRoute]
+        return await withCheckedContinuation { (continuation: CheckedContinuation<AppAttestAssertion?, Never>) in
+            let completionHandler: @convention(block) ([String: Any]?) -> Void = { result in
+                guard
+                    let keyId = result?["appAttestKeyId"] as? String,
+                    let assertion = result?["appAttestAssertion"] as? String
+                else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                continuation.resume(returning: AppAttestAssertion(keyId: keyId, assertion: assertion))
+            }
+
+            instance.perform(
+                Self.assertSelector,
+                with: options,
+                with: completionHandler
+            )
+        }
+    }
+
+    /// Adds App Attest headers to a request already sealed by `prepareRequest(_:)`, asserting over its
+    /// exact body. Returns the request unchanged when there's no assertion. Call once per attempt,
+    /// after `prepareRequest(_:)`, so every retry gets a new assertion.
+    func assertRequest(_ request: URLRequest) async -> URLRequest {
+        guard
+            let method = request.httpMethod,
+            let route = request.url?.path,
+            let body = request.httpBody,
+            let payload = String(data: body, encoding: .utf8),
+            let assertion = await assert(payload: payload, method: method, canonicalRoute: route)
+        else {
+            return request
+        }
+
+        var assertedRequest = request
+        assertedRequest.setValue(assertion.keyId, forHTTPHeaderField: Self.appAttestKeyIdHeader)
+        assertedRequest.setValue(assertion.assertion, forHTTPHeaderField: Self.appAttestAssertionHeader)
+        return assertedRequest
+    }
+
+    @objc(assertRequest:completionHandler:)
+    func assertRequest(_ request: URLRequest, completionHandler: @escaping @Sendable (URLRequest) -> Void) {
+        Task {
+            completionHandler(await self.assertRequest(request))
+        }
     }
 
     static func makeFraudEncryptionAttemptId() throws -> String {

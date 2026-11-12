@@ -14,7 +14,7 @@ private final class TrackResultCallback: @unchecked Sendable {
     init(_ invoke: @escaping RadarTrackAPICompletionHandler) { self.invoke = invoke }
 }
 
-final class MainQueueAPIHelperMock: RadarAPIHelperMock {
+class MainQueueAPIHelperMock: RadarAPIHelperMock {
     override func request(
         withMethod method: String,
         url: String,
@@ -24,6 +24,7 @@ final class MainQueueAPIHelperMock: RadarAPIHelperMock {
         logPayload: Bool,
         extendedTimeout: Bool,
         prepareRequest: RadarAPIRequestPreparation?,
+        assertRequest: RadarAPIRequestAssertion?,
         preparationFailureHandler: ((Error) -> Void)?,
         trace: (any RadarAPIRequestTrace)?,
         completionHandler: RadarAPICompletionHandler?
@@ -35,6 +36,7 @@ final class MainQueueAPIHelperMock: RadarAPIHelperMock {
                 trace: trace, completionHandler: completionHandler)
             return
         }
+        // Only the sealed body reaches the mocked response, so App Attest headers aren't needed here.
         do {
             let headers = Self.headers(headers, tracedBy: trace)
             var request = URLRequest(url: try XCTUnwrap(URL(string: url)))
