@@ -6,6 +6,7 @@
 //
 
 import CoreLocation
+import CoreMotion
 import Foundation
 import Testing
 
@@ -44,8 +45,9 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
     private(set) var cancelPendingShutdownCallCount = 0
     private(set) var scheduledShutdownDelays: [TimeInterval] = []
     private(set) var requestLocationCallCount = 0
-    private(set) var addCompletionHandlerCallCount = 0
-    private(set) var startMotionUpdatesOptions: [RadarTrackingOptions] = []
+    private(set) var activityHandlers: [(CMMotionActivity) -> Void] = []
+    private(set) var relativeAltitudeHandlers: [(CMAltitudeData?) -> Void] = []
+    private(set) var absoluteAltitudeHandlers: [(CMAbsoluteAltitudeData?) -> Void] = []
     let trackingLocationManager = TrackingCLLocationManager()
     let trackingLowPowerLocationManager = TrackingCLLocationManager()
     var locationManager: CLLocationManager { trackingLocationManager }
@@ -60,6 +62,22 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
     func setStartedInterval(_ interval: Int32) { startedIntervalValue = interval }
 
     func sending() -> Bool { sendingValue }
+
+    // Called when `sendLocation` clears `sending`, so an async test can wait for the send to finish.
+    var onSendingCleared: (() -> Void)?
+
+    func setSending(_ sending: Bool) {
+        sendingValue = sending
+        if !sending {
+            onSendingCleared?()
+        }
+    }
+
+    private(set) var replacedSyncedGeofences: [[RadarGeofence]?] = []
+
+    func replaceSyncedGeofences(_ geofences: [RadarGeofence]?) {
+        replacedSyncedGeofences.append(geofences)
+    }
 
     func timer() -> Timer? { timerValue }
 
@@ -77,12 +95,16 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
         scheduledShutdownDelays.append(delay)
     }
 
-    func addCompletionHandler(_ completionHandler: RadarLocationCompletionHandler?) {
-        addCompletionHandlerCallCount += 1
+    func startActivityUpdates(handler: @escaping (CMMotionActivity) -> Void) {
+        activityHandlers.append(handler)
     }
 
-    func startMotionUpdates(options: RadarTrackingOptions) {
-        startMotionUpdatesOptions.append(options)
+    func startRelativeAltitude(handler: @escaping (CMAltitudeData?) -> Void) {
+        relativeAltitudeHandlers.append(handler)
+    }
+
+    func startAbsoluteAltitude(handler: @escaping (CMAbsoluteAltitudeData?) -> Void) {
+        absoluteAltitudeHandlers.append(handler)
     }
 
     struct SentLocation {
@@ -94,38 +116,17 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
         let forceTrack: Bool
     }
 
-    private(set) var cancelTimeoutsCallCount = 0
-    private(set) var completionStatuses: [RadarStatus] = []
     private(set) var updateTrackingLocations: [CLLocation?] = []
     private(set) var sentLocations: [SentLocation] = []
-    var pendingCompletionHandlerCount = 0
-
-    func cancelTimeouts() {
-        cancelTimeoutsCallCount += 1
-    }
-
-    func callCompletionHandlers(status: RadarStatus, location: CLLocation?) {
-        completionStatuses.append(status)
-    }
-
-    func completionHandlerCount() -> Int { pendingCompletionHandlerCount }
-
     func updateTracking(_ location: CLLocation?) {
         updateTrackingLocations.append(location)
     }
 
-    func sendLocation(  // swiftlint:disable:this function_parameter_count
-        _ location: CLLocation,
-        stopped: Bool,
-        source: RadarLocationSource,
-        replayed: Bool,
-        beacons: [RadarBeacon]?,
-        forceTrack: Bool
-    ) {
+    func recordSentLocation(_ send: LocationToSend) {
         sentLocations.append(
             SentLocation(
-                location: location, stopped: stopped, source: source, replayed: replayed, beacons: beacons,
-                forceTrack: forceTrack))
+                location: send.location, stopped: send.stopped, source: send.source, replayed: send.replayed,
+                beacons: send.beacons, forceTrack: send.forceTrack))
     }
 }
 
@@ -467,38 +468,42 @@ extension RadarSerializedTests {
 
         @Test("getLocation uses high accuracy for authorized when-in-use requests")
         func getLocationUsesHighAccuracyForAuthorizedWhenInUse() {
-            let host = TrackingRadarLocationManagerHost()
-            let locationManager = TrackingCLLocationManager()
+            RadarLocationManagerSwiftTestHelpers.withRecordingCompletionStore { completions in
+                let host = TrackingRadarLocationManagerHost()
+                let locationManager = TrackingCLLocationManager()
 
-            RadarLocationManagerSwift.getLocation(
-                host: host,
-                authorizationStatus: .authorizedWhenInUse,
-                locationManager: locationManager,
-                desiredAccuracy: .high,
-                completionHandler: { _, _, _ in }
-            )
+                RadarLocationManagerSwift.getLocation(
+                    host: host,
+                    authorizationStatus: .authorizedWhenInUse,
+                    locationManager: locationManager,
+                    desiredAccuracy: .high,
+                    completionHandler: { _, _, _ in }
+                )
 
-            #expect(host.addCompletionHandlerCallCount == 1)
-            #expect(locationManager.desiredAccuracy == kCLLocationAccuracyBest)
-            #expect(locationManager.requestLocationCallCount == 1)
+                #expect(completions.addCallCount == 1)
+                #expect(locationManager.desiredAccuracy == kCLLocationAccuracyBest)
+                #expect(locationManager.requestLocationCallCount == 1)
+            }
         }
 
         @Test("getLocation uses low accuracy for authorized-always requests")
         func getLocationUsesLowAccuracyForAuthorizedAlways() {
-            let host = TrackingRadarLocationManagerHost()
-            let locationManager = TrackingCLLocationManager()
+            RadarLocationManagerSwiftTestHelpers.withRecordingCompletionStore { completions in
+                let host = TrackingRadarLocationManagerHost()
+                let locationManager = TrackingCLLocationManager()
 
-            RadarLocationManagerSwift.getLocation(
-                host: host,
-                authorizationStatus: .authorizedAlways,
-                locationManager: locationManager,
-                desiredAccuracy: .low,
-                completionHandler: nil
-            )
+                RadarLocationManagerSwift.getLocation(
+                    host: host,
+                    authorizationStatus: .authorizedAlways,
+                    locationManager: locationManager,
+                    desiredAccuracy: .low,
+                    completionHandler: nil
+                )
 
-            #expect(host.addCompletionHandlerCallCount == 0)
-            #expect(locationManager.desiredAccuracy == kCLLocationAccuracyKilometer)
-            #expect(locationManager.requestLocationCallCount == 1)
+                #expect(completions.addCallCount == 0)
+                #expect(locationManager.desiredAccuracy == kCLLocationAccuracyKilometer)
+                #expect(locationManager.requestLocationCallCount == 1)
+            }
         }
 
         @Test("getLocation uses medium accuracy in the default overload")
@@ -519,36 +524,38 @@ extension RadarSerializedTests {
 
         @Test("getLocation reports permissions errors before changing location state")
         func getLocationReportsPermissionsErrorBeforeChangingLocationState() {
-            let host = TrackingRadarLocationManagerHost()
-            let locationManager = TrackingCLLocationManager()
-            let originalAccuracy = locationManager.desiredAccuracy
-            let bridge = MockRadarSwiftBridge()
-            let originalBridge = RadarSwift.bridge
-            RadarSwift.bridge = bridge
-            defer { RadarSwift.bridge = originalBridge }
+            RadarLocationManagerSwiftTestHelpers.withRecordingCompletionStore { completions in
+                let host = TrackingRadarLocationManagerHost()
+                let locationManager = TrackingCLLocationManager()
+                let originalAccuracy = locationManager.desiredAccuracy
+                let bridge = MockRadarSwiftBridge()
+                let originalBridge = RadarSwift.bridge
+                RadarSwift.bridge = bridge
+                defer { RadarSwift.bridge = originalBridge }
 
-            var callbackStatus: RadarStatus?
-            var callbackLocation: CLLocation?
-            var callbackStopped: Bool?
-            RadarLocationManagerSwift.getLocation(
-                host: host,
-                authorizationStatus: .notDetermined,
-                locationManager: locationManager,
-                desiredAccuracy: .high,
-                completionHandler: { status, location, stopped in
-                    callbackStatus = status
-                    callbackLocation = location
-                    callbackStopped = stopped
-                }
-            )
+                var callbackStatus: RadarStatus?
+                var callbackLocation: CLLocation?
+                var callbackStopped: Bool?
+                RadarLocationManagerSwift.getLocation(
+                    host: host,
+                    authorizationStatus: .notDetermined,
+                    locationManager: locationManager,
+                    desiredAccuracy: .high,
+                    completionHandler: { status, location, stopped in
+                        callbackStatus = status
+                        callbackLocation = location
+                        callbackStopped = stopped
+                    }
+                )
 
-            #expect(bridge.lastFailStatus == .errorPermissions)
-            #expect(callbackStatus == .errorPermissions)
-            #expect(callbackLocation == nil)
-            #expect(callbackStopped == false)
-            #expect(host.addCompletionHandlerCallCount == 0)
-            #expect(locationManager.desiredAccuracy == originalAccuracy)
-            #expect(locationManager.requestLocationCallCount == 0)
+                #expect(bridge.lastFailStatus == .errorPermissions)
+                #expect(callbackStatus == .errorPermissions)
+                #expect(callbackLocation == nil)
+                #expect(callbackStopped == false)
+                #expect(completions.addCallCount == 0)
+                #expect(locationManager.desiredAccuracy == originalAccuracy)
+                #expect(locationManager.requestLocationCallCount == 0)
+            }
         }
     }
 }

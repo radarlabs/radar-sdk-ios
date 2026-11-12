@@ -12,7 +12,7 @@ import Foundation
 extension RadarLocationManagerSwift {
 
     @objc(didUpdateLocations:completionHandlerCount:)
-    static func didUpdateLocations(_ updates: [CLLocation]?, completionHandlerCount: UInt) {
+    static func didUpdateLocations(_ updates: [CLLocation]?, completionHandlerCount: Int) {
         // At least one location update exists. Last one is the one we care about
         guard let location = updates?.last else {
             return
@@ -26,7 +26,7 @@ extension RadarLocationManagerSwift {
         RadarSwift.bridge?.handleLocation(location, source: source)
     }
 
-    private static func locationSource(completionHandlerCount: UInt) -> RadarLocationSource {
+    private static func locationSource(completionHandlerCount: Int) -> RadarLocationSource {
         let configuration = RadarSettings.sdkConfiguration
         if completionHandlerCount > 0,
             configuration?.skipForegroundCheck == true || RadarSwift.bridge?.isForeground() == true

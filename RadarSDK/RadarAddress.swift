@@ -105,6 +105,12 @@ public final class RadarAddress: NSObject {
     /// The categories of the address.
     public let categories: [String]?
 
+    /// Identifies this result within the session that returned it, not the address itself.
+    ///
+    /// Short-lived; pass the whole address to `RadarAutocompleteSession.select` rather than
+    /// storing this.
+    public let resultId: String?
+
     // Public so `RadarAddress()` and `[RadarAddress new]` keep working as they did with the
     // old header. Matches Objective-C `-init`, which left every field zeroed.
     public override init() {
@@ -134,13 +140,14 @@ public final class RadarAddress: NSObject {
         confidence = .none
         timeZone = nil
         categories = nil
+        resultId = nil
         super.init()
     }
 
     // Keeps the Objective-C initializer declared in RadarAddress+Internal.h working. Wrongly
     // typed fields are ignored, and a missing latitude or longitude gives an invalid coordinate.
     @objc(initWithObject:)
-    init?(object: Any) {
+    init?(object: Any) {  // swiftlint:disable:this function_body_length
         guard let dictionary = object as? NSDictionary else {
             return nil
         }
@@ -195,6 +202,7 @@ public final class RadarAddress: NSObject {
         }
 
         categories = (dictionary["categories"] as? NSArray)?.compactMap { $0 as? String }
+        resultId = dictionary["resultId"] as? String
 
         super.init()
     }
@@ -296,6 +304,7 @@ public final class RadarAddress: NSObject {
         dictionary["metadata"] = metadata
         dictionary["timeZone"] = timeZone?.dictionaryValue()
         dictionary["categories"] = categories
+        dictionary["resultId"] = resultId
         return dictionary
     }
 }

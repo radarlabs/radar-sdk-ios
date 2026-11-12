@@ -138,6 +138,19 @@ public final class RadarAPIClient: Sendable {
         }
     }
 
+    /// Uploads an OTLP/JSON trace batch to `/v1/traces`, authenticated with `publishableKey` so the key that selected
+    /// the batch also uploads it. Returns the raw response; `RadarTraceManager` decides what to do with the batch.
+    /// Throws on network errors.
+    func postTraces(body: Data, publishableKey: String) async throws -> (Data, HTTPURLResponse) {
+        return try await apiHelper.radarRequest(
+            host: .defaultHost,
+            method: "POST",
+            url: "traces",
+            body: body,
+            publishableKey: publishableKey
+        )
+    }
+
     func revealRisk(
         preparedPayload: RadarPreparedFraudPayload,
         useSecondaryVerifiedHost: Bool
@@ -155,7 +168,7 @@ public final class RadarAPIClient: Sendable {
             "deviceMake": RadarUtils.deviceMake,
             "sdkVersion": RadarUtils.sdkVersion,
             "deviceModel": RadarUtils.deviceModel,
-            "deviceOS": await RadarUtils.deviceOSVersion,
+            "deviceOS": RadarUtils.deviceOSVersion,
             "country": RadarUtils.country,
             "timeZoneOffset": RadarUtils.timeZoneOffset,
             "lang": RadarSettings.userLanguage,
@@ -258,4 +271,116 @@ public final class RadarAPIClient: Sendable {
     }
 
     // TODO: implement rest of RadarAPIClient
+}
+
+extension RadarAPIClient {
+    func validateAddress(_ request: RadarValidateAddressRequest) async throws -> RadarValidateAddressResponse {
+        var fields = [
+            ("countryCode", request.countryCode),
+            ("stateCode", request.stateCode),
+            ("city", request.city),
+            ("postalCode", request.postalCode),
+        ]
+        switch request.line {
+        case let .streetAndNumber(street, number):
+            fields += [("street", street), ("number", number)]
+        case let .label(label):
+            fields.append(("addressLabel", label))
+        }
+
+        if let (name, _) = fields.first(where: { $0.1.isEmpty }) {
+            throw RadarError(status: .errorBadRequest, message: "validateAddress() requires \(name)")
+        }
+
+        var query = fields.map { URLQueryItem(name: $0.0, value: $0.1) }
+        if let unit = request.unit, !unit.isEmpty {
+            query.append(URLQueryItem(name: "unit", value: unit))
+        }
+
+        let (data, response) = try await apiHelper.radarRequest(method: "GET", url: "addresses/validate", query: query)
+
+        try assertResponseCode(response.statusCode)
+
+        guard let res = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let addressObj = res["address"],
+            let address = RadarAddress(from: addressObj),
+            let result = res["result"] as? [String: Any],
+            let verificationStatus = result["verificationStatus"] as? String
+        else {
+            throw APIError(data: data, response: response, message: "Failed to parse validate address response")
+        }
+
+        return RadarValidateAddressResponse(
+            address: address,
+            verificationStatus: RadarAddress.addressVerificationStatus(for: verificationStatus)
+        )
+    }
+}
+
+extension RadarAPIClient {
+    /// Returns nil when the project doesn't enrich addresses, which the API answers with 204 and no body.
+    func selectAutocompleteResult(_ resultId: String) async throws -> RadarAutocompleteEnrichedAddress? {
+        guard !resultId.isEmpty else {
+            throw RadarError(status: .errorBadRequest, message: "selectAddress() requires an address with a resultId")
+        }
+
+        let (data, response) = try await apiHelper.radarRequest(
+            method: "POST", url: "search/autocomplete/select", body: ["resultId": resultId])
+
+        try assertResponseCode(response.statusCode)
+
+        guard !data.isEmpty else {
+            return nil
+        }
+        let res = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        return RadarAutocompleteEnrichedAddress(object: res?["address"])
+    }
+}
+
+/// The fields `/v1/addresses/validate` takes. The API accepts a street and number or an address label, but not both.
+struct RadarValidateAddressRequest {
+    enum Line {
+        case streetAndNumber(street: String, number: String)
+        case label(String)
+    }
+
+    let line: Line
+    let unit: String?
+    let city: String
+    let stateCode: String
+    let postalCode: String
+    let countryCode: String
+
+    init(line: Line, unit: String?, city: String, stateCode: String, postalCode: String, countryCode: String) {
+        self.line = line
+        self.unit = unit
+        self.city = city
+        self.stateCode = stateCode
+        self.postalCode = postalCode
+        self.countryCode = countryCode
+    }
+
+    /// Uses the address's street and number when both are set, and its label otherwise. Addresses from search and
+    /// geocoding have all three.
+    init(address: RadarAddress) {
+        let line: Line
+        if let street = address.street, let number = address.number, !street.isEmpty, !number.isEmpty {
+            line = .streetAndNumber(street: street, number: number)
+        } else {
+            line = .label(address.addressLabel ?? "")
+        }
+        self.init(
+            line: line,
+            unit: address.unit,
+            city: address.city ?? "",
+            stateCode: address.stateCode ?? "",
+            postalCode: address.postalCode ?? "",
+            countryCode: address.countryCode ?? ""
+        )
+    }
+}
+
+struct RadarValidateAddressResponse: @unchecked Sendable {
+    let address: RadarAddress
+    let verificationStatus: RadarAddressVerificationStatus
 }

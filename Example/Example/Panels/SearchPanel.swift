@@ -113,17 +113,14 @@ struct SearchPanel: View {
                 }
             }
             ActionButton("validateAddress") {
-                let address: RadarAddress = RadarAddress(from: [
-                    "latitude": 0,
-                    "longitude": 0,
-                    "city": "New York",
-                    "stateCode": "NY",
-                    "postalCode": "10003",
-                    "countryCode": "US",
-                    "street": "Broadway",
-                    "number": "841",
-                ])!
-                Radar.validateAddress(address: address) { (status, address, verificationStatus) in
+                Radar.validateAddress(
+                    street: "Broadway",
+                    number: "841",
+                    city: "New York",
+                    stateCode: "NY",
+                    postalCode: "10003",
+                    countryCode: "US"
+                ) { (status, address, verificationStatus) in
                     let detail = """
                         country: \(String(describing: address?.countryCode))
                         city: \(String(describing: address?.city))
@@ -135,16 +132,13 @@ struct SearchPanel: View {
                         detail: detail
                     )
                 }
-                let addressLabel: RadarAddress = RadarAddress(from: [
-                    "latitude": 0,
-                    "longitude": 0,
-                    "city": "New York",
-                    "stateCode": "NY",
-                    "postalCode": "10003",
-                    "countryCode": "US",
-                    "addressLabel": "Broadway 841",
-                ])!
-                Radar.validateAddress(address: addressLabel) { (status, address, verificationStatus) in
+                Radar.validateAddress(
+                    addressLabel: "841 Broadway",
+                    city: "New York",
+                    stateCode: "NY",
+                    postalCode: "10003",
+                    countryCode: "US"
+                ) { (status, address, verificationStatus) in
                     let detail = """
                         country: \(String(describing: address?.countryCode))
                         city: \(String(describing: address?.city))
@@ -159,63 +153,40 @@ struct SearchPanel: View {
             }
             ActionButton("autocomplete") {
                 let origin = CLLocation(latitude: 40.78382, longitude: -73.97536)
-                Radar.autocomplete(
-                    query: "brooklyn",
+                // one session per input: autocomplete within it, then report the pick
+                let session = RadarAutocompleteSession()
+                session.autocomplete(
+                    query: "123 Main",
                     near: origin,
-                    layers: ["locality"],
-                    limit: 10,
-                    country: "US"
-                ) { (status, addresses) in
-                    logStream.write(
-                        status,
-                        summary: "autocomplete: \(Radar.stringForStatus(status))",
-                        detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
-                    )
-                    if let address = addresses?.first {
-                        Radar.validateAddress(address: address) { (status, address, verificationStatus) in
-                            logStream.write(
-                                status,
-                                summary: "validateAddress (from autocomplete): \(Radar.stringForStatus(status))",
-                                detail: "address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))"
-                            )
-                        }
-                    }
-                }
-                Radar.autocomplete(
-                    query: "brooklyn",
-                    near: origin,
-                    layers: ["locality"],
-                    limit: 10,
+                    layers: nil,
+                    limit: 5,
                     country: "US",
                     mailable: true
                 ) { (status, addresses) in
+                    let selected = addresses?.first
                     logStream.write(
                         status,
-                        summary: "autocomplete (mailable): \(Radar.stringForStatus(status))",
-                        detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
+                        summary: "autocomplete: \(Radar.stringForStatus(status))",
+                        detail: "results = \(addresses?.count ?? 0); "
+                            + "formattedAddress = \(String(describing: selected?.formattedAddress)); "
+                            + "resultId = \(String(describing: selected?.resultId))"
                     )
-                    if let address = addresses?.first {
-                        Radar.validateAddress(address: address) { (status, address, verificationStatus) in
-                            logStream.write(
-                                status,
-                                summary: "validateAddress (from autocomplete): \(Radar.stringForStatus(status))",
-                                detail: "address = \(String(describing: address)); verificationStatus = \(Radar.stringForVerificationStatus(verificationStatus))"
-                            )
-                        }
+                    guard let selected else { return }
+                    session.select(address: selected) { (selectStatus, enriched) in
+                        // only an address result has anything to enrich; everything else is
+                        // recorded and comes back without one
+                        let detail =
+                            enriched.map {
+                                "formattedAddress = \(String(describing: $0.formattedAddress)); "
+                                    + "usage = \($0.locationDetails.usage); "
+                                    + "dwelling = \($0.locationDetails.dwelling)"
+                            } ?? "recorded, no enrichment for this result"
+                        logStream.write(
+                            selectStatus,
+                            summary: "select: \(Radar.stringForStatus(selectStatus))",
+                            detail: detail
+                        )
                     }
-                }
-                Radar.autocomplete(
-                    query: "brooklyn",
-                    near: origin,
-                    layers: ["locality"],
-                    limit: 10,
-                    country: "US"
-                ) { (status, addresses) in
-                    logStream.write(
-                        status,
-                        summary: "autocomplete (no validate): \(Radar.stringForStatus(status))",
-                        detail: "formattedAddress = \(String(describing: addresses?.first?.formattedAddress))"
-                    )
                 }
             }
         }

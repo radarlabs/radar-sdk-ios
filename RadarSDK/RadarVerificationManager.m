@@ -13,6 +13,7 @@
 
 #import "Radar+Internal.h"
 #import "RadarAPIClient.h"
+#import "RadarAPIClient+Internal.h"
 #import "RadarSdkConfiguration.h"
 #import "RadarOneShotBeaconManager+Internal.h"
 #import "RadarNearbyBeaconSearch+Internal.h"
@@ -134,6 +135,13 @@
     RadarInitializeOptions *initializeOptions = [RadarSettings initializeOptions];
     BOOL autoFailover = initializeOptions ? initializeOptions.trackVerifiedAutoFailover : YES;
 
+    // Every exit calls completionHandler on the main thread, so the wrapper ends the root on each of them. reason and
+    // transactionId can come from the app, so they're never recorded.
+    RadarTraceSpan *trace = [RadarTraceSpan startWithName:@"radar.track_verified"];
+    [trace recordTrackWithDesiredAccuracy:desiredAccuracy beacons:beacons foreground:foreground];
+    [trace setVerifiedFailover:NO];
+    completionHandler = [trace endingTrackVerifiedHandler:completionHandler];
+
     void (^continueWithConfig)(RadarStatus, RadarConfig * _Nullable, BOOL) =
     ^(RadarStatus status, RadarConfig * _Nullable config, BOOL useSecondaryVerifiedHost) {
         if (status != RadarStatusSuccess || !config) {
@@ -155,7 +163,7 @@
 
         [locationManager
          getLocationWithDesiredAccuracy:desiredAccuracy
-         completionHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
+         completionHandler:[trace tracingLocationHandler:^(RadarStatus status, CLLocation *_Nullable location, BOOL stopped) {
             if (status != RadarStatusSuccess) {
                 [RadarUtilsDeprecated runOnMainThread:^{
                     [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
@@ -219,7 +227,7 @@
                     failCollection(RadarStatusErrorPublishableKey);
                     return;
                 }
-                [requestPreparer preparePayloadWithCompletionHandler:^(RadarStatus status, RadarPreparedFraudPayloadWrapper *_Nullable payload, NSError *_Nullable error) {
+                [requestPreparer preparePayloadWithCompletionHandler:[trace tracingFraudPrepareHandler:^(RadarStatus status, RadarPreparedFraudPayloadWrapper *_Nullable payload, NSError *_Nullable error) {
                                                     if (status != RadarStatusSuccess || !payload || error) {
                                                         failCollection(status == RadarStatusSuccess ? RadarStatusErrorUnknown : status);
                                                         return;
@@ -247,6 +255,7 @@
                                                                    transactionId:transactionId
                                                                     revealRiskId:revealRiskId
                                                         useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                                                                       traceSpan:trace
                                                                completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events,
                                                                                    RadarUser *_Nullable user, NSArray<RadarGeofence *> *_Nullable nearbyGeofences,
                                                                                    RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
@@ -271,7 +280,7 @@
                                                                        }
                                                                    }];
                                                                }];
-                                                }];
+                                                }]];
             };
 
             void (^rangeBeaconsAndTrack)(void) = ^{
@@ -279,6 +288,7 @@
                      searchBeaconsNear:location
                      radius:RadarNearbyBeaconSearch.radius
                      limit:RadarNearbyBeaconSearch.limit
+                     traceSpan:trace
                      completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
                                          NSArray<NSString *> *_Nullable beaconUUIDs) {
                         // Continuous ranging couldn't serve this request, so it ranges this
@@ -291,7 +301,7 @@
                             [RadarUtilsDeprecated runOnMainThread:^{
                                 [[RadarOneShotBeaconManager shared]
                                  rangeBeaconUUIDs:beaconUUIDs
-                                 completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                 completionHandler:[trace tracingBeaconHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                     if (status != RadarStatusSuccess || !beacons) {
                                         callTrackAPI(nil);
                                         
@@ -299,13 +309,13 @@
                                     }
                                     
                                     callTrackAPI(beacons);
-                                }];
+                                } mode:@"uuids"]];
                             }];
                         } else if (beacons && beacons.count) {
                             [RadarUtilsDeprecated runOnMainThread:^{
                                 [[RadarOneShotBeaconManager shared]
                                  rangeBeacons:beacons
-                                 completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                 completionHandler:[trace tracingBeaconHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                     if (status != RadarStatusSuccess || !beacons) {
                                         callTrackAPI(nil);
                                         
@@ -313,7 +323,7 @@
                                     }
                                     
                                     callTrackAPI(beacons);
-                                }];
+                                } mode:@"beacons"]];
                             }];
                         } else {
                             callTrackAPI(@[]);
@@ -325,9 +335,12 @@
                 [RadarUtilsDeprecated runOnMainThread:^{
                     NSArray<RadarBeacon *> *continuousBeacons = [[RadarContinuousBeaconManager shared] beaconsNear:location];
                     if (!continuousBeacons) {
+                        [trace setBeaconSource:@"search"];
                         rangeBeaconsAndTrack();
                         return;
                     }
+
+                    [trace setBeaconSource:@"continuous"];
 
                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                        message:[NSString stringWithFormat:@"Using continuously ranged beacons | beacons.count = %lu", (unsigned long)continuousBeacons.count]];
@@ -337,12 +350,14 @@
             } else {
                 callTrackAPI(nil);
             }
-        }];
+        }]];
     };
 
     [[RadarAPIClient sharedInstance]
      getConfigForUsage:@"verify"
      verified:YES
+     useSecondaryVerifiedHost:NO
+     traceSpan:trace
      completionHandler:^(RadarStatus status, RadarConfig * _Nullable config) {
         BOOL primaryRadarResponse = (config && config.meta);
         if (!autoFailover || primaryRadarResponse) {
@@ -354,10 +369,12 @@
             logWithLevel:RadarLogLevelInfo
                  message:@"trackVerified: primary verified host returned non-Radar response, retrying on secondary"];
 
+        [trace setVerifiedFailover:YES];
         [[RadarAPIClient sharedInstance]
          getConfigForUsage:@"verify"
          verified:YES
          useSecondaryVerifiedHost:YES
+         traceSpan:trace
          completionHandler:^(RadarStatus status2, RadarConfig * _Nullable config2) {
             continueWithConfig(status2, config2, YES);
         }];

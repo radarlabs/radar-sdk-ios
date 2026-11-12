@@ -6,6 +6,7 @@
 //
 
 import CoreLocation
+import CoreMotion
 import Foundation
 
 // Keep the ObjC-facing twins together while the location manager migration is in progress.
@@ -32,6 +33,7 @@ import Foundation
     func startedInterval() -> Int32
     func setStartedInterval(_ interval: Int32)
     func sending() -> Bool
+    func setSending(_ sending: Bool)
     func timer() -> Timer?
     func setTimer(_ timer: Timer?)
 
@@ -39,34 +41,26 @@ import Foundation
     func requestLocation()
     func scheduleShutdown(after delay: TimeInterval)
 
-    // Keep completion storage in Objective-C until the location callback and timeout paths move together.
-    func addCompletionHandler(_ completionHandler: RadarLocationCompletionHandler?)
-    func cancelTimeouts()
-    @objc(callCompletionHandlersWithStatus:location:)
-    func callCompletionHandlers(status: RadarStatus, location: CLLocation?)
-    func completionHandlerCount() -> Int
-
     @objc(updateTracking:)
     func updateTracking(_ location: CLLocation?)
 
-    // Keep sending in Objective-C until `sendLocation:stopped:source:replayed:beacons:forceTrack:` is ported.
-    @objc(sendLocation:stopped:source:replayed:beacons:forceTrack:)
-    func sendLocation(  // swiftlint:disable:this function_parameter_count
-        _ location: CLLocation,
-        stopped: Bool,
-        source: RadarLocationSource,
-        replayed: Bool,
-        beacons: [RadarBeacon]?,
-        forceTrack: Bool
-    )
+    // The Objective-C `replaceSyncedGeofences:` also registers geofence notifications before it
+    // calls the Swift twin, so `sendLocation` replaces geofences through it.
+    @objc(replaceSyncedGeofences:)
+    func replaceSyncedGeofences(_ geofences: [RadarGeofence]?)
 
     var locationManager: CLLocationManager { get }
     var lowPowerLocationManager: CLLocationManager { get }
 
-    // Keep motion and pressure setup in Objective-C until RadarActivityManager and the RadarState
-    // motion storage are reachable from Swift.
-    @objc(startMotionUpdatesWithOptions:)
-    func startMotionUpdates(options: RadarTrackingOptions)
+    // `RadarActivityManager` is still Objective-C and its header isn't visible from Swift. The host
+    // starts the shared activity manager and keeps it, so `stopTracking` stops the same instance.
+    // `startMotionUpdates(host:options:)` handles the updates.
+    @objc(startActivityUpdatesWithHandler:)
+    func startActivityUpdates(handler: @escaping (CMMotionActivity) -> Void)
+    @objc(startRelativeAltitudeWithHandler:)
+    func startRelativeAltitude(handler: @escaping (CMAltitudeData?) -> Void)
+    @objc(startAbsoluteAltitudeWithHandler:)
+    func startAbsoluteAltitude(handler: @escaping (CMAbsoluteAltitudeData?) -> Void)
 }
 
 private final class RadarLocationManagerSwiftHostBox: @unchecked Sendable {
@@ -271,7 +265,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
         }
 
         if let completionHandler {
-            host.addCompletionHandler(completionHandler)
+            addCompletionHandler(completionHandler)
         }
 
         locationManager.desiredAccuracy = clLocationAccuracy(for: desiredAccuracy)

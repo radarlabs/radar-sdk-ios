@@ -9,6 +9,7 @@
 
 #import "CLLocation+Radar.h"
 #import "RadarAPIClient.h"
+#import "RadarAPIClient+Internal.h"
 #import "RadarSdkConfiguration.h"
 #import "Radar+Internal.h"
 #import "RadarOneShotBeaconManager+Internal.h"
@@ -127,6 +128,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)callCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift callCompletionHandlersWithStatus:status location:location];
+    }
+
+    // Also call handlers that this store got before useSwiftLocationManager turned on. When the
+    // flag is off, the Swift store is empty.
+    [self callObjCCompletionHandlersWithStatus:status location:location];
+}
+
+// Calls only the handlers in the Objective-C store. Its timeouts call this directly, so a timeout
+// never calls the Swift store's handlers after useSwiftLocationManager changes.
+- (void)callObjCCompletionHandlersWithStatus:(RadarStatus)status location:(CLLocation *_Nullable)location {
     @synchronized(self) {
         if (!self.completionHandlers.count){
             return;
@@ -151,6 +164,11 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift addCompletionHandler:completionHandler];
+        return;
+    }
+
     @synchronized(self) {
         RadarLocationCompletionHandler completionHandlerCopy = [completionHandler copy];
         [self.completionHandlers addObject:completionHandlerCopy];
@@ -159,15 +177,22 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     }
 }
 
-// Temporary callback used by the Swift handleLocation twin, which needs to know whether a
-// location request is waiting. Completion storage stays in Objective-C until it is ported.
 - (NSInteger)completionHandlerCount {
+    NSInteger swiftCount = 0;
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        swiftCount = [RadarLocationManagerSwift completionHandlerCount];
+    }
+
     @synchronized(self) {
-        return self.completionHandlers.count;
+        return swiftCount + (NSInteger)self.completionHandlers.count;
     }
 }
 
 - (void)cancelTimeouts {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift cancelTimeouts];
+    }
+
     @synchronized(self) {
         for (RadarLocationCompletionHandler completionHandler in self.completionHandlers) {
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(timeoutWithCompletionHandler:) object:completionHandler];
@@ -179,7 +204,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     @synchronized(self) {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Location timeout"];
 
-        [self callCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
+        [self callObjCCompletionHandlersWithStatus:RadarStatusErrorLocation location:nil];
     }
 }
 
@@ -412,8 +437,26 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self updateTracking:location fromInitialize:NO];
 }
 
-// Temporary callback used by the Swift updateTracking twin. Motion and pressure setup stays in
-// Objective-C until RadarActivityManager and the RadarState motion storage are reachable from Swift.
+// Temporary callbacks used by the Swift motion twin in RadarLocationManager+SwiftMotion.swift.
+// RadarActivityManager stays in Objective-C until it is ported. Keep the shared instance in
+// `activityManager`, so `stopTracking` stops the same instance.
+- (void)startActivityUpdatesWithHandler:(void (^)(CMMotionActivity *activity))handler {
+    self.activityManager = [RadarActivityManager sharedInstance];
+    [self.activityManager startActivityUpdatesWithHandler:handler];
+}
+
+- (void)startRelativeAltitudeWithHandler:(void (^)(CMAltitudeData *_Nullable altitudeData))handler {
+    self.activityManager = [RadarActivityManager sharedInstance];
+    [self.activityManager startRelativeAltitudeWithHandler:handler];
+}
+
+- (void)startAbsoluteAltitudeWithHandler:(void (^)(CMAbsoluteAltitudeData *_Nullable altitudeData))handler {
+    self.activityManager = [RadarActivityManager sharedInstance];
+    [self.activityManager startAbsoluteAltitudeWithHandler:handler];
+}
+
+// The Objective-C path of `updateTracking:fromInitialize:` calls this. With useSwiftLocationManager,
+// the Swift updateTracking twin calls RadarLocationManagerSwift.startMotionUpdates(host:options:).
 - (void)startMotionUpdatesWithOptions:(RadarTrackingOptions *)options {
     if (options.useMotion) {
         self.activityManager = [RadarActivityManager sharedInstance];
@@ -1142,6 +1185,17 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 }
 
 - (void)sendLocation:(CLLocation *)location stopped:(BOOL)stopped source:(RadarLocationSource)source replayed:(BOOL)replayed beacons:(NSArray<RadarBeacon *> *_Nullable)beacons forceTrack:(BOOL)forceTrack {
+    if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
+        [RadarLocationManagerSwift sendLocationWithHost:self
+                                               location:location
+                                                stopped:stopped
+                                                 source:source
+                                               replayed:replayed
+                                                beacons:beacons
+                                             forceTrack:forceTrack];
+        return;
+    }
+
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                        message:[NSString stringWithFormat:@"Sending location | source = %@; location = %@; stopped = %d; replayed = %d; beacons = %@; forceTrack = %d",
                                                                           [Radar stringForLocationSource:source], location, stopped, replayed, beacons, forceTrack]];
@@ -1149,6 +1203,17 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     self.sending = YES;
 
     RadarTrackingOptions *options = [Radar getTrackingOptions];
+
+    // One trace per tracking update. It ends when the track request completes, or with the ranging status when the
+    // update ranges beacons and sends no track. An update that does neither is discarded.
+    BOOL rangesBeacons = options.beacons && source != RadarLocationSourceBeaconEnter && source != RadarLocationSourceBeaconExit &&
+                         source != RadarLocationSourceMockLocation && source != RadarLocationSourceManualLocation;
+    RadarTraceSpan *trace = [RadarTraceSpan startWithName:@"radar.tracking_update"];
+    [trace recordTrackingUpdateWithSource:source
+                                  stopped:stopped
+                                  beacons:rangesBeacons
+                                 location:location
+                               foreground:[RadarUtilsDeprecated foreground]];
     
     if ([RadarSettings useRadarModifiedBeacon]) {
         void (^callTrackAPI)(NSArray<RadarBeacon *> *_Nullable) = ^(NSArray<RadarBeacon *> *_Nullable beacons) {
@@ -1160,8 +1225,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                           replayed:replayed
                                                            beacons:beacons
                                                     indoorLocation:indoorLocation
+                                                         traceSpan:trace
                                                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                                      NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                    [trace endWithStatus:status];
                     self.sending = NO;
 
                     if ([RadarSettings sdkConfiguration].useSyncRegion) {
@@ -1199,16 +1266,18 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 && [RadarSyncManager hasSyncedRegion]
                 && ![RadarSyncManager isOutsideSyncedRegionWithLocation:location]) {
                 
+                [trace setBeaconSource:@"sync_region"];
                 NSArray<RadarBeacon *> *syncedBeacons = [RadarSyncManager getObjCBeaconsFor:location];
                 if (syncedBeacons.count > 0) {
                     [self replaceSyncedBeacons:syncedBeacons];
                     [RadarUtilsDeprecated runOnMainThread:^{
                         [[RadarOneShotBeaconManager shared] rangeBeacons:syncedBeacons
-                                                        completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                        completionHandler:[trace tracingBeaconHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                             if (status != RadarStatusSuccess || !beacons) {
                                 if (forceTrack) {
                                     callTrackAPI(nil);
                                 } else {
+                                    [trace endWithStatus:status];
                                     self.sending = NO;
                                 }
                                 return;
@@ -1225,42 +1294,47 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                     callTrackAPI(beacons);
                                 } else {
                                     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Skipping track: beacon state unchanged after BLE ranging"];
+                                    [trace endWithStatus:status];
                                     self.sending = NO;
                                 }
                             }
-                        }];
+                        } mode:@"beacons"]];
                     }];
                 } else {
                     if (forceTrack) {
                         callTrackAPI(@[]);
                     } else {
+                        // Nothing to range and no track to send, so there's nothing to trace.
+                        [trace discard];
                         self.sending = NO;
                     }
                 }
             } else {
+                [trace setBeaconSource:@"search"];
                 [[RadarAPIClient sharedInstance]
                  searchBeaconsNear:location
                  radius:RadarNearbyBeaconSearch.radius
                  limit:RadarNearbyBeaconSearch.limit
+                 traceSpan:trace
                  completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons, NSArray<NSString *> *_Nullable beaconUUIDs) {
                     if (beaconUUIDs && beaconUUIDs.count) {
                         [self replaceSyncedBeaconUUIDs:beaconUUIDs];
                         [RadarUtilsDeprecated runOnMainThread:^{
                             [[RadarOneShotBeaconManager shared] rangeBeaconUUIDs:beaconUUIDs
-                                                                completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                                completionHandler:[trace tracingBeaconHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                 if (status != RadarStatusSuccess || !beacons) {
                                     callTrackAPI(nil);
                                     return;
                                 }
                                 
                                 callTrackAPI(beacons);
-                            }];
+                            } mode:@"uuids"]];
                         }];
                     } else if (beacons && beacons.count) {
                         [self replaceSyncedBeacons:beacons];
                         [RadarUtilsDeprecated runOnMainThread:^{
                             [[RadarOneShotBeaconManager shared] rangeBeacons:beacons
-                                                            completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
+                                                            completionHandler:[trace tracingBeaconHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable beacons) {
                                 if (status != RadarStatusSuccess || !beacons) {
                                     callTrackAPI(nil);
                                     
@@ -1268,7 +1342,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                 }
                                 
                                 callTrackAPI(beacons);
-                            }];
+                            } mode:@"beacons"]];
                         }];
                     } else {
                         callTrackAPI(@[]);
@@ -1293,10 +1367,12 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                         [self replaceSyncedBeacons:syncedBeacons];
                         
                         if (!forceTrack) {
+                            [trace setBeaconSource:@"sync_region"];
                             [RadarUtilsDeprecated runOnMainThread:^{
                                 [[RadarOneShotBeaconManager shared] rangeBeacons:syncedBeacons
-                                                                completionHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable rangedBeacons) {
+                                                                completionHandler:[trace tracingBeaconHandler:^(RadarStatus status, NSArray<RadarBeacon *> *_Nullable rangedBeacons) {
                                     if (status != RadarStatusSuccess || !rangedBeacons) {
+                                        [trace endWithStatus:status];
                                         self.sending = NO;
                                         return;
                                     }
@@ -1313,8 +1389,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                                                       replayed:replayed
                                                                                        beacons:rangedBeacons
                                                                                 indoorLocation:indoorLocation
+                                                                                     traceSpan:trace
                                                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                                                                  NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                                                [trace endWithStatus:status];
                                                 self.sending = NO;
                                                 if ([RadarSettings sdkConfiguration].useSyncRegion) {
                                                     if (status == RadarStatusSuccess && user) {
@@ -1341,9 +1419,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                         }];
                                     } else {
                                         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo message:@"Skipping track: beacon state unchanged after BLE ranging"];
+                                        [trace endWithStatus:status];
                                         self.sending = NO;
                                     }
-                                }];
+                                } mode:@"beacons"]];
                             }];
                             return;
                         }
@@ -1372,8 +1451,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                       replayed:replayed
                                                        beacons:beacons
                                                 indoorLocation:indoorLocation
+                                                     traceSpan:trace
                                              completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
                                                                  NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+                [trace endWithStatus:status];
                 self.sending = NO;
 
                 if ([RadarSettings sdkConfiguration].useSyncRegion) {
@@ -1411,7 +1492,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
-        [RadarLocationManagerSwift didUpdateLocations:locations completionHandlerCount:self.completionHandlers.count];
+        [RadarLocationManagerSwift didUpdateLocations:locations completionHandlerCount:[self completionHandlerCount]];
         return;
     }
 

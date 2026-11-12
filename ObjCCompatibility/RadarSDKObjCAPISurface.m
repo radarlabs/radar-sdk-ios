@@ -23,6 +23,27 @@
 
 RADAR_API_SURFACE void call_Radar_class_startRangingBeacons(void) { [Radar startRangingBeacons]; }
 RADAR_API_SURFACE void call_Radar_class_stopRangingBeacons(void) { [Radar stopRangingBeacons]; }
+RADAR_API_SURFACE void call_Radar_class_validateAddressWithStreet_number_unit_city_stateCode_postalCode_countryCode_completionHandler(
+    NSString *_Nonnull a0,
+    NSString *_Nonnull a1,
+    NSString *_Nullable a2,
+    NSString *_Nonnull a3,
+    NSString *_Nonnull a4,
+    NSString *_Nonnull a5,
+    NSString *_Nonnull a6,
+    void (^_Nonnull a7)(RadarStatus, RadarAddress *_Nullable, RadarAddressVerificationStatus)) {
+    [Radar validateAddressWithStreet:a0 number:a1 unit:a2 city:a3 stateCode:a4 postalCode:a5 countryCode:a6 completionHandler:a7];
+}
+RADAR_API_SURFACE void call_Radar_class_validateAddressWithAddressLabel_unit_city_stateCode_postalCode_countryCode_completionHandler(
+    NSString *_Nonnull a0,
+    NSString *_Nullable a1,
+    NSString *_Nonnull a2,
+    NSString *_Nonnull a3,
+    NSString *_Nonnull a4,
+    NSString *_Nonnull a5,
+    void (^_Nonnull a6)(RadarStatus, RadarAddress *_Nullable, RadarAddressVerificationStatus)) {
+    [Radar validateAddressWithAddressLabel:a0 unit:a1 city:a2 stateCode:a3 postalCode:a4 countryCode:a5 completionHandler:a6];
+}
 
 #pragma mark - RadarChain
 
@@ -547,3 +568,80 @@ RADAR_API_SURFACE NSArray<NSDictionary *> *_Nullable call_RadarAddress_class_arr
     return [RadarAddress arrayForAddresses:a0];
 }
 RADAR_API_SURFACE NSDictionary *_Nonnull call_RadarAddress_dictionaryValue(RadarAddress *obj) { return [obj dictionaryValue]; }
+RADAR_API_SURFACE NSString * _Nullable get_RadarAddress_resultId(RadarAddress *obj) { return obj.resultId; }
+
+#pragma mark - RadarAddressLocationDetails
+
+RADAR_API_SURFACE Class class_RadarAddressLocationDetails(void) { return [RadarAddressLocationDetails class]; }
+RADAR_API_SURFACE NSString * _Nonnull get_RadarAddressLocationDetails_usage(RadarAddressLocationDetails *obj) { return obj.usage; }
+RADAR_API_SURFACE NSString * _Nonnull get_RadarAddressLocationDetails_dwelling(RadarAddressLocationDetails *obj) { return obj.dwelling; }
+RADAR_API_SURFACE NSArray<NSString *> * _Nonnull get_RadarAddressLocationDetails_grounds(RadarAddressLocationDetails *obj) { return obj.grounds; }
+RADAR_API_SURFACE NSArray<RadarAddressPlace *> * _Nonnull get_RadarAddressLocationDetails_places(RadarAddressLocationDetails *obj) { return obj.places; }
+RADAR_API_SURFACE NSDictionary * _Nonnull call_RadarAddressLocationDetails_dictionaryValue(RadarAddressLocationDetails *obj) { return [obj dictionaryValue]; }
+
+#pragma mark - RadarAddressPlace
+
+RADAR_API_SURFACE Class class_RadarAddressPlace(void) { return [RadarAddressPlace class]; }
+RADAR_API_SURFACE NSString * _Nonnull get_RadarAddressPlace_name(RadarAddressPlace *obj) { return obj.name; }
+RADAR_API_SURFACE NSArray<NSString *> * _Nonnull get_RadarAddressPlace_categories(RadarAddressPlace *obj) { return obj.categories; }
+RADAR_API_SURFACE NSDictionary * _Nonnull call_RadarAddressPlace_dictionaryValue(RadarAddressPlace *obj) { return [obj dictionaryValue]; }
+
+#pragma mark - RadarAutocompleteEnrichedAddress
+
+RADAR_API_SURFACE Class class_RadarAutocompleteEnrichedAddress(void) { return [RadarAutocompleteEnrichedAddress class]; }
+RADAR_API_SURFACE NSString * _Nullable get_RadarAutocompleteEnrichedAddress_formattedAddress(RadarAutocompleteEnrichedAddress *obj) { return obj.formattedAddress; }
+RADAR_API_SURFACE RadarAddressLocationDetails * _Nonnull get_RadarAutocompleteEnrichedAddress_locationDetails(RadarAutocompleteEnrichedAddress *obj) { return obj.locationDetails; }
+RADAR_API_SURFACE NSDictionary * _Nonnull call_RadarAutocompleteEnrichedAddress_dictionaryValue(RadarAutocompleteEnrichedAddress *obj) { return [obj dictionaryValue]; }
+
+#pragma mark - RadarAutocompleteSession
+
+RADAR_API_SURFACE Class class_RadarAutocompleteSession(void) { return [RadarAutocompleteSession class]; }
+RADAR_API_SURFACE NSString * _Nonnull get_RadarAutocompleteSession_sessionToken(RadarAutocompleteSession *obj) { return obj.sessionToken; }
+RADAR_API_SURFACE RadarAutocompleteSession * _Nonnull call_RadarAutocompleteSession_init(void) { return [[RadarAutocompleteSession alloc] init]; }
+RADAR_API_SURFACE RadarAutocompleteSession * _Nullable call_RadarAutocompleteSession_initWithSessionToken(NSString * _Nonnull a0) { return [[RadarAutocompleteSession alloc] initWithSessionToken:a0]; }
+RADAR_API_SURFACE void call_RadarAutocompleteSession_autocompleteQuery_near_layers_limit_country_mailable_completionHandler(RadarAutocompleteSession *obj, NSString * _Nonnull a0, CLLocation * _Nullable a1, NSArray<NSString *> * _Nullable a2, int32_t a3, NSString * _Nullable a4, BOOL a5, void (^ _Nonnull a6)(RadarStatus, NSArray<RadarAddress *> * _Nullable)) { [obj autocompleteQuery:a0 near:a1 layers:a2 limit:a3 country:a4 mailable:a5 completionHandler:a6]; }
+RADAR_API_SURFACE void call_RadarAutocompleteSession_selectAddress_completionHandler(RadarAutocompleteSession *obj, RadarAddress * _Nonnull a0, void (^ _Nullable a1)(RadarStatus, RadarAutocompleteEnrichedAddress * _Nullable)) { [obj selectAddress:a0 completionHandler:a1]; }
+
+#pragma mark - RadarUser
+
+RADAR_API_SURFACE Class class_RadarUser(void) { return [RadarUser class]; }
+RADAR_API_SURFACE NSString * _Nonnull get_RadarUser__id(RadarUser *obj) { return obj._id; }
+RADAR_API_SURFACE NSString * _Nullable get_RadarUser_userId(RadarUser *obj) { return obj.userId; }
+RADAR_API_SURFACE NSString * _Nullable get_RadarUser_deviceId(RadarUser *obj) { return obj.deviceId; }
+RADAR_API_SURFACE NSString * _Nullable get_RadarUser___description(RadarUser *obj) { return obj.__description; }
+RADAR_API_SURFACE NSDictionary * _Nullable get_RadarUser_metadata(RadarUser *obj) { return obj.metadata; }
+RADAR_API_SURFACE CLLocation * _Nonnull get_RadarUser_location(RadarUser *obj) { return obj.location; }
+RADAR_API_SURFACE RadarActivityType get_RadarUser_activityType(RadarUser *obj) { return obj.activityType; }
+RADAR_API_SURFACE NSArray<RadarGeofence *> * _Nullable get_RadarUser_geofences(RadarUser *obj) { return obj.geofences; }
+RADAR_API_SURFACE RadarPlace * _Nullable get_RadarUser_place(RadarUser *obj) { return obj.place; }
+RADAR_API_SURFACE NSArray<RadarBeacon *> * _Nullable get_RadarUser_beacons(RadarUser *obj) { return obj.beacons; }
+RADAR_API_SURFACE BOOL get_RadarUser_stopped(RadarUser *obj) { return obj.stopped; }
+RADAR_API_SURFACE BOOL get_RadarUser_foreground(RadarUser *obj) { return obj.foreground; }
+RADAR_API_SURFACE RadarRegion * _Nullable get_RadarUser_country(RadarUser *obj) { return obj.country; }
+RADAR_API_SURFACE RadarRegion * _Nullable get_RadarUser_state(RadarUser *obj) { return obj.state; }
+RADAR_API_SURFACE RadarRegion * _Nullable get_RadarUser_dma(RadarUser *obj) { return obj.dma; }
+RADAR_API_SURFACE RadarRegion * _Nullable get_RadarUser_postalCode(RadarUser *obj) { return obj.postalCode; }
+RADAR_API_SURFACE NSArray<RadarChain *> * _Nullable get_RadarUser_nearbyPlaceChains(RadarUser *obj) { return obj.nearbyPlaceChains; }
+RADAR_API_SURFACE NSArray<RadarSegment *> * _Nullable get_RadarUser_segments(RadarUser *obj) { return obj.segments; }
+RADAR_API_SURFACE NSArray<RadarChain *> * _Nullable get_RadarUser_topChains(RadarUser *obj) { return obj.topChains; }
+RADAR_API_SURFACE RadarLocationSource get_RadarUser_source(RadarUser *obj) { return obj.source; }
+RADAR_API_SURFACE RadarTrip * _Nullable get_RadarUser_trip(RadarUser *obj) { return obj.trip; }
+RADAR_API_SURFACE BOOL get_RadarUser_debug(RadarUser *obj) { return obj.debug; }
+RADAR_API_SURFACE RadarFraud * _Nullable get_RadarUser_fraud(RadarUser *obj) { return obj.fraud; }
+RADAR_API_SURFACE RadarUserLocationInsights * _Nullable get_RadarUser_locationInsights(RadarUser *obj) { return obj.locationInsights; }
+RADAR_API_SURFACE RadarExpectedAddress * _Nullable get_RadarUser_expectedAddress(RadarUser *obj) { return obj.expectedAddress; }
+RADAR_API_SURFACE double get_RadarUser_altitude(RadarUser *obj) { return obj.altitude; }
+RADAR_API_SURFACE RadarUser * _Nonnull call_RadarUser_init(void) { return [[RadarUser alloc] init]; }
+RADAR_API_SURFACE RadarUser * _Nullable call_RadarUser_initWithObject(id _Nonnull a0) { return [[RadarUser alloc] initWithObject:a0]; }
+RADAR_API_SURFACE NSDictionary * _Nonnull call_RadarUser_dictionaryValue(RadarUser *obj) { return [obj dictionaryValue]; }
+
+#pragma mark - RadarUserLocationInsights
+
+RADAR_API_SURFACE Class class_RadarUserLocationInsights(void) { return [RadarUserLocationInsights class]; }
+RADAR_API_SURFACE BOOL get_RadarUserLocationInsights_atHome(RadarUserLocationInsights *obj) { return obj.atHome; }
+RADAR_API_SURFACE BOOL get_RadarUserLocationInsights_atWork(RadarUserLocationInsights *obj) { return obj.atWork; }
+RADAR_API_SURFACE BOOL get_RadarUserLocationInsights_traveling(RadarUserLocationInsights *obj) { return obj.traveling; }
+RADAR_API_SURFACE NSNumber * _Nullable get_RadarUserLocationInsights_commuting(RadarUserLocationInsights *obj) { return obj.commuting; }
+RADAR_API_SURFACE RadarUserLocationInsights * _Nonnull call_RadarUserLocationInsights_init(void) { return [[RadarUserLocationInsights alloc] init]; }
+RADAR_API_SURFACE RadarUserLocationInsights * _Nullable call_RadarUserLocationInsights_initWithObject(id _Nonnull a0) { return [[RadarUserLocationInsights alloc] initWithObject:a0]; }
+RADAR_API_SURFACE NSDictionary * _Nonnull call_RadarUserLocationInsights_dictionaryValue(RadarUserLocationInsights *obj) { return [obj dictionaryValue]; }

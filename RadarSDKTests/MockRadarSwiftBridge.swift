@@ -22,6 +22,7 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
 
     func flushReplaysRequest(
         _ replays: [[AnyHashable: Any]],
+        parentSpan: RadarTraceSpan?,
         completionHandler: ((RadarStatus, [AnyHashable: Any]?) -> Void)?
     ) {
         lastFlushedReplays = replays
@@ -36,6 +37,12 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func stopIndoorTracking() {
         stopIndoorTrackingCallCount += 1
         callOrder.append("stopIndoorTracking")
+    }
+
+    private(set) var indoorTrackingGeofences: [[RadarGeofence]?] = []
+
+    func updateIndoorTracking(geofences: [RadarGeofence]?) {
+        indoorTrackingGeofences.append(geofences)
     }
 
     func updateTracking() {
@@ -87,6 +94,8 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func createPlace(dict: [String: Any]) -> RadarPlace? { createPlaceHandler?(dict) }
     var mockIsForeground = false
     func isForeground() -> Bool { mockIsForeground }
+    var mockMotionAuthorizationString = "NOT_DETERMINED"
+    func motionAuthorizationString() -> String { mockMotionAuthorizationString }
     func didReceiveEvents(_ events: [RadarEvent], user: RadarUser) {}
     private(set) var lastClientLocation: CLLocation?
     private(set) var lastClientLocationSource: RadarLocationSource?
@@ -115,6 +124,64 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     private(set) var lastFailStatus: RadarStatus?
     func didFail(status: RadarStatus) { lastFailStatus = status }
 
+    struct TrackRequest {
+        let location: CLLocation
+        let stopped: Bool
+        let source: RadarLocationSource
+        let replayed: Bool
+        let beacons: [RadarBeacon]?
+        let indoorLocation: CLLocation?
+    }
+
+    struct TrackResponse {
+        var status: RadarStatus = .success
+        var events: [RadarEvent]?
+        var user: RadarUser?
+        var nearbyGeofences: [RadarGeofence]?
+        var config: RadarSDK.RadarConfig?
+    }
+
+    private(set) var trackRequests: [TrackRequest] = []
+    var trackResponse = TrackResponse()
+    // Called when a track request is made, before it's answered.
+    var onTrackRequest: (() -> Void)?
+    // Called after a track request is answered, so an async test can wait for it.
+    var onTrack: (() -> Void)?
+
+    func track(  // swiftlint:disable:this function_parameter_count
+        location: CLLocation,
+        stopped: Bool,
+        source: RadarLocationSource,
+        replayed: Bool,
+        beacons: [RadarBeacon]?,
+        indoorLocation: CLLocation?,
+        traceSpan: RadarTraceSpan?,
+        completionHandler: @escaping (RadarStatus, [RadarEvent]?, RadarUser?, [RadarGeofence]?, RadarSDK.RadarConfig?) -> Void
+    ) {
+        trackRequests.append(
+            TrackRequest(
+                location: location, stopped: stopped, source: source, replayed: replayed, beacons: beacons,
+                indoorLocation: indoorLocation))
+        onTrackRequest?()
+        let response = trackResponse
+        completionHandler(response.status, response.events, response.user, response.nearbyGeofences, response.config)
+        onTrack?()
+    }
+
+    private(set) var searchBeaconsLocations: [CLLocation] = []
+    var searchBeaconsResult: (beacons: [RadarBeacon]?, uuids: [String]?) = (nil, nil)
+
+    func searchBeacons(
+        near location: CLLocation,
+        radius: Int32,
+        limit: Int32,
+        traceSpan: RadarTraceSpan?,
+        completionHandler: @escaping (RadarStatus, [RadarBeacon]?, [String]?) -> Void
+    ) {
+        searchBeaconsLocations.append(location)
+        completionHandler(.success, searchBeaconsResult.beacons, searchBeaconsResult.uuids)
+    }
+
     func createBeacon(uuid: String, major: String, minor: String, rssi: Int) -> RadarBeacon {
         RadarBeacon()
     }
@@ -130,4 +197,17 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     }
 
     func updateClientSideCampaigns(withPrefix prefix: String, notificationRequests: [UNNotificationRequest]) {}
+
+    func autocomplete(  // swiftlint:disable:this function_parameter_count
+        query: String,
+        near: CLLocation?,
+        layers: [String]?,
+        limit: Int32,
+        country: String?,
+        mailable: Bool,
+        sessionToken: String,
+        completionHandler: @escaping (RadarStatus, [RadarAddress]?) -> Void
+    ) {
+        completionHandler(.success, nil)
+    }
 }

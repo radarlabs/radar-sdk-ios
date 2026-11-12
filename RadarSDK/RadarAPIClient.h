@@ -12,7 +12,6 @@
 #import "RadarBeacon.h"
 #import "RadarConfig.h"
 #import "RadarEvent.h"
-#import "RadarUser.h"
 
 @class RadarAddress;
 @class RadarTripLeg;
@@ -20,6 +19,7 @@
 @class RadarRoutes;
 @class RadarVerifiedLocationToken;
 @class RadarContext;
+@class RadarUser;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,8 +54,6 @@ typedef void (^_Nonnull RadarSearchBeaconsAPICompletionHandler)(RadarStatus stat
                                                                 NSArray<NSString *> *_Nullable beaconUUIDs);
 
 typedef void (^_Nonnull RadarGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses);
-
-typedef void (^_Nonnull RadarValidateAddressAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, RadarAddressVerificationStatus verificationStatus);
 
 typedef void (^_Nonnull RadarIPGeocodeAPICompletionHandler)(RadarStatus status, NSDictionary *_Nullable res, RadarAddress *_Nullable address, BOOL proxy, NSError *_Nullable error);
 
@@ -158,14 +156,22 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
                  mailable:(BOOL)mailable
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
 
+/// Pass a nil `sessionToken` to send none. `RadarAutocompleteSession` is the only caller that supplies one.
+- (void)autocompleteQuery:(NSString *_Nonnull)query
+                     near:(CLLocation *_Nullable)near
+                   layers:(NSArray<NSString *> *_Nullable)layers
+                    limit:(int)limit
+                  country:(NSString *_Nullable)country
+                 mailable:(BOOL)mailable
+             sessionToken:(NSString *_Nullable)sessionToken
+        completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
+
 - (void)autocompleteQuery:(NSString *_Nonnull)query
                      near:(CLLocation *_Nullable)near
                    layers:(NSArray<NSString *> *_Nullable)layers
                     limit:(int)limit
                   country:(NSString *_Nullable)country
         completionHandler:(RadarGeocodeAPICompletionHandler _Nonnull)completionHandler;
-
-- (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)geocodeAddress:(NSString *_Nonnull)query
                 layers:(NSArray<NSString *> *_Nullable)layers

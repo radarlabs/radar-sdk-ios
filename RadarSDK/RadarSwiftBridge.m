@@ -9,11 +9,12 @@
 #import <Foundation/Foundation.h>
 
 #import "RadarSwiftBridge.h"
+#import "RadarAPIClient+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarEvent+Internal.h"
 #import "RadarGeofence+Internal.h"
 #import "RadarPlace+Internal.h"
-#import "RadarUser+Internal.h"
+#import "RadarSegment+Internal.h"
 #import "RadarReplayBuffer.h"
 #import "Radar+Internal.h"
 #import "RadarState.h"
@@ -24,6 +25,12 @@
 #import "RadarIndoors.h"
 #import "RadarLocationManager.h"
 
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
+
 @interface RadarLocationManager (SwiftBeaconLocation)
 - (void)handleLocation:(CLLocation *)location
                 source:(RadarLocationSource)source
@@ -32,12 +39,22 @@
 
 @implementation RadarSwiftBridge
 
++ (void)load {
+    // Runs before `main`, so the factory is in place before any Swift model parses and is never
+    // written again. The bridge itself is still installed by `Radar.initialize`.
+    RadarSwift.modelFactory = [[RadarSwiftBridge alloc] init];
+}
+
 - (void)flushReplays {
     [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
 }
 
 - (void)stopIndoorTracking {
     [[RadarIndoors shared] stopWithCompletionHandler:^{}];
+}
+
+- (void)updateIndoorTrackingWithGeofences:(NSArray<RadarGeofence *> *)geofences {
+    [[RadarIndoors shared] updateTrackingWithGeofences:geofences completionHandler:^{}];
 }
 
 - (void)updateTracking {
@@ -143,8 +160,20 @@
     return [[RadarPlace alloc] initWithObject:dict];
 }
 
+- (RadarBeacon * _Nullable)createBeaconWithDict:(NSDictionary *)dict {
+    return [[RadarBeacon alloc] initWithObject:dict];
+}
+
+- (RadarSegment * _Nullable)createSegmentWithDict:(NSDictionary *)dict {
+    return [[RadarSegment alloc] initWithObject:dict];
+}
+
 - (BOOL)isForeground {
     return [RadarUtilsDeprecated foreground];
+}
+
+- (NSString *)motionAuthorizationString {
+    return [Radar stringForMotionAuthorizationStatus];
 }
 
 - (void)didReceiveEvents:(NSArray<RadarEvent *> *)events user:(RadarUser *)user {
@@ -168,8 +197,9 @@
 }
 
 - (void)flushReplaysRequest:(NSArray<NSDictionary *> *)replays
+                 parentSpan:(RadarTraceSpan *)parentSpan
           completionHandler:(void (^)(RadarStatus, NSDictionary * _Nullable))completionHandler {
-    [[RadarAPIClient sharedInstance] flushReplays:replays completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
+    [[RadarAPIClient sharedInstance] flushReplays:replays traceSpan:parentSpan completionHandler:^(RadarStatus status, NSDictionary * _Nullable res) {
         if (completionHandler) {
             completionHandler(status, res);
         }
@@ -178,6 +208,44 @@
 
 - (void)didFailWithStatus:(RadarStatus)status {
     [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+}
+
+- (void)trackWithLocation:(CLLocation *)location
+                  stopped:(BOOL)stopped
+                   source:(RadarLocationSource)source
+                 replayed:(BOOL)replayed
+                  beacons:(NSArray<RadarBeacon *> *)beacons
+           indoorLocation:(CLLocation *)indoorLocation
+                traceSpan:(RadarTraceSpan *)traceSpan
+        completionHandler:(void (^)(RadarStatus, NSArray<RadarEvent *> *_Nullable, RadarUser *_Nullable, NSArray<RadarGeofence *> *_Nullable,
+                                    RadarConfig *_Nullable))completionHandler {
+    [[RadarAPIClient sharedInstance] trackWithLocation:location
+                                               stopped:stopped
+                                            foreground:[RadarUtilsDeprecated foreground]
+                                                source:source
+                                              replayed:replayed
+                                               beacons:beacons
+                                        indoorLocation:indoorLocation
+                                             traceSpan:traceSpan
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarEvent *> *_Nullable events, RadarUser *_Nullable user,
+                                                         NSArray<RadarGeofence *> *_Nullable nearbyGeofences, RadarConfig *_Nullable config, RadarVerifiedLocationToken *_Nullable token) {
+        completionHandler(status, events, user, nearbyGeofences, config);
+    }];
+}
+
+- (void)searchBeaconsNear:(CLLocation *)location
+                   radius:(int)radius
+                    limit:(int)limit
+                traceSpan:(RadarTraceSpan *)traceSpan
+        completionHandler:(void (^)(RadarStatus, NSArray<RadarBeacon *> *_Nullable, NSArray<NSString *> *_Nullable))completionHandler {
+    [[RadarAPIClient sharedInstance] searchBeaconsNear:location
+                                                radius:radius
+                                                 limit:limit
+                                             traceSpan:traceSpan
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarBeacon *> *_Nullable beacons,
+                                                         NSArray<NSString *> *_Nullable beaconUUIDs) {
+        completionHandler(status, beacons, beaconUUIDs);
+    }];
 }
 
 - (RadarBeacon * _Nonnull)createBeaconWithUuid:(NSString *)uuid major:(NSString *)major minor:(NSString *)minor rssi:(NSInteger)rssi {
@@ -190,6 +258,26 @@
 
 - (void)setRssi:(NSInteger)rssi onBeacon:(RadarBeacon *)beacon {
     [beacon setRssi:rssi];
+}
+
+- (void)autocompleteQuery:(NSString *)query
+                     near:(CLLocation *)near
+                   layers:(NSArray<NSString *> *)layers
+                    limit:(int)limit
+                  country:(NSString *)country
+                 mailable:(BOOL)mailable
+             sessionToken:(NSString *)sessionToken
+        completionHandler:(void (^)(RadarStatus, NSArray<RadarAddress *> *_Nullable))completionHandler {
+    [[RadarAPIClient sharedInstance] autocompleteQuery:query
+                                                  near:near
+                                                layers:layers
+                                                 limit:limit
+                                               country:country
+                                              mailable:mailable
+                                          sessionToken:sessionToken
+                                     completionHandler:^(RadarStatus status, NSDictionary *_Nullable res, NSArray<RadarAddress *> *_Nullable addresses) {
+                                         completionHandler(status, addresses);
+                                     }];
 }
 
 @end

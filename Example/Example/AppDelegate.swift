@@ -53,7 +53,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         settingsStore.environment.apply(localURL: settingsStore.localURL)
         print("radar-env: \(settingsStore.environmentSummary)")
         logStream.write(result: "radar-env: \(settingsStore.environmentSummary)")
-        Radar.initialize(publishableKey: settingsStore.resolvedPublishableKey, options: radarInitializeOptions)
+        if settingsStore.useAuthToken {
+            // Pass only the token. The publishable key is still used for map styles.
+            Radar.initialize(authToken: settingsStore.resolvedAuthToken ?? "", options: radarInitializeOptions)
+        } else {
+            Radar.initialize(publishableKey: settingsStore.resolvedPublishableKey, options: radarInitializeOptions)
+        }
         settingsStore.runKeyCheck(logStream: logStream)
         Radar.setDelegate(logStream)
         wireLiveActivitySubscriptions()

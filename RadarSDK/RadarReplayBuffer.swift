@@ -63,6 +63,16 @@ final class RadarReplayBuffer: NSObject, @unchecked Sendable {
 
     @objc(flushReplaysWithCompletionHandler:completionHandler:)
     func flushReplays(withCompletionHandler replayParams: [AnyHashable: Any]?, completionHandler: RadarFlushReplaysCompletionHandler?) {
+        flushReplays(withCompletionHandler: replayParams, parentSpan: nil, completionHandler: completionHandler)
+    }
+
+    /// `parentSpan` traces the replay request, for a traced track that's sent as a replay flush.
+    @objc(flushReplaysWithCompletionHandler:parentSpan:completionHandler:)
+    func flushReplays(
+        withCompletionHandler replayParams: [AnyHashable: Any]?,
+        parentSpan: RadarTraceSpan?,
+        completionHandler: RadarFlushReplaysCompletionHandler?
+    ) {
         if isFlushing {
             RadarLogger.shared.debug("Already flushing replays")
             completionHandler?(.errorServer, nil)
@@ -101,11 +111,12 @@ final class RadarReplayBuffer: NSObject, @unchecked Sendable {
             return
         }
 
-        bridge.flushReplaysRequest(replaysRequestArray) { [self] status, res in
+        bridge.flushReplaysRequest(replaysRequestArray, parentSpan: parentSpan) { [self] status, res in
             if status == .success {
                 RadarLogger.shared.debug("Flushed replays successfully")
                 removeReplaysFromBuffer(replaysArray)
                 RadarLogger.flushLogs()
+                RadarTraceManager.shared.flush(after: parentSpan)
             } else if replayParams != nil, let newReplayParams = newReplayParams {
                 writeNewReplayToBuffer(newReplayParams)
             }

@@ -13,7 +13,6 @@
 #import "RadarEvent.h"
 #import "RadarRouteMode.h"
 #import "RadarTrackingOptions.h"
-#import "RadarUser.h"
 #import "RadarTripLeg.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -34,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class RadarRoutes;
 @class RadarVerifiedLocationToken;
 @class RadarContext;
+@class RadarTrip;
+@class RadarUser;
 
 #pragma mark - Enums
 
@@ -1368,13 +1369,20 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
 /**
  Validates an address, attaching a verification status, property type, and ZIP+4.
 
+ The API accepts a street and number or an address label, but not both. Addresses from search and geocoding have all
+ three, so this sends the street and number when both are set, and the address label otherwise.
+
  @param address The address to validate.
  @param completionHandler A completion handler.
 
  @see https://radar.com/documentation/api#validate-an-address
  */
 
-+ (void)validateAddress:(RadarAddress *_Nonnull)address completionHandler:(RadarValidateAddressCompletionHandler)completionHandler NS_SWIFT_NAME(validateAddress(address:completionHandler:));
++ (void)validateAddress:(RadarAddress *_Nonnull)address
+      completionHandler:(RadarValidateAddressCompletionHandler)completionHandler
+    NS_SWIFT_NAME(validateAddress(address:completionHandler:))
+    __deprecated_msg("Use validateAddress(street:number:unit:city:stateCode:postalCode:countryCode:completionHandler:) or "
+                     "validateAddress(addressLabel:unit:city:stateCode:postalCode:countryCode:completionHandler:).");
 
 #pragma mark - Distance
 
