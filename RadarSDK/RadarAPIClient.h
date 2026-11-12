@@ -70,6 +70,8 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
 @interface RadarAPIClient : NSObject
 
 @property (nonnull, strong, nonatomic) RadarAPIHelper *apiHelper;
+// Returns the App Attest key ID sent on verified /config. Nil asks the installed fraud SDK.
+@property (nonatomic, copy, nullable) NSString *_Nullable (^appAttestKeyIdProvider)(void);
 
 + (instancetype)sharedInstance;
 

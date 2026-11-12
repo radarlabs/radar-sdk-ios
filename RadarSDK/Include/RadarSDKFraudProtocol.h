@@ -23,6 +23,10 @@ typedef void (^RadarFraudPayloadCallback)(NSDictionary<NSString *, id> *_Nullabl
 
 - (void)setSharingDidChangeHandler:(nullable void (^)(BOOL sharing))handler;
 
+@optional
+
+- (nullable NSString *)appAttestKeyId;
+
 @end
 
 NS_ASSUME_NONNULL_END
