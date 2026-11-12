@@ -75,8 +75,11 @@ extension RadarSerializedTests {
             let (status, event) = await logConversion(metadata: ["foo": "bar"])
 
             #expect(status == .success)
-            let metadata = try #require(event).metadata
-            #expect(metadata["foo"] as? String == "bar")
+            let conversion = try #require(event)
+            #expect(conversion.type == .conversion)
+            #expect(conversion.conversionName == "settings_opened")
+            #expect(conversion.location == nil)
+            #expect(conversion.metadata["foo"] as? String == "bar")
         }
 
         @Test("logConversion with revenue adds it to the metadata")

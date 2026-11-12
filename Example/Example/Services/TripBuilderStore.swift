@@ -12,7 +12,7 @@ import Foundation
 import RadarSDK
 
 @MainActor
-final class TripBuilderStore: ObservableObject {
+final class TripBuilderStore: ObservableObject {  // swiftlint:disable:this type_body_length
 
     // MARK: - Selection state
 
@@ -131,11 +131,11 @@ final class TripBuilderStore: ObservableObject {
 
         for event in events {
             let allowed = forced || Self.tripEventTypes.contains(event.type)
-            guard allowed else { continue }
+            guard allowed, let location = event.location else { continue }
             if tripEventMarkers.contains(where: { $0.id == event._id }) { continue }
             let marker = TripEventMarker(
                 id: event._id,
-                coordinate: event.location.coordinate,
+                coordinate: location.coordinate,
                 type: event.type,
                 timestamp: event.createdAt
             )
@@ -252,7 +252,7 @@ final class TripBuilderStore: ObservableObject {
     }
 
     enum LegMoveDirection {
-        case up, down
+        case up, down  // swiftlint:disable:this identifier_name
     }
 
     func moveLeg(legId: String, direction: LegMoveDirection) {

@@ -85,8 +85,6 @@ final class MockRadarSwiftBridge: NSObject, RadarSwiftBridgeProtocol, @unchecked
     func canExit() -> Bool { mockCanExit }
     func getTripOptions() -> RadarTripOptions? { nil }
     func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?) {}
-    var createEventHandler: (([String: Any]) -> RadarEvent?)?
-    func createEvent(dict: [String: Any]) -> RadarEvent? { createEventHandler?(dict) }
     func createUser(dict: [String: Any]) -> RadarUser? { nil }
     var createGeofenceHandler: (([String: Any]) -> RadarGeofence?)?
     func createGeofence(dict: [String: Any]) -> RadarGeofence? { createGeofenceHandler?(dict) }
