@@ -31,6 +31,7 @@
 #import "RadarSDKFraudProtocol.h"
 #import "RadarSwiftBridge.h"
 #import "RadarRevealRiskManager.h"
+#import "RadarActivityManager+Internal.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>

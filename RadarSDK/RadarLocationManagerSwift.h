@@ -22,6 +22,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class RadarActivityManager;
+
 @interface RadarLocationManagerSwift : NSObject
 
 + (CLLocationAccuracy)clLocationAccuracyForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
@@ -48,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)restartPreviousTrackingOptions;
 + (void)stopTrackingOnLocationManager:(CLLocationManager *)locationManager
-                      activityManager:(nullable id)activityManager;
+                      activityManager:(nullable RadarActivityManager *)activityManager;
 + (void)startUpdatesWithHost:(id<RadarLocationManagerSwiftHost>)host
               locationManager:(CLLocationManager *)locationManager
        lowPowerLocationManager:(CLLocationManager *)lowPowerLocationManager

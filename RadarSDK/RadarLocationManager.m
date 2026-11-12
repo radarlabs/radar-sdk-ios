@@ -22,7 +22,7 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarReplayBuffer.h"
-#import "RadarActivityManager.h"
+#import "RadarActivityManager+Internal.h"
 #import "RadarNotificationHelper.h"
 #import "RadarIndoorsProtocol.h"
 #import "RadarIndoors.h"
@@ -435,24 +435,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
 - (void)updateTracking:(CLLocation *)location {
     [self updateTracking:location fromInitialize:NO];
-}
-
-// Temporary callbacks used by the Swift motion twin in RadarLocationManager+SwiftMotion.swift.
-// RadarActivityManager stays in Objective-C until it is ported. Keep the shared instance in
-// `activityManager`, so `stopTracking` stops the same instance.
-- (void)startActivityUpdatesWithHandler:(void (^)(CMMotionActivity *activity))handler {
-    self.activityManager = [RadarActivityManager sharedInstance];
-    [self.activityManager startActivityUpdatesWithHandler:handler];
-}
-
-- (void)startRelativeAltitudeWithHandler:(void (^)(CMAltitudeData *_Nullable altitudeData))handler {
-    self.activityManager = [RadarActivityManager sharedInstance];
-    [self.activityManager startRelativeAltitudeWithHandler:handler];
-}
-
-- (void)startAbsoluteAltitudeWithHandler:(void (^)(CMAbsoluteAltitudeData *_Nullable altitudeData))handler {
-    self.activityManager = [RadarActivityManager sharedInstance];
-    [self.activityManager startAbsoluteAltitudeWithHandler:handler];
 }
 
 // The Objective-C path of `updateTracking:fromInitialize:` calls this. With useSwiftLocationManager,
