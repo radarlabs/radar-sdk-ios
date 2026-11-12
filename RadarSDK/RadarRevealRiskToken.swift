@@ -5,10 +5,9 @@
 
 import Foundation
 
-// Each type is both the `@objc` interface and the `Decodable` parser: the compiler
-// synthesizes `init(from:)` for these `NSObject` subclasses, so there is no separate parsing
-// struct or mapping layer to keep in sync. `CodingKeys` is only declared where a JSON key
-// differs from the property name; the `Date` format is handled once on the decoder.
+// These types expose Objective-C compatible models and decode API responses.
+// The top-level token validates the response format; nested models use
+// synthesized decoding.
 
 /// Represents device and network risk signals.
 ///
@@ -22,9 +21,12 @@ public final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendabl
     public let expiresAt: Date?
     let expiresInValue: Double?
     public var expiresIn: NSNumber? { expiresInValue.map { NSNumber(value: $0) } }
-    public let risk: RadarRevealRiskTokenRisk
-    public let network: RadarRevealRiskTokenNetwork
-    public let device: RadarRevealRiskTokenDevice
+    public let risk: RadarRevealRiskTokenRisk?
+    public let network: RadarRevealRiskTokenNetwork?
+    public let device: RadarRevealRiskTokenDevice?
+    
+    /// The response format selected by the server.
+    public let format: RadarResponseFormat
 
     // unchecked sendable, set on init, should not be modified afterwards
     private(set) var dictionaryValueStorage: [String: Sendable]?
@@ -38,6 +40,81 @@ public final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendabl
         case risk
         case network
         case device
+        case format
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let responseFormat = container.contains(.format)
+            ? try container.decode(String.self, forKey: .format)
+            : nil
+        
+        guard let format = RadarResponseFormat(responseValue: responseFormat) else {
+            throw DecodingError.dataCorruptedError(
+                forKey: .format,
+                in: container,
+                debugDescription: "Unsupported response format"
+            )
+        }
+        
+        self.format = format
+        _id = try container.decode(String.self, forKey: ._id)
+        
+        if format != .jws && _id.isEmpty {
+            throw DecodingError.dataCorruptedError(
+                forKey: ._id,
+                in: container,
+                debugDescription: "Response ID must not be empty"
+            )
+        }
+        
+        switch format {
+        case .jws:
+            token = try container.decodeIfPresent(String.self, forKey: .token)
+            expiresAt = try container.decodeIfPresent(Date.self, forKey: .expiresAt)
+            expiresInValue = try container.decodeIfPresent(
+                Double.self,
+                forKey: .expiresInValue
+            )
+            risk = try container.decode(RadarRevealRiskTokenRisk.self, forKey: .risk)
+            network = try container.decode(
+                RadarRevealRiskTokenNetwork.self,
+                forKey: .network
+            )
+            device = try container.decode(
+                RadarRevealRiskTokenDevice.self,
+                forKey: .device
+            )
+        case .jwe:
+            let responseToken = try container.decode(String.self, forKey: .token)
+            guard !responseToken.isEmpty else {
+                throw DecodingError.dataCorruptedError(
+                    forKey: .token,
+                    in: container,
+                    debugDescription: "Response token must not be empty"
+                )
+            }
+            
+            token = responseToken
+            expiresAt = try container.decode(Date.self, forKey: .expiresAt)
+            expiresInValue = try container.decode(
+                Double.self,
+                forKey: .expiresInValue
+            )
+            risk = nil
+            network = nil
+            device = nil
+            
+        case .id:
+            token = nil
+            expiresAt = nil
+            expiresInValue = nil
+            risk = nil
+            network = nil
+            device = nil
+        }
+        
+        super.init()
     }
 
     nonisolated(unsafe) private static let isoFormatter: ISO8601DateFormatter = {
@@ -72,8 +149,23 @@ public final class RadarRevealRiskToken: NSObject, Decodable, @unchecked Sendabl
         guard let decoded = try? decoder.decode(RadarRevealRiskToken.self, from: data) else {
             return nil
         }
-        var dict: [String: Sendable]? = (try? JSONSerialization.jsonObject(with: data)) as? [String: Sendable]
-        // raw data from response returns with a meta field for the http status, ignore this for reveal risk response dict
+        var dict = (try? JSONSerialization.jsonObject(with: data))
+            as? [String: Sendable]
+        
+        switch decoded.format {
+        case .jws:
+            break
+        case .jwe:
+            let allowedKeys: Set<String> = [
+                "format", "_id", "token", "expiresAt", "expiresIn"
+            ]
+            dict = dict?.filter { allowedKeys.contains($0.key) }
+        case .id:
+            let allowedKeys: Set<String> = ["format", "_id"]
+            dict = dict?.filter { allowedKeys.contains($0.key) }
+        }
+        
+        // Preserve Reveal's existing omission of response metadata
         dict?["meta"] = nil
         decoded.dictionaryValueStorage = dict
         return decoded
