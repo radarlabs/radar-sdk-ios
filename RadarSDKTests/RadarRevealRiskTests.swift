@@ -435,5 +435,100 @@ extension RadarSerializedTests {
             let data = try JSONSerialization.data(withJSONObject: response)
             #expect(RadarRevealRiskToken.fromData(data) == nil)
         }
+        
+        @Test(
+            "Reveal delivers reduced responses and updates the shared Reveal ID",
+            arguments: ["jwe", "id"]
+        )
+        func revealRiskDeliversReducedResponse(format: String) async throws {
+            let responseID = "risk-\(format)-id"
+            var response: [String: Any] = [
+                "meta": ["code": 200],
+                "format": format,
+                "_id": responseID,
+            ]
+
+            if format == "jwe" {
+                response["token"] = "opaque-token"
+                response["expiresAt"] = "2030-01-01T00:00:00.000Z"
+                response["expiresIn"] = 90
+            }
+
+            let session = MockURLSession()
+            session.on(Self.revealRiskURL, response)
+
+            let manager = makeManager(
+                sealResult: ["payload": MockFraudEnvelope.payload],
+                session: session
+            )
+            manager.revealRiskId = "previous-risk-id"
+
+            let (status, result) = await withCheckedContinuation { continuation in
+                manager.revealRisk(useSecondaryVerifiedHost: false) { status, token in
+                    continuation.resume(returning: (status, token))
+                }
+            }
+
+            #expect(status == .success)
+            let token = try #require(result)
+            #expect(token.format == (format == "jwe" ? .jwe : .id))
+            #expect(token._id == responseID)
+            #expect(manager.revealRiskId == responseID)
+            #expect(token.risk == nil)
+            #expect(token.network == nil)
+            #expect(token.device == nil)
+
+            if format == "jwe" {
+                #expect(token.token == "opaque-token")
+                #expect(token.expiresAt != nil)
+                #expect(token.expiresIn == 90)
+                #expect(
+                    Set(token.dictionaryValue().keys) == Set<AnyHashable>([
+                        "format", "_id", "token", "expiresAt", "expiresIn",
+                    ])
+                )
+            } else {
+                #expect(token.token == nil)
+                #expect(token.expiresAt == nil)
+                #expect(token.expiresIn == nil)
+                #expect(
+                    Set(token.dictionaryValue().keys)
+                        == Set<AnyHashable>(["format", "_id"])
+                )
+            }
+        }
+        
+        @Test("Reveal reports malformed responses through the completion handler")
+        func revealRiskRejectsMalformedResponses() async {
+            let responses: [[String: Any]] = [
+                // JWE is missing its token and expiration fields.
+                ["format": "jwe", "_id": "risk-id"],
+                // ID response is missing its ID.
+                ["format": "id"],
+                // Unknown formats must not fall back to legacy parsing.
+                ["format": "unknown", "_id": "risk-id"],
+            ]
+
+            for response in responses {
+                let session = MockURLSession()
+                session.on(Self.revealRiskURL, response)
+
+                let manager = makeManager(
+                    sealResult: ["payload": MockFraudEnvelope.payload],
+                    session: session
+                )
+                manager.revealRiskId = "previous-risk-id"
+
+                let (status, token) = await withCheckedContinuation { continuation in
+                    manager.revealRisk(useSecondaryVerifiedHost: false) { status, token in
+                        continuation.resume(returning: (status, token))
+                    }
+                }
+
+                #expect(status == .errorServer)
+                #expect(token == nil)
+                #expect(manager.revealRiskId == "previous-risk-id")
+            }
+        }
     }
 }
