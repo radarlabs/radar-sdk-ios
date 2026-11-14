@@ -22,7 +22,7 @@ public extension RadarRevealRiskToken {
         case jwe(token: String, expiresAt: Date)
         case id(String)
     }
-    
+
     /// A Swift-only view of the response.
     /// Returns nil when the model lacks the fields required by its format.
     @nonobjc

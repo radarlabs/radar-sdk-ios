@@ -35,14 +35,15 @@ struct RadarVerifiedLocationTokenPayloadTests {
 
     @Test(arguments: [true, false])
     func jweExposesItsOpaqueToken(passed: Bool) throws {
-        let result = try #require(RadarVerifiedLocationToken(object: [
-            "format": "jwe",
-            "_id": "evaluation-id",
-            "token": "opaque-token",
-            "expiresAt": "2030-01-01T00:00:00.000Z",
-            "expiresIn": 90,
-            "passed": passed,
-        ]))
+        let result = try #require(
+            RadarVerifiedLocationToken(object: [
+                "format": "jwe",
+                "_id": "evaluation-id",
+                "token": "opaque-token",
+                "expiresAt": "2030-01-01T00:00:00.000Z",
+                "expiresIn": 90,
+                "passed": passed,
+            ]))
         let payload = try #require(result.payload)
 
         guard case let .jwe(token, expiration) = payload else {
@@ -58,10 +59,11 @@ struct RadarVerifiedLocationTokenPayloadTests {
 
     @Test
     func idExposesTheEvaluationID() throws {
-        let result = try #require(RadarVerifiedLocationToken(object: [
-            "format": "id",
-            "_id": "lookup-id",
-        ]))
+        let result = try #require(
+            RadarVerifiedLocationToken(object: [
+                "format": "id",
+                "_id": "lookup-id",
+            ]))
         let payload = try #require(result.payload)
 
         guard case let .id(id) = payload else {

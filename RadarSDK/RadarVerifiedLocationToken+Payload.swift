@@ -23,7 +23,7 @@ public extension RadarVerifiedLocationToken {
         case jwe(token: String, expiresAt: Date)
         case id(String)
     }
-    
+
     /// A Swift-only view of the response.
     /// Returns nil when the model lacks the fields required by its format
     @nonobjc
@@ -31,11 +31,11 @@ public extension RadarVerifiedLocationToken {
         switch format {
         case .jws:
             guard let user, let events, let token,
-                  let failureReasons, let expiresAt
+                let failureReasons, let expiresAt
             else {
                 return nil
             }
-            
+
             return .jws(
                 user: user,
                 events: events,
@@ -44,13 +44,13 @@ public extension RadarVerifiedLocationToken {
                 failureReasons: failureReasons,
                 expiresAt: expiresAt
             )
-            
+
         case .jwe:
             guard let token, let expiresAt else {
                 return nil
             }
             return .jwe(token: token, expiresAt: expiresAt)
-            
+
         case .id:
             guard let id = _id else {
                 return nil
