@@ -17,6 +17,8 @@ struct EnvironmentSectionView: View {
     @State private var localURL: String
     @State private var useAuthToken: Bool
     @State private var authToken: String
+    @State private var fraudPublicKey: String
+    @State private var fraudKeyVersion: String
     @State private var showQuitAlert = false
 
     init(settingsStore: SettingsStore) {
@@ -26,6 +28,8 @@ struct EnvironmentSectionView: View {
         _localURL = State(initialValue: settingsStore.localURL)
         _useAuthToken = State(initialValue: settingsStore.useAuthToken)
         _authToken = State(initialValue: settingsStore.authToken(for: settingsStore.environment))
+        _fraudPublicKey = State(initialValue: settingsStore.fraudPublicKey(for: settingsStore.environment))
+        _fraudKeyVersion = State(initialValue: settingsStore.fraudKeyVersion(for: settingsStore.environment))
     }
 
     var body: some View {
@@ -45,6 +49,8 @@ struct EnvironmentSectionView: View {
                 key = settingsStore.publishableKey(for: env)
                 useAuthToken = settingsStore.useAuthToken(for: env)
                 authToken = settingsStore.authToken(for: env)
+                fraudPublicKey = settingsStore.fraudPublicKey(for: env)
+                fraudKeyVersion = settingsStore.fraudKeyVersion(for: env)
             }
 
             if selected == .local {
@@ -68,9 +74,21 @@ struct EnvironmentSectionView: View {
                     .foregroundColor(.secondary)
             }
 
+            if selected.allowsFraudKeyOverride {
+                FieldEditor("Fraud public key", text: $fraudPublicKey, placeholder: "Optional, base64 P-256")
+                FieldEditor("Fraud key version", text: $fraudKeyVersion, placeholder: "1")
+                Text(
+                    "Optional. Encrypts verified requests with this server's public key instead of the production key. "
+                        + "Saved on this device for \(selected.label)."
+                )
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
+
             Button {
                 settingsStore.saveEnvironment(
-                    selected, publishableKey: key, localURL: localURL, useAuthToken: useAuthToken, authToken: authToken)
+                    selected, publishableKey: key, localURL: localURL, useAuthToken: useAuthToken, authToken: authToken,
+                    fraudPublicKey: fraudPublicKey, fraudKeyVersion: fraudKeyVersion)
                 showQuitAlert = true
             } label: {
                 Text("Apply & quit").frame(maxWidth: .infinity)
