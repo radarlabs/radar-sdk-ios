@@ -227,22 +227,17 @@ struct RadarVerifiedLocationTokenTests {
     }
 }
 
-// Event parsing goes through `RadarSwift.bridge`, so these tests swap the global bridge.
+// Events are parsed by `RadarEvent` directly, so they don't need `RadarSwift.bridge`. These tests
+// clear the global bridge to prove that.
 extension RadarSerializedTests {
     @Suite(.serialized)
     struct RadarVerifiedLocationTokenEventTests {
 
-        private func withBridge<T>(_ bridge: RadarSwiftBridgeProtocol?, _ body: () throws -> T) rethrows -> T {
+        private func withoutBridge<T>(_ body: () throws -> T) rethrows -> T {
             let original = RadarSwift.bridge
-            RadarSwift.bridge = bridge
+            RadarSwift.bridge = nil
             defer { RadarSwift.bridge = original }
             return try body()
-        }
-
-        private func eventBridge() -> MockRadarSwiftBridge {
-            let bridge = MockRadarSwiftBridge()
-            bridge.createEventHandler = { RadarEvent(object: $0) }
-            return bridge
         }
 
         @Test
@@ -250,31 +245,24 @@ extension RadarSerializedTests {
             var object = tokenObject()
             object["events"] = [eventObject(id: "event-1"), eventObject(id: "event-2")]
 
-            let token = try #require(withBridge(eventBridge()) { RadarVerifiedLocationToken(object: object) })
+            let token = try #require(withoutBridge { RadarVerifiedLocationToken(object: object) })
 
             #expect(token.events?.map(\._id) == ["event-1", "event-2"])
             #expect(token.events?.first?.type == .userEnteredGeofence)
         }
 
         @Test
-        func anyUnparseableEventReturnsNil() {
+        func unparseableEventsAreDropped() throws {
             var object = tokenObject()
             object["events"] = [eventObject(id: "event-1"), "not an event"]
 
-            #expect(withBridge(eventBridge()) { RadarVerifiedLocationToken(object: object) } == nil)
+            let token = try #require(withoutBridge { RadarVerifiedLocationToken(object: object) })
+            #expect(token.events?.map(\._id) == ["event-1"])
         }
 
         @Test
-        func eventRejectedByTheBridgeReturnsNil() {
-            var object = tokenObject()
-            object["events"] = [eventObject(id: "event-1")]
-
-            #expect(withBridge(MockRadarSwiftBridge()) { RadarVerifiedLocationToken(object: object) } == nil)
-        }
-
-        @Test
-        func emptyEventsDoNotNeedTheBridge() {
-            #expect(withBridge(nil) { RadarVerifiedLocationToken(object: tokenObject()) } != nil)
+        func emptyEventsParse() {
+            #expect(withoutBridge { RadarVerifiedLocationToken(object: tokenObject()) } != nil)
         }
     }
 }

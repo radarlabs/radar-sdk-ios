@@ -58,7 +58,7 @@ class RadarUtils: NSObject {  // swiftlint:disable:this type_body_length
 
     static let country = Locale.current.regionCode
     static let timeZoneOffset = NSNumber(value: TimeZone.current.secondsFromGMT())
-    static let sdkVersion = "3.45.0"
+    static let sdkVersion = "3.46.0"
 
     // Keeps the device ID lookup for the session once it succeeds. A nil result (e.g. before
     // first unlock after a reboot) is dropped, so the next request retries.

@@ -140,7 +140,8 @@ public final class RadarVerifiedLocationToken: NSObject {
             let user = (dict["user"] as? NSDictionary).flatMap {
                 RadarUser(object: $0)
             }
-            let events = (dict["events"] as? NSArray).flatMap(Self.events(from:))
+            // Drop malformed events using the shared RadarEvent parser.
+            let events = RadarEvent.events(from: dict["events"])
             let failureReasons =
                 (dict["failureReasons"] as? NSArray)?
                 .compactMap { $0 as? String } ?? []
@@ -236,19 +237,6 @@ public final class RadarVerifiedLocationToken: NSObject {
 
         formatter.formatOptions = [.withInternetDateTime]
         return formatter.date(from: value)
-    }
-
-    private static func events(from array: NSArray) -> [RadarEvent]? {
-        var events: [RadarEvent] = []
-        for object in array {
-            guard let dict = object as? [String: Any],
-                let event = RadarSwift.bridge?.createEvent(dict: dict)
-            else {
-                return nil
-            }
-            events.append(event)
-        }
-        return events
     }
 
     public func dictionaryValue() -> [AnyHashable: Any] {

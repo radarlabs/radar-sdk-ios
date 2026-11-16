@@ -13,15 +13,14 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
+// RadarEvent is implemented in Swift and declared in the generated RadarSDK-Swift.h, which the
+// umbrella header imports. This header keeps the event enums, which other headers use. Headers
+// that refer to the class declare it with `@class RadarEvent;`.
+
 @class RadarFraud;
 @class RadarRegion;
 @class RadarTrip;
 @class RadarUser;
-
-/**
- Represents a change in user state.
- */
-@interface RadarEvent : NSObject
 
 /**
  The types for events.
@@ -122,109 +121,3 @@ typedef NS_ENUM(NSInteger, RadarEventVerification) {
     /// Reject event
     RadarEventVerificationReject NS_SWIFT_NAME(reject) = -1
 };
-
-/**
- The Radar ID of the event.
- */
-@property (nonnull, copy, nonatomic, readonly) NSString *_id;
-
-/**
- The datetime when the event occurred on the device.
- */
-@property (nonnull, copy, nonatomic, readonly) NSDate *createdAt;
-
-/**
- The datetime when the event was created on the server.
- */
-@property (nonnull, copy, nonatomic, readonly) NSDate *actualCreatedAt;
-
-/**
- A boolean indicating whether the event was generated with your live API key.
- */
-@property (assign, nonatomic, readonly) BOOL live;
-
-/**
- The type of the event.
- */
-@property (assign, nonatomic, readonly) RadarEventType type;
-
-/**
- The name of the conversion event. This will only be set if the `type` is `RadarEventTypeConversion`.
- */
-@property (nullable, copy, nonatomic, readonly) NSString *conversionName;
-
-/**
- The geofence for which the event was generated. May be `nil` for non-geofence events.
- */
-@property (nullable, strong, nonatomic, readonly) RadarGeofence *geofence;
-
-/**
- The place for which the event was generated. May be `nil` for non-place events.
- */
-@property (nullable, strong, nonatomic, readonly) RadarPlace *place;
-
-/**
- The region for which the event was generated. May be `null` for non-region events.
- */
-@property (nullable, strong, nonatomic, readonly) RadarRegion *region;
-
-/**
- The beacon for which the event was generated. May be `nil` for non-beacon events.
- */
-@property (nullable, strong, nonatomic, readonly) RadarBeacon *beacon;
-
-/**
- The trip for which the event was generated. May be `nil` for non-trip events.
- */
-@property (nullable, strong, nonatomic, readonly) RadarTrip *trip;
-
-/**
- The fraud checks for which the event was generated. May be `nil` for non-fraud events.
- */
-@property (nullable, strong, nonatomic, readonly) RadarFraud *fraud;
-
-/**
- For place entry events, alternate place candidates. May be `nil` for non-place events.
- */
-@property (nullable, strong, nonatomic, readonly) NSArray<RadarPlace *> *alternatePlaces;
-
-/**
- For accepted place entry events, the verified place. May be `nil` for non-place events or unverified events.
- */
-@property (nullable, strong, nonatomic, readonly) RadarPlace *verifiedPlace;
-
-/**
- The verification of the event.
- */
-@property (assign, nonatomic, readonly) RadarEventVerification verification;
-
-/**
- The confidence level of the event.
- */
-@property (assign, nonatomic, readonly) RadarEventConfidence confidence;
-
-/**
- The duration between entry and exit events, in minutes, for exit events. 0 for entry events.
- */
-@property (assign, nonatomic, readonly) float duration;
-
-/**
- The location of the event.
- */
-@property (nonnull, strong, nonatomic, readonly) CLLocation *location;
-
-/**
- A boolean indicating whether the event came from a replayed location.
- */
-@property (assign, nonatomic, readonly) BOOL replayed;
-
-/**
- The metadata of the event. Present on conversion events only.
- */
-@property (nonnull, copy, nonatomic, readonly) NSDictionary *metadata;
-
-+ (NSString *_Nullable)stringForType:(RadarEventType)type;
-+ (NSArray<NSDictionary *> *_Nullable)arrayForEvents:(NSArray<RadarEvent *> *_Nullable)events;
-- (NSDictionary *_Nonnull)dictionaryValue;
-
-@end
