@@ -147,15 +147,20 @@ final class MockPreparedFraudPayloadInstance: NSObject {
 
     private(set) var capturedOptions: [[String: Any]] = []
     private(set) var capturedAssertOptions: [[String: Any]] = []
+    // Set to stand in for a fraud SDK that doesn't answer; the test can call the held completion later.
+    private let holdsAssertCompletion: Bool
+    private(set) var heldAssertCompletion: (([String: Any]) -> Void)?
 
     init(
         result: [String: Any]?,
         resultForOptions: (([String: Any]) -> [String: Any]?)? = nil,
-        assertionForOptions: (([String: Any]) -> [String: Any])? = nil
+        assertionForOptions: (([String: Any]) -> [String: Any])? = nil,
+        holdsAssertCompletion: Bool = false
     ) {
         self.result = result
         self.resultForOptions = resultForOptions
         self.assertionForOptions = assertionForOptions
+        self.holdsAssertCompletion = holdsAssertCompletion
         super.init()
     }
 
@@ -169,6 +174,10 @@ final class MockPreparedFraudPayloadInstance: NSObject {
     @objc(assertWithOptions:completionHandler:)
     func assert(options: [String: Any], completionHandler: @escaping ([String: Any]) -> Void) {
         capturedAssertOptions.append(options)
+        if holdsAssertCompletion {
+            heldAssertCompletion = completionHandler
+            return
+        }
         completionHandler(assertionForOptions?(options) ?? [:])
     }
 

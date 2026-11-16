@@ -74,6 +74,25 @@ extension RadarSerializedTests.RadarFraudBridgeTests {
         #expect(instance.capturedAssertOptions.count == 1)
     }
 
+    @Test("Asserting sends the sealed request without an assertion when the fraud SDK doesn't answer in time")
+    func assertRequestTimesOut() async throws {
+        let instance = MockPreparedFraudPayloadInstance(
+            result: ["payload": MockFraudEnvelope.payload],
+            assertionForOptions: { _ in [:] },
+            holdsAssertCompletion: true
+        )
+        let prepared = try #require(RadarPreparedFraudPayload(instance: instance))
+        prepared.assertionTimeout = 0.1
+        let sealed = try prepared.prepareRequest(try Self.assertionRequest())
+
+        let sent = await prepared.assertRequest(sealed)
+
+        #expect(sent == sealed)
+        let lateCompletion = try #require(instance.heldAssertCompletion)
+        lateCompletion(["appAttestKeyId": "test-key-id", "appAttestAssertion": "late-assertion"])
+        lateCompletion([:])
+    }
+
     @Test("Asserting returns the sealed request unchanged when the fraud SDK cannot assert")
     func assertRequestWithoutAssertionSupport() async throws {
         let instance = MockPreparedFraudPayloadInstance(result: ["payload": MockFraudEnvelope.payload])

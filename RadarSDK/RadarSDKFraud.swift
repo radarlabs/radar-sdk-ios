@@ -151,6 +151,9 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
         let assertion: String
     }
 
+    /// How long to wait for the fraud SDK's assertion before sending the request without one.
+    var assertionTimeout: TimeInterval = 2
+
     init?(instance: NSObject) {
         guard instance.responds(to: Self.sealSelector) else {
             return nil
@@ -240,7 +243,8 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
     }
 
     /// Asserts over a sealed body when the fraud SDK supports it. Returns nil when it doesn't, has no
-    /// key to assert with, or fails; the request then goes out without App Attest headers.
+    /// key to assert with, fails, or doesn't answer within `assertionTimeout`; the request then goes out
+    /// without App Attest headers.
     func assert(payload: String, method: String, canonicalRoute: String) async -> AppAttestAssertion? {
         guard instance.responds(to: Self.assertSelector) else {
             return nil
@@ -248,15 +252,21 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
 
         let options: [String: Any] = ["payload": payload, "method": method, "canonicalRoute": canonicalRoute]
         return await withCheckedContinuation { (continuation: CheckedContinuation<AppAttestAssertion?, Never>) in
+            let once = ResumeOnce(continuation)
+            DispatchQueue.global().asyncAfter(deadline: .now() + assertionTimeout) {
+                if once.resume(returning: nil) {
+                    RadarLogger.shared.warning("App Attest assertion timed out; sending the request without one.")
+                }
+            }
             let completionHandler: @convention(block) ([String: Any]?) -> Void = { result in
                 guard
                     let keyId = result?["appAttestKeyId"] as? String,
                     let assertion = result?["appAttestAssertion"] as? String
                 else {
-                    continuation.resume(returning: nil)
+                    once.resume(returning: nil)
                     return
                 }
-                continuation.resume(returning: AppAttestAssertion(keyId: keyId, assertion: assertion))
+                once.resume(returning: AppAttestAssertion(keyId: keyId, assertion: assertion))
             }
 
             instance.perform(
@@ -315,5 +325,26 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
+    }
+}
+
+/// Resumes a continuation at most once, so a late or repeated callback is ignored instead of trapping.
+private final class ResumeOnce<T: Sendable>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuation: CheckedContinuation<T, Never>?
+
+    init(_ continuation: CheckedContinuation<T, Never>) {
+        self.continuation = continuation
+    }
+
+    /// Returns whether this call resumed the continuation.
+    @discardableResult
+    func resume(returning value: T) -> Bool {
+        lock.lock()
+        let continuation = continuation
+        self.continuation = nil
+        lock.unlock()
+        continuation?.resume(returning: value)
+        return continuation != nil
     }
 }
