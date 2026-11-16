@@ -21,8 +21,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		C0DE30050000000000000004 /* VerifiedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE30050000000000000003 /* VerifiedResponse.swift */; };
-		C0DE30050000000000000006 /* ExampleVerifiedResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE30050000000000000005 /* ExampleVerifiedResponseTests.swift */; };
 		0107A9FF26220037008AB52F /* RadarSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C782308797B00EB88F9 /* RadarSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0107AA0726220040008AB52F /* RadarAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C9823087F9200EB88F9 /* RadarAPIClient.h */; };
 		0107AA0C26220045008AB52F /* RadarAPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC1237C5B800026C91A /* RadarAPIHelper.h */; };
@@ -394,8 +392,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C0DE30050000000000000003 /* VerifiedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = VerifiedResponse.swift; path = Example/Example/Services/VerifiedResponse.swift; sourceTree = SOURCE_ROOT; };
-		C0DE30050000000000000005 /* ExampleVerifiedResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleVerifiedResponseTests.swift; sourceTree = "<group>"; };
 		0107A9E82621FFB9008AB52F /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0113020E2AE1467800EFC377 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk/System/Library/PrivateFrameworks/Network.framework; sourceTree = DEVELOPER_DIR; };
 		0114F057284EFDB700ADA4E4 /* RadarRouteMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRouteMode.h; sourceTree = "<group>"; };
@@ -1138,8 +1134,6 @@
 				BA7180542FB3D32900A28DD4 /* RadarUtilsTests.swift */,
 				F6FA1101000000000000A001 /* RadarVerifiedHostOverrideTests.swift */,
 				BAA5D65030A610B9009F108F /* RadarVerifiedRefreshSchedulingTests.swift */,
-				C0DE30050000000000000003 /* VerifiedResponse.swift */,
-				C0DE30050000000000000005 /* ExampleVerifiedResponseTests.swift */,
 				F6FA1103000000000000A002 /* RadarVerificationManagerSwiftTests.swift */,
 				DD103213237F1778003DD408 /* Resources */,
 			);
@@ -1769,8 +1763,6 @@
 				7E57C0DE30C1000000000004 /* RadarPermissionsHelperMock.swift in Sources */,
 				7E57C0DE30C1000000000006 /* CLVisitMock.swift in Sources */,
 				BAA5D65130A610C9009F108F /* RadarVerifiedRefreshSchedulingTests.swift in Sources */,
-				C0DE30050000000000000004 /* VerifiedResponse.swift in Sources */,
-				C0DE30050000000000000006 /* ExampleVerifiedResponseTests.swift in Sources */,
 				7E57C0DE30C1000000000008 /* CLLocationManagerMock.swift in Sources */,
 				7E57C0DE30C100000000000A /* RadarTrackTestBridge.swift in Sources */,
 				7E57C0DE30C0000000000002 /* RadarSDKTestFixture.swift in Sources */,

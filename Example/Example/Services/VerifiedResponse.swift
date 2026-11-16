@@ -50,10 +50,10 @@ struct VerifiedResponse {
         }
     }
 
-    /// Only the opaque token and/or evaluation ID are sent to a customer backend.
+    /// Every response format relays only the opaque token and/or evaluation ID to the backend.
     var relayJSON: String? {
         guard token != nil || evaluationID != nil else { return nil }
-        var payload: [AnyHashable: Any] = ["format": formatName]
+        var payload: [AnyHashable: Any] = [:]
         if let token { payload["token"] = token }
         if let evaluationID { payload["_id"] = evaluationID }
         return Self.json(payload)
