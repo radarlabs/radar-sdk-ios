@@ -21,6 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		BEEF0A0030C2000000000002 /* RadarEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF0A0030C2000000000001 /* RadarEvent.swift */; };
+		BEEF0A0030C2000000000004 /* RadarEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF0A0030C2000000000003 /* RadarEventTests.swift */; };
 		0107A9FF26220037008AB52F /* RadarSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C782308797B00EB88F9 /* RadarSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0107AA0726220040008AB52F /* RadarAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C9823087F9200EB88F9 /* RadarAPIClient.h */; };
 		0107AA0C26220045008AB52F /* RadarAPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC1237C5B800026C91A /* RadarAPIHelper.h */; };
@@ -31,7 +33,6 @@
 		0107AA222622005B008AB52F /* RadarState.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0E2309B3FE00EB88F9 /* RadarState.h */; };
 		0107AA2B26220066008AB52F /* RadarUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0323099B8400EB88F9 /* RadarUtils.h */; };
 		0107AA832622013A008AB52F /* RadarBeacon.m in Sources */ = {isa = PBXBuildFile; fileRef = DD6F4F8525741B1700AFA38B /* RadarBeacon.m */; };
-		0107AAA126220159008AB52F /* RadarEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CB82308812700EB88F9 /* RadarEvent.m */; };
 		0107AAA726220160008AB52F /* RadarGeofence.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CA92308812600EB88F9 /* RadarGeofence.m */; };
 		0107AAB02622016B008AB52F /* RadarPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CB22308812600EB88F9 /* RadarPlace.m */; };
 		0107AAE6262201A1008AB52F /* RadarSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = DD14FD4B23CE783500E80AC8 /* RadarSegment.m */; };
@@ -392,6 +393,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BEEF0A0030C2000000000001 /* RadarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarEvent.swift; sourceTree = "<group>"; };
+		BEEF0A0030C2000000000003 /* RadarEventTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarEventTests.swift; sourceTree = "<group>"; };
 		0107A9E82621FFB9008AB52F /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0113020E2AE1467800EFC377 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk/System/Library/PrivateFrameworks/Network.framework; sourceTree = DEVELOPER_DIR; };
 		0114F057284EFDB700ADA4E4 /* RadarRouteMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRouteMode.h; sourceTree = "<group>"; };
@@ -680,7 +683,6 @@
 		DD236C9923087F9200EB88F9 /* RadarAPIClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAPIClient.m; sourceTree = "<group>"; };
 		DD236CA92308812600EB88F9 /* RadarGeofence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarGeofence.m; sourceTree = "<group>"; };
 		DD236CB22308812600EB88F9 /* RadarPlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarPlace.m; sourceTree = "<group>"; };
-		DD236CB82308812700EB88F9 /* RadarEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarEvent.m; sourceTree = "<group>"; };
 		DD236CF723088F8400EB88F9 /* RadarLocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarLocationManager.h; sourceTree = "<group>"; };
 		DD236CF823088F8400EB88F9 /* RadarLocationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarLocationManager.m; sourceTree = "<group>"; };
 		DD236CFB230895D400EB88F9 /* RadarSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSettings.h; sourceTree = "<group>"; };
@@ -1169,7 +1171,7 @@
 				96A5A0B627AD9F40007B960B /* RadarCoordinate+Internal.h */,
 				BA8647AE2F6C576700F1A199 /* RadarCoordinate.swift */,
 				96A5A0B927AD9F41007B960B /* RadarEvent+Internal.h */,
-				DD236CB82308812700EB88F9 /* RadarEvent.m */,
+				BEEF0A0030C2000000000001 /* RadarEvent.swift */,
 				96A5A0AD27AD9F40007B960B /* RadarFraud+Internal.h */,
 				CA5E9A0430A5000000000001 /* RadarFraud.swift */,
 				96A5A0BC27AD9F41007B960B /* RadarGeofence+Internal.h */,
@@ -1258,6 +1260,7 @@
 				F1A0E6A230B2000000000003 /* RadarRegionTests.swift */,
 				AD0E55A030C1000000000003 /* RadarAddressTests.swift */,
 				BEEF0A0030C1000000000003 /* RadarUserTests.swift */,
+				BEEF0A0030C2000000000003 /* RadarEventTests.swift */,
 				BEEF0A0030C1000000000005 /* RadarUserCompatibilityTests.swift */,
 				CA5E9A0130A1000000000003 /* RadarSegmentTests.swift */,
 				CA5E9A0330A4000000000003 /* RadarTimeZoneTests.swift */,
@@ -1634,7 +1637,7 @@
 				F1A0E6A230B2000000000002 /* RadarRegion.swift in Sources */,
 				F64FF0DD2E4D2BEA00DF3926 /* RadarLogger.swift in Sources */,
 				F6AC00012F00000100523472 /* RadarLifecycleMarker.swift in Sources */,
-				0107AAA126220159008AB52F /* RadarEvent.m in Sources */,
+				BEEF0A0030C2000000000002 /* RadarEvent.swift in Sources */,
 				F64FF0DF2E4D2C2A00DF3926 /* RadarSettings.swift in Sources */,
 				BA561CD82FD377AA00D7A3E3 /* RadarOperatingHoursEvaluator.swift in Sources */,
 				F686B72D2E4D27EB00D3D614 /* RadarInAppMessage.swift in Sources */,
@@ -1708,6 +1711,7 @@
 				F1A0E6A230B2000000000004 /* RadarRegionTests.swift in Sources */,
 				AD0E55A030C1000000000004 /* RadarAddressTests.swift in Sources */,
 				BEEF0A0030C1000000000004 /* RadarUserTests.swift in Sources */,
+				BEEF0A0030C2000000000004 /* RadarEventTests.swift in Sources */,
 				BEEF0A0030C1000000000006 /* RadarUserCompatibilityTests.swift in Sources */,
 				B0A0F0222FBC000100111111 /* StubCLHeading.swift in Sources */,
 				B0A0F0242FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift in Sources */,
@@ -1935,7 +1939,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 3.45.0;
+				MARKETING_VERSION = 3.46.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1993,7 +1997,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 3.45.0;
+				MARKETING_VERSION = 3.46.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";
