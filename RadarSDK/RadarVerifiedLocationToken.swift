@@ -80,9 +80,6 @@ public final class RadarVerifiedLocationToken: NSObject {
 
     // Keeps the Objective-C parser declared in RadarVerifiedLocationToken+Internal.h working.
     // `user`, `events`, `token`, and `expiresAt` are required; the rest fall back to defaults.
-    // Events are built through `RadarSwift.bridge`, because `RadarEvent`'s parser is internal
-    // Objective-C. The bridge is installed by `Radar.initialize`, which runs before any
-    // verified track.
     @objc(initWithObject:)
     convenience init?(object: Any) {
         guard let dict = object as? NSDictionary else {
@@ -95,7 +92,8 @@ public final class RadarVerifiedLocationToken: NSObject {
         let expiresIn = (dict["expiresIn"] as? NSNumber).map { TimeInterval($0.floatValue) } ?? 0
         let passed = (dict["passed"] as? NSNumber)?.boolValue ?? false
         let user = (dict["user"] as? NSDictionary).flatMap { RadarUser(object: $0) }
-        let events = (dict["events"] as? NSArray).flatMap(Self.events(from:))
+        // An event that fails to parse is dropped; a non-array `events` fails the token.
+        let events = RadarEvent.events(from: dict["events"])
         let failureReasons = (dict["failureReasons"] as? NSArray)?.compactMap { $0 as? String } ?? []
         let id = dict["_id"] as? String
 
@@ -114,18 +112,6 @@ public final class RadarVerifiedLocationToken: NSObject {
             _id: id,
             fullDict: dict as? [AnyHashable: Any] ?? [:]
         )
-    }
-
-    // Like `+[RadarEvent eventsFromObject:]`, any event that fails to parse fails the whole array.
-    private static func events(from array: NSArray) -> [RadarEvent]? {
-        var events: [RadarEvent] = []
-        for object in array {
-            guard let dict = object as? [String: Any], let event = RadarSwift.bridge?.createEvent(dict: dict) else {
-                return nil
-            }
-            events.append(event)
-        }
-        return events
     }
 
     public func dictionaryValue() -> [AnyHashable: Any] {
