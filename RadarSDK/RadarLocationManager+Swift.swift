@@ -131,21 +131,9 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
             RadarSwift.bridge?.flushReplays()
         }
 
+        stopMotionUpdatesForStopTracking(locationManager: locationManager, activityManager: activityManager)
+
         let trackingOptions = RadarSettings.trackingOptions ?? .presetEfficient
-        if trackingOptions.useMotion || trackingOptions.usePressure {
-            locationManager.stopUpdatingHeading()
-
-            if let activityManager {
-                if trackingOptions.usePressure {
-                    activityManager.stopRelativeAltitudeUpdates()
-                    activityManager.stopAbsoluteAltitudeUpdates()
-                }
-                if trackingOptions.useMotion {
-                    activityManager.stopActivityUpdates()
-                }
-            }
-        }
-
         trackingOptions.startTrackingAfter = nil
         trackingOptions.stopTrackingAfter = nil
         RadarSettings.trackingOptions = trackingOptions

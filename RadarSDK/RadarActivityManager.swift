@@ -46,7 +46,16 @@ class RadarActivityManager: NSObject, @unchecked Sendable {
 
     /// Starts each sensor and stops it at the first sample, so that iOS asks for the Motion &
     /// Fitness permission. It does nothing while an update is already running.
+    ///
+    /// Apps can call `Radar.requestMotionActivityPermission()` from any thread. Off the main thread,
+    /// this runs later on the main actor, because the `isUpdating*` flags are only safe there.
     @objc func requestPermission() {
+        guard Thread.isMainThread else {
+            Task { @MainActor in
+                self.requestPermission()
+            }
+            return
+        }
         guard let radarSDKMotion = motionOrLog() else {
             return
         }

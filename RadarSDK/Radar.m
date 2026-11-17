@@ -1825,10 +1825,7 @@ BOOL _initialized = NO;
 }
 
 + (void)requestMotionActivityPermission {
-    // RadarActivityManager reads and writes its updating flags on the main thread only.
-    [RadarUtilsDeprecated runOnMainThread:^{
-        [[RadarActivityManager sharedInstance] requestPermission];
-    }];
+    [[RadarActivityManager sharedInstance] requestPermission];
 }
 
 + (void)setAppGroup:(NSString *)appGroup {

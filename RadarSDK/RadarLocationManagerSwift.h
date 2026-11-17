@@ -51,6 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)restartPreviousTrackingOptions;
 + (void)stopTrackingOnLocationManager:(CLLocationManager *)locationManager
                       activityManager:(nullable RadarActivityManager *)activityManager;
++ (void)stopUnusedMotionUpdatesOnLocationManager:(CLLocationManager *)locationManager
+                                 activityManager:(nullable RadarActivityManager *)activityManager
+                                         options:(nullable RadarTrackingOptions *)options;
++ (void)stopMotionUpdatesForStopTrackingOnLocationManager:(CLLocationManager *)locationManager
+                                          activityManager:(nullable RadarActivityManager *)activityManager;
 + (void)startUpdatesWithHost:(id<RadarLocationManagerSwiftHost>)host
               locationManager:(CLLocationManager *)locationManager
        lowPowerLocationManager:(CLLocationManager *)lowPowerLocationManager

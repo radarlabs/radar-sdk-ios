@@ -9,6 +9,12 @@ import CoreLocation
 import CoreMotion
 import Foundation
 
+/// Moves the location manager and the activity manager to the main actor. Both are only used there.
+private struct RadarMotionStopBox: @unchecked Sendable {
+    let locationManager: CLLocationManager
+    let activityManager: RadarActivityManager?
+}
+
 // Swift port of `startMotionUpdatesWithOptions:` in RadarLocationManager.m. With `useMotion`, it
 // starts heading updates and stores each new motion activity, then starts a track. With
 // `usePressure`, it stores relative and absolute altitude data. `RadarActivityManager` reads Core
@@ -26,6 +32,78 @@ extension RadarLocationManagerSwift {
     /// Starts a track after the motion activity changes. Tests replace it so they don't call the track API.
     nonisolated(unsafe) static var trackOnceAfterActivityChange: () -> Void = {
         Radar.trackOnce(completionHandler: nil)
+    }
+
+    /// Stops each motion sensor that still runs but that `options` does not use. With nil `options`,
+    /// for example when tracking is off, it stops every sensor that runs. Call it on the main thread.
+    @objc(stopUnusedMotionUpdatesOnLocationManager:activityManager:options:)
+    static func stopUnusedMotionUpdates(
+        locationManager: CLLocationManager,
+        activityManager: RadarActivityManager?,
+        options: RadarTrackingOptions?
+    ) {
+        guard let activityManager else {
+            return
+        }
+        if options?.useMotion != true, activityManager.isUpdatingActivity {
+            RadarLogger.shared.debug("Stopping motion activity updates that the tracking options do not use")
+            locationManager.stopUpdatingHeading()
+            activityManager.stopActivityUpdates()
+        }
+        if options?.usePressure != true {
+            if activityManager.isUpdatingPressure {
+                RadarLogger.shared.debug("Stopping relative altitude updates that the tracking options do not use")
+                activityManager.stopRelativeAltitudeUpdates()
+            }
+            if activityManager.isUpdatingAbsoluteAltitude {
+                RadarLogger.shared.debug("Stopping absolute altitude updates that the tracking options do not use")
+                activityManager.stopAbsoluteAltitudeUpdates()
+            }
+        }
+    }
+
+    /// Stops the motion sensors when tracking stops. It stops each sensor that the local or the
+    /// remote tracking options use, and each sensor that still runs. Tracking starts the sensors
+    /// from the remote options when they exist, so the local options alone can miss one.
+    ///
+    /// `RadarActivityManager` reads and writes its flags on the main thread, and apps can call
+    /// `stopTracking` from any thread. Off the main thread, this runs later on the main actor.
+    @objc(stopMotionUpdatesForStopTrackingOnLocationManager:activityManager:)
+    static func stopMotionUpdatesForStopTracking(
+        locationManager: CLLocationManager,
+        activityManager: RadarActivityManager?
+    ) {
+        let localOptions = RadarSettings.trackingOptions ?? .presetEfficient
+        let options = Radar.getTrackingOptions()
+        let useMotion = localOptions.useMotion || options.useMotion
+        let usePressure = localOptions.usePressure || options.usePressure
+        let boxes = RadarMotionStopBox(locationManager: locationManager, activityManager: activityManager)
+
+        let stop = {
+            let locationManager = boxes.locationManager
+            let activityManager = boxes.activityManager
+            if useMotion || usePressure {
+                locationManager.stopUpdatingHeading()
+            }
+            if let activityManager {
+                if usePressure {
+                    activityManager.stopRelativeAltitudeUpdates()
+                    activityManager.stopAbsoluteAltitudeUpdates()
+                }
+                if useMotion {
+                    activityManager.stopActivityUpdates()
+                }
+            }
+            stopUnusedMotionUpdates(locationManager: locationManager, activityManager: activityManager, options: nil)
+        }
+
+        if Thread.isMainThread {
+            stop()
+        } else {
+            Task { @MainActor in
+                stop()
+            }
+        }
     }
 
     static func startMotionUpdates(host: RadarLocationManagerSwiftHost, options: RadarTrackingOptions) {

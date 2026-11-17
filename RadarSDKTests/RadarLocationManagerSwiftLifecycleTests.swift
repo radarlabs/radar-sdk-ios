@@ -350,6 +350,7 @@ extension RadarSerializedTests {
         // MARK: - stopTracking
 
         @Test("stopTracking clears tracking state without stopping motion services when disabled")
+        @MainActor
         func stopTrackingClearsStateWithoutMotionServices() {
             RadarLocationManagerSwiftTestHelpers.clearState()
             let bridge = MockRadarSwiftBridge()
@@ -384,6 +385,7 @@ extension RadarSerializedTests {
         }
 
         @Test("stopTracking stops activity and heading updates when motion is enabled")
+        @MainActor
         func stopTrackingStopsMotionUpdates() {
             RadarLocationManagerSwiftTestHelpers.clearState()
             let bridge = MockRadarSwiftBridge()
@@ -412,6 +414,7 @@ extension RadarSerializedTests {
         }
 
         @Test("stopTracking stops altitude and heading updates when pressure is enabled")
+        @MainActor
         func stopTrackingStopsPressureUpdates() {
             RadarLocationManagerSwiftTestHelpers.clearState()
             let bridge = MockRadarSwiftBridge()
@@ -437,6 +440,135 @@ extension RadarSerializedTests {
             #expect(activityManager.stopActivityUpdatesCallCount == 0)
             #expect(activityManager.stopRelativeAltitudeUpdatesCallCount == 1)
             #expect(activityManager.stopAbsoluteAltitudeUpdatesCallCount == 1)
+        }
+
+        @Test("stopTracking stops altitude updates that only the remote options enable")
+        @MainActor
+        func stopTrackingStopsRemotePressureUpdates() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer {
+                RadarSwift.bridge = originalBridge
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            RadarSettings.trackingOptions = RadarTrackingOptions.presetEfficient
+            let remoteOptions = RadarTrackingOptions.presetEfficient
+            remoteOptions.usePressure = true
+            RadarSettings.remoteTrackingOptions = remoteOptions
+            let locationManager = TrackingCLLocationManager()
+            let activityManager = TrackingRadarActivityManager()
+
+            RadarLocationManagerSwift.stopTracking(
+                locationManager: locationManager,
+                activityManager: activityManager
+            )
+
+            #expect(locationManager.stopUpdatingHeadingCallCount == 1)
+            #expect(activityManager.stopRelativeAltitudeUpdatesCallCount == 1)
+            #expect(activityManager.stopAbsoluteAltitudeUpdatesCallCount == 1)
+        }
+
+        @Test("stopTracking stops a sensor that still runs when no options use it")
+        @MainActor
+        func stopTrackingStopsRunningSensors() {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer {
+                RadarSwift.bridge = originalBridge
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            RadarSettings.trackingOptions = RadarTrackingOptions.presetEfficient
+            let motion = TrackingRadarMotion()
+            let activityManager = RadarActivityManager()
+            activityManager.radarSDKMotion = motion
+            activityManager.startActivityUpdates { _ in }
+            activityManager.startRelativeAltitude { _ in }
+            activityManager.startAbsoluteAltitude { _ in }
+            let locationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.stopTracking(
+                locationManager: locationManager,
+                activityManager: activityManager
+            )
+
+            #expect(activityManager.isUpdatingActivity == false)
+            #expect(activityManager.isUpdatingPressure == false)
+            #expect(activityManager.isUpdatingAbsoluteAltitude == false)
+            #expect(motion.calls.contains("stopActivityUpdates"))
+            #expect(motion.calls.contains("stopRelativeAltitudeUpdates"))
+            #expect(motion.calls.contains("stopAbsoluteAltitudeUpdates"))
+            #expect(locationManager.stopUpdatingHeadingCallCount == 1)
+        }
+
+        @Test("stopUnusedMotionUpdates stops only the running sensors that the options do not use")
+        @MainActor
+        func stopUnusedMotionUpdatesKeepsUsedSensors() {
+            let motion = TrackingRadarMotion()
+            let activityManager = RadarActivityManager()
+            activityManager.radarSDKMotion = motion
+            activityManager.startActivityUpdates { _ in }
+            activityManager.startRelativeAltitude { _ in }
+            activityManager.startAbsoluteAltitude { _ in }
+            let locationManager = TrackingCLLocationManager()
+
+            let options = RadarTrackingOptions.presetEfficient
+            options.useMotion = true
+            options.usePressure = false
+            RadarLocationManagerSwift.stopUnusedMotionUpdates(
+                locationManager: locationManager,
+                activityManager: activityManager,
+                options: options
+            )
+
+            #expect(activityManager.isUpdatingActivity)
+            #expect(activityManager.isUpdatingPressure == false)
+            #expect(activityManager.isUpdatingAbsoluteAltitude == false)
+            #expect(locationManager.stopUpdatingHeadingCallCount == 0)
+
+            RadarLocationManagerSwift.stopUnusedMotionUpdates(
+                locationManager: locationManager,
+                activityManager: activityManager,
+                options: nil
+            )
+
+            #expect(activityManager.isUpdatingActivity == false)
+            #expect(locationManager.stopUpdatingHeadingCallCount == 1)
+        }
+
+        @Test("stopTracking off the main thread stops the sensors on the main actor")
+        func stopTrackingOffMainStopsOnMainActor() async {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer {
+                RadarSwift.bridge = originalBridge
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            let options = RadarTrackingOptions.presetEfficient
+            options.useMotion = true
+            RadarSettings.trackingOptions = options
+            let locationManager = TrackingCLLocationManager()
+            let activityManager = TrackingRadarActivityManager()
+
+            await Task.detached {
+                RadarLocationManagerSwift.stopTracking(
+                    locationManager: locationManager,
+                    activityManager: activityManager
+                )
+            }.value
+            // The main actor runs jobs in order, so this waits for the stop that stopTracking queued.
+            await Task { @MainActor in }.value
+
+            #expect(activityManager.stopActivityUpdatesCallCount == 1)
+            #expect(locationManager.stopUpdatingHeadingCallCount == 1)
         }
 
         @Test("stopTracking flushes replays before updating tracking when configured")

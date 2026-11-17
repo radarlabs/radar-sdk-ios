@@ -263,7 +263,7 @@ struct RadarActivityManagerTests {
 
     @Test("A late warm-up sample does not stop a sensor that tracking started")
     @MainActor
-    func requestPermissionLateSampleKeepsTrackingUpdates() async throws {
+    func requestPermissionLateSampleKeepsTrackingUpdates() async {
         let (manager, motion) = makeManager()
 
         manager.requestPermission()
@@ -275,8 +275,8 @@ struct RadarActivityManagerTests {
         motion.activityHandlers[0](nil)
         motion.relativeAltitudeHandlers[0](nil, nil)
         motion.absoluteAltitudeHandlers[0](nil, nil)
-        // Let the main-actor tasks that the handlers started run.
-        try await Task.sleep(nanoseconds: 100_000_000)
+        // The main actor runs jobs in order, so this waits for the tasks that the handlers queued.
+        await Task { @MainActor in }.value
 
         #expect(!motion.calls.contains("stopActivityUpdates"))
         #expect(!motion.calls.contains("stopRelativeAltitudeUpdates"))
@@ -284,6 +284,19 @@ struct RadarActivityManagerTests {
         #expect(manager.isUpdatingActivity)
         #expect(manager.isUpdatingPressure)
         #expect(manager.isUpdatingAbsoluteAltitude)
+    }
+
+    @Test("requestPermission off the main thread starts the sensors on the main actor")
+    func requestPermissionOffMainRunsOnMainActor() async {
+        let (manager, motion) = makeManager()
+
+        await Task.detached {
+            manager.requestPermission()
+        }.value
+        // The main actor runs jobs in order, so this waits for the call that requestPermission queued.
+        await Task { @MainActor in }.value
+
+        #expect(motion.calls == ["startActivityUpdates", "startRelativeAltitudeUpdates", "startAbsoluteAltitudeUpdates"])
     }
 
     @MainActor
@@ -295,6 +308,7 @@ struct RadarActivityManagerTests {
     }
 
     @Test("requestPermission does nothing while an update is running")
+    @MainActor
     func requestPermissionSkipsWhileUpdating() {
         let (manager, motion) = makeManager()
         manager.startRelativeAltitude { _ in }
