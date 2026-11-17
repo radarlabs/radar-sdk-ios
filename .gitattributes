@@ -5,3 +5,6 @@
 # Pretty-print the SwiftLint baseline on stage so its diffs are readable.
 # Requires `git config filter.swiftlint-baseline.clean "jq -S ."` (set up by bootstrap.sh).
 .swiftlint-baseline.json filter=swiftlint-baseline
+
+# Xcode writes the project file. Collapse it in GitHub diffs and leave it out of language stats.
+RadarSDK.xcodeproj/project.pbxproj linguist-generated=true

@@ -204,10 +204,11 @@ struct RadarActivityManagerTests {
 
     // MARK: - Absolute altitude
 
-    @Test("startAbsoluteAltitude sets the flag, and stop clears it")
+    @Test("startAbsoluteAltitude sets the flag, ignores a second start, and stop clears it")
     func absoluteAltitudeStartAndStop() {
         let (manager, motion) = makeManager()
 
+        manager.startAbsoluteAltitude { _ in }
         manager.startAbsoluteAltitude { _ in }
         #expect(manager.isUpdatingAbsoluteAltitude)
         #expect(motion.queues.first === manager.absoluteAltitudeQueue)
@@ -239,7 +240,8 @@ struct RadarActivityManagerTests {
     // MARK: - requestPermission
 
     @Test("requestPermission starts each sensor and stops it at the first sample")
-    func requestPermissionWarmsUpSensors() {
+    @MainActor
+    func requestPermissionWarmsUpSensors() async throws {
         let (manager, motion) = makeManager()
 
         manager.requestPermission()
@@ -252,10 +254,44 @@ struct RadarActivityManagerTests {
         motion.activityHandlers[0](nil)
         motion.relativeAltitudeHandlers[0](nil, nil)
         motion.absoluteAltitudeHandlers[0](nil, nil)
+        try await waitUntil { motion.calls.count == 6 }
 
         #expect(
-            Array(motion.calls.suffix(3))
+            Set(motion.calls.suffix(3))
                 == ["stopActivityUpdates", "stopRelativeAltitudeUpdates", "stopAbsoluteAltitudeUpdates"])
+    }
+
+    @Test("A late warm-up sample does not stop a sensor that tracking started")
+    @MainActor
+    func requestPermissionLateSampleKeepsTrackingUpdates() async throws {
+        let (manager, motion) = makeManager()
+
+        manager.requestPermission()
+        manager.startActivityUpdates { _ in }
+        manager.startRelativeAltitude { _ in }
+        manager.startAbsoluteAltitude { _ in }
+
+        // The warm-up samples arrive after tracking started each sensor.
+        motion.activityHandlers[0](nil)
+        motion.relativeAltitudeHandlers[0](nil, nil)
+        motion.absoluteAltitudeHandlers[0](nil, nil)
+        // Let the main-actor tasks that the handlers started run.
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        #expect(!motion.calls.contains("stopActivityUpdates"))
+        #expect(!motion.calls.contains("stopRelativeAltitudeUpdates"))
+        #expect(!motion.calls.contains("stopAbsoluteAltitudeUpdates"))
+        #expect(manager.isUpdatingActivity)
+        #expect(manager.isUpdatingPressure)
+        #expect(manager.isUpdatingAbsoluteAltitude)
+    }
+
+    @MainActor
+    private func waitUntil(_ condition: @MainActor () -> Bool) async throws {
+        for _ in 0..<100 where !condition() {
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        #expect(condition())
     }
 
     @Test("requestPermission does nothing while an update is running")
@@ -274,10 +310,10 @@ struct RadarActivityManagerTests {
     func startMotionUpdatesStoresSharedInstance() {
         let host = TrackingRadarLocationManagerHost()
         host.activityManager = nil
+        // The test bundle does not link RadarSDKMotion, so the shared instance has no
+        // `radarSDKMotion` and its start methods do nothing. Do not change the shared instance here:
+        // other suites can run at the same time.
         let shared = RadarActivityManager.shared
-        let originalMotion = shared.radarSDKMotion
-        shared.radarSDKMotion = nil
-        defer { shared.radarSDKMotion = originalMotion }
 
         let options = RadarTrackingOptions.presetEfficient
         options.useMotion = true

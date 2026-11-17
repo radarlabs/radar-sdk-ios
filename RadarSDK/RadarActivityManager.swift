@@ -17,7 +17,7 @@ private struct RadarActivityMainActorBox<Value>: @unchecked Sendable {
 /// Starts and stops Core Motion activity and altitude updates through `RadarSDKMotion`. Each start
 /// method does nothing when `radarSDKMotion` is not set, and it calls its handler on the main actor.
 ///
-/// The `isUpdating*` flags are not locked. Callers start and stop updates from the main thread.
+/// The `isUpdating*` flags are not locked. Call every method from the main thread.
 @objc(RadarActivityManager)
 class RadarActivityManager: NSObject, @unchecked Sendable {
 
@@ -58,14 +58,29 @@ class RadarActivityManager: NSObject, @unchecked Sendable {
         RadarLogger.shared.info(
             "requestPermission: warming up CoreMotion sensors (activity, relative altitude, absolute altitude if available)"
         )
+        // A warm-up sample can already be on its queue when tracking starts the same sensor. Read
+        // the flag on the main actor, and stop the sensor only if tracking did not start it.
+        let motionBox = RadarActivityMainActorBox(value: radarSDKMotion)
         radarSDKMotion.startActivityUpdates(to: activityQueue) { _ in
-            radarSDKMotion.stopActivityUpdates()
+            Task { @MainActor in
+                if !self.isUpdatingActivity {
+                    motionBox.value.stopActivityUpdates()
+                }
+            }
         }
         radarSDKMotion.startRelativeAltitudeUpdates(to: pressureQueue) { _, _ in
-            radarSDKMotion.stopRelativeAltitudeUpdates()
+            Task { @MainActor in
+                if !self.isUpdatingPressure {
+                    motionBox.value.stopRelativeAltitudeUpdates()
+                }
+            }
         }
         radarSDKMotion.startAbsoluteAltitudeUpdates(to: absoluteAltitudeQueue) { _, _ in
-            radarSDKMotion.stopAbsoluteAltitudeUpdates()
+            Task { @MainActor in
+                if !self.isUpdatingAbsoluteAltitude {
+                    motionBox.value.stopAbsoluteAltitudeUpdates()
+                }
+            }
         }
     }
 
@@ -165,6 +180,11 @@ class RadarActivityManager: NSObject, @unchecked Sendable {
         guard let radarSDKMotion = motionOrLog() else {
             return
         }
+        guard !isUpdatingAbsoluteAltitude else {
+            RadarLogger.shared.debug(
+                "startAbsoluteAltitudeWithHandler: already updating absolute altitude; ignoring duplicate call")
+            return
+        }
         isUpdatingAbsoluteAltitude = true
         RadarLogger.shared.info("startAbsoluteAltitudeWithHandler: starting CMAltimeter absolute updates (iOS 15+)")
 
@@ -182,10 +202,17 @@ class RadarActivityManager: NSObject, @unchecked Sendable {
             }
             // `RadarMotionProtocol` declares this handler with `CMAltitudeHandler`, but RadarSDKMotion
             // passes the handler to `CMAltimeter`, which sends `CMAbsoluteAltitudeData`.
-            guard let altitudeData = (sample as AnyObject?) as? CMAbsoluteAltitudeData else {
+            guard let sample else {
                 RadarLogger.shared.warning(
                     "Absolute altitude handler invoked with nil altitudeData at \(Self.format(callbackTime)) "
                         + "- this will cause altitude to be undefined"
+                )
+                return
+            }
+            guard let altitudeData = (sample as AnyObject) as? CMAbsoluteAltitudeData else {
+                RadarLogger.shared.error(
+                    "Absolute altitude handler invoked with \(type(of: sample)), not CMAbsoluteAltitudeData; "
+                        + "dropping the sample"
                 )
                 return
             }
