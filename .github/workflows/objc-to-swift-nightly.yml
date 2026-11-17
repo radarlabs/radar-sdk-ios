@@ -124,12 +124,18 @@ jobs:
 
             Inspect the full RadarSDK Objective-C backlog and choose exactly one eligible
             implementation. Prefer the smallest implementation, then the least coupled,
-            then the filename. Exclude managers, partial migrations, files containing an
-            `// objc-only:` marker, and models already represented elsewhere. State the
-            selected file and rationale before editing.
-            Replace it with a same-basename Swift implementation, preserve Objective-C
-            compatibility, delete the old .m and project references, and do not select
-            another file or leave the old implementation beside Swift. For a public
+            then the filename. Exclude only managers (`Radar` and `*Manager` classes) and
+            files containing an `// objc-only:` marker. A `.m` with a same-basename `.swift`
+            file is eligible: it is either a partial port (the Swift file holds a stub or
+            parallel type such as `RadarSegmentSwift`) or leftover Objective-C (the Swift file
+            is the real class and the `.m` holds a type such as `RadarSdkConfiguration_ObjC`).
+            Finish it as the skill's "Target kinds" section describes. State the selected
+            file, its target kind, and the rationale before editing.
+            End with one Swift implementation in the same-basename `.swift` file: preserve
+            Objective-C compatibility, fold any stub type into it and update its callers,
+            move or delete each leftover symbol based on its consumers, delete the old .m
+            and project references, and do not select another file or leave a stub,
+            leftover, or old implementation beside Swift. For a public
             class, follow "Public classes implemented in Swift" in AGENTS.md: declare it once
             as `@objc(ClassName) @objcMembers public final class ClassName` (option types
             customers create keep public initializers and are not final), keep exactly the

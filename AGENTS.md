@@ -39,8 +39,11 @@ migration must never select it.
 `radarlabs/clankers`) in its unattended batch mode: each run asks the skill to choose one
 eligible implementation using its candidacy rules, replaces it with a same-basename Swift
 implementation while preserving compatibility, deletes the old `.m` from the project, and
-opens a PR labeled `swift-migration`. In that context the
-"ask the user" requirement is satisfied by human review of that PR — nothing merges without
+opens a PR labeled `swift-migration`. A `.m` that already has a same-basename `.swift` file
+is eligible: the run finishes the partial port (it folds a stub type such as
+`RadarSegmentSwift` into the real class) or removes the leftover Objective-C (such as
+`RadarSdkConfiguration_ObjC`) after it moves or deletes each symbol based on its consumers.
+In that context the "ask the user" requirement is satisfied by human review of that PR — nothing merges without
 an explicit approval — and at most one such PR may be open at a time. Interactive sessions
 must still ask before migrating.
 
