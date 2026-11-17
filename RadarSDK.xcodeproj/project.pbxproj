@@ -163,6 +163,7 @@
 		C1F0A0D42FBD000100222222 /* RadarLocationManagerSwiftMotionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0D42FBD000100333333 /* RadarLocationManagerSwiftMotionTests.swift */; };
 		C1F0A0D32FBD000100222222 /* RadarLocationManagerSwiftCompletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0D32FBD000100333333 /* RadarLocationManagerSwiftCompletionTests.swift */; };
 		B0A0F0542FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0552FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift */; };
+		B0A0F0562FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0572FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift */; };
 		B0A0F3042FBC000100111111 /* RadarRegionCleanerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F3052FBC000100111111 /* RadarRegionCleanerTests.swift */; };
 		B0A0F3062FBC000100111111 /* RadarPermissionsHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F3072FBC000100111111 /* RadarPermissionsHelperTests.swift */; };
 		B0A0F02C2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F02D2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift */; };
@@ -516,6 +517,7 @@
 		C1F0A0D42FBD000100333333 /* RadarLocationManagerSwiftMotionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftMotionTests.swift; sourceTree = "<group>"; };
 		C1F0A0D32FBD000100333333 /* RadarLocationManagerSwiftCompletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftCompletionTests.swift; sourceTree = "<group>"; };
 		B0A0F0552FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerObjCRegionTests.swift; sourceTree = "<group>"; };
+		B0A0F0572FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerObjCUpdatesTests.swift; sourceTree = "<group>"; };
 		B0A0F3052FBC000100111111 /* RadarRegionCleanerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRegionCleanerTests.swift; sourceTree = "<group>"; };
 		B0A0F3072FBC000100111111 /* RadarPermissionsHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarPermissionsHelperTests.swift; sourceTree = "<group>"; };
 		B0A0F02D2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftAccuracyTests.swift; sourceTree = "<group>"; };
@@ -1055,6 +1057,7 @@
 				C1F0A0D42FBD000100333333 /* RadarLocationManagerSwiftMotionTests.swift */,
 				C1F0A0D32FBD000100333333 /* RadarLocationManagerSwiftCompletionTests.swift */,
 				B0A0F0552FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift */,
+				B0A0F0572FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift */,
 				B0A0F3052FBC000100111111 /* RadarRegionCleanerTests.swift */,
 				B0A0F3072FBC000100111111 /* RadarPermissionsHelperTests.swift */,
 				B0A0F0312FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift */,
@@ -1700,6 +1703,7 @@
 				C1F0A0D42FBD000100222222 /* RadarLocationManagerSwiftMotionTests.swift in Sources */,
 				C1F0A0D32FBD000100222222 /* RadarLocationManagerSwiftCompletionTests.swift in Sources */,
 				B0A0F0542FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift in Sources */,
+				B0A0F0562FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift in Sources */,
 				B0A0F3042FBC000100111111 /* RadarRegionCleanerTests.swift in Sources */,
 				B0A0F3062FBC000100111111 /* RadarPermissionsHelperTests.swift in Sources */,
 				B0A0F02C2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift in Sources */,

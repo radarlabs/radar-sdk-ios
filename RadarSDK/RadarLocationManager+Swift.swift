@@ -83,6 +83,8 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
     private static let trackingShutdownDelay: TimeInterval = 10
     private static let immediateShutdownDelay: TimeInterval = 0
+    // With the blue bar, intervals at or below this value use continuous updates.
+    private static let continuousUpdatesMaxInterval: Int32 = 5
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
     nonisolated(unsafe) static var bootstrapIndoorTracking: () -> Void = { RadarIndoors.bootstrapTrackingIfNeeded() }
     // The region the last `replaceBubbleGeofence(locationManager:location:radius:)` registered.
@@ -173,15 +175,24 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
             host.cancelPendingShutdown()
             host.timer()?.invalidate()
 
+            // Continuous updates on the primary location manager already deliver a fix about once
+            // per second, so the timer does not also request a location in that mode.
+            let continuousUpdates = blueBar && interval <= Self.continuousUpdatesMaxInterval
+
             let hostBox = RadarLocationManagerSwiftHostBox(host: host)
             host.setTimer(
                 Timer.scheduledTimer(withTimeInterval: TimeInterval(interval), repeats: true) { [hostBox] _ in
+                    if continuousUpdates {
+                        RadarLogger.shared.debug("🦅 Timer fired | skipping requestLocation: continuous updates active")
+                        return
+                    }
+
                     RadarLogger.shared.debug("🦅 Timer fired")
                     hostBox.host.requestLocation()
                 })
 
             lowPowerLocationManager.startUpdatingLocation()
-            if blueBar && interval <= 5 {
+            if continuousUpdates {
                 locationManager.startUpdatingLocation()
             } else {
                 locationManager.stopUpdatingLocation()

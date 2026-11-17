@@ -183,6 +183,26 @@ extension RadarSerializedTests {
             #expect(lowPowerLocationManager.startUpdatingLocationCallCount == 1)
         }
 
+        @Test("startUpdates timer does not request a location while continuous updates run")
+        func startUpdatesTimerSkipsRequestDuringContinuousUpdates() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: lowPowerLocationManager,
+                interval: 5,
+                blueBar: true
+            )
+            defer { host.timer()?.invalidate() }
+
+            #expect(host.timer() != nil)
+            host.timer()?.fire()
+            #expect(host.requestLocationCallCount == 0)
+        }
+
         @Test("startUpdates stops primary updates for a long blue-bar interval")
         func startUpdatesStopsPrimaryManagerForLongBlueBarInterval() {
             let host = TrackingRadarLocationManagerHost()
@@ -200,6 +220,9 @@ extension RadarSerializedTests {
 
             #expect(locationManager.startUpdatingLocationCallCount == 0)
             #expect(locationManager.stopUpdatingLocationCallCount == 1)
+
+            host.timer()?.fire()
+            #expect(host.requestLocationCallCount == 1)
         }
 
         @Test("startUpdates does not replace a timer when the interval is unchanged")

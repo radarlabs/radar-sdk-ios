@@ -342,16 +342,27 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [self.timer invalidate];
         }
 
+        // Continuous updates on the primary location manager already deliver a fix about once
+        // per second, so the timer does not also request a location in that mode.
+        BOOL continuousUpdates = blueBar && interval <= 5;
+
         self.timer = [NSTimer scheduledTimerWithTimeInterval:interval
                                                      repeats:YES
                                                        block:^(NSTimer *_Nonnull timer) {
+                                                           if (continuousUpdates) {
+                                                               [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                                                                                  message:@"Timer fired | skipping requestLocation: continuous updates active"];
+
+                                                               return;
+                                                           }
+
                                                            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Timer fired"];
 
                                                            [self requestLocation];
                                                        }];
 
         [self.lowPowerLocationManager startUpdatingLocation];
-        if (blueBar && interval <= 5) {
+        if (continuousUpdates) {
             [self.locationManager startUpdatingLocation];
         } else {
             [self.locationManager stopUpdatingLocation];
