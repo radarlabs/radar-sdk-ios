@@ -152,7 +152,7 @@ final class RadarPreparedFraudPayload: NSObject, @unchecked Sendable {
     }
 
     /// How long to wait for the fraud SDK's assertion before sending the request without one.
-    var assertionTimeout: TimeInterval = 2
+    var assertionTimeout: TimeInterval = 1
 
     init?(instance: NSObject) {
         guard instance.responds(to: Self.sealSelector) else {
