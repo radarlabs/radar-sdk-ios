@@ -22,22 +22,23 @@ struct VerifiedPanel: View {
             }
             ActionButton("getVerifiedLocationToken") {
                 Radar.getVerifiedLocationToken { (status, token) in
-                    let tokenDesc = token?.dictionaryValue().description ?? "no token"
-                    logStream.write(
+                    logStream.writeVerifiedResponse(
                         status,
-                        summary: "getVerifiedLocationToken: \(Radar.stringForStatus(status))",
-                        detail: tokenDesc
+                        action: "getVerifiedLocationToken",
+                        response: token.map(VerifiedResponse.init)
                     )
                 }
             }
+            ActionButton("clearVerifiedLocationToken") {
+                Radar.clearVerifiedLocationToken()
+                logStream.write(result: "Verified token cache cleared; the next token request will fetch a fresh response.")
+            }
             ActionButton("trackVerified") {
-                Radar.setExpectedJurisdiction(countryCode: "CA", stateCode: nil)
                 Radar.trackVerified { (status, token) in
-                    let tokenDesc = token?.dictionaryValue().description ?? "no token"
-                    logStream.write(
+                    logStream.writeVerifiedResponse(
                         status,
-                        summary: "trackVerified: \(Radar.stringForStatus(status))",
-                        detail: tokenDesc
+                        action: "trackVerified",
+                        response: token.map(VerifiedResponse.init)
                     )
                 }
             }
@@ -45,12 +46,12 @@ struct VerifiedPanel: View {
                 let start = Date()
                 Radar.trackVerified(beacons: true, desiredAccuracy: .medium) { (status, token) in
                     let elapsed = Int(Date().timeIntervalSince(start) * 1000)
-                    let beacons = token?.user?.beacons ?? []
-                    let beaconDesc = beacons.map { "\($0.__description ?? $0._id ?? "beacon") (\($0.uuid) \($0.major)/\($0.minor))" }
-                    logStream.write(
+                    logStream.writeVerifiedResponse(
                         status,
-                        summary: "trackVerified (beacons): \(Radar.stringForStatus(status)) in \(elapsed) ms, \(beacons.count) beacons",
-                        detail: beaconDesc.joined(separator: "\n")
+                        action: "trackVerified (beacons)",
+                        response: token.map(VerifiedResponse.init),
+                        elapsedMilliseconds: elapsed,
+                        includeBeacons: true
                     )
                 }
             }
@@ -64,11 +65,10 @@ struct VerifiedPanel: View {
             }
             ActionButton("revealRisk") {
                 Radar.revealRisk { (status, token) in
-                    let tokenDesc = token?.dictionaryValue().description ?? "no token"
-                    logStream.write(
+                    logStream.writeVerifiedResponse(
                         status,
-                        summary: "revealRisk: \(Radar.stringForStatus(status))",
-                        detail: tokenDesc
+                        action: "revealRisk",
+                        response: token.map(VerifiedResponse.init)
                     )
                 }
             }

@@ -13,7 +13,7 @@ import UIKit
 import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarVerifiedDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate {
 
     // Default keys, used until you save one in Settings → Environment. hooks/clean-filter keeps
     // real keys out of git.
@@ -70,7 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         settingsStore.runKeyCheck(logStream: logStream)
         Radar.setDelegate(logStream)
         wireLiveActivitySubscriptions()
-        Radar.setVerifiedDelegate(self)
+        Radar.setVerifiedDelegate(logStream)
         Radar.setInAppMessageDelegate(MyIAMDelegate(logStream: logStream))
         settingsStore.loadFromSDK()
         mapOverlayRegistry.register(MonitoredRegionsSource())
