@@ -127,10 +127,8 @@ struct ObjCVerificationManager {
 
 enum RadarVerificationManagerSwiftTestHelpers {
 
-    /// `isLastTokenValid` reads exactly four fields off the token: `expiresIn`,
-    /// `passed`, and `user.state.distanceToBorder`, plus the stored uptime. Build a
-    /// real token through the internal JSON initializer so both implementations see
-    /// identical input.
+    /// Build a real token so both implementations see identical input. Border
+    /// distances remain configurable to verify they do not affect cache validity.
     static func makeToken(
         passed: Bool = true,
         expiresIn: TimeInterval = 90,
