@@ -157,6 +157,11 @@
     [queryString appendFormat:@"installId=%@", [RadarSettings installId]];
     [queryString appendFormat:@"&sessionId=%@", sessionId];
     [queryString appendFormat:@"&id=%@", [RadarSettings _id]];
+    // The server stores App Attest keys per device and confirms the client's key against it.
+    NSString *deviceId = [RadarUtilsDeprecated deviceId];
+    if (deviceId && ![RadarSettings anonymousTrackingEnabled]) {
+        [queryString appendFormat:@"&deviceId=%@", deviceId];
+    }
     NSString *locationAuthorization = [RadarUtils locationAuthorization];
     if (locationAuthorization) {
         [queryString appendFormat:@"&locationAuthorization=%@", locationAuthorization];
