@@ -78,6 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)useOpenedAppConversion;
 + (void)setInitializeOptions:(RadarInitializeOptions *)options;
 + (RadarInitializeOptions *)initializeOptions;
++ (NSTimeInterval)networkTimeoutInterval;
 + (NSString * _Nullable)pushNotificationToken;
 + (void)setPushNotificationToken:(NSString* _Nullable)deviceToken;
 + (NSString * _Nullable)locationExtensionToken;

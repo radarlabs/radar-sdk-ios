@@ -237,3 +237,64 @@ struct RadarAPIHelperTests {
         #expect(requests.count == failingAttempt - 1)
     }
 }
+
+@Suite(.serialized)
+struct RadarNetworkTimeoutTests {
+
+    private static func options(timeout: TimeInterval) -> RadarInitializeOptions {
+        let options = RadarInitializeOptions()
+        options.networkTimeoutInterval = timeout
+        return options
+    }
+
+    @Test func noOptionsUsesDefault() {
+        #expect(RadarSettings.networkTimeoutInterval(for: nil) == 10)
+    }
+
+    @Test func validValueIsUsed() {
+        #expect(RadarSettings.networkTimeoutInterval(for: Self.options(timeout: 30)) == 30)
+    }
+
+    // Same results as the old `RadarAPIHelperStandardNetworkTimeoutInterval` in RadarAPIHelper.m.
+    @Test(
+        "Values that aren't valid fall back to the default, and others are clamped to 1...300",
+        arguments: [
+            (0, 10), (-5, 10), (.nan, 10), (.infinity, 10), (-.infinity, 10),
+            (0.5, 1), (1, 1), (300, 300), (600, 300),
+        ] as [(TimeInterval, TimeInterval)]
+    )
+    func invalidAndOutOfRangeValues(input: TimeInterval, expected: TimeInterval) {
+        #expect(RadarSettings.networkTimeoutInterval(for: Self.options(timeout: input)) == expected)
+    }
+
+    @Test func helperSessionUsesStoredTimeout() throws {
+        let savedOptions = RadarSettings.initializeOptions
+        defer { RadarSettings.initializeOptions = savedOptions }
+
+        // The helper exists before the options are stored, like `RadarAPIClient.shared` can.
+        // `session: nil` picks the Swift helper. The Objective-C `RadarAPIHelper` also has `init()`.
+        let helper = RadarAPIHelper(session: nil)
+
+        RadarSettings.initializeOptions = Self.options(timeout: 30)
+        let first = try #require(helper.currentSession() as? URLSession)
+        #expect(first.configuration.timeoutIntervalForRequest == 30)
+        #expect(first.configuration.timeoutIntervalForResource == 30)
+        #expect(try #require(helper.currentSession() as? URLSession) === first)
+
+        RadarSettings.initializeOptions = Self.options(timeout: 45)
+        let second = try #require(helper.currentSession() as? URLSession)
+        #expect(second !== first)
+        #expect(second.configuration.timeoutIntervalForRequest == 45)
+        #expect(second.configuration.timeoutIntervalForResource == 45)
+
+        RadarSettings.initializeOptions = nil
+        let third = try #require(helper.currentSession() as? URLSession)
+        #expect(third.configuration.timeoutIntervalForRequest == 10)
+    }
+
+    @Test func helperUsesInjectedSession() {
+        let injected = RetryTestSession(failures: [])
+        let helper = RadarAPIHelper(session: injected)
+        #expect(helper.currentSession() as? RetryTestSession === injected)
+    }
+}

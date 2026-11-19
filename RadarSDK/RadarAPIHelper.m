@@ -11,32 +11,11 @@
 #import "RadarSettings.h"
 #import "RadarUtils.h"
 
-#import <math.h>
-
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
 #elif __has_include("RadarSDK-Swift.h")
 #import "RadarSDK-Swift.h"
 #endif
-
-static NSTimeInterval RadarAPIHelperStandardNetworkTimeoutInterval(void) {
-    RadarInitializeOptions *opts = [RadarSettings initializeOptions];
-    NSTimeInterval interval = opts ? opts.networkTimeoutInterval : 10;
-
-    // Validate
-    if (interval <= 0 || isnan(interval) || isinf(interval)) {
-        interval = 10;
-    }
-
-    // Clamp to reasonable range
-    if (interval < 1) {
-        interval = 1;
-    } else if (interval > 300) {
-        interval = 300;
-    }
-
-    return interval;
-}
 
 static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterval standard) { return standard * 2.5; }
 
@@ -58,7 +37,7 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
         _semaphore = dispatch_semaphore_create(1);
 
-        NSTimeInterval standardTimeout = RadarAPIHelperStandardNetworkTimeoutInterval();
+        NSTimeInterval standardTimeout = [RadarSettings networkTimeoutInterval];
         NSTimeInterval extendedTimeout = RadarAPIHelperExtendedNetworkTimeoutInterval(standardTimeout);
 
         NSURLSessionConfiguration *standardConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];

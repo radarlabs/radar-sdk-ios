@@ -12,25 +12,52 @@ protocol RadarURLSessionProtocol: Sendable {
 }
 extension URLSession: RadarURLSessionProtocol {}
 
-final class RadarAPIHelper: Sendable {
+// `lock` guards `cachedSession`. The other stored properties are immutable.
+final class RadarAPIHelper: @unchecked Sendable {
 
-    let session: RadarURLSessionProtocol
+    private let injectedSession: RadarURLSessionProtocol?
+    private let lock = NSLock()
+    private var cachedSession: (timeout: TimeInterval, session: URLSession)?
 
+    /// Tests pass `session`. With no session, the helper makes a `URLSession` that uses
+    /// `RadarSettings.networkTimeoutInterval`.
     init(session: RadarURLSessionProtocol? = nil) {
-        if let session {
-            self.session = session
-        } else {
-            let config = URLSessionConfiguration.default
-            config.timeoutIntervalForRequest = 10
-            config.timeoutIntervalForResource = 10
-            self.session = URLSession(configuration: config)
+        self.injectedSession = session
+    }
+
+    /// Returns the session for the next request. The helper can exist before `Radar.initialize`
+    /// stores the options, so it reads the timeout for each request. It makes a new session only
+    /// when the timeout changes.
+    func currentSession() -> RadarURLSessionProtocol {
+        if let injectedSession {
+            return injectedSession
         }
+        return session(timeout: RadarSettings.networkTimeoutInterval)
+    }
+
+    private func session(timeout: TimeInterval) -> URLSession {
+        lock.lock()
+        defer { lock.unlock() }
+
+        if let cachedSession, cachedSession.timeout == timeout {
+            return cachedSession.session
+        }
+
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = timeout
+        config.timeoutIntervalForResource = timeout
+        let session = URLSession(configuration: config)
+
+        cachedSession?.session.finishTasksAndInvalidate()
+        cachedSession = (timeout, session)
+        return session
     }
 
     func retryingRequest(
         for request: URLRequest,
         prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
     ) async throws -> (Data, URLResponse) {
+        let session = currentSession()
         let firstRequest = try prepareRequest?(request) ?? request
 
         do {
