@@ -29,14 +29,8 @@ private func invokeStartUpdates(on manager: RadarLocationManager, interval: Int3
 extension RadarSerializedTests {
     @Suite(.serialized)
     actor RadarLocationManagerObjCUpdatesTests {
-        private static func location(age: TimeInterval) -> CLLocation {
-            CLLocation(
-                coordinate: CLLocationCoordinate2D(latitude: 40.7, longitude: -74.0),
-                altitude: 0,
-                horizontalAccuracy: 10,
-                verticalAccuracy: 10,
-                timestamp: Date(timeIntervalSinceNow: -age)
-            )
+        private static func uptime(age: TimeInterval) -> TimeInterval {
+            ProcessInfo.processInfo.systemUptime - age
         }
 
         /// Calls `startUpdates:blueBar:` once for each entry in `starts` on the shared manager with
@@ -45,7 +39,7 @@ extension RadarSerializedTests {
         /// each call replaces the timer.
         private func primaryManagerAfterTimerFires(
             starts: [(interval: Int32, blueBar: Bool)],
-            lastFixAge: TimeInterval? = 1,
+            lastUpdateAge: TimeInterval? = 1,
             expectedTimerCount: Int? = nil
         ) -> TrackingCLLocationManager {
             RadarLocationManagerSwiftTestHelpers.clearState()
@@ -60,6 +54,7 @@ extension RadarSerializedTests {
                 manager.setValue(false, forKey: "started")
                 manager.setValue(0, forKey: "startedInterval")
                 manager.setValue(false, forKey: "startedContinuousUpdates")
+                manager.setValue(0, forKey: "lastLocationUpdateUptime")
                 manager.locationManager = originalLocationManager
                 manager.lowPowerLocationManager = originalLowPowerLocationManager
                 RadarLocationManagerSwiftTestHelpers.clearState()
@@ -68,7 +63,7 @@ extension RadarSerializedTests {
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": false])
             manager.setValue(false, forKey: "started")
             manager.setValue(false, forKey: "startedContinuousUpdates")
-            locationManager.mockLocation = lastFixAge.map(Self.location(age:))
+            manager.setValue(lastUpdateAge.map(Self.uptime(age:)) ?? 0, forKey: "lastLocationUpdateUptime")
             manager.locationManager = locationManager
             manager.lowPowerLocationManager = lowPowerLocationManager
 
@@ -90,8 +85,8 @@ extension RadarSerializedTests {
             return locationManager
         }
 
-        private func requestLocationCountAfterTimerFires(interval: Int32, blueBar: Bool, lastFixAge: TimeInterval? = 1) -> Int {
-            primaryManagerAfterTimerFires(starts: [(interval, blueBar)], lastFixAge: lastFixAge).requestLocationCallCount
+        private func requestLocationCountAfterTimerFires(interval: Int32, blueBar: Bool, lastUpdateAge: TimeInterval? = 1) -> Int {
+            primaryManagerAfterTimerFires(starts: [(interval, blueBar)], lastUpdateAge: lastUpdateAge).requestLocationCallCount
         }
 
         @Test("Objective-C startUpdates timer does not request a location while continuous updates run")
@@ -99,10 +94,44 @@ extension RadarSerializedTests {
             #expect(requestLocationCountAfterTimerFires(interval: 5, blueBar: true) == 0)
         }
 
-        @Test("Objective-C startUpdates timer requests a location in continuous mode when the last fix is stale")
+        @Test("Objective-C startUpdates timer requests a location in continuous mode when updates are stale")
         func objCStartUpdatesTimerRequestsForStaleContinuousUpdates() {
-            #expect(requestLocationCountAfterTimerFires(interval: 5, blueBar: true, lastFixAge: 30) == 1)
-            #expect(requestLocationCountAfterTimerFires(interval: 5, blueBar: true, lastFixAge: nil) == 1)
+            #expect(requestLocationCountAfterTimerFires(interval: 5, blueBar: true, lastUpdateAge: 30) == 1)
+            #expect(requestLocationCountAfterTimerFires(interval: 5, blueBar: true, lastUpdateAge: nil) == 1)
+        }
+
+        @Test("Objective-C delegate records the update time only for the primary location manager")
+        func objCDelegateRecordsPrimaryManagerUpdateTime() throws {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let manager = RadarLocationManager.sharedInstance()
+            let originalLocationManager = manager.locationManager
+            let originalLowPowerLocationManager = manager.lowPowerLocationManager
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+            defer {
+                manager.setValue(0, forKey: "lastLocationUpdateUptime")
+                manager.locationManager = originalLocationManager
+                manager.lowPowerLocationManager = originalLowPowerLocationManager
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            manager.locationManager = locationManager
+            manager.lowPowerLocationManager = lowPowerLocationManager
+            manager.setValue(0, forKey: "lastLocationUpdateUptime")
+            let location = CLLocation(latitude: 40.7, longitude: -74.0)
+            let delegate: CLLocationManagerDelegate = manager
+
+            delegate.locationManager?(lowPowerLocationManager, didUpdateLocations: [location])
+            #expect(manager.value(forKey: "lastLocationUpdateUptime") as? TimeInterval == 0)
+
+            delegate.locationManager?(locationManager, didUpdateLocations: [])
+            #expect(manager.value(forKey: "lastLocationUpdateUptime") as? TimeInterval == 0)
+
+            let before = ProcessInfo.processInfo.systemUptime
+            delegate.locationManager?(locationManager, didUpdateLocations: [location])
+            let recorded = try #require(manager.value(forKey: "lastLocationUpdateUptime") as? TimeInterval)
+            #expect(recorded >= before)
+            #expect(recorded <= ProcessInfo.processInfo.systemUptime)
         }
 
         @Test("Objective-C startUpdates restarts updates when a blueBar change turns off continuous updates")

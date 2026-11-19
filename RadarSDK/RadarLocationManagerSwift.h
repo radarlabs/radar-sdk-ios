@@ -26,8 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CLLocationAccuracy)clLocationAccuracyForDesiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy;
 + (BOOL)shouldBypassDeviceLocationStateForSource:(RadarLocationSource)source;
-+ (BOOL)usesContinuousUpdatesWithInterval:(int)interval blueBar:(BOOL)blueBar;
-+ (BOOL)timerShouldRequestLocationWithContinuousUpdates:(BOOL)continuousUpdates lastLocation:(nullable CLLocation *)lastLocation;
 
 + (void)startTrackingWithOptions:(RadarTrackingOptions *)trackingOptions;
 

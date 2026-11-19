@@ -29,6 +29,7 @@
 #import "RadarPlace+Internal.h"
 #import "RadarBeacon+Internal.h"
 #import "RadarLocationManagerSwift.h"
+#import "RadarLocationManagerSwift+Internal.h"
 #import "RadarRegionCleaner+Internal.h"
 
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
@@ -56,6 +57,13 @@
  `YES` if `startUpdates()` started continuous updates on `locationManager`.
  */
 @property (assign, nonatomic) BOOL startedContinuousUpdates;
+
+/**
+ The `NSProcessInfo.systemUptime` when `locationManager` last delivered locations to this
+ delegate, or `0` if it never did. The `startUpdates()` timer uses it to find stale continuous
+ updates. System uptime does not change when the device clock changes.
+ */
+@property (assign, nonatomic) NSTimeInterval lastLocationUpdateUptime;
 
 /**
  `YES` if `RadarAPIClient.trackWithLocation() has been called, but the
@@ -354,7 +362,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                      repeats:YES
                                                        block:^(NSTimer *_Nonnull timer) {
                                                            if (![RadarLocationManagerSwift timerShouldRequestLocationWithContinuousUpdates:continuousUpdates
-                                                                                                                              lastLocation:self.locationManager.location]) {
+                                                                                                                                  interval:interval
+                                                                                                                  lastLocationUpdateUptime:self.lastLocationUpdateUptime
+                                                                                                                                    uptime:[NSProcessInfo processInfo].systemUptime]) {
                                                                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                                                                   message:@"Timer fired | skipping requestLocation: continuous updates active"];
 
@@ -1509,6 +1519,10 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
+    if (manager == self.locationManager && locations.count) {
+        self.lastLocationUpdateUptime = [NSProcessInfo processInfo].systemUptime;
+    }
+
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift didUpdateLocations:locations completionHandlerCount:[self completionHandlerCount]];
         return;

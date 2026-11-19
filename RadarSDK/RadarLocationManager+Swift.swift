@@ -34,6 +34,9 @@ import Foundation
     func setStartedInterval(_ interval: Int32)
     func startedContinuousUpdates() -> Bool
     func setStartedContinuousUpdates(_ continuousUpdates: Bool)
+    // The `ProcessInfo.systemUptime` when the primary location manager last delivered locations,
+    // or 0 if it never did.
+    func lastLocationUpdateUptime() -> TimeInterval
     func sending() -> Bool
     func setSending(_ sending: Bool)
     func timer() -> Timer?
@@ -88,8 +91,9 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     // With the blue bar, intervals at or below this value use continuous updates.
     private static let continuousUpdatesMaxInterval: Int32 = 5
     // In continuous mode, the timer requests a location only when the primary location manager
-    // has no fix newer than this. Continuous updates usually deliver a fix about once per second.
-    private static let continuousUpdatesStaleInterval: TimeInterval = 10
+    // delivered no locations for this many timer intervals. Continuous updates usually deliver a
+    // fix about once per second, and the interval is at least 1 second.
+    private static let continuousUpdatesStaleIntervals: TimeInterval = 2
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
     nonisolated(unsafe) static var bootstrapIndoorTracking: () -> Void = { RadarIndoors.bootstrapTrackingIfNeeded() }
     // The region the last `replaceBubbleGeofence(locationManager:location:radius:)` registered.
@@ -126,15 +130,22 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     }
 
     /// Whether the `startUpdates` timer must call `requestLocation`. In continuous mode, the timer
-    /// requests a location only when continuous updates stopped delivering fixes, for example after
-    /// Core Location stopped them. Otherwise it would duplicate the continuous fixes.
-    @objc(timerShouldRequestLocationWithContinuousUpdates:lastLocation:)
-    static func timerShouldRequestLocation(continuousUpdates: Bool, lastLocation: CLLocation?) -> Bool {
-        guard continuousUpdates, let lastLocation else {
+    /// requests a location only when the primary location manager delivered no locations for two
+    /// intervals, for example after Core Location stopped continuous updates. Otherwise it would
+    /// duplicate the continuous fixes. `lastLocationUpdateUptime` and `uptime` are
+    /// `ProcessInfo.systemUptime` values, so device clock changes do not affect the result.
+    @objc(timerShouldRequestLocationWithContinuousUpdates:interval:lastLocationUpdateUptime:uptime:)
+    static func timerShouldRequestLocation(
+        continuousUpdates: Bool,
+        interval: Int32,
+        lastLocationUpdateUptime: TimeInterval,
+        uptime: TimeInterval
+    ) -> Bool {
+        guard continuousUpdates, lastLocationUpdateUptime > 0 else {
             return true
         }
 
-        return -lastLocation.timestamp.timeIntervalSinceNow >= continuousUpdatesStaleInterval
+        return uptime - lastLocationUpdateUptime >= TimeInterval(interval) * continuousUpdatesStaleIntervals
     }
 
     @objc static func restartPreviousTrackingOptions() {
@@ -203,7 +214,13 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
             let hostBox = RadarLocationManagerSwiftHostBox(host: host)
             host.setTimer(
                 Timer.scheduledTimer(withTimeInterval: TimeInterval(interval), repeats: true) { [hostBox] _ in
-                    if !timerShouldRequestLocation(continuousUpdates: continuousUpdates, lastLocation: locationManager.location) {
+                    let shouldRequestLocation = timerShouldRequestLocation(
+                        continuousUpdates: continuousUpdates,
+                        interval: interval,
+                        lastLocationUpdateUptime: hostBox.host.lastLocationUpdateUptime(),
+                        uptime: ProcessInfo.processInfo.systemUptime
+                    )
+                    if !shouldRequestLocation {
                         RadarLogger.shared.debug("🦅 Timer fired | skipping requestLocation: continuous updates active")
                         return
                     }
