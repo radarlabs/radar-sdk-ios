@@ -183,6 +183,7 @@
 		B0A0F0502FBC000100111111 /* RadarLocationManager+SwiftTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0512FBC000100111111 /* RadarLocationManager+SwiftTracking.swift */; };
 		B0A0F0522FBC000100111111 /* RadarLocationManagerSwiftTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0532FBC000100111111 /* RadarLocationManagerSwiftTrackingTests.swift */; };
 		B0A0F0542FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0552FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift */; };
+		B0A0F0562FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0572FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift */; };
 		B0A0F10A2FBC000100111111 /* RadarInAppMessageManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = B0A0F10B2FBC000100111111 /* RadarInAppMessageManager+Internal.h */; };
 		B0A0F3002FBC000100111111 /* RadarRegionCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F3012FBC000100111111 /* RadarRegionCleaner.swift */; };
 		B0A0F3022FBC000100111111 /* RadarRegionCleaner+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = B0A0F3032FBC000100111111 /* RadarRegionCleaner+Internal.h */; };
@@ -542,6 +543,7 @@
 		B0A0F0512FBC000100111111 /* RadarLocationManager+SwiftTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+SwiftTracking.swift"; sourceTree = "<group>"; };
 		B0A0F0532FBC000100111111 /* RadarLocationManagerSwiftTrackingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftTrackingTests.swift; sourceTree = "<group>"; };
 		B0A0F0552FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerObjCRegionTests.swift; sourceTree = "<group>"; };
+		B0A0F0572FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerObjCUpdatesTests.swift; sourceTree = "<group>"; };
 		B0A0F10B2FBC000100111111 /* RadarInAppMessageManager+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarInAppMessageManager+Internal.h"; sourceTree = "<group>"; };
 		B0A0F3012FBC000100111111 /* RadarRegionCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRegionCleaner.swift; sourceTree = "<group>"; };
 		B0A0F3032FBC000100111111 /* RadarRegionCleaner+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarRegionCleaner+Internal.h"; sourceTree = "<group>"; };
@@ -1071,6 +1073,7 @@
 				C1F0A0D42FBD000100333333 /* RadarLocationManagerSwiftMotionTests.swift */,
 				C1F0A0D32FBD000100333333 /* RadarLocationManagerSwiftCompletionTests.swift */,
 				B0A0F0552FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift */,
+				B0A0F0572FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift */,
 				B0A0F3052FBC000100111111 /* RadarRegionCleanerTests.swift */,
 				B0A0F3072FBC000100111111 /* RadarPermissionsHelperTests.swift */,
 				B0A0F0312FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift */,
@@ -1726,6 +1729,7 @@
 				C1F0A0D42FBD000100222222 /* RadarLocationManagerSwiftMotionTests.swift in Sources */,
 				C1F0A0D32FBD000100222222 /* RadarLocationManagerSwiftCompletionTests.swift in Sources */,
 				B0A0F0542FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift in Sources */,
+				B0A0F0562FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift in Sources */,
 				B0A0F3042FBC000100111111 /* RadarRegionCleanerTests.swift in Sources */,
 				B0A0F3062FBC000100111111 /* RadarPermissionsHelperTests.swift in Sources */,
 				B0A0F02C2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift in Sources */,
