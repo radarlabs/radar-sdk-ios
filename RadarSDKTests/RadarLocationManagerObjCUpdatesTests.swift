@@ -30,6 +30,7 @@ private struct ObjCStartUpdatesResult {
     let locationManager: TrackingCLLocationManager
     /// The number of different timers that the `startUpdates:blueBar:` calls made.
     let timerCount: Int
+    let started: Bool?
     let startedContinuousUpdates: Bool?
 }
 
@@ -37,8 +38,9 @@ extension RadarSerializedTests {
     @Suite(.serialized)
     actor RadarLocationManagerObjCUpdatesTests {
         /// Calls `startUpdates:blueBar:` once for each entry in `starts` on the shared manager with
-        /// tracking location managers, then restores the manager.
-        private func startUpdates(_ starts: [(interval: Int32, blueBar: Bool)]) -> ObjCStartUpdatesResult {
+        /// tracking location managers, then calls `stopUpdates` if `thenStop` is true, then restores
+        /// the manager.
+        private func startUpdates(_ starts: [(interval: Int32, blueBar: Bool)], thenStop: Bool = false) -> ObjCStartUpdatesResult {
             RadarLocationManagerSwiftTestHelpers.clearState()
             let manager = RadarLocationManager.sharedInstance()
             let originalLocationManager = manager.locationManager
@@ -71,9 +73,18 @@ extension RadarSerializedTests {
             }
             #expect(timers.dropLast().allSatisfy { !$0.isValid })
 
+            if thenStop {
+                manager.perform(NSSelectorFromString("stopUpdates"))
+                // `stopUpdates` schedules `shutDown` on the shared manager. Cancel it, so it does not
+                // run on the restored location managers after this test.
+                NSObject.cancelPreviousPerformRequests(withTarget: manager, selector: NSSelectorFromString("shutDown"), object: nil)
+                #expect(timers.last?.isValid == false)
+            }
+
             return ObjCStartUpdatesResult(
                 locationManager: locationManager,
                 timerCount: timers.count,
+                started: manager.value(forKey: "started") as? Bool,
                 startedContinuousUpdates: manager.value(forKey: "startedContinuousUpdates") as? Bool
             )
         }
@@ -105,6 +116,16 @@ extension RadarSerializedTests {
             #expect(result.timerCount == 1)
             #expect(result.startedContinuousUpdates == false)
             #expect(result.locationManager.startUpdatingLocationCallCount == 0)
+            #expect(result.locationManager.stopUpdatingLocationCallCount == 1)
+        }
+
+        @Test("Objective-C stopUpdates clears the started continuous-updates state")
+        func objCStopUpdatesClearsContinuousUpdates() {
+            let result = startUpdates([(5, true)], thenStop: true)
+
+            #expect(result.started == false)
+            #expect(result.startedContinuousUpdates == false)
+            #expect(result.locationManager.startUpdatingLocationCallCount == 1)
             #expect(result.locationManager.stopUpdatingLocationCallCount == 1)
         }
     }
