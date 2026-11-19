@@ -5,6 +5,7 @@
 //  Copyright © 2026 Radar Labs, Inc. All rights reserved.
 //
 
+#import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
 #import "RadarLocationManagerSwift.h"
@@ -16,11 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 // headers private.
 @interface RadarLocationManagerSwift (Internal)
 
++ (NSTimeInterval)monotonicTime;
++ (void)recordLocationUpdateWithHost:(id<RadarLocationManagerSwiftHost>)host manager:(CLLocationManager *)manager locations:(nullable NSArray<CLLocation *> *)locations;
 + (BOOL)usesContinuousUpdatesWithInterval:(int)interval blueBar:(BOOL)blueBar;
 + (BOOL)timerShouldRequestLocationWithContinuousUpdates:(BOOL)continuousUpdates
                                                interval:(int)interval
-                               lastLocationUpdateUptime:(NSTimeInterval)lastLocationUpdateUptime
-                                                 uptime:(NSTimeInterval)uptime;
+                                 lastLocationUpdateTime:(NSTimeInterval)lastLocationUpdateTime
+                                                    now:(NSTimeInterval)now;
 
 @end
 

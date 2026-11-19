@@ -41,7 +41,7 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
     private var startedValue = false
     private var startedIntervalValue: Int32 = 0
     private var startedContinuousUpdatesValue = false
-    var lastLocationUpdateUptimeValue: TimeInterval = 0
+    var lastLocationUpdateTimeValue: TimeInterval = 0
     var sendingValue = false
     private var timerValue: Timer?
     private(set) var cancelPendingShutdownCallCount = 0
@@ -67,7 +67,9 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
 
     func setStartedContinuousUpdates(_ continuousUpdates: Bool) { startedContinuousUpdatesValue = continuousUpdates }
 
-    func lastLocationUpdateUptime() -> TimeInterval { lastLocationUpdateUptimeValue }
+    func lastLocationUpdateTime() -> TimeInterval { lastLocationUpdateTimeValue }
+
+    func setLastLocationUpdateTime(_ time: TimeInterval) { lastLocationUpdateTimeValue = time }
 
     func sending() -> Bool { sendingValue }
 
@@ -203,7 +205,7 @@ extension RadarSerializedTests {
             let host = TrackingRadarLocationManagerHost()
             let locationManager = TrackingCLLocationManager()
             let lowPowerLocationManager = TrackingCLLocationManager()
-            host.lastLocationUpdateUptimeValue = lastUpdateAge.map(RadarLocationManagerSwiftLifecycleTests.uptime(age:)) ?? 0
+            host.lastLocationUpdateTimeValue = lastUpdateAge.map(RadarLocationManagerSwiftLifecycleTests.updateTime(age:)) ?? 0
 
             RadarLocationManagerSwift.startUpdates(
                 host: host,
@@ -224,7 +226,7 @@ extension RadarSerializedTests {
             let host = TrackingRadarLocationManagerHost()
             let locationManager = TrackingCLLocationManager()
             let lowPowerLocationManager = TrackingCLLocationManager()
-            host.lastLocationUpdateUptimeValue = RadarLocationManagerSwiftLifecycleTests.uptime(age: 1)
+            host.lastLocationUpdateTimeValue = RadarLocationManagerSwiftLifecycleTests.updateTime(age: 1)
 
             RadarLocationManagerSwift.startUpdates(
                 host: host,
@@ -283,7 +285,7 @@ extension RadarSerializedTests {
             let host = TrackingRadarLocationManagerHost()
             let locationManager = TrackingCLLocationManager()
             let lowPowerLocationManager = TrackingCLLocationManager()
-            host.lastLocationUpdateUptimeValue = RadarLocationManagerSwiftLifecycleTests.uptime(age: 1)
+            host.lastLocationUpdateTimeValue = RadarLocationManagerSwiftLifecycleTests.updateTime(age: 1)
 
             for interval: Int32 in [5, 30] {
                 RadarLocationManagerSwift.startUpdates(
@@ -322,22 +324,24 @@ extension RadarSerializedTests {
             #expect(host.startedContinuousUpdates() == false)
         }
 
-        private static func uptime(age: TimeInterval) -> TimeInterval {
-            ProcessInfo.processInfo.systemUptime - age
+        private static func updateTime(age: TimeInterval) -> TimeInterval {
+            RadarLocationManagerSwift.monotonicTime() - age
         }
 
         @Test(
-            "timerShouldRequestLocation treats continuous updates as stale after two intervals",
+            "timerShouldRequestLocation treats continuous updates as stale after two intervals and at least 5 seconds",
             arguments: [
                 (continuousUpdates: false, interval: Int32(5), lastUpdate: TimeInterval(99), expected: true),
                 (continuousUpdates: true, interval: Int32(5), lastUpdate: TimeInterval(0), expected: true),
                 (continuousUpdates: true, interval: Int32(5), lastUpdate: TimeInterval(91), expected: false),
                 (continuousUpdates: true, interval: Int32(5), lastUpdate: TimeInterval(90), expected: true),
-                (continuousUpdates: true, interval: Int32(1), lastUpdate: TimeInterval(98.5), expected: false),
-                (continuousUpdates: true, interval: Int32(1), lastUpdate: TimeInterval(98), expected: true),
+                (continuousUpdates: true, interval: Int32(3), lastUpdate: TimeInterval(95), expected: false),
+                (continuousUpdates: true, interval: Int32(3), lastUpdate: TimeInterval(94), expected: true),
+                (continuousUpdates: true, interval: Int32(1), lastUpdate: TimeInterval(96), expected: false),
+                (continuousUpdates: true, interval: Int32(1), lastUpdate: TimeInterval(95), expected: true),
             ]
         )
-        func timerShouldRequestLocationUsesTwoIntervals(
+        func timerShouldRequestLocationUsesTwoIntervalsAndMinimum(
             continuousUpdates: Bool,
             interval: Int32,
             lastUpdate: TimeInterval,
@@ -346,10 +350,32 @@ extension RadarSerializedTests {
             let result = RadarLocationManagerSwift.timerShouldRequestLocation(
                 continuousUpdates: continuousUpdates,
                 interval: interval,
-                lastLocationUpdateUptime: lastUpdate,
-                uptime: 100
+                lastLocationUpdateTime: lastUpdate,
+                now: 100
             )
             #expect(result == expected)
+        }
+
+        @Test("recordLocationUpdate records the time only for locations from the primary location manager")
+        func recordLocationUpdateRecordsOnlyPrimaryManagerLocations() {
+            let host = TrackingRadarLocationManagerHost()
+            let location = CLLocation(latitude: 40.7, longitude: -74.0)
+
+            RadarLocationManagerSwift.recordLocationUpdate(
+                host: host,
+                manager: host.lowPowerLocationManager,
+                locations: [location]
+            )
+            #expect(host.lastLocationUpdateTime() == 0)
+
+            RadarLocationManagerSwift.recordLocationUpdate(host: host, manager: host.locationManager, locations: [])
+            RadarLocationManagerSwift.recordLocationUpdate(host: host, manager: host.locationManager, locations: nil)
+            #expect(host.lastLocationUpdateTime() == 0)
+
+            let before = RadarLocationManagerSwift.monotonicTime()
+            RadarLocationManagerSwift.recordLocationUpdate(host: host, manager: host.locationManager, locations: [location])
+            #expect(host.lastLocationUpdateTime() >= before)
+            #expect(host.lastLocationUpdateTime() <= RadarLocationManagerSwift.monotonicTime())
         }
 
         @Test("startUpdates stops primary updates for a long blue-bar interval")

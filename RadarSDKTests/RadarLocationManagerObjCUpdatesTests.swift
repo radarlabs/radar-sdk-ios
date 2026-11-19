@@ -29,8 +29,8 @@ private func invokeStartUpdates(on manager: RadarLocationManager, interval: Int3
 extension RadarSerializedTests {
     @Suite(.serialized)
     actor RadarLocationManagerObjCUpdatesTests {
-        private static func uptime(age: TimeInterval) -> TimeInterval {
-            ProcessInfo.processInfo.systemUptime - age
+        private static func updateTime(age: TimeInterval) -> TimeInterval {
+            RadarLocationManagerSwift.monotonicTime() - age
         }
 
         /// Calls `startUpdates:blueBar:` once for each entry in `starts` on the shared manager with
@@ -54,7 +54,7 @@ extension RadarSerializedTests {
                 manager.setValue(false, forKey: "started")
                 manager.setValue(0, forKey: "startedInterval")
                 manager.setValue(false, forKey: "startedContinuousUpdates")
-                manager.setValue(0, forKey: "lastLocationUpdateUptime")
+                manager.setValue(0, forKey: "lastLocationUpdateTime")
                 manager.locationManager = originalLocationManager
                 manager.lowPowerLocationManager = originalLowPowerLocationManager
                 RadarLocationManagerSwiftTestHelpers.clearState()
@@ -63,7 +63,7 @@ extension RadarSerializedTests {
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": false])
             manager.setValue(false, forKey: "started")
             manager.setValue(false, forKey: "startedContinuousUpdates")
-            manager.setValue(lastUpdateAge.map(Self.uptime(age:)) ?? 0, forKey: "lastLocationUpdateUptime")
+            manager.setValue(lastUpdateAge.map(Self.updateTime(age:)) ?? 0, forKey: "lastLocationUpdateTime")
             manager.locationManager = locationManager
             manager.lowPowerLocationManager = lowPowerLocationManager
 
@@ -109,7 +109,7 @@ extension RadarSerializedTests {
             let locationManager = TrackingCLLocationManager()
             let lowPowerLocationManager = TrackingCLLocationManager()
             defer {
-                manager.setValue(0, forKey: "lastLocationUpdateUptime")
+                manager.setValue(0, forKey: "lastLocationUpdateTime")
                 manager.locationManager = originalLocationManager
                 manager.lowPowerLocationManager = originalLowPowerLocationManager
                 RadarLocationManagerSwiftTestHelpers.clearState()
@@ -117,21 +117,21 @@ extension RadarSerializedTests {
 
             manager.locationManager = locationManager
             manager.lowPowerLocationManager = lowPowerLocationManager
-            manager.setValue(0, forKey: "lastLocationUpdateUptime")
+            manager.setValue(0, forKey: "lastLocationUpdateTime")
             let location = CLLocation(latitude: 40.7, longitude: -74.0)
             let delegate: CLLocationManagerDelegate = manager
 
             delegate.locationManager?(lowPowerLocationManager, didUpdateLocations: [location])
-            #expect(manager.value(forKey: "lastLocationUpdateUptime") as? TimeInterval == 0)
+            #expect(manager.value(forKey: "lastLocationUpdateTime") as? TimeInterval == 0)
 
             delegate.locationManager?(locationManager, didUpdateLocations: [])
-            #expect(manager.value(forKey: "lastLocationUpdateUptime") as? TimeInterval == 0)
+            #expect(manager.value(forKey: "lastLocationUpdateTime") as? TimeInterval == 0)
 
-            let before = ProcessInfo.processInfo.systemUptime
+            let before = RadarLocationManagerSwift.monotonicTime()
             delegate.locationManager?(locationManager, didUpdateLocations: [location])
-            let recorded = try #require(manager.value(forKey: "lastLocationUpdateUptime") as? TimeInterval)
+            let recorded = try #require(manager.value(forKey: "lastLocationUpdateTime") as? TimeInterval)
             #expect(recorded >= before)
-            #expect(recorded <= ProcessInfo.processInfo.systemUptime)
+            #expect(recorded <= RadarLocationManagerSwift.monotonicTime())
         }
 
         @Test("Objective-C startUpdates restarts updates when a blueBar change turns off continuous updates")

@@ -59,11 +59,11 @@
 @property (assign, nonatomic) BOOL startedContinuousUpdates;
 
 /**
- The `NSProcessInfo.systemUptime` when `locationManager` last delivered locations to this
- delegate, or `0` if it never did. The `startUpdates()` timer uses it to find stale continuous
- updates. System uptime does not change when the device clock changes.
+ The `RadarLocationManagerSwift.monotonicTime` when `locationManager` last delivered locations to
+ this delegate, or `0` if it never did. The `startUpdates()` timer uses it to find stale
+ continuous updates.
  */
-@property (assign, nonatomic) NSTimeInterval lastLocationUpdateUptime;
+@property (assign, nonatomic) NSTimeInterval lastLocationUpdateTime;
 
 /**
  `YES` if `RadarAPIClient.trackWithLocation() has been called, but the
@@ -363,8 +363,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                                                        block:^(NSTimer *_Nonnull timer) {
                                                            if (![RadarLocationManagerSwift timerShouldRequestLocationWithContinuousUpdates:continuousUpdates
                                                                                                                                   interval:interval
-                                                                                                                  lastLocationUpdateUptime:self.lastLocationUpdateUptime
-                                                                                                                                    uptime:[NSProcessInfo processInfo].systemUptime]) {
+                                                                                                                    lastLocationUpdateTime:self.lastLocationUpdateTime
+                                                                                                                                       now:[RadarLocationManagerSwift monotonicTime]]) {
                                                                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                                                                   message:@"Timer fired | skipping requestLocation: continuous updates active"];
 
@@ -1519,9 +1519,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
-    if (manager == self.locationManager && locations.count) {
-        self.lastLocationUpdateUptime = [NSProcessInfo processInfo].systemUptime;
-    }
+    // Both the Objective-C and the Swift paths need the update time, so record it before the
+    // dispatch. A Swift port of this delegate method must also call it.
+    [RadarLocationManagerSwift recordLocationUpdateWithHost:self manager:manager locations:locations];
 
     if ([RadarSettings sdkConfiguration].useSwiftLocationManager) {
         [RadarLocationManagerSwift didUpdateLocations:locations completionHandlerCount:[self completionHandlerCount]];
