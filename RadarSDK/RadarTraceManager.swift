@@ -39,6 +39,7 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     private let apiClient: RadarAPIClient
     private let publishableKey: @Sendable () -> String?
     private let sessionId: @Sendable () -> String
+    private let xPlatform: @Sendable () -> XPlatform
 
     // Accessed only on the disk queue.
     let store: RadarTraceStore
@@ -57,12 +58,13 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     private var droppedWrites = 0
 
     /// The defaults are what production uses. Tests inject a temporary directory, a mock API client, a key, a session,
-    /// and a clock, so they don't share files or change global state.
+    /// a cross-platform framework, and a clock, so they don't share files or change global state.
     init(
         directory: URL = RadarTraceStore.defaultDirectory(),
         apiClient: RadarAPIClient = .shared,
         publishableKey: @escaping @Sendable () -> String? = { RadarSettings.publishableKey },
         sessionId: @escaping @Sendable () -> String = { RadarSettings.sessionId },
+        xPlatform: @escaping @Sendable () -> XPlatform = { .current },
         clock: RadarTraceClock = .system
     ) {
         self.store = RadarTraceStore(directory: directory)
@@ -70,6 +72,7 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
         self.apiClient = apiClient
         self.publishableKey = publishableKey
         self.sessionId = sessionId
+        self.xPlatform = xPlatform
         super.init()
         disk.async {
             self.store.createDirectory()
@@ -105,11 +108,16 @@ final class RadarTraceManager: NSObject, @unchecked Sendable {
     func record(_ span: RadarCompletedSpan, project: String, sessionId: String) {
         let data: Data
         do {
-            let record: [String: Any] = [
+            // The framework is stored with each span, so spans recorded before a wrapper upgrade keep the version that
+            // recorded them.
+            let xPlatform = xPlatform()
+            var record: [String: Any] = [
                 "project": project,
                 "sdkVersion": RadarUtils.sdkVersion,
+                "xPlatformType": xPlatform.type,
                 "span": span.otlpJSON(),
             ]
+            record["xPlatformVersion"] = xPlatform.version
             data = try JSONSerialization.data(withJSONObject: record)
         } catch {
             RadarLogger.shared.error("Could not record trace span | message = \(error.localizedDescription)", type: .sdkError)
@@ -298,7 +306,7 @@ extension RadarTraceManager {
         let name: String
         let size: Int
         let project: String
-        let sdkVersion: String
+        let source: SpanSource
         let span: [String: Any]
     }
 
@@ -313,10 +321,10 @@ extension RadarTraceManager {
             selected.append(stored)
             bytes += stored.size
         }
-        // `fits` only adds spans recorded by the same SDK version as the first, so it applies to the whole batch.
-        guard let sdkVersion = selected.first?.sdkVersion else { return nil }
+        // `fits` only adds spans recorded by the same SDK as the first, so its source applies to the whole batch.
+        guard let source = selected.first?.source else { return nil }
         do {
-            let body = try JSONSerialization.data(withJSONObject: Self.otlpPayload(spans: selected.map(\.span), sdkVersion: sdkVersion))
+            let body = try JSONSerialization.data(withJSONObject: Self.otlpPayload(spans: selected.map(\.span), source: source))
             return Batch(names: selected.map(\.name), body: body)
         } catch {
             RadarLogger.shared.error("Could not encode trace batch | message = \(error.localizedDescription)", type: .sdkError)
@@ -337,16 +345,20 @@ extension RadarTraceManager {
             name: entry.name,
             size: entry.size,
             project: record["project"] as? String ?? "",
-            sdkVersion: record["sdkVersion"] as? String ?? "",
+            source: SpanSource(
+                sdkVersion: record["sdkVersion"] as? String ?? "",
+                xPlatformType: record["xPlatformType"] as? String,
+                xPlatformVersion: record["xPlatformVersion"] as? String
+            ),
             span: span
         )
     }
 
-    /// A batch holds spans from one SDK version, up to the span and byte limits. The first span always fits. One
-    /// version per batch because `otlpPayload` stamps the version on the batch's single resource.
+    /// A batch holds spans from one `SpanSource`, up to the span and byte limits. The first span always fits. One
+    /// source per batch because `otlpPayload` stamps it on the batch's single resource.
     private func fits(_ next: StoredSpan, in selected: [StoredSpan], bytes: Int) -> Bool {
         guard let first = selected.first else { return true }
-        return next.sdkVersion == first.sdkVersion
+        return next.source == first.source
             && selected.count < Self.maxBatchSpans
             && bytes + next.size <= Self.maxBatchBytes
     }

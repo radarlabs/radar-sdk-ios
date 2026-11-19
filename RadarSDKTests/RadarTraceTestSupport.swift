@@ -20,6 +20,7 @@ final class TraceTestHarness {
     let session = TraceURLSession()
     let key = TraceKey(TraceTestHarness.publishableKey)
     let radarSession = TraceSession("1000")
+    let xPlatform = TraceXPlatform()
     let clock = TraceTestClock()
     var manager: RadarTraceManager!
 
@@ -47,11 +48,13 @@ final class TraceTestHarness {
     func makeManager(start: Bool = true) -> RadarTraceManager {
         let key = key
         let radarSession = radarSession
+        let xPlatform = xPlatform
         let manager = RadarTraceManager(
             directory: directory,
             apiClient: RadarAPIClient(apiHelper: RadarAPIHelper(session: session)),
             publishableKey: { key.value },
             sessionId: { radarSession.value },
+            xPlatform: { xPlatform.value },
             clock: clock.radarClock
         )
         manager.overrideSampledForTesting(true)
@@ -197,6 +200,17 @@ final class TraceSession: @unchecked Sendable {
     }
 
     var value: String {
+        get { lock.withLock { current } }
+        set { lock.withLock { current = newValue } }
+    }
+}
+
+/// The cross-platform framework a test's manager reads, changeable during the test. Native by default.
+final class TraceXPlatform: @unchecked Sendable {
+    private let lock = NSLock()
+    private var current = RadarTraceManager.XPlatform.native
+
+    var value: RadarTraceManager.XPlatform {
         get { lock.withLock { current } }
         set { lock.withLock { current = newValue } }
     }
