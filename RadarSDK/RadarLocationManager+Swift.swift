@@ -32,6 +32,8 @@ import Foundation
     func setStarted(_ started: Bool)
     func startedInterval() -> Int32
     func setStartedInterval(_ interval: Int32)
+    func startedBlueBar() -> Bool
+    func setStartedBlueBar(_ blueBar: Bool)
     func sending() -> Bool
     func setSending(_ sending: Bool)
     func timer() -> Timer?
@@ -85,6 +87,9 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     private static let immediateShutdownDelay: TimeInterval = 0
     // With the blue bar, intervals at or below this value use continuous updates.
     private static let continuousUpdatesMaxInterval: Int32 = 5
+    // In continuous mode, the timer requests a location only when the primary location manager
+    // has no fix newer than this. Continuous updates usually deliver a fix about once per second.
+    private static let continuousUpdatesStaleInterval: TimeInterval = 10
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
     nonisolated(unsafe) static var bootstrapIndoorTracking: () -> Void = { RadarIndoors.bootstrapTrackingIfNeeded() }
     // The region the last `replaceBubbleGeofence(locationManager:location:radius:)` registered.
@@ -112,6 +117,24 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     @objc(shouldBypassDeviceLocationStateForSource:)
     static func shouldBypassDeviceLocationState(for source: RadarLocationSource) -> Bool {
         source == .indoors
+    }
+
+    /// Whether `startUpdates` runs continuous updates on the primary location manager.
+    @objc(usesContinuousUpdatesWithInterval:blueBar:)
+    static func usesContinuousUpdates(interval: Int32, blueBar: Bool) -> Bool {
+        blueBar && interval <= continuousUpdatesMaxInterval
+    }
+
+    /// Whether the `startUpdates` timer must call `requestLocation`. In continuous mode, the timer
+    /// requests a location only when continuous updates stopped delivering fixes, for example after
+    /// Core Location stopped them. Otherwise it would duplicate the continuous fixes.
+    @objc(timerShouldRequestLocationWithContinuousUpdates:lastLocation:)
+    static func timerShouldRequestLocation(continuousUpdates: Bool, lastLocation: CLLocation?) -> Bool {
+        guard continuousUpdates, let lastLocation else {
+            return true
+        }
+
+        return -lastLocation.timestamp.timeIntervalSinceNow >= continuousUpdatesStaleInterval
     }
 
     @objc static func restartPreviousTrackingOptions() {
@@ -169,20 +192,18 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
         interval: Int32,
         blueBar: Bool
     ) {
-        if !host.started() || interval != host.startedInterval() {
-            RadarLogger.shared.debug("🦅 Starting timer | interval = \(interval)")
+        if !host.started() || interval != host.startedInterval() || blueBar != host.startedBlueBar() {
+            RadarLogger.shared.debug("🦅 Starting timer | interval = \(interval); blueBar = \(blueBar)")
 
             host.cancelPendingShutdown()
             host.timer()?.invalidate()
 
-            // Continuous updates on the primary location manager already deliver a fix about once
-            // per second, so the timer does not also request a location in that mode.
-            let continuousUpdates = blueBar && interval <= Self.continuousUpdatesMaxInterval
+            let continuousUpdates = usesContinuousUpdates(interval: interval, blueBar: blueBar)
 
             let hostBox = RadarLocationManagerSwiftHostBox(host: host)
             host.setTimer(
                 Timer.scheduledTimer(withTimeInterval: TimeInterval(interval), repeats: true) { [hostBox] _ in
-                    if continuousUpdates {
+                    if !timerShouldRequestLocation(continuousUpdates: continuousUpdates, lastLocation: locationManager.location) {
                         RadarLogger.shared.debug("🦅 Timer fired | skipping requestLocation: continuous updates active")
                         return
                     }
@@ -200,6 +221,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
             host.setStarted(true)
             host.setStartedInterval(interval)
+            host.setStartedBlueBar(blueBar)
         } else {
             RadarLogger.shared.debug("🦅 Already started timer")
         }
@@ -218,6 +240,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
         host.setStarted(false)
         host.setStartedInterval(0)
+        host.setStartedBlueBar(false)
 
         if !host.sending() {
             let delay = RadarSettings.tracking ? Self.trackingShutdownDelay : Self.immediateShutdownDelay

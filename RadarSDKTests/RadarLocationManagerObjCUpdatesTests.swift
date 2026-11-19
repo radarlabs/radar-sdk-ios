@@ -29,9 +29,22 @@ private func invokeStartUpdates(on manager: RadarLocationManager, interval: Int3
 extension RadarSerializedTests {
     @Suite(.serialized)
     actor RadarLocationManagerObjCUpdatesTests {
-        /// Starts updates on the shared manager with tracking location managers, fires the timer
-        /// once, and returns the number of `requestLocation` calls on the primary manager.
-        private func requestLocationCountAfterTimerFires(interval: Int32, blueBar: Bool) -> Int {
+        private static func location(age: TimeInterval) -> CLLocation {
+            CLLocation(
+                coordinate: CLLocationCoordinate2D(latitude: 40.7, longitude: -74.0),
+                altitude: 0,
+                horizontalAccuracy: 10,
+                verticalAccuracy: 10,
+                timestamp: Date(timeIntervalSinceNow: -age)
+            )
+        }
+
+        /// Calls `startUpdates:blueBar:` once for each entry in `starts` on the shared manager with
+        /// tracking location managers, fires the last timer once, and returns the primary manager.
+        private func primaryManagerAfterTimerFires(
+            starts: [(interval: Int32, blueBar: Bool)],
+            lastFixAge: TimeInterval? = 1
+        ) -> TrackingCLLocationManager {
             RadarLocationManagerSwiftTestHelpers.clearState()
             let manager = RadarLocationManager.sharedInstance()
             let originalLocationManager = manager.locationManager
@@ -43,6 +56,7 @@ extension RadarSerializedTests {
                 manager.setValue(nil, forKey: "timer")
                 manager.setValue(false, forKey: "started")
                 manager.setValue(0, forKey: "startedInterval")
+                manager.setValue(false, forKey: "startedBlueBar")
                 manager.locationManager = originalLocationManager
                 manager.lowPowerLocationManager = originalLowPowerLocationManager
                 RadarLocationManagerSwiftTestHelpers.clearState()
@@ -50,21 +64,51 @@ extension RadarSerializedTests {
 
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": false])
             manager.setValue(false, forKey: "started")
+            manager.setValue(false, forKey: "startedBlueBar")
+            locationManager.mockLocation = lastFixAge.map(Self.location(age:))
             manager.locationManager = locationManager
             manager.lowPowerLocationManager = lowPowerLocationManager
 
-            invokeStartUpdates(on: manager, interval: interval, blueBar: blueBar)
+            var timers: [Timer] = []
+            for start in starts {
+                invokeStartUpdates(on: manager, interval: start.interval, blueBar: start.blueBar)
+                if let timer = manager.value(forKey: "timer") as? Timer {
+                    timers.append(timer)
+                }
+            }
+            // Each start must replace the timer, so only the last one stays valid.
+            #expect(timers.count == starts.count)
+            #expect(timers.dropLast().allSatisfy { !$0.isValid })
 
             let timer = manager.value(forKey: "timer") as? Timer
             #expect(timer != nil)
             timer?.fire()
 
-            return locationManager.requestLocationCallCount
+            return locationManager
+        }
+
+        private func requestLocationCountAfterTimerFires(interval: Int32, blueBar: Bool, lastFixAge: TimeInterval? = 1) -> Int {
+            primaryManagerAfterTimerFires(starts: [(interval, blueBar)], lastFixAge: lastFixAge).requestLocationCallCount
         }
 
         @Test("Objective-C startUpdates timer does not request a location while continuous updates run")
         func objCStartUpdatesTimerSkipsRequestDuringContinuousUpdates() {
             #expect(requestLocationCountAfterTimerFires(interval: 5, blueBar: true) == 0)
+        }
+
+        @Test("Objective-C startUpdates timer requests a location in continuous mode when the last fix is stale")
+        func objCStartUpdatesTimerRequestsForStaleContinuousUpdates() {
+            #expect(requestLocationCountAfterTimerFires(interval: 5, blueBar: true, lastFixAge: 30) == 1)
+            #expect(requestLocationCountAfterTimerFires(interval: 5, blueBar: true, lastFixAge: nil) == 1)
+        }
+
+        @Test("Objective-C startUpdates restarts updates when only blueBar changes")
+        func objCStartUpdatesRestartsWhenOnlyBlueBarChanges() {
+            let locationManager = primaryManagerAfterTimerFires(starts: [(5, true), (5, false)])
+
+            #expect(locationManager.startUpdatingLocationCallCount == 1)
+            #expect(locationManager.stopUpdatingLocationCallCount == 1)
+            #expect(locationManager.requestLocationCallCount == 1)
         }
 
         @Test("Objective-C startUpdates timer requests a location for a long blue-bar interval")

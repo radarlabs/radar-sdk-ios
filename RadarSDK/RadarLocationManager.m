@@ -53,6 +53,11 @@
 @property (assign, nonatomic) int startedInterval;
 
 /**
+ The `blueBar` value that `startUpdates()` last started with.
+ */
+@property (assign, nonatomic) BOOL startedBlueBar;
+
+/**
  `YES` if `RadarAPIClient.trackWithLocation() has been called, but the
  response hasn't been received yet.
  */
@@ -333,8 +338,8 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
-    if (!self.started || interval != self.startedInterval) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d", interval]];
+    if (!self.started || interval != self.startedInterval || blueBar != self.startedBlueBar) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d; blueBar = %d", interval, blueBar]];
 
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(shutDown) object:nil];
 
@@ -342,14 +347,13 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             [self.timer invalidate];
         }
 
-        // Continuous updates on the primary location manager already deliver a fix about once
-        // per second, so the timer does not also request a location in that mode.
-        BOOL continuousUpdates = blueBar && interval <= 5;
+        BOOL continuousUpdates = [RadarLocationManagerSwift usesContinuousUpdatesWithInterval:interval blueBar:blueBar];
 
         self.timer = [NSTimer scheduledTimerWithTimeInterval:interval
                                                      repeats:YES
                                                        block:^(NSTimer *_Nonnull timer) {
-                                                           if (continuousUpdates) {
+                                                           if (![RadarLocationManagerSwift timerShouldRequestLocationWithContinuousUpdates:continuousUpdates
+                                                                                                                              lastLocation:self.locationManager.location]) {
                                                                [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
                                                                                                   message:@"Timer fired | skipping requestLocation: continuous updates active"];
 
@@ -370,6 +374,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         self.started = YES;
         self.startedInterval = interval;
+        self.startedBlueBar = blueBar;
     } else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Already started timer"];
     }
@@ -393,6 +398,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     
     self.started = NO;
     self.startedInterval = 0;
+    self.startedBlueBar = NO;
 
     if (!self.sending) {
         NSTimeInterval delay = [RadarSettings tracking] ? 10 : 0;

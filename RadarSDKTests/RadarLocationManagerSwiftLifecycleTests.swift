@@ -40,6 +40,7 @@ final class TrackingRadarActivityManager: RadarActivityManager, @unchecked Senda
 final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwiftHost, @unchecked Sendable {
     private var startedValue = false
     private var startedIntervalValue: Int32 = 0
+    private var startedBlueBarValue = false
     var sendingValue = false
     private var timerValue: Timer?
     private(set) var cancelPendingShutdownCallCount = 0
@@ -60,6 +61,10 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
     func startedInterval() -> Int32 { startedIntervalValue }
 
     func setStartedInterval(_ interval: Int32) { startedIntervalValue = interval }
+
+    func startedBlueBar() -> Bool { startedBlueBarValue }
+
+    func setStartedBlueBar(_ blueBar: Bool) { startedBlueBarValue = blueBar }
 
     func sending() -> Bool { sendingValue }
 
@@ -183,11 +188,19 @@ extension RadarSerializedTests {
             #expect(lowPowerLocationManager.startUpdatingLocationCallCount == 1)
         }
 
-        @Test("startUpdates timer does not request a location while continuous updates run")
-        func startUpdatesTimerSkipsRequestDuringContinuousUpdates() {
+        @Test(
+            "startUpdates timer requests a location in continuous mode only when the last fix is missing or stale",
+            arguments: [
+                (lastFixAge: TimeInterval?.some(1), expectedRequests: 0),
+                (lastFixAge: TimeInterval?.some(30), expectedRequests: 1),
+                (lastFixAge: TimeInterval?.none, expectedRequests: 1),
+            ]
+        )
+        func startUpdatesTimerRequestsOnlyForStaleContinuousUpdates(lastFixAge: TimeInterval?, expectedRequests: Int) {
             let host = TrackingRadarLocationManagerHost()
             let locationManager = TrackingCLLocationManager()
             let lowPowerLocationManager = TrackingCLLocationManager()
+            locationManager.mockLocation = lastFixAge.map(RadarLocationManagerSwiftLifecycleTests.location(age:))
 
             RadarLocationManagerSwift.startUpdates(
                 host: host,
@@ -200,7 +213,96 @@ extension RadarSerializedTests {
 
             #expect(host.timer() != nil)
             host.timer()?.fire()
-            #expect(host.requestLocationCallCount == 0)
+            #expect(host.requestLocationCallCount == expectedRequests)
+        }
+
+        @Test("startUpdates restarts updates when only blueBar changes")
+        func startUpdatesRestartsWhenOnlyBlueBarChanges() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+            locationManager.mockLocation = RadarLocationManagerSwiftLifecycleTests.location(age: 1)
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: lowPowerLocationManager,
+                interval: 5,
+                blueBar: true
+            )
+            let continuousTimer = host.timer()
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: lowPowerLocationManager,
+                interval: 5,
+                blueBar: false
+            )
+            defer { host.timer()?.invalidate() }
+
+            #expect(continuousTimer?.isValid == false)
+            #expect(host.timer() !== continuousTimer)
+            #expect(host.startedBlueBar() == false)
+            #expect(locationManager.startUpdatingLocationCallCount == 1)
+            #expect(locationManager.stopUpdatingLocationCallCount == 1)
+
+            host.timer()?.fire()
+            #expect(host.requestLocationCallCount == 1)
+        }
+
+        @Test("startUpdates timer requests locations again after a change from a continuous interval to a longer one")
+        func startUpdatesRequestsAfterContinuousIntervalGrows() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+            locationManager.mockLocation = RadarLocationManagerSwiftLifecycleTests.location(age: 1)
+
+            for interval: Int32 in [5, 30] {
+                RadarLocationManagerSwift.startUpdates(
+                    host: host,
+                    locationManager: locationManager,
+                    lowPowerLocationManager: lowPowerLocationManager,
+                    interval: interval,
+                    blueBar: true
+                )
+            }
+            defer { host.timer()?.invalidate() }
+
+            host.timer()?.fire()
+            #expect(host.requestLocationCallCount == 1)
+        }
+
+        @Test("stopUpdates stops continuous updates and clears the started blueBar")
+        func stopUpdatesStopsContinuousUpdates() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: lowPowerLocationManager,
+                interval: 5,
+                blueBar: true
+            )
+            let timer = host.timer()
+            RadarLocationManagerSwift.stopUpdates(host: host, locationManager: locationManager)
+
+            #expect(timer?.isValid == false)
+            #expect(locationManager.stopUpdatingLocationCallCount == 1)
+            #expect(host.started() == false)
+            #expect(host.startedBlueBar() == false)
+        }
+
+        private static func location(age: TimeInterval) -> CLLocation {
+            CLLocation(
+                coordinate: CLLocationCoordinate2D(latitude: 40.7, longitude: -74.0),
+                altitude: 0,
+                horizontalAccuracy: 10,
+                verticalAccuracy: 10,
+                timestamp: Date(timeIntervalSinceNow: -age)
+            )
         }
 
         @Test("startUpdates stops primary updates for a long blue-bar interval")
