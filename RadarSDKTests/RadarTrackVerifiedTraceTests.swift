@@ -51,8 +51,10 @@ final class RadarTrackVerifiedTraceTests: XCTestCase {
         let originalHelper = client.apiHelper
         let originalKey = RadarSettings.publishableKey
         let originalAnonymous = RadarSettings.anonymousTrackingEnabled
+        let originalOptions = RadarUserDefaults.object(forKey: .initializeOptions)
         restoreState = {
             client.apiHelper = originalHelper
+            RadarUserDefaults.set(originalOptions, forKey: .initializeOptions)
             RadarSettings.publishableKey = originalKey
             RadarSettings.anonymousTrackingEnabled = originalAnonymous
             RadarTraceSpan.defaultManager = .shared
@@ -122,6 +124,23 @@ final class RadarTrackVerifiedTraceTests: XCTestCase {
         XCTAssertEqual(TraceTestHarness.boolAttribute(root, "radar.verified.failover"), true)
         XCTAssertEqual(TraceTestHarness.errorType(root), "ERROR_UNAUTHORIZED")
         XCTAssertEqual(spans.count, 3)
+    }
+
+    // An older SDK saved trackVerifiedAutoFailover with the initialize options. A saved false
+    // value must not turn off failover.
+    @MainActor
+    func test_trackVerified_failoverIgnoresSavedAutoFailoverOption() async throws {
+        RadarUserDefaults.set(["trackVerifiedAutoFailover": false], forKey: .initializeOptions)
+        RadarAPIClient.sharedInstance().apiHelper = FailoverAPIHelperMock()
+        let manager = try makeVerificationManager(result: ["payload": MockFraudEnvelope.payload])
+
+        _ = await trackVerified(manager)
+
+        try await harness.manager.flushAndWaitForTesting()
+        let spans = harness.allSpans()
+        XCTAssertEqual(spans.filter { $0["name"] as? String == "GET /v1/config" }.count, 2)
+        let root = try XCTUnwrap(spans.first { $0["name"] as? String == "radar.track_verified" })
+        XCTAssertEqual(TraceTestHarness.boolAttribute(root, "radar.verified.failover"), true)
     }
 
     @MainActor

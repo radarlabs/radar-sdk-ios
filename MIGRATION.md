@@ -1,5 +1,13 @@
 # Migration guides
 
+## 4.x to 5.0.0
+
+### Public API changes
+
+- `RadarInitializeOptions.trackVerifiedAutoFailover` is removed. Failover is now always on for every request. Remove the option from your code. Swift and Objective-C code that sets it no longer compiles.
+- Options saved by an older SDK version, and dictionaries from wrapper SDKs that still send the `trackVerifiedAutoFailover` key, still work. The SDK ignores the key.
+- Before 3.45.0, failover was off by default. If you upgrade from 3.44.x or earlier, or if you set the option to `false`, `trackVerified()` can now send requests to the secondary verified host, `api-verified.radar.com`. If your app limits which hosts it can reach or pins certificates, allow this host.
+
 ## 3.46.x to 4.0.0
 
 ### Public API changes
