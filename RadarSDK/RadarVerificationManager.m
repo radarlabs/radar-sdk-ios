@@ -131,10 +131,6 @@
         });
     }
     
-    // Initializing without options never persists any, so fall back to the default (on).
-    RadarInitializeOptions *initializeOptions = [RadarSettings initializeOptions];
-    BOOL autoFailover = initializeOptions ? initializeOptions.trackVerifiedAutoFailover : YES;
-
     // Every exit calls completionHandler on the main thread, so the wrapper ends the root on each of them. reason and
     // transactionId can come from the app, so they're never recorded.
     RadarTraceSpan *trace = [RadarTraceSpan startWithName:@"radar.track_verified"];
@@ -356,7 +352,7 @@
      traceSpan:trace
      completionHandler:^(RadarStatus status, RadarConfig * _Nullable config) {
         BOOL primaryRadarResponse = (config && config.meta);
-        if (!autoFailover || primaryRadarResponse) {
+        if (primaryRadarResponse) {
             continueWithConfig(status, config, NO);
             return;
         }
