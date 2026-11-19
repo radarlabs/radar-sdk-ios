@@ -171,9 +171,10 @@ RADAR_API_SURFACE NSString *_Nonnull get_RadarRevealRiskToken__id(RadarRevealRis
 RADAR_API_SURFACE NSString *_Nullable get_RadarRevealRiskToken_token(RadarRevealRiskToken *obj) { return obj.token; }
 RADAR_API_SURFACE NSDate *_Nullable get_RadarRevealRiskToken_expiresAt(RadarRevealRiskToken *obj) { return obj.expiresAt; }
 RADAR_API_SURFACE NSNumber *_Nullable get_RadarRevealRiskToken_expiresIn(RadarRevealRiskToken *obj) { return obj.expiresIn; }
-RADAR_API_SURFACE RadarRevealRiskTokenRisk *_Nonnull get_RadarRevealRiskToken_risk(RadarRevealRiskToken *obj) { return obj.risk; }
-RADAR_API_SURFACE RadarRevealRiskTokenNetwork *_Nonnull get_RadarRevealRiskToken_network(RadarRevealRiskToken *obj) { return obj.network; }
-RADAR_API_SURFACE RadarRevealRiskTokenDevice *_Nonnull get_RadarRevealRiskToken_device(RadarRevealRiskToken *obj) { return obj.device; }
+RADAR_API_SURFACE RadarRevealRiskTokenRisk *_Nullable get_RadarRevealRiskToken_risk(RadarRevealRiskToken *obj) { return obj.risk; }
+RADAR_API_SURFACE RadarRevealRiskTokenNetwork *_Nullable get_RadarRevealRiskToken_network(RadarRevealRiskToken *obj) { return obj.network; }
+RADAR_API_SURFACE RadarRevealRiskTokenDevice *_Nullable get_RadarRevealRiskToken_device(RadarRevealRiskToken *obj) { return obj.device; }
+RADAR_API_SURFACE enum RadarResponseFormat get_RadarRevealRiskToken_format(RadarRevealRiskToken *obj) { return obj.format; }
 RADAR_API_SURFACE NSDictionary *_Nonnull call_RadarRevealRiskToken_dictionaryValue(RadarRevealRiskToken *obj) { return [obj dictionaryValue]; }
 
 #pragma mark - RadarRevealRiskTokenDevice
@@ -531,6 +532,7 @@ RADAR_API_SURFACE NSArray<NSString *> *_Nullable get_RadarVerifiedLocationToken_
 RADAR_API_SURFACE NSString *_Nullable get_RadarVerifiedLocationToken__id(RadarVerifiedLocationToken *obj) { return obj._id; }
 RADAR_API_SURFACE NSDictionary *_Nullable get_RadarVerifiedLocationToken_fullDict(RadarVerifiedLocationToken *obj) { return obj.fullDict; }
 RADAR_API_SURFACE NSDictionary *_Nonnull call_RadarVerifiedLocationToken_dictionaryValue(RadarVerifiedLocationToken *obj) { return [obj dictionaryValue]; }
+RADAR_API_SURFACE enum RadarResponseFormat get_RadarVerifiedLocationToken_format(RadarVerifiedLocationToken *obj) { return obj.format; }
 
 #pragma mark - RadarAddress
 

@@ -7,6 +7,10 @@
 
 import Foundation
 
+#if canImport(RadarSDKFraud)
+    @_spi(RadarInternal) import RadarSDKFraud
+#endif
+
 /// The Radar API environment the example app talks to, picked in Settings → Environment.
 /// `.local` points both hosts at a dev server URL: "http://localhost:8081" in the Simulator, or
 /// your Mac's LAN IP (e.g. "http://192.168.0.24:8081") on a device.
@@ -30,6 +34,9 @@ enum RadarEnvironment: String, CaseIterable, Identifiable {
 
     func host(localURL: String) -> String { hosts?.api ?? localURL }
 
+    /// Whether Settings offers a fraud public key override. Production always uses the SDK's key.
+    var allowsFraudKeyOverride: Bool { self != .production }
+
     /// Environments with fixed hosts, which the key check probes.
     static let checkable: [RadarEnvironment] = [.production, .staging]
 
@@ -45,6 +52,30 @@ enum RadarEnvironment: String, CaseIterable, Identifiable {
             defaults.set(hosts?.verified ?? localURL, forKey: "radar-verifiedHost")
         }
     }
+}
+
+/// A fraud payload encryption key to use instead of the fraud SDK's built-in production key, for
+/// servers with their own key (staging, or a local server's key from its `.env`).
+struct FraudKeyOverride {
+    let publicKeyBase64: String
+    let keyVersion: Int
+
+    /// Passes the key to the fraud SDK's internal testing API. Call before `Radar.initialize`.
+    /// Returns an error message, or nil on success.
+    func apply() -> String? {
+        #if canImport(RadarSDKFraud)
+            do {
+                try FraudPayloadKeyRing.setKeyOverride(publicKeyBase64: publicKeyBase64, keyVersion: keyVersion)
+                return nil
+            } catch {
+                return "Invalid fraud key override (\(error)); using the built-in key."
+            }
+        #else
+            return "RadarSDKFraud isn't linked; fraud key override ignored."
+        #endif
+    }
+
+    var summary: String { "fraud key = \(publicKeyBase64.prefix(8))… v\(keyVersion)" }
 }
 
 /// Which environments a publishable key is valid on. A key's string doesn't say whether it
