@@ -32,8 +32,8 @@ import Foundation
     func setStarted(_ started: Bool)
     func startedInterval() -> Int32
     func setStartedInterval(_ interval: Int32)
-    func startedBlueBar() -> Bool
-    func setStartedBlueBar(_ blueBar: Bool)
+    func startedContinuousUpdates() -> Bool
+    func setStartedContinuousUpdates(_ continuousUpdates: Bool)
     func sending() -> Bool
     func setSending(_ sending: Bool)
     func timer() -> Timer?
@@ -192,13 +192,13 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
         interval: Int32,
         blueBar: Bool
     ) {
-        if !host.started() || interval != host.startedInterval() || blueBar != host.startedBlueBar() {
-            RadarLogger.shared.debug("🦅 Starting timer | interval = \(interval); blueBar = \(blueBar)")
+        let continuousUpdates = usesContinuousUpdates(interval: interval, blueBar: blueBar)
+
+        if !host.started() || interval != host.startedInterval() || continuousUpdates != host.startedContinuousUpdates() {
+            RadarLogger.shared.debug("🦅 Starting timer | interval = \(interval); continuousUpdates = \(continuousUpdates)")
 
             host.cancelPendingShutdown()
             host.timer()?.invalidate()
-
-            let continuousUpdates = usesContinuousUpdates(interval: interval, blueBar: blueBar)
 
             let hostBox = RadarLocationManagerSwiftHostBox(host: host)
             host.setTimer(
@@ -221,7 +221,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
             host.setStarted(true)
             host.setStartedInterval(interval)
-            host.setStartedBlueBar(blueBar)
+            host.setStartedContinuousUpdates(continuousUpdates)
         } else {
             RadarLogger.shared.debug("🦅 Already started timer")
         }
@@ -240,7 +240,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
         host.setStarted(false)
         host.setStartedInterval(0)
-        host.setStartedBlueBar(false)
+        host.setStartedContinuousUpdates(false)
 
         if !host.sending() {
             let delay = RadarSettings.tracking ? Self.trackingShutdownDelay : Self.immediateShutdownDelay

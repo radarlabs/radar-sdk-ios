@@ -41,9 +41,12 @@ extension RadarSerializedTests {
 
         /// Calls `startUpdates:blueBar:` once for each entry in `starts` on the shared manager with
         /// tracking location managers, fires the last timer once, and returns the primary manager.
+        /// `expectedTimerCount` is the number of different timers the calls must create; by default,
+        /// each call replaces the timer.
         private func primaryManagerAfterTimerFires(
             starts: [(interval: Int32, blueBar: Bool)],
-            lastFixAge: TimeInterval? = 1
+            lastFixAge: TimeInterval? = 1,
+            expectedTimerCount: Int? = nil
         ) -> TrackingCLLocationManager {
             RadarLocationManagerSwiftTestHelpers.clearState()
             let manager = RadarLocationManager.sharedInstance()
@@ -56,7 +59,7 @@ extension RadarSerializedTests {
                 manager.setValue(nil, forKey: "timer")
                 manager.setValue(false, forKey: "started")
                 manager.setValue(0, forKey: "startedInterval")
-                manager.setValue(false, forKey: "startedBlueBar")
+                manager.setValue(false, forKey: "startedContinuousUpdates")
                 manager.locationManager = originalLocationManager
                 manager.lowPowerLocationManager = originalLowPowerLocationManager
                 RadarLocationManagerSwiftTestHelpers.clearState()
@@ -64,7 +67,7 @@ extension RadarSerializedTests {
 
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": false])
             manager.setValue(false, forKey: "started")
-            manager.setValue(false, forKey: "startedBlueBar")
+            manager.setValue(false, forKey: "startedContinuousUpdates")
             locationManager.mockLocation = lastFixAge.map(Self.location(age:))
             manager.locationManager = locationManager
             manager.lowPowerLocationManager = lowPowerLocationManager
@@ -72,12 +75,12 @@ extension RadarSerializedTests {
             var timers: [Timer] = []
             for start in starts {
                 invokeStartUpdates(on: manager, interval: start.interval, blueBar: start.blueBar)
-                if let timer = manager.value(forKey: "timer") as? Timer {
+                if let timer = manager.value(forKey: "timer") as? Timer, !timers.contains(where: { $0 === timer }) {
                     timers.append(timer)
                 }
             }
-            // Each start must replace the timer, so only the last one stays valid.
-            #expect(timers.count == starts.count)
+            // Only the last timer stays valid.
+            #expect(timers.count == (expectedTimerCount ?? starts.count))
             #expect(timers.dropLast().allSatisfy { !$0.isValid })
 
             let timer = manager.value(forKey: "timer") as? Timer
@@ -102,11 +105,20 @@ extension RadarSerializedTests {
             #expect(requestLocationCountAfterTimerFires(interval: 5, blueBar: true, lastFixAge: nil) == 1)
         }
 
-        @Test("Objective-C startUpdates restarts updates when only blueBar changes")
-        func objCStartUpdatesRestartsWhenOnlyBlueBarChanges() {
+        @Test("Objective-C startUpdates restarts updates when a blueBar change turns off continuous updates")
+        func objCStartUpdatesRestartsWhenContinuousUpdatesChange() {
             let locationManager = primaryManagerAfterTimerFires(starts: [(5, true), (5, false)])
 
             #expect(locationManager.startUpdatingLocationCallCount == 1)
+            #expect(locationManager.stopUpdatingLocationCallCount == 1)
+            #expect(locationManager.requestLocationCallCount == 1)
+        }
+
+        @Test("Objective-C startUpdates keeps the timer when a blueBar change does not change continuous updates")
+        func objCStartUpdatesKeepsTimerWhenContinuousUpdatesDoNotChange() {
+            let locationManager = primaryManagerAfterTimerFires(starts: [(10, false), (10, true)], expectedTimerCount: 1)
+
+            #expect(locationManager.startUpdatingLocationCallCount == 0)
             #expect(locationManager.stopUpdatingLocationCallCount == 1)
             #expect(locationManager.requestLocationCallCount == 1)
         }

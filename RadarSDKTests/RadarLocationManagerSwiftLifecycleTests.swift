@@ -40,7 +40,7 @@ final class TrackingRadarActivityManager: RadarActivityManager, @unchecked Senda
 final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwiftHost, @unchecked Sendable {
     private var startedValue = false
     private var startedIntervalValue: Int32 = 0
-    private var startedBlueBarValue = false
+    private var startedContinuousUpdatesValue = false
     var sendingValue = false
     private var timerValue: Timer?
     private(set) var cancelPendingShutdownCallCount = 0
@@ -62,9 +62,9 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
 
     func setStartedInterval(_ interval: Int32) { startedIntervalValue = interval }
 
-    func startedBlueBar() -> Bool { startedBlueBarValue }
+    func startedContinuousUpdates() -> Bool { startedContinuousUpdatesValue }
 
-    func setStartedBlueBar(_ blueBar: Bool) { startedBlueBarValue = blueBar }
+    func setStartedContinuousUpdates(_ continuousUpdates: Bool) { startedContinuousUpdatesValue = continuousUpdates }
 
     func sending() -> Bool { sendingValue }
 
@@ -216,8 +216,8 @@ extension RadarSerializedTests {
             #expect(host.requestLocationCallCount == expectedRequests)
         }
 
-        @Test("startUpdates restarts updates when only blueBar changes")
-        func startUpdatesRestartsWhenOnlyBlueBarChanges() {
+        @Test("startUpdates restarts updates when a blueBar change turns off continuous updates")
+        func startUpdatesRestartsWhenContinuousUpdatesChange() {
             let host = TrackingRadarLocationManagerHost()
             let locationManager = TrackingCLLocationManager()
             let lowPowerLocationManager = TrackingCLLocationManager()
@@ -243,12 +243,36 @@ extension RadarSerializedTests {
 
             #expect(continuousTimer?.isValid == false)
             #expect(host.timer() !== continuousTimer)
-            #expect(host.startedBlueBar() == false)
+            #expect(host.startedContinuousUpdates() == false)
             #expect(locationManager.startUpdatingLocationCallCount == 1)
             #expect(locationManager.stopUpdatingLocationCallCount == 1)
 
             host.timer()?.fire()
             #expect(host.requestLocationCallCount == 1)
+        }
+
+        @Test("startUpdates keeps the timer when a blueBar change does not change continuous updates")
+        func startUpdatesKeepsTimerWhenContinuousUpdatesDoNotChange() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+
+            for blueBar in [false, true] {
+                RadarLocationManagerSwift.startUpdates(
+                    host: host,
+                    locationManager: locationManager,
+                    lowPowerLocationManager: lowPowerLocationManager,
+                    interval: 10,
+                    blueBar: blueBar
+                )
+            }
+            defer { host.timer()?.invalidate() }
+
+            #expect(host.timer()?.isValid == true)
+            #expect(host.startedContinuousUpdates() == false)
+            #expect(locationManager.startUpdatingLocationCallCount == 0)
+            #expect(locationManager.stopUpdatingLocationCallCount == 1)
+            #expect(lowPowerLocationManager.startUpdatingLocationCallCount == 1)
         }
 
         @Test("startUpdates timer requests locations again after a change from a continuous interval to a longer one")
@@ -273,7 +297,7 @@ extension RadarSerializedTests {
             #expect(host.requestLocationCallCount == 1)
         }
 
-        @Test("stopUpdates stops continuous updates and clears the started blueBar")
+        @Test("stopUpdates stops continuous updates and clears the started update state")
         func stopUpdatesStopsContinuousUpdates() {
             let host = TrackingRadarLocationManagerHost()
             let locationManager = TrackingCLLocationManager()
@@ -292,7 +316,7 @@ extension RadarSerializedTests {
             #expect(timer?.isValid == false)
             #expect(locationManager.stopUpdatingLocationCallCount == 1)
             #expect(host.started() == false)
-            #expect(host.startedBlueBar() == false)
+            #expect(host.startedContinuousUpdates() == false)
         }
 
         private static func location(age: TimeInterval) -> CLLocation {

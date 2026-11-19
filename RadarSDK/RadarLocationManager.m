@@ -53,9 +53,9 @@
 @property (assign, nonatomic) int startedInterval;
 
 /**
- The `blueBar` value that `startUpdates()` last started with.
+ `YES` if `startUpdates()` started continuous updates on `locationManager`.
  */
-@property (assign, nonatomic) BOOL startedBlueBar;
+@property (assign, nonatomic) BOOL startedContinuousUpdates;
 
 /**
  `YES` if `RadarAPIClient.trackWithLocation() has been called, but the
@@ -338,16 +338,17 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         return;
     }
 
-    if (!self.started || interval != self.startedInterval || blueBar != self.startedBlueBar) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Starting timer | interval = %d; blueBar = %d", interval, blueBar]];
+    BOOL continuousUpdates = [RadarLocationManagerSwift usesContinuousUpdatesWithInterval:interval blueBar:blueBar];
+
+    if (!self.started || interval != self.startedInterval || continuousUpdates != self.startedContinuousUpdates) {
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug
+                                           message:[NSString stringWithFormat:@"Starting timer | interval = %d; continuousUpdates = %d", interval, continuousUpdates]];
 
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(shutDown) object:nil];
 
         if (self.timer) {
             [self.timer invalidate];
         }
-
-        BOOL continuousUpdates = [RadarLocationManagerSwift usesContinuousUpdatesWithInterval:interval blueBar:blueBar];
 
         self.timer = [NSTimer scheduledTimerWithTimeInterval:interval
                                                      repeats:YES
@@ -374,7 +375,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
 
         self.started = YES;
         self.startedInterval = interval;
-        self.startedBlueBar = blueBar;
+        self.startedContinuousUpdates = continuousUpdates;
     } else {
         [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:@"Already started timer"];
     }
@@ -398,7 +399,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     
     self.started = NO;
     self.startedInterval = 0;
-    self.startedBlueBar = NO;
+    self.startedContinuousUpdates = NO;
 
     if (!self.sending) {
         NSTimeInterval delay = [RadarSettings tracking] ? 10 : 0;
