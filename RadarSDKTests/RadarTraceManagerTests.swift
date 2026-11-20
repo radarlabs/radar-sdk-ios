@@ -331,3 +331,46 @@ final class RadarTraceManagerTests {
         TraceTestHarness.spanIds(payload)
     }
 }
+
+@Suite("RadarTraceManager cross-platform framework")
+final class RadarTraceManagerXPlatformTests {
+    private let harness = TraceTestHarness()
+    private var manager: RadarTraceManager { harness.manager }
+    private var session: TraceURLSession { harness.session }
+
+    @Test("Native app spans report the Native framework without a version")
+    func nativeSpansReportNativeFramework() async throws {
+        try await harness.recordSpans(1)
+
+        try await manager.flushAndWaitForTesting()
+
+        let payload = try #require(session.payloads.first)
+        #expect(TraceTestHarness.resourceAttribute(payload, "radar.sdk.xplatform.type") == "Native")
+        #expect(TraceTestHarness.resourceAttribute(payload, "radar.sdk.xplatform.version") == nil)
+    }
+
+    @Test("Spans report the wrapper version that recorded them, in separate batches per version")
+    func spansReportRecordingWrapper() async throws {
+        harness.xPlatform.value = RadarTraceManager.XPlatform(type: "ReactNative", version: "3.20.0")
+        try await harness.recordSpans(2)
+        harness.xPlatform.value = RadarTraceManager.XPlatform(type: "ReactNative", version: "3.21.0")
+        try await harness.recordSpans(1, firstId: 3)
+
+        try await manager.flushAndWaitForTesting()
+
+        #expect(session.payloads.map { TraceTestHarness.resourceAttribute($0, "radar.sdk.xplatform.type") } == ["ReactNative", "ReactNative"])
+        #expect(session.payloads.map { TraceTestHarness.resourceAttribute($0, "radar.sdk.xplatform.version") } == ["3.20.0", "3.21.0"])
+        #expect(harness.batchSizes() == [2, 1])
+    }
+
+    @Test("Spans stored without a framework leave it out and upload in their own batch")
+    func spansWithoutFrameworkUploadSeparately() async throws {
+        try await harness.writeRecordFile("1000-000000001-a.json", spanId: TraceTestHarness.spanId(1))
+        try await harness.recordSpans(1, firstId: 2)
+
+        try await manager.flushAndWaitForTesting()
+
+        #expect(session.payloads.map { TraceTestHarness.resourceAttribute($0, "radar.sdk.xplatform.type") } == [nil, "Native"])
+        #expect(harness.batchSizes() == [1, 1])
+    }
+}
