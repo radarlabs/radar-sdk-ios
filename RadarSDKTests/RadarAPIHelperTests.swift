@@ -237,3 +237,52 @@ struct RadarAPIHelperTests {
         #expect(requests.count == failingAttempt - 1)
     }
 }
+
+private final class TimeoutBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storedValue: TimeInterval
+
+    init(_ value: TimeInterval) { storedValue = value }
+
+    var value: TimeInterval {
+        get { lock.withLock { storedValue } }
+        set { lock.withLock { storedValue = newValue } }
+    }
+}
+
+@Suite
+struct RadarNetworkTimeoutTests {
+
+    // Same results as `RadarAPIHelperStandardNetworkTimeoutInterval` in RadarAPIHelper.m.
+    @Test(
+        "Values that aren't valid fall back to the default, and others are clamped to 1...300",
+        arguments: [
+            (30, 30), (0, 10), (-5, 10), (.nan, 10), (.infinity, 10), (-.infinity, 10),
+            (0.5, 1), (1, 1), (300, 300), (600, 300),
+        ] as [(TimeInterval, TimeInterval)]
+    )
+    func effectiveTimeout(input: TimeInterval, expected: TimeInterval) {
+        let options = RadarInitializeOptions()
+        options.networkTimeoutInterval = input
+        #expect(options.effectiveNetworkTimeoutInterval == expected)
+    }
+
+    @Test func helperSetsTheTimeoutOnEveryAttempt() async throws {
+        // The helper exists before the options are stored, like `RadarAPIClient.shared` can.
+        let timeout = TimeoutBox(30)
+        let session = RetryTestSession(failures: [.networkConnectionLost])
+        let helper = RadarAPIHelper(session: session, timeoutInterval: { timeout.value })
+        let url = try #require(URL(string: "https://api.radar.io/v1/config"))
+
+        // A prepared request that drops the timeout still gets it.
+        _ = try await helper.retryingRequest(for: URLRequest(url: url)) { request in
+            URLRequest(url: request.url!, timeoutInterval: 60)
+        }
+
+        timeout.value = 45
+        _ = try await helper.retryingRequest(for: URLRequest(url: url))
+
+        let timeouts = await session.recordedRequests().map(\.timeoutInterval)
+        #expect(timeouts == [30, 30, 45])
+    }
+}

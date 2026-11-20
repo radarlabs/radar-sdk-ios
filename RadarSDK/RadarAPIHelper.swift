@@ -15,24 +15,40 @@ extension URLSession: RadarURLSessionProtocol {}
 final class RadarAPIHelper: Sendable {
 
     let session: RadarURLSessionProtocol
+    // Read for each request, because `RadarAPIClient.shared` can exist before `Radar.initialize`
+    // stores the options.
+    private let timeoutInterval: @Sendable () -> TimeInterval
 
-    init(session: RadarURLSessionProtocol? = nil) {
+    init(
+        session: RadarURLSessionProtocol? = nil,
+        timeoutInterval: @escaping @Sendable () -> TimeInterval = { RadarSettings.networkTimeoutInterval }
+    ) {
         if let session {
             self.session = session
         } else {
+            // Each request sets its own timeout, so the session allows the largest one.
             let config = URLSessionConfiguration.default
-            config.timeoutIntervalForRequest = 10
-            config.timeoutIntervalForResource = 10
+            config.timeoutIntervalForRequest = RadarInitializeOptions.maxNetworkTimeoutInterval
+            config.timeoutIntervalForResource = RadarInitializeOptions.maxNetworkTimeoutInterval
             self.session = URLSession(configuration: config)
         }
+        self.timeoutInterval = timeoutInterval
     }
 
     func retryingRequest(
         for request: URLRequest,
         prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
     ) async throws -> (Data, URLResponse) {
-        let firstRequest = try prepareRequest?(request) ?? request
+        let timeout = timeoutInterval()
+        // Set after `prepareRequest`, so a prepared request can't drop the timeout.
+        func requestForAttempt() throws -> URLRequest {
+            var attempt = try prepareRequest?(request) ?? request
+            attempt.timeoutInterval = timeout
+            return attempt
+        }
 
+        // Prepare outside the `do`, so a preparation error is never retried.
+        let firstRequest = try requestForAttempt()
         do {
             return try await session.data(for: firstRequest)
         } catch {
@@ -42,8 +58,7 @@ final class RadarAPIHelper: Sendable {
                 throw error
             }
 
-            let retryRequest = try prepareRequest?(request) ?? request
-            return try await session.data(for: retryRequest)
+            return try await session.data(for: try requestForAttempt())
         }
     }
 
