@@ -13,7 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // Declares the internal Swift RadarActivityManager for Objective-C callers, since internal Swift
-// classes are not emitted into RadarSDK-Swift.h. Call the start and stop methods on the main thread.
+// classes are not emitted into RadarSDK-Swift.h. All methods are safe to call from any thread.
 @interface RadarActivityManager : NSObject
 
 @property (class, nonatomic, readonly) RadarActivityManager *sharedInstance;

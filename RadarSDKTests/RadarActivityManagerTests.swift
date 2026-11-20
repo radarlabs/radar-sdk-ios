@@ -240,8 +240,7 @@ struct RadarActivityManagerTests {
     // MARK: - requestPermission
 
     @Test("requestPermission starts each sensor and stops it at the first sample")
-    @MainActor
-    func requestPermissionWarmsUpSensors() async throws {
+    func requestPermissionWarmsUpSensors() {
         let (manager, motion) = makeManager()
 
         manager.requestPermission()
@@ -254,7 +253,6 @@ struct RadarActivityManagerTests {
         motion.activityHandlers[0](nil)
         motion.relativeAltitudeHandlers[0](nil, nil)
         motion.absoluteAltitudeHandlers[0](nil, nil)
-        try await waitUntil { motion.calls.count == 6 }
 
         #expect(
             Set(motion.calls.suffix(3))
@@ -262,8 +260,7 @@ struct RadarActivityManagerTests {
     }
 
     @Test("A late warm-up sample does not stop a sensor that tracking started")
-    @MainActor
-    func requestPermissionLateSampleKeepsTrackingUpdates() async {
+    func requestPermissionLateSampleKeepsTrackingUpdates() {
         let (manager, motion) = makeManager()
 
         manager.requestPermission()
@@ -275,8 +272,6 @@ struct RadarActivityManagerTests {
         motion.activityHandlers[0](nil)
         motion.relativeAltitudeHandlers[0](nil, nil)
         motion.absoluteAltitudeHandlers[0](nil, nil)
-        // The main actor runs jobs in order, so this waits for the tasks that the handlers queued.
-        await Task { @MainActor in }.value
 
         #expect(!motion.calls.contains("stopActivityUpdates"))
         #expect(!motion.calls.contains("stopRelativeAltitudeUpdates"))
@@ -286,25 +281,48 @@ struct RadarActivityManagerTests {
         #expect(manager.isUpdatingAbsoluteAltitude)
     }
 
-    @Test("requestPermission off the main thread starts the sensors on the main actor")
-    func requestPermissionOffMainRunsOnMainActor() async {
+    @Test("requestPermission off the main thread starts the sensors before it returns")
+    func requestPermissionOffMainStartsAtOnce() async {
         let (manager, motion) = makeManager()
 
         await Task.detached {
             manager.requestPermission()
         }.value
-        // The main actor runs jobs in order, so this waits for the call that requestPermission queued.
-        await Task { @MainActor in }.value
 
         #expect(motion.calls == ["startActivityUpdates", "startRelativeAltitudeUpdates", "startAbsoluteAltitudeUpdates"])
     }
 
-    @MainActor
-    private func waitUntil(_ condition: @MainActor () -> Bool) async throws {
-        for _ in 0..<100 where !condition() {
-            try await Task.sleep(nanoseconds: 10_000_000)
+    // MARK: - Threads
+
+    @Test("Starts and stops from many threads keep each flag and its sensor together")
+    func concurrentStartsAndStopsStayConsistent() {
+        let (manager, motion) = makeManager()
+
+        // `TrackingRadarMotion` is not thread-safe, so this also checks that the manager never
+        // calls it from two threads at the same time.
+        DispatchQueue.concurrentPerform(iterations: 1_000) { index in
+            switch index % 6 {
+            case 0: manager.startActivityUpdates { _ in }
+            case 1: manager.stopActivityUpdates()
+            case 2: manager.startRelativeAltitude { _ in }
+            case 3: manager.stopRelativeAltitudeUpdates()
+            case 4: manager.startAbsoluteAltitude { _ in }
+            default: manager.stopAbsoluteAltitudeUpdates()
+            }
         }
-        #expect(condition())
+
+        // A sensor only starts again after a stop, so no start may follow its own start.
+        for sensor in ["Activity", "RelativeAltitude", "AbsoluteAltitude"] {
+            let calls = motion.calls.filter { $0.hasSuffix("\(sensor)Updates") }
+            let doubleStart = zip(calls, calls.dropFirst()).contains { $0.hasPrefix("start") && $1.hasPrefix("start") }
+            #expect(!doubleStart, "\(sensor) started twice without a stop")
+            let running = calls.last?.hasPrefix("start") ?? false
+            switch sensor {
+            case "Activity": #expect(manager.isUpdatingActivity == running)
+            case "RelativeAltitude": #expect(manager.isUpdatingPressure == running)
+            default: #expect(manager.isUpdatingAbsoluteAltitude == running)
+            }
+        }
     }
 
     @Test("requestPermission does nothing while an update is running")

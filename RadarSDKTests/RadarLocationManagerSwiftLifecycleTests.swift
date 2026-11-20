@@ -541,8 +541,8 @@ extension RadarSerializedTests {
             #expect(locationManager.stopUpdatingHeadingCallCount == 1)
         }
 
-        @Test("stopTracking off the main thread stops the sensors on the main actor")
-        func stopTrackingOffMainStopsOnMainActor() async {
+        @Test("stopTracking off the main thread stops the sensors before it returns")
+        func stopTrackingOffMainStopsAtOnce() async {
             RadarLocationManagerSwiftTestHelpers.clearState()
             let bridge = MockRadarSwiftBridge()
             let originalBridge = RadarSwift.bridge
@@ -564,11 +564,54 @@ extension RadarSerializedTests {
                     activityManager: activityManager
                 )
             }.value
-            // The main actor runs jobs in order, so this waits for the stop that stopTracking queued.
-            await Task { @MainActor in }.value
 
             #expect(activityManager.stopActivityUpdatesCallCount == 1)
             #expect(locationManager.stopUpdatingHeadingCallCount == 1)
+        }
+
+        @Test("A start right after stopTracking off the main thread keeps its sensors on")
+        func startAfterStopTrackingOffMainKeepsSensors() async {
+            RadarLocationManagerSwiftTestHelpers.clearState()
+            let bridge = MockRadarSwiftBridge()
+            let originalBridge = RadarSwift.bridge
+            RadarSwift.bridge = bridge
+            defer {
+                RadarSwift.bridge = originalBridge
+                RadarLocationManagerSwiftTestHelpers.clearState()
+            }
+
+            let options = RadarTrackingOptions.presetEfficient
+            options.useMotion = true
+            options.usePressure = true
+            RadarSettings.trackingOptions = options
+            let locationManager = TrackingCLLocationManager()
+            let motion = TrackingRadarMotion()
+            let activityManager = RadarActivityManager()
+            activityManager.radarSDKMotion = motion
+            activityManager.startActivityUpdates { _ in }
+            activityManager.startRelativeAltitude { _ in }
+            activityManager.startAbsoluteAltitude { _ in }
+
+            await Task.detached {
+                RadarLocationManagerSwift.stopTracking(
+                    locationManager: locationManager,
+                    activityManager: activityManager
+                )
+                activityManager.startActivityUpdates { _ in }
+                activityManager.startRelativeAltitude { _ in }
+                activityManager.startAbsoluteAltitude { _ in }
+            }.value
+            // Let any work that the stop queued on the main actor run.
+            await Task { @MainActor in }.value
+
+            #expect(activityManager.isUpdatingActivity)
+            #expect(activityManager.isUpdatingPressure)
+            #expect(activityManager.isUpdatingAbsoluteAltitude)
+            #expect(motion.calls.last(where: { $0.hasSuffix("ActivityUpdates") }) == "startActivityUpdates")
+            #expect(
+                motion.calls.last(where: { $0.hasSuffix("RelativeAltitudeUpdates") }) == "startRelativeAltitudeUpdates")
+            #expect(
+                motion.calls.last(where: { $0.hasSuffix("AbsoluteAltitudeUpdates") }) == "startAbsoluteAltitudeUpdates")
         }
 
         @Test("stopTracking flushes replays before updating tracking when configured")
