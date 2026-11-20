@@ -38,9 +38,6 @@ typedef NSURLRequest *_Nullable (^RadarAPIRequestPreparation)(NSURLRequest *requ
 
 @interface RadarAPIHelper : NSObject
 
-// The timeout a request gets when it starts: `RadarSettings.networkTimeoutInterval`, times 2.5 for an extended timeout.
-+ (NSTimeInterval)timeoutIntervalWithExtendedTimeout:(BOOL)extendedTimeout;
-
 - (void)requestWithMethod:(NSString *)method
                       url:(NSString *)url
                   headers:(NSDictionary *_Nullable)headers

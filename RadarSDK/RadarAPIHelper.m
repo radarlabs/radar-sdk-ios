@@ -11,13 +11,34 @@
 #import "RadarSettings.h"
 #import "RadarUtils.h"
 
+#import <math.h>
+
 #if __has_include(<RadarSDK/RadarSDK-Swift.h>)
 #import <RadarSDK/RadarSDK-Swift.h>
 #elif __has_include("RadarSDK-Swift.h")
 #import "RadarSDK-Swift.h"
 #endif
 
-static const NSTimeInterval RadarAPIHelperExtendedTimeoutMultiplier = 2.5;
+static NSTimeInterval RadarAPIHelperStandardNetworkTimeoutInterval(void) {
+    RadarInitializeOptions *opts = [RadarSettings initializeOptions];
+    NSTimeInterval interval = opts ? opts.networkTimeoutInterval : 10;
+
+    // Validate
+    if (interval <= 0 || isnan(interval) || isinf(interval)) {
+        interval = 10;
+    }
+
+    // Clamp to reasonable range
+    if (interval < 1) {
+        interval = 1;
+    } else if (interval > 300) {
+        interval = 300;
+    }
+
+    return interval;
+}
+
+static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterval standard) { return standard * 2.5; }
 
 @interface RadarAPIHelper ()
 
@@ -37,27 +58,20 @@ static const NSTimeInterval RadarAPIHelperExtendedTimeoutMultiplier = 2.5;
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
         _semaphore = dispatch_semaphore_create(1);
 
-        // Each request sets its own timeout (see `timeoutIntervalWithExtendedTimeout:`), so the sessions never change.
-        // The session limits are the largest timeout the options allow.
-        NSTimeInterval maxStandardTimeout = [RadarSettings maxNetworkTimeoutInterval];
-        NSTimeInterval maxExtendedTimeout = maxStandardTimeout * RadarAPIHelperExtendedTimeoutMultiplier;
+        NSTimeInterval standardTimeout = RadarAPIHelperStandardNetworkTimeoutInterval();
+        NSTimeInterval extendedTimeout = RadarAPIHelperExtendedNetworkTimeoutInterval(standardTimeout);
 
         NSURLSessionConfiguration *standardConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-        standardConfig.timeoutIntervalForRequest = maxStandardTimeout;
-        standardConfig.timeoutIntervalForResource = maxStandardTimeout;
+        standardConfig.timeoutIntervalForRequest = standardTimeout;
+        standardConfig.timeoutIntervalForResource = standardTimeout;
         _standardSession = [NSURLSession sessionWithConfiguration:standardConfig];
 
         NSURLSessionConfiguration *extendedConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-        extendedConfig.timeoutIntervalForRequest = maxExtendedTimeout;
-        extendedConfig.timeoutIntervalForResource = maxExtendedTimeout;
+        extendedConfig.timeoutIntervalForRequest = extendedTimeout;
+        extendedConfig.timeoutIntervalForResource = extendedTimeout;
         _extendedTimeoutSession = [NSURLSession sessionWithConfiguration:extendedConfig];
     }
     return self;
-}
-
-+ (NSTimeInterval)timeoutIntervalWithExtendedTimeout:(BOOL)extendedTimeout {
-    NSTimeInterval standardTimeout = [RadarSettings networkTimeoutInterval];
-    return extendedTimeout ? standardTimeout * RadarAPIHelperExtendedTimeoutMultiplier : standardTimeout;
 }
 
 - (void)requestWithMethod:(NSString *)method
@@ -169,9 +183,6 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
             }
 
             NSURLSession *session = extendedTimeout ? self.extendedTimeoutSession : self.standardSession;
-            // Read when the request starts. The helper can exist before `Radar.initialize` stores the options.
-            NSTimeInterval timeout = [RadarAPIHelper timeoutIntervalWithExtendedTimeout:extendedTimeout];
-            req.timeoutInterval = timeout;
             NSDate *requestStart = [NSDate date];
 
             void (^dataTaskCompletionHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -286,10 +297,7 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                     }
                     return nil;
                 }
-                // Set the timeout again, so a prepared request can't drop it.
-                NSMutableURLRequest *preparedWithTimeout = [prepared mutableCopy];
-                preparedWithTimeout.timeoutInterval = timeout;
-                return preparedWithTimeout;
+                return prepared;
             };
 
             void (^dataTaskRetryHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {

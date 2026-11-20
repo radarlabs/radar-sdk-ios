@@ -303,19 +303,9 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
         set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .initializeOptions) }
     }
 
-    /// The timeout for standard API calls, from the stored initialize options. The Objective-C and
-    /// Swift API helpers read it for each request. It isn't cached, so it always matches the store.
-    public static var networkTimeoutInterval: TimeInterval {
-        networkTimeoutInterval(for: initializeOptions)
-    }
-
-    /// The largest value `networkTimeoutInterval` can return.
-    public static var maxNetworkTimeoutInterval: TimeInterval {
-        RadarInitializeOptions.maxNetworkTimeoutInterval
-    }
-
-    static func networkTimeoutInterval(for options: RadarInitializeOptions?) -> TimeInterval {
-        options?.effectiveNetworkTimeoutInterval ?? RadarInitializeOptions.defaultNetworkTimeoutInterval
+    /// The timeout for standard API calls, from the stored initialize options.
+    static var networkTimeoutInterval: TimeInterval {
+        initializeOptions?.effectiveNetworkTimeoutInterval ?? RadarInitializeOptions.defaultNetworkTimeoutInterval
     }
 
     public static var inSurveyMode: Bool {

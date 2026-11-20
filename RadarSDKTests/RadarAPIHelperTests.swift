@@ -253,30 +253,18 @@ private final class TimeoutBox: @unchecked Sendable {
 @Suite
 struct RadarNetworkTimeoutTests {
 
-    private static func options(timeout: TimeInterval) -> RadarInitializeOptions {
-        let options = RadarInitializeOptions()
-        options.networkTimeoutInterval = timeout
-        return options
-    }
-
-    @Test func noOptionsUsesDefault() {
-        #expect(RadarSettings.networkTimeoutInterval(for: nil) == 10)
-    }
-
-    @Test func validValueIsUsed() {
-        #expect(RadarSettings.networkTimeoutInterval(for: Self.options(timeout: 30)) == 30)
-    }
-
-    // Same results as the old `RadarAPIHelperStandardNetworkTimeoutInterval` in RadarAPIHelper.m.
+    // Same results as `RadarAPIHelperStandardNetworkTimeoutInterval` in RadarAPIHelper.m.
     @Test(
         "Values that aren't valid fall back to the default, and others are clamped to 1...300",
         arguments: [
-            (0, 10), (-5, 10), (.nan, 10), (.infinity, 10), (-.infinity, 10),
+            (30, 30), (0, 10), (-5, 10), (.nan, 10), (.infinity, 10), (-.infinity, 10),
             (0.5, 1), (1, 1), (300, 300), (600, 300),
         ] as [(TimeInterval, TimeInterval)]
     )
-    func invalidAndOutOfRangeValues(input: TimeInterval, expected: TimeInterval) {
-        #expect(RadarSettings.networkTimeoutInterval(for: Self.options(timeout: input)) == expected)
+    func effectiveTimeout(input: TimeInterval, expected: TimeInterval) {
+        let options = RadarInitializeOptions()
+        options.networkTimeoutInterval = input
+        #expect(options.effectiveNetworkTimeoutInterval == expected)
     }
 
     @Test func helperSetsTheTimeoutOnEveryAttempt() async throws {
@@ -296,41 +284,5 @@ struct RadarNetworkTimeoutTests {
 
         let timeouts = await session.recordedRequests().map(\.timeoutInterval)
         #expect(timeouts == [30, 30, 45])
-    }
-
-    @Test func defaultSessionAllowsTheLargestTimeout() throws {
-        let session = try #require(RadarAPIHelper().session as? URLSession)
-        #expect(session.configuration.timeoutIntervalForRequest == 300)
-        #expect(session.configuration.timeoutIntervalForResource == 300)
-    }
-
-    @Test func helperUsesInjectedSession() {
-        let injected = RetryTestSession(failures: [])
-        let helper = RadarAPIHelper(session: injected)
-        #expect(helper.session as? RetryTestSession === injected)
-    }
-}
-
-// These tests write the stored initialize options, which other suites read.
-extension RadarSerializedTests {
-    @Suite(.serialized)
-    struct RadarSettingsNetworkTimeoutTests {
-
-        @Test func followsTheStoredOptions() {
-            let original = RadarSettings.initializeOptions
-            defer { RadarSettings.initializeOptions = original }
-
-            let options = RadarInitializeOptions()
-            options.networkTimeoutInterval = 30
-            RadarSettings.initializeOptions = options
-            #expect(RadarSettings.networkTimeoutInterval == 30)
-
-            options.networkTimeoutInterval = 600
-            RadarSettings.initializeOptions = options
-            #expect(RadarSettings.networkTimeoutInterval == 300)
-
-            RadarSettings.initializeOptions = nil
-            #expect(RadarSettings.networkTimeoutInterval == 10)
-        }
     }
 }

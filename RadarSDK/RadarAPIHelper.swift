@@ -15,27 +15,24 @@ extension URLSession: RadarURLSessionProtocol {}
 final class RadarAPIHelper: Sendable {
 
     let session: RadarURLSessionProtocol
+    // Read for each request, because `RadarAPIClient.shared` can exist before `Radar.initialize`
+    // stores the options.
     private let timeoutInterval: @Sendable () -> TimeInterval
 
-    /// Tests pass `session` or `timeoutInterval`. `timeoutInterval` is read for each request, because
-    /// the helper can exist before `Radar.initialize` stores the options. By default it is
-    /// `RadarSettings.networkTimeoutInterval`.
     init(
         session: RadarURLSessionProtocol? = nil,
         timeoutInterval: @escaping @Sendable () -> TimeInterval = { RadarSettings.networkTimeoutInterval }
     ) {
-        self.session = session ?? Self.makeSession()
+        if let session {
+            self.session = session
+        } else {
+            // Each request sets its own timeout, so the session allows the largest one.
+            let config = URLSessionConfiguration.default
+            config.timeoutIntervalForRequest = RadarInitializeOptions.maxNetworkTimeoutInterval
+            config.timeoutIntervalForResource = RadarInitializeOptions.maxNetworkTimeoutInterval
+            self.session = URLSession(configuration: config)
+        }
         self.timeoutInterval = timeoutInterval
-    }
-
-    // Each request sets its own `timeoutInterval`, so the session never changes. The session limits
-    // are the largest timeout the options allow. Ephemeral, like the Objective-C helper's standard
-    // session, so responses and cookies aren't stored.
-    private static func makeSession() -> URLSession {
-        let config = URLSessionConfiguration.ephemeral
-        config.timeoutIntervalForRequest = RadarInitializeOptions.maxNetworkTimeoutInterval
-        config.timeoutIntervalForResource = RadarInitializeOptions.maxNetworkTimeoutInterval
-        return URLSession(configuration: config)
     }
 
     func retryingRequest(

@@ -59,8 +59,8 @@ public class RadarInitializeOptions: NSObject {
             defaultValue: RadarInitializeOptions.defaultIPChangeDebounceInterval)
     }
 
-    /// The timeout the API helpers use. A value that isn't valid (≤ 0, NaN, or infinite) uses the
-    /// default. Other values are clamped to `minNetworkTimeoutInterval`...`maxNetworkTimeoutInterval`.
+    /// The timeout the Swift API helper uses. Same rule as `RadarAPIHelper.m`: a value that isn't
+    /// valid (≤ 0, NaN, or infinite) uses the default. Other values are clamped to 1...300 s.
     var effectiveNetworkTimeoutInterval: TimeInterval {
         let interval = networkTimeoutInterval
         guard interval.isFinite, interval > 0 else {
