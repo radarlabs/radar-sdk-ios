@@ -120,8 +120,6 @@ RADAR_API_SURFACE BOOL get_RadarInitializeOptions_autoHandleNotificationDeepLink
 RADAR_API_SURFACE void set_RadarInitializeOptions_autoHandleNotificationDeepLinks(RadarInitializeOptions *obj, BOOL value) { obj.autoHandleNotificationDeepLinks = value; }
 RADAR_API_SURFACE BOOL get_RadarInitializeOptions_silentPush(RadarInitializeOptions *obj) { return obj.silentPush; }
 RADAR_API_SURFACE void set_RadarInitializeOptions_silentPush(RadarInitializeOptions *obj, BOOL value) { obj.silentPush = value; }
-RADAR_API_SURFACE BOOL get_RadarInitializeOptions_trackVerifiedAutoFailover(RadarInitializeOptions *obj) { return obj.trackVerifiedAutoFailover; }
-RADAR_API_SURFACE void set_RadarInitializeOptions_trackVerifiedAutoFailover(RadarInitializeOptions *obj, BOOL value) { obj.trackVerifiedAutoFailover = value; }
 RADAR_API_SURFACE NSTimeInterval get_RadarInitializeOptions_networkTimeoutInterval(RadarInitializeOptions *obj) { return obj.networkTimeoutInterval; }
 RADAR_API_SURFACE void set_RadarInitializeOptions_networkTimeoutInterval(RadarInitializeOptions *obj, NSTimeInterval value) { obj.networkTimeoutInterval = value; }
 RADAR_API_SURFACE NSTimeInterval get_RadarInitializeOptions_ipChangeDebounceInterval(RadarInitializeOptions *obj) { return obj.ipChangeDebounceInterval; }
