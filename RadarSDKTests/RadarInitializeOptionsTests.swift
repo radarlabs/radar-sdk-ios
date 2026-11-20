@@ -22,7 +22,6 @@ struct RadarInitializeOptionsTests {
         #expect(options.autoLogNotificationConversions == false)
         #expect(options.autoHandleNotificationDeepLinks == false)
         #expect(options.silentPush == false)
-        #expect(options.trackVerifiedAutoFailover)
         #expect(options.networkTimeoutInterval == 10)
         #expect(options.ipChangeDebounceInterval == 10)
     }
@@ -34,7 +33,6 @@ struct RadarInitializeOptionsTests {
         #expect(options.autoLogNotificationConversions == false)
         #expect(options.autoHandleNotificationDeepLinks == false)
         #expect(options.silentPush == false)
-        #expect(options.trackVerifiedAutoFailover)
         #expect(options.networkTimeoutInterval == 10)
         #expect(options.ipChangeDebounceInterval == 10)
     }
@@ -46,7 +44,6 @@ struct RadarInitializeOptionsTests {
         #expect(options.networkTimeoutInterval == 10)
         #expect(options.ipChangeDebounceInterval == 10)
         #expect(options.silentPush == false)
-        #expect(options.trackVerifiedAutoFailover)
     }
 
     // MARK: - Dictionary round trip
@@ -57,7 +54,6 @@ struct RadarInitializeOptionsTests {
         options.autoLogNotificationConversions = true
         options.autoHandleNotificationDeepLinks = true
         options.silentPush = true
-        options.trackVerifiedAutoFailover = false
         options.networkTimeoutInterval = 45
         options.ipChangeDebounceInterval = 2.5
 
@@ -66,7 +62,6 @@ struct RadarInitializeOptionsTests {
         #expect(restored.autoLogNotificationConversions)
         #expect(restored.autoHandleNotificationDeepLinks)
         #expect(restored.silentPush)
-        #expect(restored.trackVerifiedAutoFailover == false)
         #expect(restored.networkTimeoutInterval == 45)
         #expect(restored.ipChangeDebounceInterval == 2.5)
     }
@@ -88,7 +83,6 @@ struct RadarInitializeOptionsTests {
     @Test("A round trip through a property list preserves the values")
     func roundTripThroughPropertyList() throws {
         let options = RadarInitializeOptions()
-        options.trackVerifiedAutoFailover = false
         options.networkTimeoutInterval = 12.5
         options.ipChangeDebounceInterval = 0
 
@@ -97,7 +91,6 @@ struct RadarInitializeOptionsTests {
         let plist = try PropertyListSerialization.propertyList(from: data, format: nil)
         let restored = RadarInitializeOptions(dict: try #require(plist as? [String: Any]))
 
-        #expect(restored.trackVerifiedAutoFailover == false)
         #expect(restored.networkTimeoutInterval == 12.5)
         #expect(restored.ipChangeDebounceInterval == 0)
     }
@@ -163,9 +156,29 @@ struct RadarInitializeOptionsTests {
 
     @Test("Booleans decode from string representations")
     func booleansDecodeFromStrings() {
-        let options = RadarInitializeOptions(dict: ["silentPush": "true", "trackVerifiedAutoFailover": "false"])
+        let options = RadarInitializeOptions(dict: ["silentPush": "true", "autoLogNotificationConversions": "false"])
 
         #expect(options.silentPush)
-        #expect(options.trackVerifiedAutoFailover == false)
+        #expect(options.autoLogNotificationConversions == false)
+    }
+
+    // MARK: - Removed keys
+
+    // Options saved by an older SDK, or sent by an older wrapper, can still have the removed
+    // trackVerifiedAutoFailover key. They must still parse, and the SDK ignores the key.
+    @Test("A dictionary with the removed trackVerifiedAutoFailover key still parses")
+    func removedTrackVerifiedAutoFailoverKeyIsIgnored() {
+        let values: [Any] = [false, "false", true]
+        for value in values {
+            let options = RadarInitializeOptions(dict: [
+                "silentPush": true,
+                "networkTimeoutInterval": 30,
+                "trackVerifiedAutoFailover": value,
+            ])
+
+            #expect(options.silentPush)
+            #expect(options.networkTimeoutInterval == 30)
+            #expect(options.dictionaryValue()["trackVerifiedAutoFailover"] == nil)
+        }
     }
 }

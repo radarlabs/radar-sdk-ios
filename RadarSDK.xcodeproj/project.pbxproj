@@ -21,6 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		BEEF0A0030C2000000000002 /* RadarEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF0A0030C2000000000001 /* RadarEvent.swift */; };
+		BEEF0A0030C2000000000004 /* RadarEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF0A0030C2000000000003 /* RadarEventTests.swift */; };
 		0107A9FF26220037008AB52F /* RadarSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C782308797B00EB88F9 /* RadarSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0107AA0726220040008AB52F /* RadarAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236C9823087F9200EB88F9 /* RadarAPIClient.h */; };
 		0107AA0C26220045008AB52F /* RadarAPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = DD633EC1237C5B800026C91A /* RadarAPIHelper.h */; };
@@ -30,23 +32,9 @@
 		0107AA1F26220059008AB52F /* RadarSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236CFB230895D400EB88F9 /* RadarSettings.h */; };
 		0107AA222622005B008AB52F /* RadarState.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0E2309B3FE00EB88F9 /* RadarState.h */; };
 		0107AA2B26220066008AB52F /* RadarUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = DD236D0323099B8400EB88F9 /* RadarUtils.h */; };
-		AD0E55A030C1000000000002 /* RadarAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0E55A030C1000000000001 /* RadarAddress.swift */; };
-		BEEF0A0030C1000000000002 /* RadarUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF0A0030C1000000000001 /* RadarUser.swift */; };
-		BEEF0A0030C1000000000004 /* RadarUserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF0A0030C1000000000003 /* RadarUserTests.swift */; };
-		BEEF0A0030C1000000000006 /* RadarUserCompatibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF0A0030C1000000000005 /* RadarUserCompatibilityTests.swift */; };
-		7E57C0DE30C0000000000047 /* RadarAutocompleteSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000046 /* RadarAutocompleteSession.swift */; };
-		7E57C0DE30C0000000000045 /* RadarAutocompleteEnrichedAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000044 /* RadarAutocompleteEnrichedAddress.swift */; };
-		7E57C0DE30C0000000000043 /* RadarAddressLocationDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000042 /* RadarAddressLocationDetails.swift */; };
-		7E57C0DE30C0000000000041 /* RadarAddressPlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000040 /* RadarAddressPlace.swift */; };
-		AD0E55A030C1000000000004 /* RadarAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0E55A030C1000000000003 /* RadarAddressTests.swift */; };
 		0107AA832622013A008AB52F /* RadarBeacon.m in Sources */ = {isa = PBXBuildFile; fileRef = DD6F4F8525741B1700AFA38B /* RadarBeacon.m */; };
-		CA5E9A0130B1000000000024 /* RadarContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000023 /* RadarContext.swift */; };
-		CA5E9A0130B1000000000026 /* RadarContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000025 /* RadarContextTests.swift */; };
-		0107AAA126220159008AB52F /* RadarEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CB82308812700EB88F9 /* RadarEvent.m */; };
 		0107AAA726220160008AB52F /* RadarGeofence.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CA92308812600EB88F9 /* RadarGeofence.m */; };
 		0107AAB02622016B008AB52F /* RadarPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236CB22308812600EB88F9 /* RadarPlace.m */; };
-		F1A0E6A230B2000000000002 /* RadarRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0E6A230B2000000000001 /* RadarRegion.swift */; };
-		F1A0E6A230B2000000000004 /* RadarRegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0E6A230B2000000000003 /* RadarRegionTests.swift */; };
 		0107AAE6262201A1008AB52F /* RadarSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = DD14FD4B23CE783500E80AC8 /* RadarSegment.m */; };
 		0107AB05262201CB008AB52F /* Radar.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236C9023087A3500EB88F9 /* Radar.m */; };
 		0107AB08262201CE008AB52F /* RadarAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236C9923087F9200EB88F9 /* RadarAPIClient.m */; };
@@ -56,18 +44,51 @@
 		0107AB20262201E9008AB52F /* RadarPermissionsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */; };
 		0107AB2F262201FB008AB52F /* RadarUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = DD236D0423099B8400EB88F9 /* RadarUtils.m */; };
 		0107AB7A2622061A008AB52F /* RadarSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */; };
+		0107E040FEB0DEE9CEF45D92 /* RadarCompletedSpan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC986F487669DA96BB8389A /* RadarCompletedSpan.swift */; };
 		0114F058284EFDB700ADA4E4 /* RadarRouteMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 0114F057284EFDB700ADA4E4 /* RadarRouteMode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		016B29A22D3575CF00EA8D40 /* RadarSdkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F667F8262BFBF3C8001F2F67 /* RadarSdkConfiguration.m */; };
 		019514362BD078D90031ABA2 /* RadarVerifiedLocationToken.h in Headers */ = {isa = PBXBuildFile; fileRef = 019514352BD077D10031ABA2 /* RadarVerifiedLocationToken.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0195143A2BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 019514382BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h */; };
 		01F810702AF0119800BD7088 /* RadarVerifiedDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		01F99CFB2965C182004E8CF3 /* RadarConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 01F99CFA2965C182004E8CF3 /* RadarConfig.h */; };
+		04E5A3E4C695423CB5582C3D /* RadarTrackTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3111B7B2488E4E12B51970C3 /* RadarTrackTraceTests.swift */; };
+		06E1B73BC00694DD81B45E26 /* RadarTraceManager+Sampling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5581E00B188D4463CC40D1B /* RadarTraceManager+Sampling.swift */; };
+		2259EBB03BFF97FA4F76C8C3 /* RadarTraceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A068A830080CB384AA3296 /* RadarTraceStore.swift */; };
+		28078254C5EA495E8E36106D /* RadarTrackTracing.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE06EB67B36943EBB32737E3 /* RadarTrackTracing.swift */; };
+		31A40C607FD848B5AC12B9A9 /* RadarAPIClient+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 055AFE68DEBF4FACA7E5AEF6 /* RadarAPIClient+Internal.h */; };
+		33B70821AC0F35B1CC138A61 /* RadarTraceManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A45B6D85514BBDD518E612E8 /* RadarTraceManagerTests.swift */; };
+		376653DA7F47FE2E774652BF /* RadarTraceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049A21E29A90FA7FA02476C /* RadarTraceManager.swift */; };
+		381ECB5C2981417998EAE7B2 /* RadarLocationTracing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88303911D1F14998B4C4FC42 /* RadarLocationTracing.swift */; };
+		3869E36BE30A41719A5D08AB /* RadarTrackVerifiedTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9224EFA2894E4912AC1DE7C7 /* RadarTrackVerifiedTraceTests.swift */; };
+		3F85B9EF7F844024946D4254 /* RadarHTTPTracing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3BB84F3DB1486285141E3A /* RadarHTTPTracing.swift */; };
+		472B3FCCB9793CBAB06C45AF /* RadarTraceSpan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F65C9DF0A4D013C05F9D292 /* RadarTraceSpan.swift */; };
 		4B5BB8D72E7C79AF004C98C9 /* RadarSDKFraudProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5BB8D62E7C79AF004C98C9 /* RadarSDKFraudProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52C9956B8416B72B2F5C9A5A /* CLLocation+RadarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEA1981B9F1BE2A536837C4 /* CLLocation+RadarTests.swift */; };
 		532FC304277A790600989279 /* Radar+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 532FC303277A783900989279 /* Radar+Internal.h */; };
 		53B3B26B23EE41B400080818 /* context.json in Resources */ = {isa = PBXBuildFile; fileRef = 53B3B26A23EE41B400080818 /* context.json */; };
+		5CB25E6C0620FCE7A524FEE0 /* RadarTraceSpanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B44A6003E1F281C15460A4 /* RadarTraceSpanTests.swift */; };
+		69AD1DD0FBFB838FAC3105F8 /* RadarTraceManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 38676C7ACC5D3B6DB9DCD642 /* RadarTraceManager+Internal.h */; };
+		70C3D746F1AB1CFC877C78B7 /* RadarAPIClientValidateAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 780B8AE6B6126AB61F59CA95 /* RadarAPIClientValidateAddressTests.swift */; };
 		78D8CE3C23AD78A1009E91F5 /* geocode.json in Resources */ = {isa = PBXBuildFile; fileRef = 78D8CE3B23AD78A1009E91F5 /* geocode.json */; };
 		78D8CE3E23AD7FEE009E91F5 /* geocode_ip.json in Resources */ = {isa = PBXBuildFile; fileRef = 78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */; };
+		7E57C0DE30C0000000000002 /* RadarSDKTestFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000001 /* RadarSDKTestFixture.swift */; };
+		7E57C0DE30C0000000000004 /* RadarSDKTestAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000003 /* RadarSDKTestAssertions.swift */; };
+		7E57C0DE30C0000000000006 /* RadarSDKUserMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000005 /* RadarSDKUserMetadataTests.swift */; };
+		7E57C0DE30C0000000000008 /* RadarSDKTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000007 /* RadarSDKTrackingTests.swift */; };
+		7E57C0DE30C000000000000A /* RadarSDKEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000009 /* RadarSDKEventTests.swift */; };
+		7E57C0DE30C000000000000C /* RadarSDKSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C000000000000B /* RadarSDKSearchTests.swift */; };
+		7E57C0DE30C000000000000E /* RadarSdkConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C000000000000D /* RadarSdkConfigurationTests.swift */; };
+		7E57C0DE30C0000000000010 /* RadarSDKGeocodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C000000000000F /* RadarSDKGeocodeTests.swift */; };
+		7E57C0DE30C000000000001F /* RadarSDKAutocompleteSelectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000020 /* RadarSDKAutocompleteSelectTests.swift */; };
+		7E57C0DE30C0000000000041 /* RadarAddressPlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000040 /* RadarAddressPlace.swift */; };
+		7E57C0DE30C0000000000043 /* RadarAddressLocationDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000042 /* RadarAddressLocationDetails.swift */; };
+		7E57C0DE30C0000000000045 /* RadarAutocompleteEnrichedAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000044 /* RadarAutocompleteEnrichedAddress.swift */; };
+		7E57C0DE30C0000000000047 /* RadarAutocompleteSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000046 /* RadarAutocompleteSession.swift */; };
+		7E57C0DE30C1000000000002 /* RadarAPIHelperMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C1000000000001 /* RadarAPIHelperMock.swift */; };
+		7E57C0DE30C1000000000004 /* RadarPermissionsHelperMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C1000000000003 /* RadarPermissionsHelperMock.swift */; };
+		7E57C0DE30C1000000000006 /* CLVisitMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C1000000000005 /* CLVisitMock.swift */; };
+		7E57C0DE30C1000000000008 /* CLLocationManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C1000000000007 /* CLLocationManagerMock.swift */; };
+		7E57C0DE30C100000000000A /* RadarTrackTestBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C1000000000009 /* RadarTrackTestBridge.swift */; };
 		825732512B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */; };
 		825732522B72BE1900DF8B88 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */; };
 		828D1A562E295FD400663787 /* RadarTripOrder.h in Headers */ = {isa = PBXBuildFile; fileRef = 828D1A552E295FD400663787 /* RadarTripOrder.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -76,20 +97,12 @@
 		82DF187A2C58324900301B17 /* RadarActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DF18782C5830C300301B17 /* RadarActivityManager.swift */; };
 		82F7FAEE2A65FE030055AA4B /* RadarVerificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 82F7FAEC2A65FE030055AA4B /* RadarVerificationManager.h */; };
 		82F7FAEF2A65FE030055AA4B /* RadarVerificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */; };
+		8A30A99D03FD4BB98CC20913 /* RadarTraceTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A67DAD150A9943F815EFEC /* RadarTraceTestSupport.swift */; };
+		8D98EF347E9675253AC09852 /* RadarTraceSamplingAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E355B78ED8E3A027D1D1F855 /* RadarTraceSamplingAPIClientTests.swift */; };
+		93C546BFA360430DA994AD20 /* RadarTrackingUpdateTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD31BCABC664F8C8DC2F442 /* RadarTrackingUpdateTraceTests.swift */; };
 		966D8860288F7404008C0D00 /* conversion_event.json in Resources */ = {isa = PBXBuildFile; fileRef = 966D885F288F7404008C0D00 /* conversion_event.json */; };
 		9679F4A127CD8D0600800797 /* CLLocation+Radar.h in Headers */ = {isa = PBXBuildFile; fileRef = 9679F4A027CD8D0600800797 /* CLLocation+Radar.h */; };
 		9683FD6427B36C26009EBB6B /* RadarMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9683FD6227B36C26009EBB6B /* RadarMeta.swift */; };
-		0107E040FEB0DEE9CEF45D92 /* RadarCompletedSpan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC986F487669DA96BB8389A /* RadarCompletedSpan.swift */; };
-		376653DA7F47FE2E774652BF /* RadarTraceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049A21E29A90FA7FA02476C /* RadarTraceManager.swift */; };
-		F6E6DE05FE3B68438D8ED217 /* RadarTraceManager+Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A81A877BCF8422BCEFE3D5E /* RadarTraceManager+Export.swift */; };
-		2259EBB03BFF97FA4F76C8C3 /* RadarTraceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A068A830080CB384AA3296 /* RadarTraceStore.swift */; };
-		472B3FCCB9793CBAB06C45AF /* RadarTraceSpan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F65C9DF0A4D013C05F9D292 /* RadarTraceSpan.swift */; };
-		06E1B73BC00694DD81B45E26 /* RadarTraceManager+Sampling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5581E00B188D4463CC40D1B /* RadarTraceManager+Sampling.swift */; };
-		E56CCD68FA0A4FC0B08014E2 /* RadarVerificationTracing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5FF3B67B19C49D194B60E40 /* RadarVerificationTracing.swift */; };
-		3F85B9EF7F844024946D4254 /* RadarHTTPTracing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3BB84F3DB1486285141E3A /* RadarHTTPTracing.swift */; };
-		C16CC42006D940AC97A6DA0C /* RadarBeaconTracing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F1913DB4BA4B4DBD6D0336 /* RadarBeaconTracing.swift */; };
-		381ECB5C2981417998EAE7B2 /* RadarLocationTracing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88303911D1F14998B4C4FC42 /* RadarLocationTracing.swift */; };
-		28078254C5EA495E8E36106D /* RadarTrackTracing.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE06EB67B36943EBB32737E3 /* RadarTrackTracing.swift */; };
 		968C839928A6D8350030103E /* conversion_event_nil_event.json in Resources */ = {isa = PBXBuildFile; fileRef = 968C839828A6D8350030103E /* conversion_event_nil_event.json */; };
 		96A0AC2728A4066D00B41D40 /* search_places_chain_metadata.json in Resources */ = {isa = PBXBuildFile; fileRef = 96A0AC2628A4066D00B41D40 /* search_places_chain_metadata.json */; };
 		96A5A0C127AD9F41007B960B /* RadarRoutes+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0A927AD9F40007B960B /* RadarRoutes+Internal.h */; };
@@ -136,12 +149,18 @@
 		96A5A11127AD9F7F007B960B /* RadarBeacon.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0F427AD9F7F007B960B /* RadarBeacon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A11227AD9F7F007B960B /* Radar.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A0F527AD9F7F007B960B /* Radar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A5A11B27ADA02F007B960B /* RadarDelegateHolder.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A5A11727ADA02E007B960B /* RadarDelegateHolder.h */; };
+		99FF5423A282EE9BCAC8B605 /* RadarTraceStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D21B48B14C4B8AF74E0378 /* RadarTraceStorageTests.swift */; };
+		9D43D747ED482232E91EC941 /* RadarTraceSpan+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 6F1B76BF89DFAF6BB1A2734D /* RadarTraceSpan+Internal.h */; };
 		9DACF4A7161A400A81B6B370 /* RadarAPIHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1FACB1BB65B49969B63CEA7 /* RadarAPIHelperTests.swift */; };
+		A0468AB6A70B41A1ABA8FCE2 /* RadarAPIHelperTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1928EFFCBE140D0866E6CEE /* RadarAPIHelperTraceTests.swift */; };
 		A1E5AD01305A000000C0FFEE /* RadarSDKTestsSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E5AD00305A000000C0FFEE /* RadarSDKTestsSwift.swift */; };
 		AA00000000000000000000A1 /* RadarMetaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000A2 /* RadarMetaTests.swift */; };
 		AA00000000000000000000B1 /* RadarMeta.h in Headers */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000B2 /* RadarMeta.h */; };
 		AA00000000000000000000C1 /* RadarConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000C2 /* RadarConfig.swift */; };
 		AA00000000000000000000C3 /* RadarConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000C4 /* RadarConfigTests.swift */; };
+		AA2C6B8DAE38455F40FA06FE /* RadarTraceSamplingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A32D155CDF9811388CDA85 /* RadarTraceSamplingTests.swift */; };
+		AD0E55A030C1000000000002 /* RadarAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0E55A030C1000000000001 /* RadarAddress.swift */; };
+		AD0E55A030C1000000000004 /* RadarAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0E55A030C1000000000003 /* RadarAddressTests.swift */; };
 		B0A0F0022FBC000100111111 /* RadarLocationManager+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0062FBC000100111111 /* RadarLocationManager+Swift.swift */; };
 		B0A0F0032FBC000100111111 /* RadarLocationManagerSwiftSeamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0072FBC000100111111 /* RadarLocationManagerSwiftSeamTests.swift */; };
 		B0A0F0082FBC000100111111 /* RadarLocationManagerSwift.h in Headers */ = {isa = PBXBuildFile; fileRef = B0A0F0092FBC000100111111 /* RadarLocationManagerSwift.h */; };
@@ -154,35 +173,23 @@
 		B0A0F0262FBC000100111111 /* RadarUserDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = B0A0F0272FBC000100111111 /* RadarUserDefaults.h */; };
 		B0A0F0282FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0292FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift */; };
 		B0A0F02A2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F02B2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift */; };
-		B0A0F0522FBC000100111111 /* RadarLocationManagerSwiftTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0532FBC000100111111 /* RadarLocationManagerSwiftTrackingTests.swift */; };
-		C1F0A0032FBD000100222222 /* RadarLocationManagerSwiftHandleLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0042FBD000100222222 /* RadarLocationManagerSwiftHandleLocationTests.swift */; };
-		C1F0A0072FBD000100222222 /* RadarLocationManagerSwiftHostConformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0082FBD000100222222 /* RadarLocationManagerSwiftHostConformanceTests.swift */; };
-		C1F0A0052FBD000100222222 /* RadarLocationManagerSwiftHandleLocationSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0062FBD000100222222 /* RadarLocationManagerSwiftHandleLocationSyncTests.swift */; };
-		C1F0A00B2FBD000100222222 /* RadarLocationManagerSwiftSendLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A00C2FBD000100222222 /* RadarLocationManagerSwiftSendLocationTests.swift */; };
-		C1F0A0D42FBD000100222222 /* RadarLocationManagerSwiftMotionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0D42FBD000100333333 /* RadarLocationManagerSwiftMotionTests.swift */; };
 		A7C1D0E12FBE000100444444 /* RadarActivityManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C1D0E12FBE000100555555 /* RadarActivityManagerTests.swift */; };
-		C1F0A0D32FBD000100222222 /* RadarLocationManagerSwiftCompletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0D32FBD000100333333 /* RadarLocationManagerSwiftCompletionTests.swift */; };
-		B0A0F0542FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0552FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift */; };
-		B0A0F3042FBC000100111111 /* RadarRegionCleanerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F3052FBC000100111111 /* RadarRegionCleanerTests.swift */; };
-		B0A0F3062FBC000100111111 /* RadarPermissionsHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F3072FBC000100111111 /* RadarPermissionsHelperTests.swift */; };
 		B0A0F02C2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F02D2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift */; };
 		B0A0F02E2FBC000100111111 /* RadarLocationManagerSwiftFailureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F02F2FBC000100111111 /* RadarLocationManagerSwiftFailureTests.swift */; };
 		B0A0F0302FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0312FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift */; };
 		B0A0F0322FBC000100111111 /* MockRadarSwiftBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0332FBC000100111111 /* MockRadarSwiftBridge.swift */; };
 		B0A0F0342FBC000100111111 /* RadarLocationManagerSwiftRTOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0352FBC000100111111 /* RadarLocationManagerSwiftRTOTests.swift */; };
 		B0A0F0382FBC000100111111 /* RadarLocationManager+SwiftDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0392FBC000100111111 /* RadarLocationManager+SwiftDelegate.swift */; };
+		B0A0F03A2FBC000100111111 /* RadarLocationManagerSwiftBeaconStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F03B2FBC000100111111 /* RadarLocationManagerSwiftBeaconStateTests.swift */; };
 		B0A0F0502FBC000100111111 /* RadarLocationManager+SwiftTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0512FBC000100111111 /* RadarLocationManager+SwiftTracking.swift */; };
-		C1F0A0012FBD000100222222 /* RadarLocationManager+SwiftLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0022FBD000100222222 /* RadarLocationManager+SwiftLocation.swift */; };
-		C1F0A0092FBD000100222222 /* RadarLocationManager+SwiftSend.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A00A2FBD000100222222 /* RadarLocationManager+SwiftSend.swift */; };
-		C1F0A0D22FBD000100222222 /* RadarLocationManager+SwiftMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0D22FBD000100333333 /* RadarLocationManager+SwiftMotion.swift */; };
-		C1F0A0D12FBD000100222222 /* RadarLocationManager+SwiftCompletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0D12FBD000100333333 /* RadarLocationManager+SwiftCompletion.swift */; };
+		B0A0F0522FBC000100111111 /* RadarLocationManagerSwiftTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0532FBC000100111111 /* RadarLocationManagerSwiftTrackingTests.swift */; };
+		B0A0F0542FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0552FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift */; };
+		B0A0F0562FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F0572FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift */; };
+		B0A0F10A2FBC000100111111 /* RadarInAppMessageManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = B0A0F10B2FBC000100111111 /* RadarInAppMessageManager+Internal.h */; };
 		B0A0F3002FBC000100111111 /* RadarRegionCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F3012FBC000100111111 /* RadarRegionCleaner.swift */; };
 		B0A0F3022FBC000100111111 /* RadarRegionCleaner+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = B0A0F3032FBC000100111111 /* RadarRegionCleaner+Internal.h */; };
-		B0A0F03A2FBC000100111111 /* RadarLocationManagerSwiftBeaconStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F03B2FBC000100111111 /* RadarLocationManagerSwiftBeaconStateTests.swift */; };
-		B0A0F10A2FBC000100111111 /* RadarInAppMessageManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = B0A0F10B2FBC000100111111 /* RadarInAppMessageManager+Internal.h */; };
-		69AD1DD0FBFB838FAC3105F8 /* RadarTraceManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 38676C7ACC5D3B6DB9DCD642 /* RadarTraceManager+Internal.h */; };
-		9D43D747ED482232E91EC941 /* RadarTraceSpan+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 6F1B76BF89DFAF6BB1A2734D /* RadarTraceSpan+Internal.h */; };
-		31A40C607FD848B5AC12B9A9 /* RadarAPIClient+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 055AFE68DEBF4FACA7E5AEF6 /* RadarAPIClient+Internal.h */; };
+		B0A0F3042FBC000100111111 /* RadarRegionCleanerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F3052FBC000100111111 /* RadarRegionCleanerTests.swift */; };
+		B0A0F3062FBC000100111111 /* RadarPermissionsHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A0F3072FBC000100111111 /* RadarPermissionsHelperTests.swift */; };
 		B7E6CE0E6EFBA25C635EC1C1 /* CLLocation+Radar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171F6F711363E4AC60E02B28 /* CLLocation+Radar.swift */; };
 		BA264CFB2FF3158B000EDFE6 /* RadarReplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA264CFA2FF31582000EDFE6 /* RadarReplay.swift */; };
 		BA264CFD2FF31BD9000EDFE6 /* RadarReplay.h in Headers */ = {isa = PBXBuildFile; fileRef = BA264CFC2FF31BD5000EDFE6 /* RadarReplay.h */; };
@@ -194,20 +201,6 @@
 		BA3540202F8EBFBD00E553A1 /* RadarOfflineEventManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA35401F2F8EBFAD00E553A1 /* RadarOfflineEventManagerTests.swift */; };
 		BA3540222F90020F00E553A1 /* RadarOfflineEventManager.h in Headers */ = {isa = PBXBuildFile; fileRef = BA3540212F90020900E553A1 /* RadarOfflineEventManager.h */; };
 		BA3540242F9033A900E553A1 /* RadarSerializedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3540232F90339F00E553A1 /* RadarSerializedTests.swift */; };
-		7E57C0DE30C1000000000002 /* RadarAPIHelperMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C1000000000001 /* RadarAPIHelperMock.swift */; };
-		7E57C0DE30C1000000000004 /* RadarPermissionsHelperMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C1000000000003 /* RadarPermissionsHelperMock.swift */; };
-		7E57C0DE30C1000000000006 /* CLVisitMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C1000000000005 /* CLVisitMock.swift */; };
-		7E57C0DE30C1000000000008 /* CLLocationManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C1000000000007 /* CLLocationManagerMock.swift */; };
-		7E57C0DE30C100000000000A /* RadarTrackTestBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C1000000000009 /* RadarTrackTestBridge.swift */; };
-		7E57C0DE30C0000000000002 /* RadarSDKTestFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000001 /* RadarSDKTestFixture.swift */; };
-		7E57C0DE30C0000000000004 /* RadarSDKTestAssertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000003 /* RadarSDKTestAssertions.swift */; };
-		7E57C0DE30C0000000000006 /* RadarSDKUserMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000005 /* RadarSDKUserMetadataTests.swift */; };
-		7E57C0DE30C0000000000008 /* RadarSDKTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000007 /* RadarSDKTrackingTests.swift */; };
-		7E57C0DE30C000000000000A /* RadarSDKEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000009 /* RadarSDKEventTests.swift */; };
-		7E57C0DE30C000000000000C /* RadarSDKSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C000000000000B /* RadarSDKSearchTests.swift */; };
-		7E57C0DE30C0000000000010 /* RadarSDKGeocodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C000000000000F /* RadarSDKGeocodeTests.swift */; };
-		7E57C0DE30C000000000001F /* RadarSDKAutocompleteSelectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C0000000000020 /* RadarSDKAutocompleteSelectTests.swift */; };
-		7E57C0DE30C000000000000E /* RadarSdkConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E57C0DE30C000000000000D /* RadarSdkConfigurationTests.swift */; };
 		BA3540252F9100AB00E553A1 /* RadarOfflineEventManagerBeaconDwellTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3540242F9100AA00E553A1 /* RadarOfflineEventManagerBeaconDwellTests.swift */; };
 		BA46C1662F4CF3F200031891 /* RadarTripLeg.h in Headers */ = {isa = PBXBuildFile; fileRef = BA46C1652F4CF3E900031891 /* RadarTripLeg.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BA46C16A2F4E0A9000031891 /* trip_with_legs.json in Resources */ = {isa = PBXBuildFile; fileRef = BA46C1692F4E0A8300031891 /* trip_with_legs.json */; };
@@ -236,31 +229,17 @@
 		BA8D153D300EA41900022EB3 /* RadarEventNotificationsTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8D153C300EA40D00022EB3 /* RadarEventNotificationsTestHelpers.swift */; };
 		BA8D15C230100DF600022EB3 /* RadarSwizzleHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = BA8D15C130100DE800022EB3 /* RadarSwizzleHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BA8D15C430100E0500022EB3 /* RadarSwizzleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = BA8D15C330100E0100022EB3 /* RadarSwizzleHelper.m */; };
-		F3050F0230059A000035CBDB /* Radar+BeaconRanging.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050F0130059A000035CBDB /* Radar+BeaconRanging.swift */; };
-		F3051A0230059A000035CBDB /* Radar+ValidateAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3051A0130059A000035CBDB /* Radar+ValidateAddress.swift */; };
-		F3051002300A5A000035CBDB /* RadarNearbyBeaconSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3051001300A5A000035CBDB /* RadarNearbyBeaconSearch.swift */; };
-		F3050B0230059A000035CBDB /* RadarContinuousBeaconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050B0130059A000035CBDB /* RadarContinuousBeaconManager.swift */; };
+		BAA5D64830A50F0E009F108F /* RadarVerifiedLocationTokenFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA5D64730A50F03009F108F /* RadarVerifiedLocationTokenFormatTests.swift */; };
+		BAA5D64A30A60B31009F108F /* RadarTrackResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA5D64930A60B27009F108F /* RadarTrackResponseHandler.swift */; };
+		BAA5D64D30A60C3B009F108F /* RadarTrackResponseHandler+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = BAA5D64C30A60C3B009F108F /* RadarTrackResponseHandler+Internal.h */; };
+		BAA5D64F30A60D27009F108F /* RadarTrackResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA5D64E30A60D1E009F108F /* RadarTrackResponseTests.swift */; };
+		BAA5D65130A610C9009F108F /* RadarVerifiedRefreshSchedulingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA5D65030A610B9009F108F /* RadarVerifiedRefreshSchedulingTests.swift */; };
+		BAB0BE1E30A4BE0C0015AC47 /* RadarResponseFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BE1D30A4BE040015AC47 /* RadarResponseFormat.swift */; };
+		BAB0BE2030A4C1480015AC47 /* RadarResponseFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BE1F30A4C1400015AC47 /* RadarResponseFormatTests.swift */; };
 		BABC4B91300190E50035CBDB /* RadarOneShotBeaconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABC4B90300190E10035CBDB /* RadarOneShotBeaconManager.swift */; };
 		BABC4B933001AE9B0035CBDB /* RadarOneShotBeaconManager+Internal.h in Sources */ = {isa = PBXBuildFile; fileRef = BABC4B923001AE860035CBDB /* RadarOneShotBeaconManager+Internal.h */; };
 		BABC4B9D3005494E0035CBDB /* RadarPermissionsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABC4B9C3005494A0035CBDB /* RadarPermissionsHelper.swift */; };
 		BABC4B9F300597970035CBDB /* MockRadarPermissionsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABC4B9E3005978E0035CBDB /* MockRadarPermissionsHelper.swift */; };
-		F3051006300A5A000035CBDB /* RadarContinuousBeaconManagerRangingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3051005300A5A000035CBDB /* RadarContinuousBeaconManagerRangingTests.swift */; };
-		F3051008300A5A000035CBDB /* RadarContinuousBeaconManager+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3051007300A5A000035CBDB /* RadarContinuousBeaconManager+Delegate.swift */; };
-		F3050B0630059A000035CBDB /* RadarContinuousBeaconManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050B0530059A000035CBDB /* RadarContinuousBeaconManagerTests.swift */; };
-		F3050C0230059A000035CBDB /* RadarSwiftBridgeConformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050C0130059A000035CBDB /* RadarSwiftBridgeConformanceTests.swift */; };
-		F3050D0230059A000035CBDB /* RadarAPIClientSearchBeaconsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050D0130059A000035CBDB /* RadarAPIClientSearchBeaconsTests.swift */; };
-		70C3D746F1AB1CFC877C78B7 /* RadarAPIClientValidateAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 780B8AE6B6126AB61F59CA95 /* RadarAPIClientValidateAddressTests.swift */; };
-		33B70821AC0F35B1CC138A61 /* RadarTraceManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A45B6D85514BBDD518E612E8 /* RadarTraceManagerTests.swift */; };
-		8D98EF347E9675253AC09852 /* RadarTraceSamplingAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E355B78ED8E3A027D1D1F855 /* RadarTraceSamplingAPIClientTests.swift */; };
-		AA2C6B8DAE38455F40FA06FE /* RadarTraceSamplingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A32D155CDF9811388CDA85 /* RadarTraceSamplingTests.swift */; };
-		8A30A99D03FD4BB98CC20913 /* RadarTraceTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A67DAD150A9943F815EFEC /* RadarTraceTestSupport.swift */; };
-		99FF5423A282EE9BCAC8B605 /* RadarTraceStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D21B48B14C4B8AF74E0378 /* RadarTraceStorageTests.swift */; };
-		5CB25E6C0620FCE7A524FEE0 /* RadarTraceSpanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B44A6003E1F281C15460A4 /* RadarTraceSpanTests.swift */; };
-		93C546BFA360430DA994AD20 /* RadarTrackingUpdateTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD31BCABC664F8C8DC2F442 /* RadarTrackingUpdateTraceTests.swift */; };
-		3869E36BE30A41719A5D08AB /* RadarTrackVerifiedTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9224EFA2894E4912AC1DE7C7 /* RadarTrackVerifiedTraceTests.swift */; };
-		04E5A3E4C695423CB5582C3D /* RadarTrackTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3111B7B2488E4E12B51970C3 /* RadarTrackTraceTests.swift */; };
-		A0468AB6A70B41A1ABA8FCE2 /* RadarAPIHelperTraceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1928EFFCBE140D0866E6CEE /* RadarAPIHelperTraceTests.swift */; };
-		F139F4013B904B4B8DACFC6D /* RadarTraceInstrumentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E825B09338044A1C8F092F70 /* RadarTraceInstrumentationTests.swift */; };
 		BABC4BA1300599750035CBDB /* RadarOneShotBeaconManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABC4BA03005996B0035CBDB /* RadarOneShotBeaconManagerTests.swift */; };
 		BAC932F02FF43E8100503C2C /* RadarStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC932EF2FF43E7400503C2C /* RadarStateTests.swift */; };
 		BAC932F22FF45B4200503C2C /* RadarReplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC932F12FF45B3C00503C2C /* RadarReplayTests.swift */; };
@@ -279,28 +258,44 @@
 		BAE8057F304626D4000DA607 /* RadarTripIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE8057E304626CB000DA607 /* RadarTripIntegrationTests.swift */; };
 		BAE8058130462952000DA607 /* RadarTripIntegrationTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE805803046293C000DA607 /* RadarTripIntegrationTestSupport.swift */; };
 		BAE8058330463590000DA607 /* RadarTripSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE8058230463588000DA607 /* RadarTripSettingsTests.swift */; };
+		BAE805B73047854B000DA607 /* RadarTrackingOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE805B630478543000DA607 /* RadarTrackingOptionsTests.swift */; };
+		BAE805BC3048D3F2000DA607 /* RadarTrackingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE805B8304790EC000DA607 /* RadarTrackingOptions.swift */; };
 		BAE8065A30535F06000DA607 /* RadarTrackVerifiedRequestPreparer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE8065930535EFD000DA607 /* RadarTrackVerifiedRequestPreparer.swift */; };
 		BAE8065C305363AB000DA607 /* RadarTrackVerifiedRequestPreparer.h in Headers */ = {isa = PBXBuildFile; fileRef = BAE8065B3053639A000DA607 /* RadarTrackVerifiedRequestPreparer.h */; };
 		BAE8065E305372B5000DA607 /* RadarTrackVerifiedReplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE8065D305372A7000DA607 /* RadarTrackVerifiedReplayTests.swift */; };
+		BEEF0A0030C1000000000002 /* RadarUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF0A0030C1000000000001 /* RadarUser.swift */; };
+		BEEF0A0030C1000000000004 /* RadarUserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF0A0030C1000000000003 /* RadarUserTests.swift */; };
+		BEEF0A0030C1000000000006 /* RadarUserCompatibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEF0A0030C1000000000005 /* RadarUserCompatibilityTests.swift */; };
 		C0DE20260910000000000002 /* RadarFraudTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE20260910000000000001 /* RadarFraudTestSupport.swift */; };
 		C0DE20260910000000000004 /* RadarFraudBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE20260910000000000003 /* RadarFraudBridgeTests.swift */; };
 		C0DE20260910000000000008 /* RadarTrackVerifiedRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE20260910000000000007 /* RadarTrackVerifiedRoutingTests.swift */; };
 		C0DE2026091000000000000A /* RadarTrackVerifiedRetryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE20260910000000000009 /* RadarTrackVerifiedRetryTests.swift */; };
 		C0DE2026091000000000000C /* RadarTrackVerifiedTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE2026091000000000000B /* RadarTrackVerifiedTestSupport.swift */; };
-		BAE805B73047854B000DA607 /* RadarTrackingOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE805B630478543000DA607 /* RadarTrackingOptionsTests.swift */; };
-		BAE805BC3048D3F2000DA607 /* RadarTrackingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE805B8304790EC000DA607 /* RadarTrackingOptions.swift */; };
+		C16CC42006D940AC97A6DA0C /* RadarBeaconTracing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F1913DB4BA4B4DBD6D0336 /* RadarBeaconTracing.swift */; };
+		C1F0A0012FBD000100222222 /* RadarLocationManager+SwiftLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0022FBD000100222222 /* RadarLocationManager+SwiftLocation.swift */; };
+		C1F0A0032FBD000100222222 /* RadarLocationManagerSwiftHandleLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0042FBD000100222222 /* RadarLocationManagerSwiftHandleLocationTests.swift */; };
+		C1F0A0052FBD000100222222 /* RadarLocationManagerSwiftHandleLocationSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0062FBD000100222222 /* RadarLocationManagerSwiftHandleLocationSyncTests.swift */; };
+		C1F0A0072FBD000100222222 /* RadarLocationManagerSwiftHostConformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0082FBD000100222222 /* RadarLocationManagerSwiftHostConformanceTests.swift */; };
+		C1F0A0092FBD000100222222 /* RadarLocationManager+SwiftSend.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A00A2FBD000100222222 /* RadarLocationManager+SwiftSend.swift */; };
+		C1F0A00B2FBD000100222222 /* RadarLocationManagerSwiftSendLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A00C2FBD000100222222 /* RadarLocationManagerSwiftSendLocationTests.swift */; };
+		C1F0A0D12FBD000100222222 /* RadarLocationManager+SwiftCompletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0D12FBD000100333333 /* RadarLocationManager+SwiftCompletion.swift */; };
+		C1F0A0D22FBD000100222222 /* RadarLocationManager+SwiftMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0D22FBD000100333333 /* RadarLocationManager+SwiftMotion.swift */; };
+		C1F0A0D32FBD000100222222 /* RadarLocationManagerSwiftCompletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0D32FBD000100333333 /* RadarLocationManagerSwiftCompletionTests.swift */; };
+		C1F0A0D42FBD000100222222 /* RadarLocationManagerSwiftMotionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F0A0D42FBD000100333333 /* RadarLocationManagerSwiftMotionTests.swift */; };
 		CA5E9A0130A1000000000002 /* RadarSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130A1000000000001 /* RadarSegment.swift */; };
 		CA5E9A0130A1000000000004 /* RadarSegmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130A1000000000003 /* RadarSegmentTests.swift */; };
 		CA5E9A0130A2000000000002 /* RadarOperatingHours.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130A2000000000001 /* RadarOperatingHours.swift */; };
 		CA5E9A0130A2000000000004 /* RadarOperatingHoursTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130A2000000000003 /* RadarOperatingHoursTests.swift */; };
 		CA5E9A0130B1000000000002 /* RadarChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000001 /* RadarChain.swift */; };
 		CA5E9A0130B1000000000004 /* RadarChainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000003 /* RadarChainTests.swift */; };
-		CA5E9A0130B1000000000016 /* RadarRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000015 /* RadarRoutes.swift */; };
 		CA5E9A0130B1000000000012 /* RadarRouteMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000011 /* RadarRouteMatrix.swift */; };
 		CA5E9A0130B1000000000014 /* RadarRouteMatrixTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000013 /* RadarRouteMatrixTests.swift */; };
+		CA5E9A0130B1000000000016 /* RadarRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000015 /* RadarRoutes.swift */; };
 		CA5E9A0130B1000000000018 /* RadarRoutesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000017 /* RadarRoutesTests.swift */; };
 		CA5E9A0130B1000000000020 /* RadarVerifiedLocationToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000019 /* RadarVerifiedLocationToken.swift */; };
 		CA5E9A0130B1000000000022 /* RadarVerifiedLocationTokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000021 /* RadarVerifiedLocationTokenTests.swift */; };
+		CA5E9A0130B1000000000024 /* RadarContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000023 /* RadarContext.swift */; };
+		CA5E9A0130B1000000000026 /* RadarContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B1000000000025 /* RadarContextTests.swift */; };
 		CA5E9A0130B2000000000002 /* RadarCircleGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B2000000000001 /* RadarCircleGeometry.swift */; };
 		CA5E9A0130B2000000000004 /* RadarCircleGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B2000000000003 /* RadarCircleGeometryTests.swift */; };
 		CA5E9A0130B3000000000002 /* RadarPolygonGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0130B3000000000001 /* RadarPolygonGeometry.swift */; };
@@ -316,16 +311,30 @@
 		CA5E9A0330A4000000000004 /* RadarTimeZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0330A4000000000003 /* RadarTimeZoneTests.swift */; };
 		CA5E9A0430A5000000000002 /* RadarFraud.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0430A5000000000001 /* RadarFraud.swift */; };
 		CA5E9A0430A5000000000004 /* RadarFraudTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5E9A0430A5000000000003 /* RadarFraudTests.swift */; };
+		CDB81723305A100000000002 /* RadarRevealRiskRetryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB81723305A100000000001 /* RadarRevealRiskRetryTests.swift */; };
 		DD103215237F1795003DD408 /* track.json in Resources */ = {isa = PBXBuildFile; fileRef = DD103214237F1795003DD408 /* track.json */; };
 		DD4D4D2523E648D000D36C1D /* search_autocomplete.json in Resources */ = {isa = PBXBuildFile; fileRef = DD4D4D2423E648D000D36C1D /* search_autocomplete.json */; };
 		DD4D4D2723E648FF00D36C1D /* route_distance.json in Resources */ = {isa = PBXBuildFile; fileRef = DD4D4D2623E648FF00D36C1D /* route_distance.json */; };
 		DD5E35E1238205FF002D93FF /* events_verification.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5E35E0238205FF002D93FF /* events_verification.json */; };
 		DD5E35E323820796002D93FF /* search_places.json in Resources */ = {isa = PBXBuildFile; fileRef = DD5E35E223820796002D93FF /* search_places.json */; };
 		DE1E7644239724FD006F34A1 /* search_geofences.json in Resources */ = {isa = PBXBuildFile; fileRef = DE1E7643239724FD006F34A1 /* search_geofences.json */; };
+		E56CCD68FA0A4FC0B08014E2 /* RadarVerificationTracing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5FF3B67B19C49D194B60E40 /* RadarVerificationTracing.swift */; };
 		E658DB072CB46277004E0F01 /* RadarOperatingHours.h in Headers */ = {isa = PBXBuildFile; fileRef = E658DB062CB46277004E0F01 /* RadarOperatingHours.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E658DB0C2CB46B50004E0F01 /* RadarOperatingHours+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */; };
 		E698B6502C6112FA00084371 /* RadarMotionProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = E698B64F2C6112FA00084371 /* RadarMotionProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6B93B722C90E2B8003CB858 /* RadarInitializeOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E6B93B712C90E2B8003CB858 /* RadarInitializeOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F139F4013B904B4B8DACFC6D /* RadarTraceInstrumentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E825B09338044A1C8F092F70 /* RadarTraceInstrumentationTests.swift */; };
+		F1A0E6A230B2000000000002 /* RadarRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0E6A230B2000000000001 /* RadarRegion.swift */; };
+		F1A0E6A230B2000000000004 /* RadarRegionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0E6A230B2000000000003 /* RadarRegionTests.swift */; };
+		F3050B0230059A000035CBDB /* RadarContinuousBeaconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050B0130059A000035CBDB /* RadarContinuousBeaconManager.swift */; };
+		F3050B0630059A000035CBDB /* RadarContinuousBeaconManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050B0530059A000035CBDB /* RadarContinuousBeaconManagerTests.swift */; };
+		F3050C0230059A000035CBDB /* RadarSwiftBridgeConformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050C0130059A000035CBDB /* RadarSwiftBridgeConformanceTests.swift */; };
+		F3050D0230059A000035CBDB /* RadarAPIClientSearchBeaconsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050D0130059A000035CBDB /* RadarAPIClientSearchBeaconsTests.swift */; };
+		F3050F0230059A000035CBDB /* Radar+BeaconRanging.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3050F0130059A000035CBDB /* Radar+BeaconRanging.swift */; };
+		F3051002300A5A000035CBDB /* RadarNearbyBeaconSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3051001300A5A000035CBDB /* RadarNearbyBeaconSearch.swift */; };
+		F3051006300A5A000035CBDB /* RadarContinuousBeaconManagerRangingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3051005300A5A000035CBDB /* RadarContinuousBeaconManagerRangingTests.swift */; };
+		F3051008300A5A000035CBDB /* RadarContinuousBeaconManager+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3051007300A5A000035CBDB /* RadarContinuousBeaconManager+Delegate.swift */; };
+		F3051A0230059A000035CBDB /* Radar+ValidateAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3051A0130059A000035CBDB /* Radar+ValidateAddress.swift */; };
 		F60D65E92F15805000CE1D73 /* RadarDelegateHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60D65E82F15804900CE1D73 /* RadarDelegateHolder.swift */; };
 		F645D8E33061C890001A78B6 /* RadarExpectedAddress+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F645D8E43061C890001A78B6 /* RadarExpectedAddress+Internal.h */; };
 		F645D8E63061C8AF001A78B6 /* RadarExpectedAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F645D8E53061C8AF001A78B6 /* RadarExpectedAddress.swift */; };
@@ -355,7 +364,6 @@
 		F6843C3A3005539300213092 /* RadarRevealRiskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F6843C393005538D00213092 /* RadarRevealRiskManager.h */; };
 		F6843C503005A79E00213092 /* RadarSDKFraud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6843C4F3005A79E00213092 /* RadarSDKFraud.swift */; };
 		F6843C87300696A200213092 /* RadarRevealRiskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6843C86300696A200213092 /* RadarRevealRiskTests.swift */; };
-		CDB81723305A100000000002 /* RadarRevealRiskRetryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB81723305A100000000001 /* RadarRevealRiskRetryTests.swift */; };
 		F686B72D2E4D27EB00D3D614 /* RadarInAppMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F686B72C2E4D27EB00D3D614 /* RadarInAppMessage.swift */; };
 		F686B7312E4D29C400D3D614 /* RadarInAppMessageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F686B7302E4D29C400D3D614 /* RadarInAppMessageDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F686B7372E4D2AFC00D3D614 /* RadarAPIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F686B7362E4D2AFC00D3D614 /* RadarAPIHelper.swift */; };
@@ -374,6 +382,7 @@
 		F6E0D8B52E79FA4500DB4C73 /* RadarSwiftBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E0D8B22E79FA4500DB4C73 /* RadarSwiftBridge.h */; };
 		F6E0D8B62E79FA4500DB4C73 /* RadarSwiftBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E0D8B42E79FA4500DB4C73 /* RadarSwiftBridge.swift */; };
 		F6E0D8B72E79FA4500DB4C73 /* RadarSwiftBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E0D8B32E79FA4500DB4C73 /* RadarSwiftBridge.m */; };
+		F6E6DE05FE3B68438D8ED217 /* RadarTraceManager+Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A81A877BCF8422BCEFE3D5E /* RadarTraceManager+Export.swift */; };
 		F6EFF1952F71972000E48CE1 /* RadarSdkConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EFF1942F71971B00E48CE1 /* RadarSdkConfiguration.swift */; };
 		F6F959802C3D7D9900BC30FE /* RadarTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F9597F2C3D7D9900BC30FE /* RadarTimeZone.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6F959822C3D7EA200BC30FE /* RadarTimeZone+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */; };
@@ -386,33 +395,55 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BEEF0A0030C2000000000001 /* RadarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarEvent.swift; sourceTree = "<group>"; };
+		BEEF0A0030C2000000000003 /* RadarEventTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarEventTests.swift; sourceTree = "<group>"; };
 		0107A9E82621FFB9008AB52F /* RadarSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RadarSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0113020E2AE1467800EFC377 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk/System/Library/PrivateFrameworks/Network.framework; sourceTree = DEVELOPER_DIR; };
 		0114F057284EFDB700ADA4E4 /* RadarRouteMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarRouteMode.h; sourceTree = "<group>"; };
 		019514352BD077D10031ABA2 /* RadarVerifiedLocationToken.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedLocationToken.h; sourceTree = "<group>"; };
 		019514382BD081630031ABA2 /* RadarVerifiedLocationToken+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarVerifiedLocationToken+Internal.h"; sourceTree = "<group>"; };
+		01B44A6003E1F281C15460A4 /* RadarTraceSpanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceSpanTests.swift; sourceTree = "<group>"; };
 		01DDC7C629FC387400C0D039 /* RadarNotificationHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarNotificationHelper.h; sourceTree = "<group>"; };
 		01F8106F2AF0119800BD7088 /* RadarVerifiedDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarVerifiedDelegate.h; sourceTree = "<group>"; };
 		01F99CFA2965C182004E8CF3 /* RadarConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarConfig.h; sourceTree = "<group>"; };
+		055AFE68DEBF4FACA7E5AEF6 /* RadarAPIClient+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarAPIClient+Internal.h"; sourceTree = "<group>"; };
 		171F6F711363E4AC60E02B28 /* CLLocation+Radar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocation+Radar.swift"; sourceTree = "<group>"; };
+		1F65C9DF0A4D013C05F9D292 /* RadarTraceSpan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceSpan.swift; sourceTree = "<group>"; };
+		2A81A877BCF8422BCEFE3D5E /* RadarTraceManager+Export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarTraceManager+Export.swift"; sourceTree = "<group>"; };
+		3111B7B2488E4E12B51970C3 /* RadarTrackTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackTraceTests.swift; sourceTree = "<group>"; };
+		38676C7ACC5D3B6DB9DCD642 /* RadarTraceManager+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTraceManager+Internal.h"; sourceTree = "<group>"; };
+		48A32D155CDF9811388CDA85 /* RadarTraceSamplingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceSamplingTests.swift; sourceTree = "<group>"; };
 		4B5BB8D62E7C79AF004C98C9 /* RadarSDKFraudProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSDKFraudProtocol.h; sourceTree = "<group>"; };
+		5049A21E29A90FA7FA02476C /* RadarTraceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceManager.swift; sourceTree = "<group>"; };
+		51A67DAD150A9943F815EFEC /* RadarTraceTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceTestSupport.swift; sourceTree = "<group>"; };
 		532FC303277A783900989279 /* Radar+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Radar+Internal.h"; sourceTree = "<group>"; };
-		CA5E9A0130B1000000000023 /* RadarContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarContext.swift; sourceTree = "<group>"; };
-		CA5E9A0130B1000000000025 /* RadarContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarContextTests.swift; sourceTree = "<group>"; };
 		53B3B26A23EE41B400080818 /* context.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = context.json; sourceTree = "<group>"; };
 		61FFFC29F8BCE53F30E3180F /* RadarIndoorsUpdateTrackingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarIndoorsUpdateTrackingTests.swift; sourceTree = "<group>"; };
+		66D21B48B14C4B8AF74E0378 /* RadarTraceStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceStorageTests.swift; sourceTree = "<group>"; };
 		6BEA1981B9F1BE2A536837C4 /* CLLocation+RadarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocation+RadarTests.swift"; sourceTree = "<group>"; };
-		AD0E55A030C1000000000001 /* RadarAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAddress.swift; sourceTree = "<group>"; };
-		7E57C0DE30C0000000000046 /* RadarAutocompleteSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAutocompleteSession.swift; sourceTree = "<group>"; };
-		7E57C0DE30C0000000000044 /* RadarAutocompleteEnrichedAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAutocompleteEnrichedAddress.swift; sourceTree = "<group>"; };
-		7E57C0DE30C0000000000042 /* RadarAddressLocationDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAddressLocationDetails.swift; sourceTree = "<group>"; };
-		7E57C0DE30C0000000000040 /* RadarAddressPlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAddressPlace.swift; sourceTree = "<group>"; };
-		AD0E55A030C1000000000003 /* RadarAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAddressTests.swift; sourceTree = "<group>"; };
-		BEEF0A0030C1000000000001 /* RadarUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarUser.swift; sourceTree = "<group>"; };
-		BEEF0A0030C1000000000003 /* RadarUserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarUserTests.swift; sourceTree = "<group>"; };
-		BEEF0A0030C1000000000005 /* RadarUserCompatibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarUserCompatibilityTests.swift; sourceTree = "<group>"; };
+		6F1B76BF89DFAF6BB1A2734D /* RadarTraceSpan+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTraceSpan+Internal.h"; sourceTree = "<group>"; };
+		780B8AE6B6126AB61F59CA95 /* RadarAPIClientValidateAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIClientValidateAddressTests.swift; sourceTree = "<group>"; };
 		78D8CE3B23AD78A1009E91F5 /* geocode.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode.json; sourceTree = "<group>"; };
 		78D8CE3D23AD7FEE009E91F5 /* geocode_ip.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geocode_ip.json; sourceTree = "<group>"; };
+		7CC986F487669DA96BB8389A /* RadarCompletedSpan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarCompletedSpan.swift; sourceTree = "<group>"; };
+		7E57C0DE30C0000000000001 /* RadarSDKTestFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKTestFixture.swift; sourceTree = "<group>"; };
+		7E57C0DE30C0000000000003 /* RadarSDKTestAssertions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKTestAssertions.swift; sourceTree = "<group>"; };
+		7E57C0DE30C0000000000005 /* RadarSDKUserMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKUserMetadataTests.swift; sourceTree = "<group>"; };
+		7E57C0DE30C0000000000007 /* RadarSDKTrackingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKTrackingTests.swift; sourceTree = "<group>"; };
+		7E57C0DE30C0000000000009 /* RadarSDKEventTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKEventTests.swift; sourceTree = "<group>"; };
+		7E57C0DE30C000000000000B /* RadarSDKSearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKSearchTests.swift; sourceTree = "<group>"; };
+		7E57C0DE30C000000000000D /* RadarSdkConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSdkConfigurationTests.swift; sourceTree = "<group>"; };
+		7E57C0DE30C000000000000F /* RadarSDKGeocodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKGeocodeTests.swift; sourceTree = "<group>"; };
+		7E57C0DE30C0000000000020 /* RadarSDKAutocompleteSelectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKAutocompleteSelectTests.swift; sourceTree = "<group>"; };
+		7E57C0DE30C0000000000040 /* RadarAddressPlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAddressPlace.swift; sourceTree = "<group>"; };
+		7E57C0DE30C0000000000042 /* RadarAddressLocationDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAddressLocationDetails.swift; sourceTree = "<group>"; };
+		7E57C0DE30C0000000000044 /* RadarAutocompleteEnrichedAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAutocompleteEnrichedAddress.swift; sourceTree = "<group>"; };
+		7E57C0DE30C0000000000046 /* RadarAutocompleteSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAutocompleteSession.swift; sourceTree = "<group>"; };
+		7E57C0DE30C1000000000001 /* RadarAPIHelperMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelperMock.swift; sourceTree = "<group>"; };
+		7E57C0DE30C1000000000003 /* RadarPermissionsHelperMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarPermissionsHelperMock.swift; sourceTree = "<group>"; };
+		7E57C0DE30C1000000000005 /* CLVisitMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLVisitMock.swift; sourceTree = "<group>"; };
+		7E57C0DE30C1000000000007 /* CLLocationManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLLocationManagerMock.swift; sourceTree = "<group>"; };
+		7E57C0DE30C1000000000009 /* RadarTrackTestBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackTestBridge.swift; sourceTree = "<group>"; };
 		825732502B72BE1900DF8B88 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		828D1A552E295FD400663787 /* RadarTripOrder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTripOrder.h; sourceTree = "<group>"; };
 		82D04ABA29722ED20036619F /* RadarReplayBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarReplayBuffer.h; sourceTree = "<group>"; };
@@ -420,21 +451,12 @@
 		82DF18782C5830C300301B17 /* RadarActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarActivityManager.swift; sourceTree = "<group>"; };
 		82F7FAEC2A65FE030055AA4B /* RadarVerificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadarVerificationManager.h; sourceTree = "<group>"; };
 		82F7FAED2A65FE030055AA4B /* RadarVerificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarVerificationManager.m; sourceTree = "<group>"; };
+		88303911D1F14998B4C4FC42 /* RadarLocationTracing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationTracing.swift; sourceTree = "<group>"; };
+		9224EFA2894E4912AC1DE7C7 /* RadarTrackVerifiedTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackVerifiedTraceTests.swift; sourceTree = "<group>"; };
 		966D885F288F7404008C0D00 /* conversion_event.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = conversion_event.json; sourceTree = "<group>"; };
 		96711A8F2790C87A009ED205 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		9679F4A027CD8D0600800797 /* CLLocation+Radar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CLLocation+Radar.h"; sourceTree = "<group>"; };
 		9683FD6227B36C26009EBB6B /* RadarMeta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarMeta.swift; sourceTree = "<group>"; };
-		7CC986F487669DA96BB8389A /* RadarCompletedSpan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarCompletedSpan.swift; sourceTree = "<group>"; };
-		5049A21E29A90FA7FA02476C /* RadarTraceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceManager.swift; sourceTree = "<group>"; };
-		2A81A877BCF8422BCEFE3D5E /* RadarTraceManager+Export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarTraceManager+Export.swift"; sourceTree = "<group>"; };
-		A4A068A830080CB384AA3296 /* RadarTraceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceStore.swift; sourceTree = "<group>"; };
-		1F65C9DF0A4D013C05F9D292 /* RadarTraceSpan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceSpan.swift; sourceTree = "<group>"; };
-		A5581E00B188D4463CC40D1B /* RadarTraceManager+Sampling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarTraceManager+Sampling.swift"; sourceTree = "<group>"; };
-		B5FF3B67B19C49D194B60E40 /* RadarVerificationTracing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarVerificationTracing.swift; sourceTree = "<group>"; };
-		BF3BB84F3DB1486285141E3A /* RadarHTTPTracing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarHTTPTracing.swift; sourceTree = "<group>"; };
-		D0F1913DB4BA4B4DBD6D0336 /* RadarBeaconTracing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarBeaconTracing.swift; sourceTree = "<group>"; };
-		88303911D1F14998B4C4FC42 /* RadarLocationTracing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationTracing.swift; sourceTree = "<group>"; };
-		AE06EB67B36943EBB32737E3 /* RadarTrackTracing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackTracing.swift; sourceTree = "<group>"; };
 		968C839828A6D8350030103E /* conversion_event_nil_event.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = conversion_event_nil_event.json; sourceTree = "<group>"; };
 		96A0AC2628A4066D00B41D40 /* search_places_chain_metadata.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = search_places_chain_metadata.json; sourceTree = "<group>"; };
 		96A5A0A927AD9F40007B960B /* RadarRoutes+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RadarRoutes+Internal.h"; sourceTree = "<group>"; };
@@ -490,10 +512,16 @@
 		96D3F20927C6B291007578B9 /* MIGRATION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MIGRATION.md; sourceTree = "<group>"; };
 		A1B2C3D40000000000000102 /* RadarRouteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRouteTests.swift; sourceTree = "<group>"; };
 		A1E5AD00305A000000C0FFEE /* RadarSDKTestsSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKTestsSwift.swift; sourceTree = "<group>"; };
+		A45B6D85514BBDD518E612E8 /* RadarTraceManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceManagerTests.swift; sourceTree = "<group>"; };
+		A4A068A830080CB384AA3296 /* RadarTraceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceStore.swift; sourceTree = "<group>"; };
+		A5581E00B188D4463CC40D1B /* RadarTraceManager+Sampling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarTraceManager+Sampling.swift"; sourceTree = "<group>"; };
 		AA00000000000000000000A2 /* RadarMetaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarMetaTests.swift; sourceTree = "<group>"; };
 		AA00000000000000000000B2 /* RadarMeta.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarMeta.h; sourceTree = "<group>"; };
 		AA00000000000000000000C2 /* RadarConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarConfig.swift; sourceTree = "<group>"; };
 		AA00000000000000000000C4 /* RadarConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarConfigTests.swift; sourceTree = "<group>"; };
+		AD0E55A030C1000000000001 /* RadarAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAddress.swift; sourceTree = "<group>"; };
+		AD0E55A030C1000000000003 /* RadarAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAddressTests.swift; sourceTree = "<group>"; };
+		AE06EB67B36943EBB32737E3 /* RadarTrackTracing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackTracing.swift; sourceTree = "<group>"; };
 		B0A0F0062FBC000100111111 /* RadarLocationManager+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+Swift.swift"; sourceTree = "<group>"; };
 		B0A0F0072FBC000100111111 /* RadarLocationManagerSwiftSeamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftSeamTests.swift; sourceTree = "<group>"; };
 		B0A0F0092FBC000100111111 /* RadarLocationManagerSwift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarLocationManagerSwift.h; sourceTree = "<group>"; };
@@ -506,35 +534,24 @@
 		B0A0F0272FBC000100111111 /* RadarUserDefaults.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarUserDefaults.h; sourceTree = "<group>"; };
 		B0A0F0292FBC000100111111 /* RadarLocationManagerSwiftAuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftAuthTests.swift; sourceTree = "<group>"; };
 		B0A0F02B2FBC000100111111 /* RadarLocationManagerSwiftLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftLifecycleTests.swift; sourceTree = "<group>"; };
-		B0A0F0532FBC000100111111 /* RadarLocationManagerSwiftTrackingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftTrackingTests.swift; sourceTree = "<group>"; };
-		C1F0A0042FBD000100222222 /* RadarLocationManagerSwiftHandleLocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftHandleLocationTests.swift; sourceTree = "<group>"; };
-		C1F0A0082FBD000100222222 /* RadarLocationManagerSwiftHostConformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftHostConformanceTests.swift; sourceTree = "<group>"; };
-		C1F0A0062FBD000100222222 /* RadarLocationManagerSwiftHandleLocationSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftHandleLocationSyncTests.swift; sourceTree = "<group>"; };
-		C1F0A00C2FBD000100222222 /* RadarLocationManagerSwiftSendLocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftSendLocationTests.swift; sourceTree = "<group>"; };
-		C1F0A0D42FBD000100333333 /* RadarLocationManagerSwiftMotionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftMotionTests.swift; sourceTree = "<group>"; };
 		A7C1D0E12FBE000100555555 /* RadarActivityManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarActivityManagerTests.swift; sourceTree = "<group>"; };
-		C1F0A0D32FBD000100333333 /* RadarLocationManagerSwiftCompletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftCompletionTests.swift; sourceTree = "<group>"; };
-		B0A0F0552FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerObjCRegionTests.swift; sourceTree = "<group>"; };
-		B0A0F3052FBC000100111111 /* RadarRegionCleanerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRegionCleanerTests.swift; sourceTree = "<group>"; };
-		B0A0F3072FBC000100111111 /* RadarPermissionsHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarPermissionsHelperTests.swift; sourceTree = "<group>"; };
 		B0A0F02D2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftAccuracyTests.swift; sourceTree = "<group>"; };
 		B0A0F02F2FBC000100111111 /* RadarLocationManagerSwiftFailureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftFailureTests.swift; sourceTree = "<group>"; };
 		B0A0F0312FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftLocationTests.swift; sourceTree = "<group>"; };
 		B0A0F0332FBC000100111111 /* MockRadarSwiftBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRadarSwiftBridge.swift; sourceTree = "<group>"; };
 		B0A0F0352FBC000100111111 /* RadarLocationManagerSwiftRTOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftRTOTests.swift; sourceTree = "<group>"; };
 		B0A0F0392FBC000100111111 /* RadarLocationManager+SwiftDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+SwiftDelegate.swift"; sourceTree = "<group>"; };
+		B0A0F03B2FBC000100111111 /* RadarLocationManagerSwiftBeaconStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftBeaconStateTests.swift; sourceTree = "<group>"; };
 		B0A0F0512FBC000100111111 /* RadarLocationManager+SwiftTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+SwiftTracking.swift"; sourceTree = "<group>"; };
-		C1F0A0022FBD000100222222 /* RadarLocationManager+SwiftLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+SwiftLocation.swift"; sourceTree = "<group>"; };
-		C1F0A00A2FBD000100222222 /* RadarLocationManager+SwiftSend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+SwiftSend.swift"; sourceTree = "<group>"; };
-		C1F0A0D22FBD000100333333 /* RadarLocationManager+SwiftMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+SwiftMotion.swift"; sourceTree = "<group>"; };
-		C1F0A0D12FBD000100333333 /* RadarLocationManager+SwiftCompletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+SwiftCompletion.swift"; sourceTree = "<group>"; };
+		B0A0F0532FBC000100111111 /* RadarLocationManagerSwiftTrackingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftTrackingTests.swift; sourceTree = "<group>"; };
+		B0A0F0552FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerObjCRegionTests.swift; sourceTree = "<group>"; };
+		B0A0F0572FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerObjCUpdatesTests.swift; sourceTree = "<group>"; };
+		B0A0F10B2FBC000100111111 /* RadarInAppMessageManager+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarInAppMessageManager+Internal.h"; sourceTree = "<group>"; };
 		B0A0F3012FBC000100111111 /* RadarRegionCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRegionCleaner.swift; sourceTree = "<group>"; };
 		B0A0F3032FBC000100111111 /* RadarRegionCleaner+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarRegionCleaner+Internal.h"; sourceTree = "<group>"; };
-		B0A0F03B2FBC000100111111 /* RadarLocationManagerSwiftBeaconStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftBeaconStateTests.swift; sourceTree = "<group>"; };
-		B0A0F10B2FBC000100111111 /* RadarInAppMessageManager+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarInAppMessageManager+Internal.h"; sourceTree = "<group>"; };
-		38676C7ACC5D3B6DB9DCD642 /* RadarTraceManager+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTraceManager+Internal.h"; sourceTree = "<group>"; };
-		6F1B76BF89DFAF6BB1A2734D /* RadarTraceSpan+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTraceSpan+Internal.h"; sourceTree = "<group>"; };
-		055AFE68DEBF4FACA7E5AEF6 /* RadarAPIClient+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarAPIClient+Internal.h"; sourceTree = "<group>"; };
+		B0A0F3052FBC000100111111 /* RadarRegionCleanerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRegionCleanerTests.swift; sourceTree = "<group>"; };
+		B0A0F3072FBC000100111111 /* RadarPermissionsHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarPermissionsHelperTests.swift; sourceTree = "<group>"; };
+		B5FF3B67B19C49D194B60E40 /* RadarVerificationTracing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarVerificationTracing.swift; sourceTree = "<group>"; };
 		BA264CFA2FF31582000EDFE6 /* RadarReplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarReplay.swift; sourceTree = "<group>"; };
 		BA264CFC2FF31BD5000EDFE6 /* RadarReplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarReplay.h; sourceTree = "<group>"; };
 		BA264CFE2FF31FAF000EDFE6 /* RadarReplayBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarReplayBuffer.swift; sourceTree = "<group>"; };
@@ -545,20 +562,6 @@
 		BA35401F2F8EBFAD00E553A1 /* RadarOfflineEventManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineEventManagerTests.swift; sourceTree = "<group>"; };
 		BA3540212F90020900E553A1 /* RadarOfflineEventManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOfflineEventManager.h; sourceTree = "<group>"; };
 		BA3540232F90339F00E553A1 /* RadarSerializedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSerializedTests.swift; sourceTree = "<group>"; };
-		7E57C0DE30C1000000000001 /* RadarAPIHelperMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelperMock.swift; sourceTree = "<group>"; };
-		7E57C0DE30C1000000000003 /* RadarPermissionsHelperMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarPermissionsHelperMock.swift; sourceTree = "<group>"; };
-		7E57C0DE30C1000000000005 /* CLVisitMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLVisitMock.swift; sourceTree = "<group>"; };
-		7E57C0DE30C1000000000007 /* CLLocationManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLLocationManagerMock.swift; sourceTree = "<group>"; };
-		7E57C0DE30C1000000000009 /* RadarTrackTestBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackTestBridge.swift; sourceTree = "<group>"; };
-		7E57C0DE30C0000000000001 /* RadarSDKTestFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKTestFixture.swift; sourceTree = "<group>"; };
-		7E57C0DE30C0000000000003 /* RadarSDKTestAssertions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKTestAssertions.swift; sourceTree = "<group>"; };
-		7E57C0DE30C0000000000005 /* RadarSDKUserMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKUserMetadataTests.swift; sourceTree = "<group>"; };
-		7E57C0DE30C0000000000007 /* RadarSDKTrackingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKTrackingTests.swift; sourceTree = "<group>"; };
-		7E57C0DE30C0000000000009 /* RadarSDKEventTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKEventTests.swift; sourceTree = "<group>"; };
-		7E57C0DE30C000000000000B /* RadarSDKSearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKSearchTests.swift; sourceTree = "<group>"; };
-		7E57C0DE30C000000000000F /* RadarSDKGeocodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKGeocodeTests.swift; sourceTree = "<group>"; };
-		7E57C0DE30C0000000000020 /* RadarSDKAutocompleteSelectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKAutocompleteSelectTests.swift; sourceTree = "<group>"; };
-		7E57C0DE30C000000000000D /* RadarSdkConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSdkConfigurationTests.swift; sourceTree = "<group>"; };
 		BA3540242F9100AA00E553A1 /* RadarOfflineEventManagerBeaconDwellTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOfflineEventManagerBeaconDwellTests.swift; sourceTree = "<group>"; };
 		BA46C1652F4CF3E900031891 /* RadarTripLeg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTripLeg.h; sourceTree = "<group>"; };
 		BA46C1692F4E0A8300031891 /* trip_with_legs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = trip_with_legs.json; sourceTree = "<group>"; };
@@ -588,33 +591,17 @@
 		BA8D153C300EA40D00022EB3 /* RadarEventNotificationsTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarEventNotificationsTestHelpers.swift; sourceTree = "<group>"; };
 		BA8D15C130100DE800022EB3 /* RadarSwizzleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSwizzleHelper.h; sourceTree = "<group>"; };
 		BA8D15C330100E0100022EB3 /* RadarSwizzleHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSwizzleHelper.m; sourceTree = "<group>"; };
-		F3050F0130059A000035CBDB /* Radar+BeaconRanging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Radar+BeaconRanging.swift"; sourceTree = "<group>"; };
-		F3051A0130059A000035CBDB /* Radar+ValidateAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Radar+ValidateAddress.swift"; sourceTree = "<group>"; };
-		F3051001300A5A000035CBDB /* RadarNearbyBeaconSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarNearbyBeaconSearch.swift; sourceTree = "<group>"; };
-		F3051004300A5A000035CBDB /* RadarContinuousBeaconManager+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarContinuousBeaconManager+Internal.h"; sourceTree = "<group>"; };
-		F3051003300A5A000035CBDB /* RadarNearbyBeaconSearch+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarNearbyBeaconSearch+Internal.h"; sourceTree = "<group>"; };
-		F3050B0130059A000035CBDB /* RadarContinuousBeaconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarContinuousBeaconManager.swift; sourceTree = "<group>"; };
+		BAA5D64730A50F03009F108F /* RadarVerifiedLocationTokenFormatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarVerifiedLocationTokenFormatTests.swift; sourceTree = "<group>"; };
+		BAA5D64930A60B27009F108F /* RadarTrackResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackResponseHandler.swift; sourceTree = "<group>"; };
+		BAA5D64C30A60C3B009F108F /* RadarTrackResponseHandler+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarTrackResponseHandler+Internal.h"; sourceTree = "<group>"; };
+		BAA5D64E30A60D1E009F108F /* RadarTrackResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackResponseTests.swift; sourceTree = "<group>"; };
+		BAA5D65030A610B9009F108F /* RadarVerifiedRefreshSchedulingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarVerifiedRefreshSchedulingTests.swift; sourceTree = "<group>"; };
+		BAB0BE1D30A4BE040015AC47 /* RadarResponseFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarResponseFormat.swift; sourceTree = "<group>"; };
+		BAB0BE1F30A4C1400015AC47 /* RadarResponseFormatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarResponseFormatTests.swift; sourceTree = "<group>"; };
 		BABC4B90300190E10035CBDB /* RadarOneShotBeaconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOneShotBeaconManager.swift; sourceTree = "<group>"; };
 		BABC4B923001AE860035CBDB /* RadarOneShotBeaconManager+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarOneShotBeaconManager+Internal.h"; sourceTree = "<group>"; };
 		BABC4B9C3005494A0035CBDB /* RadarPermissionsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarPermissionsHelper.swift; sourceTree = "<group>"; };
 		BABC4B9E3005978E0035CBDB /* MockRadarPermissionsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRadarPermissionsHelper.swift; sourceTree = "<group>"; };
-		F3051005300A5A000035CBDB /* RadarContinuousBeaconManagerRangingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarContinuousBeaconManagerRangingTests.swift; sourceTree = "<group>"; };
-		F3051007300A5A000035CBDB /* RadarContinuousBeaconManager+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarContinuousBeaconManager+Delegate.swift"; sourceTree = "<group>"; };
-		F3050B0530059A000035CBDB /* RadarContinuousBeaconManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarContinuousBeaconManagerTests.swift; sourceTree = "<group>"; };
-		F3050C0130059A000035CBDB /* RadarSwiftBridgeConformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSwiftBridgeConformanceTests.swift; sourceTree = "<group>"; };
-		F3050D0130059A000035CBDB /* RadarAPIClientSearchBeaconsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIClientSearchBeaconsTests.swift; sourceTree = "<group>"; };
-		780B8AE6B6126AB61F59CA95 /* RadarAPIClientValidateAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIClientValidateAddressTests.swift; sourceTree = "<group>"; };
-		A45B6D85514BBDD518E612E8 /* RadarTraceManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceManagerTests.swift; sourceTree = "<group>"; };
-		E355B78ED8E3A027D1D1F855 /* RadarTraceSamplingAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceSamplingAPIClientTests.swift; sourceTree = "<group>"; };
-		48A32D155CDF9811388CDA85 /* RadarTraceSamplingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceSamplingTests.swift; sourceTree = "<group>"; };
-		51A67DAD150A9943F815EFEC /* RadarTraceTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceTestSupport.swift; sourceTree = "<group>"; };
-		66D21B48B14C4B8AF74E0378 /* RadarTraceStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceStorageTests.swift; sourceTree = "<group>"; };
-		01B44A6003E1F281C15460A4 /* RadarTraceSpanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceSpanTests.swift; sourceTree = "<group>"; };
-		FAD31BCABC664F8C8DC2F442 /* RadarTrackingUpdateTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackingUpdateTraceTests.swift; sourceTree = "<group>"; };
-		9224EFA2894E4912AC1DE7C7 /* RadarTrackVerifiedTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackVerifiedTraceTests.swift; sourceTree = "<group>"; };
-		3111B7B2488E4E12B51970C3 /* RadarTrackTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackTraceTests.swift; sourceTree = "<group>"; };
-		E1928EFFCBE140D0866E6CEE /* RadarAPIHelperTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelperTraceTests.swift; sourceTree = "<group>"; };
-		E825B09338044A1C8F092F70 /* RadarTraceInstrumentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceInstrumentationTests.swift; sourceTree = "<group>"; };
 		BABC4BA03005996B0035CBDB /* RadarOneShotBeaconManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOneShotBeaconManagerTests.swift; sourceTree = "<group>"; };
 		BAC932EF2FF43E7400503C2C /* RadarStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarStateTests.swift; sourceTree = "<group>"; };
 		BAC932F12FF45B3C00503C2C /* RadarReplayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarReplayTests.swift; sourceTree = "<group>"; };
@@ -633,28 +620,44 @@
 		BAE8057E304626CB000DA607 /* RadarTripIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTripIntegrationTests.swift; sourceTree = "<group>"; };
 		BAE805803046293C000DA607 /* RadarTripIntegrationTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTripIntegrationTestSupport.swift; sourceTree = "<group>"; };
 		BAE8058230463588000DA607 /* RadarTripSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTripSettingsTests.swift; sourceTree = "<group>"; };
+		BAE805B630478543000DA607 /* RadarTrackingOptionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackingOptionsTests.swift; sourceTree = "<group>"; };
+		BAE805B8304790EC000DA607 /* RadarTrackingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackingOptions.swift; sourceTree = "<group>"; };
 		BAE8065930535EFD000DA607 /* RadarTrackVerifiedRequestPreparer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackVerifiedRequestPreparer.swift; sourceTree = "<group>"; };
 		BAE8065B3053639A000DA607 /* RadarTrackVerifiedRequestPreparer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarTrackVerifiedRequestPreparer.h; sourceTree = "<group>"; };
 		BAE8065D305372A7000DA607 /* RadarTrackVerifiedReplayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackVerifiedReplayTests.swift; sourceTree = "<group>"; };
+		BEEF0A0030C1000000000001 /* RadarUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarUser.swift; sourceTree = "<group>"; };
+		BEEF0A0030C1000000000003 /* RadarUserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarUserTests.swift; sourceTree = "<group>"; };
+		BEEF0A0030C1000000000005 /* RadarUserCompatibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarUserCompatibilityTests.swift; sourceTree = "<group>"; };
+		BF3BB84F3DB1486285141E3A /* RadarHTTPTracing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarHTTPTracing.swift; sourceTree = "<group>"; };
 		C0DE20260910000000000001 /* RadarFraudTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFraudTestSupport.swift; sourceTree = "<group>"; };
 		C0DE20260910000000000003 /* RadarFraudBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFraudBridgeTests.swift; sourceTree = "<group>"; };
 		C0DE20260910000000000007 /* RadarTrackVerifiedRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackVerifiedRoutingTests.swift; sourceTree = "<group>"; };
 		C0DE20260910000000000009 /* RadarTrackVerifiedRetryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackVerifiedRetryTests.swift; sourceTree = "<group>"; };
 		C0DE2026091000000000000B /* RadarTrackVerifiedTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackVerifiedTestSupport.swift; sourceTree = "<group>"; };
-		BAE805B630478543000DA607 /* RadarTrackingOptionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackingOptionsTests.swift; sourceTree = "<group>"; };
-		BAE805B8304790EC000DA607 /* RadarTrackingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackingOptions.swift; sourceTree = "<group>"; };
+		C1F0A0022FBD000100222222 /* RadarLocationManager+SwiftLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+SwiftLocation.swift"; sourceTree = "<group>"; };
+		C1F0A0042FBD000100222222 /* RadarLocationManagerSwiftHandleLocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftHandleLocationTests.swift; sourceTree = "<group>"; };
+		C1F0A0062FBD000100222222 /* RadarLocationManagerSwiftHandleLocationSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftHandleLocationSyncTests.swift; sourceTree = "<group>"; };
+		C1F0A0082FBD000100222222 /* RadarLocationManagerSwiftHostConformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftHostConformanceTests.swift; sourceTree = "<group>"; };
+		C1F0A00A2FBD000100222222 /* RadarLocationManager+SwiftSend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+SwiftSend.swift"; sourceTree = "<group>"; };
+		C1F0A00C2FBD000100222222 /* RadarLocationManagerSwiftSendLocationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftSendLocationTests.swift; sourceTree = "<group>"; };
+		C1F0A0D12FBD000100333333 /* RadarLocationManager+SwiftCompletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+SwiftCompletion.swift"; sourceTree = "<group>"; };
+		C1F0A0D22FBD000100333333 /* RadarLocationManager+SwiftMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarLocationManager+SwiftMotion.swift"; sourceTree = "<group>"; };
+		C1F0A0D32FBD000100333333 /* RadarLocationManagerSwiftCompletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftCompletionTests.swift; sourceTree = "<group>"; };
+		C1F0A0D42FBD000100333333 /* RadarLocationManagerSwiftMotionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLocationManagerSwiftMotionTests.swift; sourceTree = "<group>"; };
 		CA5E9A0130A1000000000001 /* RadarSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSegment.swift; sourceTree = "<group>"; };
 		CA5E9A0130A1000000000003 /* RadarSegmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSegmentTests.swift; sourceTree = "<group>"; };
 		CA5E9A0130A2000000000001 /* RadarOperatingHours.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOperatingHours.swift; sourceTree = "<group>"; };
 		CA5E9A0130A2000000000003 /* RadarOperatingHoursTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarOperatingHoursTests.swift; sourceTree = "<group>"; };
 		CA5E9A0130B1000000000001 /* RadarChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarChain.swift; sourceTree = "<group>"; };
 		CA5E9A0130B1000000000003 /* RadarChainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarChainTests.swift; sourceTree = "<group>"; };
-		CA5E9A0130B1000000000015 /* RadarRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRoutes.swift; sourceTree = "<group>"; };
 		CA5E9A0130B1000000000011 /* RadarRouteMatrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRouteMatrix.swift; sourceTree = "<group>"; };
 		CA5E9A0130B1000000000013 /* RadarRouteMatrixTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRouteMatrixTests.swift; sourceTree = "<group>"; };
+		CA5E9A0130B1000000000015 /* RadarRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRoutes.swift; sourceTree = "<group>"; };
 		CA5E9A0130B1000000000017 /* RadarRoutesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRoutesTests.swift; sourceTree = "<group>"; };
 		CA5E9A0130B1000000000019 /* RadarVerifiedLocationToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarVerifiedLocationToken.swift; sourceTree = "<group>"; };
 		CA5E9A0130B1000000000021 /* RadarVerifiedLocationTokenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarVerifiedLocationTokenTests.swift; sourceTree = "<group>"; };
+		CA5E9A0130B1000000000023 /* RadarContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarContext.swift; sourceTree = "<group>"; };
+		CA5E9A0130B1000000000025 /* RadarContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarContextTests.swift; sourceTree = "<group>"; };
 		CA5E9A0130B2000000000001 /* RadarCircleGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarCircleGeometry.swift; sourceTree = "<group>"; };
 		CA5E9A0130B2000000000003 /* RadarCircleGeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarCircleGeometryTests.swift; sourceTree = "<group>"; };
 		CA5E9A0130B3000000000001 /* RadarPolygonGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarPolygonGeometry.swift; sourceTree = "<group>"; };
@@ -670,6 +673,8 @@
 		CA5E9A0330A4000000000003 /* RadarTimeZoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTimeZoneTests.swift; sourceTree = "<group>"; };
 		CA5E9A0430A5000000000001 /* RadarFraud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFraud.swift; sourceTree = "<group>"; };
 		CA5E9A0430A5000000000003 /* RadarFraudTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarFraudTests.swift; sourceTree = "<group>"; };
+		CDB81723305A100000000001 /* RadarRevealRiskRetryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRevealRiskRetryTests.swift; sourceTree = "<group>"; };
+		D0F1913DB4BA4B4DBD6D0336 /* RadarBeaconTracing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarBeaconTracing.swift; sourceTree = "<group>"; };
 		D1FACB1BB65B49969B63CEA7 /* RadarAPIHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelperTests.swift; sourceTree = "<group>"; };
 		DD103214237F1795003DD408 /* track.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = track.json; sourceTree = "<group>"; };
 		DD14FD4B23CE783500E80AC8 /* RadarSegment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarSegment.m; sourceTree = "<group>"; };
@@ -682,9 +687,6 @@
 		DD236C9923087F9200EB88F9 /* RadarAPIClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarAPIClient.m; sourceTree = "<group>"; };
 		DD236CA92308812600EB88F9 /* RadarGeofence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarGeofence.m; sourceTree = "<group>"; };
 		DD236CB22308812600EB88F9 /* RadarPlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarPlace.m; sourceTree = "<group>"; };
-		DD236CB82308812700EB88F9 /* RadarEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadarEvent.m; sourceTree = "<group>"; };
-		F1A0E6A230B2000000000001 /* RadarRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRegion.swift; sourceTree = "<group>"; };
-		F1A0E6A230B2000000000003 /* RadarRegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRegionTests.swift; sourceTree = "<group>"; };
 		DD236CF723088F8400EB88F9 /* RadarLocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarLocationManager.h; sourceTree = "<group>"; };
 		DD236CF823088F8400EB88F9 /* RadarLocationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarLocationManager.m; sourceTree = "<group>"; };
 		DD236CFB230895D400EB88F9 /* RadarSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarSettings.h; sourceTree = "<group>"; };
@@ -703,10 +705,26 @@
 		DD633EC6237C5B9C0026C91A /* RadarPermissionsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarPermissionsHelper.m; sourceTree = "<group>"; };
 		DD6F4F8525741B1700AFA38B /* RadarBeacon.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RadarBeacon.m; sourceTree = "<group>"; };
 		DE1E7643239724FD006F34A1 /* search_geofences.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = search_geofences.json; sourceTree = "<group>"; };
+		E1928EFFCBE140D0866E6CEE /* RadarAPIHelperTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelperTraceTests.swift; sourceTree = "<group>"; };
+		E355B78ED8E3A027D1D1F855 /* RadarTraceSamplingAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceSamplingAPIClientTests.swift; sourceTree = "<group>"; };
 		E658DB062CB46277004E0F01 /* RadarOperatingHours.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarOperatingHours.h; sourceTree = "<group>"; };
 		E658DB0B2CB46B50004E0F01 /* RadarOperatingHours+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarOperatingHours+Internal.h"; sourceTree = "<group>"; };
 		E698B64F2C6112FA00084371 /* RadarMotionProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarMotionProtocol.h; sourceTree = "<group>"; };
 		E6B93B712C90E2B8003CB858 /* RadarInitializeOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarInitializeOptions.h; sourceTree = "<group>"; };
+		E825B09338044A1C8F092F70 /* RadarTraceInstrumentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTraceInstrumentationTests.swift; sourceTree = "<group>"; };
+		F1A0E6A230B2000000000001 /* RadarRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRegion.swift; sourceTree = "<group>"; };
+		F1A0E6A230B2000000000003 /* RadarRegionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRegionTests.swift; sourceTree = "<group>"; };
+		F3050B0130059A000035CBDB /* RadarContinuousBeaconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarContinuousBeaconManager.swift; sourceTree = "<group>"; };
+		F3050B0530059A000035CBDB /* RadarContinuousBeaconManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarContinuousBeaconManagerTests.swift; sourceTree = "<group>"; };
+		F3050C0130059A000035CBDB /* RadarSwiftBridgeConformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSwiftBridgeConformanceTests.swift; sourceTree = "<group>"; };
+		F3050D0130059A000035CBDB /* RadarAPIClientSearchBeaconsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIClientSearchBeaconsTests.swift; sourceTree = "<group>"; };
+		F3050F0130059A000035CBDB /* Radar+BeaconRanging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Radar+BeaconRanging.swift"; sourceTree = "<group>"; };
+		F3051001300A5A000035CBDB /* RadarNearbyBeaconSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarNearbyBeaconSearch.swift; sourceTree = "<group>"; };
+		F3051003300A5A000035CBDB /* RadarNearbyBeaconSearch+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarNearbyBeaconSearch+Internal.h"; sourceTree = "<group>"; };
+		F3051004300A5A000035CBDB /* RadarContinuousBeaconManager+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarContinuousBeaconManager+Internal.h"; sourceTree = "<group>"; };
+		F3051005300A5A000035CBDB /* RadarContinuousBeaconManagerRangingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarContinuousBeaconManagerRangingTests.swift; sourceTree = "<group>"; };
+		F3051007300A5A000035CBDB /* RadarContinuousBeaconManager+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RadarContinuousBeaconManager+Delegate.swift"; sourceTree = "<group>"; };
+		F3051A0130059A000035CBDB /* Radar+ValidateAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Radar+ValidateAddress.swift"; sourceTree = "<group>"; };
 		F60D65E82F15804900CE1D73 /* RadarDelegateHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarDelegateHolder.swift; sourceTree = "<group>"; };
 		F645D8E43061C890001A78B6 /* RadarExpectedAddress+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RadarExpectedAddress+Internal.h"; sourceTree = "<group>"; };
 		F645D8E53061C8AF001A78B6 /* RadarExpectedAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarExpectedAddress.swift; sourceTree = "<group>"; };
@@ -739,7 +757,6 @@
 		F6843C4F3005A79E00213092 /* RadarSDKFraud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSDKFraud.swift; sourceTree = "<group>"; };
 		F6843C51300602BE00213092 /* RadarSDKFraud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RadarSDKFraud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6843C86300696A200213092 /* RadarRevealRiskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRevealRiskTests.swift; sourceTree = "<group>"; };
-		CDB81723305A100000000001 /* RadarRevealRiskRetryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRevealRiskRetryTests.swift; sourceTree = "<group>"; };
 		F686B72C2E4D27EB00D3D614 /* RadarInAppMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarInAppMessage.swift; sourceTree = "<group>"; };
 		F686B7302E4D29C400D3D614 /* RadarInAppMessageDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarInAppMessageDelegate.h; sourceTree = "<group>"; };
 		F686B7362E4D2AFC00D3D614 /* RadarAPIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarAPIHelper.swift; sourceTree = "<group>"; };
@@ -764,6 +781,7 @@
 		F6FA1101000000000000A001 /* RadarVerifiedHostOverrideTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarVerifiedHostOverrideTests.swift; sourceTree = "<group>"; };
 		F6FA1103000000000000A001 /* RadarIndoorLocationTrackParamsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarIndoorLocationTrackParamsTests.swift; sourceTree = "<group>"; };
 		F6FA1103000000000000A002 /* RadarVerificationManagerSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarVerificationManagerSwiftTests.swift; sourceTree = "<group>"; };
+		FAD31BCABC664F8C8DC2F442 /* RadarTrackingUpdateTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackingUpdateTraceTests.swift; sourceTree = "<group>"; };
 		FE10A6092F2BC9160058ECD4 /* RadarRevealRiskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRevealRiskManager.swift; sourceTree = "<group>"; };
 		FE9417172E1C2958008ECBEB /* RadarIndoorsProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarIndoorsProtocol.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -906,6 +924,8 @@
 				DD236C9823087F9200EB88F9 /* RadarAPIClient.h */,
 				DD236C9923087F9200EB88F9 /* RadarAPIClient.m */,
 				F6513DDB2E54F63100523472 /* RadarAPIClient.swift */,
+				BAA5D64930A60B27009F108F /* RadarTrackResponseHandler.swift */,
+				BAA5D64C30A60C3B009F108F /* RadarTrackResponseHandler+Internal.h */,
 				DD633EC1237C5B800026C91A /* RadarAPIHelper.h */,
 				DD633EC2237C5B800026C91A /* RadarAPIHelper.m */,
 				F686B7362E4D2AFC00D3D614 /* RadarAPIHelper.swift */,
@@ -1056,6 +1076,7 @@
 				A7C1D0E12FBE000100555555 /* RadarActivityManagerTests.swift */,
 				C1F0A0D32FBD000100333333 /* RadarLocationManagerSwiftCompletionTests.swift */,
 				B0A0F0552FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift */,
+				B0A0F0572FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift */,
 				B0A0F3052FBC000100111111 /* RadarRegionCleanerTests.swift */,
 				B0A0F3072FBC000100111111 /* RadarPermissionsHelperTests.swift */,
 				B0A0F0312FBC000100111111 /* RadarLocationManagerSwiftLocationTests.swift */,
@@ -1072,6 +1093,7 @@
 				BA35401F2F8EBFAD00E553A1 /* RadarOfflineEventManagerTests.swift */,
 				BA561CD92FD3868600D7A3E3 /* RadarOperatingHoursEvaluatorTest.swift */,
 				BA264D002FF32A7A000EDFE6 /* RadarReplayBufferTests.swift */,
+				BAB0BE1F30A4C1400015AC47 /* RadarResponseFormatTests.swift */,
 				BAC932F12FF45B3C00503C2C /* RadarReplayTests.swift */,
 				F6843C86300696A200213092 /* RadarRevealRiskTests.swift */,
 				CDB81723305A100000000001 /* RadarRevealRiskRetryTests.swift */,
@@ -1080,6 +1102,7 @@
 				C0DE20260910000000000007 /* RadarTrackVerifiedRoutingTests.swift */,
 				BA337619305C72D5008B0A7D /* RadarTrackVerifiedManagerTests.swift */,
 				BAD17FA6305A0DCF00D8D798 /* RadarTrackRequestPreparationTests.swift */,
+				BAA5D64E30A60D1E009F108F /* RadarTrackResponseTests.swift */,
 				C0DE20260910000000000009 /* RadarTrackVerifiedRetryTests.swift */,
 				C0DE2026091000000000000B /* RadarTrackVerifiedTestSupport.swift */,
 				BAE8065D305372A7000DA607 /* RadarTrackVerifiedReplayTests.swift */,
@@ -1118,6 +1141,7 @@
 				BAE8058230463588000DA607 /* RadarTripSettingsTests.swift */,
 				BA7180542FB3D32900A28DD4 /* RadarUtilsTests.swift */,
 				F6FA1101000000000000A001 /* RadarVerifiedHostOverrideTests.swift */,
+				BAA5D65030A610B9009F108F /* RadarVerifiedRefreshSchedulingTests.swift */,
 				F6FA1103000000000000A002 /* RadarVerificationManagerSwiftTests.swift */,
 				DD103213237F1778003DD408 /* Resources */,
 			);
@@ -1153,7 +1177,7 @@
 				96A5A0B627AD9F40007B960B /* RadarCoordinate+Internal.h */,
 				BA8647AE2F6C576700F1A199 /* RadarCoordinate.swift */,
 				96A5A0B927AD9F41007B960B /* RadarEvent+Internal.h */,
-				DD236CB82308812700EB88F9 /* RadarEvent.m */,
+				BEEF0A0030C2000000000001 /* RadarEvent.swift */,
 				96A5A0AD27AD9F40007B960B /* RadarFraud+Internal.h */,
 				CA5E9A0430A5000000000001 /* RadarFraud.swift */,
 				96A5A0BC27AD9F41007B960B /* RadarGeofence+Internal.h */,
@@ -1174,6 +1198,7 @@
 				CA5E9A0130B1000000000011 /* RadarRouteMatrix.swift */,
 				96A5A0A927AD9F40007B960B /* RadarRoutes+Internal.h */,
 				CA5E9A0130B1000000000015 /* RadarRoutes.swift */,
+				BAB0BE1D30A4BE040015AC47 /* RadarResponseFormat.swift */,
 				96A5A0AA27AD9F40007B960B /* RadarSegment+Internal.h */,
 				DD14FD4B23CE783500E80AC8 /* RadarSegment.m */,
 				F6F959812C3D7EA200BC30FE /* RadarTimeZone+Internal.h */,
@@ -1220,6 +1245,7 @@
 		F66D639F30508CB000B95B82 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BAA5D64730A50F03009F108F /* RadarVerifiedLocationTokenFormatTests.swift */,
 				CA5E9A0130B1000000000003 /* RadarChainTests.swift */,
 				CA5E9A0130B2000000000003 /* RadarCircleGeometryTests.swift */,
 				CA5E9A0130B6000000000003 /* RadarGeofenceGeometryTests.swift */,
@@ -1240,6 +1266,7 @@
 				F1A0E6A230B2000000000003 /* RadarRegionTests.swift */,
 				AD0E55A030C1000000000003 /* RadarAddressTests.swift */,
 				BEEF0A0030C1000000000003 /* RadarUserTests.swift */,
+				BEEF0A0030C2000000000003 /* RadarEventTests.swift */,
 				BEEF0A0030C1000000000005 /* RadarUserCompatibilityTests.swift */,
 				CA5E9A0130A1000000000003 /* RadarSegmentTests.swift */,
 				CA5E9A0330A4000000000003 /* RadarTimeZoneTests.swift */,
@@ -1268,6 +1295,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAA5D64D30A60C3B009F108F /* RadarTrackResponseHandler+Internal.h in Headers */,
 				AA00000000000000000000B1 /* RadarMeta.h in Headers */,
 				96A5A0F727AD9F7F007B960B /* RadarEvent.h in Headers */,
 				4B5BB8D72E7C79AF004C98C9 /* RadarSDKFraudProtocol.h in Headers */,
@@ -1588,11 +1616,13 @@
 				0107AAB02622016B008AB52F /* RadarPlace.m in Sources */,
 				F3050F0230059A000035CBDB /* Radar+BeaconRanging.swift in Sources */,
 				F3051A0230059A000035CBDB /* Radar+ValidateAddress.swift in Sources */,
+				BAA5D64A30A60B31009F108F /* RadarTrackResponseHandler.swift in Sources */,
 				F3050B0230059A000035CBDB /* RadarContinuousBeaconManager.swift in Sources */,
 				F3051008300A5A000035CBDB /* RadarContinuousBeaconManager+Delegate.swift in Sources */,
 				F3051002300A5A000035CBDB /* RadarNearbyBeaconSearch.swift in Sources */,
 				BABC4B91300190E50035CBDB /* RadarOneShotBeaconManager.swift in Sources */,
 				BA353F8D2F89A17500E553A1 /* RadarRemoteTrackingOptions.swift in Sources */,
+				BAB0BE1E30A4BE0C0015AC47 /* RadarResponseFormat.swift in Sources */,
 				0107AAE6262201A1008AB52F /* RadarSegment.m in Sources */,
 				0107AB20262201E9008AB52F /* RadarPermissionsHelper.m in Sources */,
 				82F7FAEF2A65FE030055AA4B /* RadarVerificationManager.m in Sources */,
@@ -1613,7 +1643,7 @@
 				F1A0E6A230B2000000000002 /* RadarRegion.swift in Sources */,
 				F64FF0DD2E4D2BEA00DF3926 /* RadarLogger.swift in Sources */,
 				F6AC00012F00000100523472 /* RadarLifecycleMarker.swift in Sources */,
-				0107AAA126220159008AB52F /* RadarEvent.m in Sources */,
+				BEEF0A0030C2000000000002 /* RadarEvent.swift in Sources */,
 				F64FF0DF2E4D2C2A00DF3926 /* RadarSettings.swift in Sources */,
 				BA561CD82FD377AA00D7A3E3 /* RadarOperatingHoursEvaluator.swift in Sources */,
 				F686B72D2E4D27EB00D3D614 /* RadarInAppMessage.swift in Sources */,
@@ -1643,6 +1673,7 @@
 				F6843C87300696A200213092 /* RadarRevealRiskTests.swift in Sources */,
 				CDB81723305A100000000002 /* RadarRevealRiskRetryTests.swift in Sources */,
 				C0DE20260910000000000002 /* RadarFraudTestSupport.swift in Sources */,
+				BAA5D64830A50F0E009F108F /* RadarVerifiedLocationTokenFormatTests.swift in Sources */,
 				C0DE20260910000000000004 /* RadarFraudBridgeTests.swift in Sources */,
 				C0DE20260910000000000008 /* RadarTrackVerifiedRoutingTests.swift in Sources */,
 				C0DE2026091000000000000A /* RadarTrackVerifiedRetryTests.swift in Sources */,
@@ -1677,6 +1708,7 @@
 				B0A0F0182FBC000100111111 /* RadarLocationManagerSwiftBeaconSyncTests.swift in Sources */,
 				B0A0F0202FBC000100111111 /* RadarLocationManagerSwiftRegionTests.swift in Sources */,
 				B0A0F03A2FBC000100111111 /* RadarLocationManagerSwiftBeaconStateTests.swift in Sources */,
+				BAB0BE2030A4C1480015AC47 /* RadarResponseFormatTests.swift in Sources */,
 				F66D643D3050A54100B95B82 /* RadarRouteTests.swift in Sources */,
 				CA5E9A0130B1000000000014 /* RadarRouteMatrixTests.swift in Sources */,
 				CA5E9A0130B1000000000018 /* RadarRoutesTests.swift in Sources */,
@@ -1685,6 +1717,7 @@
 				F1A0E6A230B2000000000004 /* RadarRegionTests.swift in Sources */,
 				AD0E55A030C1000000000004 /* RadarAddressTests.swift in Sources */,
 				BEEF0A0030C1000000000004 /* RadarUserTests.swift in Sources */,
+				BEEF0A0030C2000000000004 /* RadarEventTests.swift in Sources */,
 				BEEF0A0030C1000000000006 /* RadarUserCompatibilityTests.swift in Sources */,
 				B0A0F0222FBC000100111111 /* StubCLHeading.swift in Sources */,
 				B0A0F0242FBC000100111111 /* RadarLocationManagerSwiftHeadingTests.swift in Sources */,
@@ -1700,6 +1733,7 @@
 				A7C1D0E12FBE000100444444 /* RadarActivityManagerTests.swift in Sources */,
 				C1F0A0D32FBD000100222222 /* RadarLocationManagerSwiftCompletionTests.swift in Sources */,
 				B0A0F0542FBC000100111111 /* RadarLocationManagerObjCRegionTests.swift in Sources */,
+				B0A0F0562FBC000100111111 /* RadarLocationManagerObjCUpdatesTests.swift in Sources */,
 				B0A0F3042FBC000100111111 /* RadarRegionCleanerTests.swift in Sources */,
 				B0A0F3062FBC000100111111 /* RadarPermissionsHelperTests.swift in Sources */,
 				B0A0F02C2FBC000100111111 /* RadarLocationManagerSwiftAccuracyTests.swift in Sources */,
@@ -1727,6 +1761,7 @@
 				AA2C6B8DAE38455F40FA06FE /* RadarTraceSamplingTests.swift in Sources */,
 				8A30A99D03FD4BB98CC20913 /* RadarTraceTestSupport.swift in Sources */,
 				99FF5423A282EE9BCAC8B605 /* RadarTraceStorageTests.swift in Sources */,
+				BAA5D64F30A60D27009F108F /* RadarTrackResponseTests.swift in Sources */,
 				5CB25E6C0620FCE7A524FEE0 /* RadarTraceSpanTests.swift in Sources */,
 				93C546BFA360430DA994AD20 /* RadarTrackingUpdateTraceTests.swift in Sources */,
 				3869E36BE30A41719A5D08AB /* RadarTrackVerifiedTraceTests.swift in Sources */,
@@ -1739,6 +1774,7 @@
 				7E57C0DE30C1000000000002 /* RadarAPIHelperMock.swift in Sources */,
 				7E57C0DE30C1000000000004 /* RadarPermissionsHelperMock.swift in Sources */,
 				7E57C0DE30C1000000000006 /* CLVisitMock.swift in Sources */,
+				BAA5D65130A610C9009F108F /* RadarVerifiedRefreshSchedulingTests.swift in Sources */,
 				7E57C0DE30C1000000000008 /* CLLocationManagerMock.swift in Sources */,
 				7E57C0DE30C100000000000A /* RadarTrackTestBridge.swift in Sources */,
 				7E57C0DE30C0000000000002 /* RadarSDKTestFixture.swift in Sources */,
@@ -1911,7 +1947,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 3.45.0;
+				MARKETING_VERSION = 4.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1969,7 +2005,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 3.45.0;
+				MARKETING_VERSION = 4.0.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode";

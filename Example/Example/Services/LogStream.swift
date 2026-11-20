@@ -37,11 +37,14 @@ struct ConsoleEntry: Identifiable {
     let kind: Kind
     let summary: String
     let detail: String?
+    /// An exact JSON body that can be copied independently of the console text.
+    let relayJSON: String?
 
     init(
         kind: Kind,
         summary: String,
         detail: String? = nil,
+        relayJSON: String? = nil,
         timestamp: Date = Date()
     ) {
         self.id = UUID()
@@ -49,6 +52,7 @@ struct ConsoleEntry: Identifiable {
         self.kind = kind
         self.summary = summary
         self.detail = detail
+        self.relayJSON = relayJSON
     }
 }
 
@@ -152,7 +156,7 @@ final class LogStream: NSObject, ObservableObject {
         return "\(lat), \(lng)  ±\(acc)m"
     }
 
-    fileprivate static func prettyJSON(_ raw: [AnyHashable: Any]?) -> String? {
+    static func prettyJSON(_ raw: [AnyHashable: Any]?) -> String? {
         guard let raw = raw, JSONSerialization.isValidJSONObject(raw) else { return nil }
         let data = try? JSONSerialization.data(
             withJSONObject: raw,
@@ -226,6 +230,35 @@ extension LogStream: RadarDelegate {
                 kind: .error,
                 summary: "didFail: \(Radar.stringForStatus(status))"
             ))
+    }
+}
+
+// MARK: - Verified responses
+
+extension LogStream: RadarVerifiedDelegate {
+    func didUpdateToken(_ token: RadarVerifiedLocationToken) {
+        writeVerifiedResponse(.success, action: "didUpdateToken", response: VerifiedResponse(token))
+    }
+
+    func writeVerifiedResponse(
+        _ status: RadarStatus,
+        action: String,
+        response: VerifiedResponse?,
+        elapsedMilliseconds: Int? = nil,
+        includeBeacons: Bool = false
+    ) {
+        var summary = "\(action): \(Radar.stringForStatus(status))"
+        if let elapsedMilliseconds { summary += " in \(elapsedMilliseconds) ms" }
+        if let response { summary += " | \(response.summary)" }
+        if includeBeacons, let response { summary += " | \(response.beaconSummary)" }
+        append(
+            ConsoleEntry(
+                kind: status == .success ? .result : .error,
+                summary: summary,
+                detail: response?.detail ?? "No response returned.",
+                relayJSON: status == .success ? response?.relayJSON : nil
+            )
+        )
     }
 }
 

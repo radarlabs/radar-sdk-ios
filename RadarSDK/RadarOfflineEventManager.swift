@@ -233,7 +233,7 @@ class RadarOfflineEventManager: NSObject {
             "replayed": false,
             "metadata": ["offline": true],
         ]
-        return RadarSwift.bridge?.createEvent(dict: eventDict)
+        return RadarEvent(object: eventDict)
     }
 
     private static func makeBeaconEvent(
@@ -261,7 +261,7 @@ class RadarOfflineEventManager: NSObject {
             "metadata": ["offline": true],
         ]
 
-        return RadarSwift.bridge?.createEvent(dict: eventDict)
+        return RadarEvent(object: eventDict)
     }
 
     private static func buildSyntheticUser(

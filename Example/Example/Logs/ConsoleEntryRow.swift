@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 /// Single row in the Logs tab's console timeline. Renders kind icon,
 /// timestamp, kind label, and summary, with tap-to-expand revealing
@@ -56,6 +57,15 @@ struct ConsoleEntryRow: View {
             }
         }
         .contentShape(Rectangle())
+        .contextMenu {
+            if let relayJSON = entry.relayJSON {
+                Button {
+                    UIPasteboard.general.string = relayJSON
+                } label: {
+                    Label("Copy backend relay JSON", systemImage: "doc.on.doc")
+                }
+            }
+        }
         .onTapGesture {
             guard canExpand else { return }
             withAnimation {

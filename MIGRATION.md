@@ -1,5 +1,37 @@
 # Migration guides
 
+## 4.x.x to 4.x.x
+
+### Public API changes
+
+- `RadarInitializeOptions.trackVerifiedAutoFailover` is removed. Failover is now always on for every request. Remove the option from your code. Swift and Objective-C code that sets it no longer compiles.
+- Options saved by an older SDK version, and dictionaries from wrapper SDKs that still send the `trackVerifiedAutoFailover` key, still work. The SDK ignores the key.
+- Before 3.45.0, failover was off by default. If you upgrade from 3.44.x or earlier, or if you set the option to `false`, `trackVerified()` can now send requests to the secondary verified host, `api-verified.radar.com`. If your app limits which hosts it can reach or pins certificates, allow this host.
+
+## 3.46.x to 4.0.0
+
+### Public API changes
+
+- `RadarRevealRiskToken.risk`, `network`, and `device` are now optional. Update Swift callers to use optional chaining or unwrapping.
+- `RadarEvent.location` and `RadarEvent.actualCreatedAt` are now optional. Conversion events may omit these fields, so callers must handle `nil`.
+- `RadarEvent` is now declared in Swift and is `final`, so it can no longer be subclassed. Objective-C callers accessing its properties must import the whole SDK with `@import RadarSDK;` or `#import <RadarSDK/RadarSDK.h>` instead of importing only `RadarEvent.h`.
+
+### Verified tracking and Reveal Risk responses
+
+`RadarVerifiedLocationToken` and `RadarRevealRiskToken` now expose a `format` property of type `RadarResponseFormat`. The response format is configured on the Radar project:
+
+| Format | Response | Backend handling |
+| --- | --- | --- |
+| `.jws` | Legacy full plaintext response, with a signed token when signing is configured | Preserve the existing integration and verify signed tokens on the backend |
+| `.jwe` | Encrypted token and clear response metadata | Decrypt and verify the token on the backend |
+| `.id` | Evaluation `_id` | Retrieve the result on the backend using a secret API key |
+
+- For JWE and ID responses, Track's `user`, `events`, and `failureReasons`, and Reveal's `risk`, `network`, and `device`, are `nil`. These fields are also omitted from the SDK's response dictionaries.
+- For ID responses, `token` and expiration fields are unavailable. `RadarVerifiedLocationToken.expiresIn` is `0` and `passed` is `false`; these are placeholders, not the evaluation result.
+- Forward the available `token` and `_id` fields to your backend. Move decisions based on user, event, beacon, or risk fields to the backend when using JWE or ID. The SDK does not decrypt JWE tokens, and client-side `passed` values must not be used as authorization decisions without backend verification.
+
+Existing legacy full responses and ordinary `trackOnce` / `startTracking` responses remain supported.
+
 ## 3.43.x to 3.44.0
 
 - Verified tracking and reveal-risk requests now encrypt the complete request body. Apps using these features must update `RadarSDKFraud` alongside `RadarSDK` to a compatible version that supports encrypted requests. Regular tracking does not require the Fraud SDK.

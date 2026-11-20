@@ -57,6 +57,14 @@ final class SettingsStore: ObservableObject {
         static func authToken(_ environment: RadarEnvironment) -> String {
             "settings.authToken.\(environment.rawValue)"
         }
+
+        static func fraudPublicKey(_ environment: RadarEnvironment) -> String {
+            "settings.fraudPublicKey.\(environment.rawValue)"
+        }
+
+        static func fraudKeyVersion(_ environment: RadarEnvironment) -> String {
+            "settings.fraudKeyVersion.\(environment.rawValue)"
+        }
     }
 
     // MARK: - SDK-backed (read/write)
@@ -171,6 +179,26 @@ final class SettingsStore: ObservableObject {
         UserDefaults.standard.string(forKey: Keys.authToken(environment)) ?? ""
     }
 
+    /// The saved fraud public key override for `environment`, or "" if none is set. Production
+    /// never has one.
+    func fraudPublicKey(for environment: RadarEnvironment) -> String {
+        guard environment.allowsFraudKeyOverride else { return "" }
+        return UserDefaults.standard.string(forKey: Keys.fraudPublicKey(environment)) ?? ""
+    }
+
+    /// The saved fraud key version for `environment`, or "" (meaning 1) if none is set.
+    func fraudKeyVersion(for environment: RadarEnvironment) -> String {
+        UserDefaults.standard.string(forKey: Keys.fraudKeyVersion(environment)) ?? ""
+    }
+
+    /// The fraud key override for this launch's environment, or nil to use the SDK's built-in key.
+    var fraudKeyOverride: FraudKeyOverride? {
+        let key = fraudPublicKey(for: environment)
+        guard !key.isEmpty else { return nil }
+        let version = fraudKeyVersion(for: environment)
+        return FraudKeyOverride(publicKeyBase64: key, keyVersion: version.isEmpty ? 1 : Int(version) ?? 0)
+    }
+
     /// The saved key for `environment`, falling back to its default in `AppDelegate`
     /// (placeholders count as unset).
     func publishableKey(for environment: RadarEnvironment) -> String {
@@ -192,7 +220,9 @@ final class SettingsStore: ObservableObject {
         publishableKey: String,
         localURL: String,
         useAuthToken: Bool,
-        authToken: String
+        authToken: String,
+        fraudPublicKey: String,
+        fraudKeyVersion: String
     ) {
         let defaults = UserDefaults.standard
         defaults.set(environment.rawValue, forKey: Keys.environment)
@@ -200,6 +230,12 @@ final class SettingsStore: ObservableObject {
         defaults.set(useAuthToken, forKey: Keys.useAuthToken(environment))
         defaults.set(authToken.trimmingCharacters(in: .whitespacesAndNewlines), forKey: Keys.authToken(environment))
         defaults.set(localURL.trimmingCharacters(in: .whitespaces), forKey: Keys.localURL)
+        if environment.allowsFraudKeyOverride {
+            defaults.set(
+                fraudPublicKey.trimmingCharacters(in: .whitespacesAndNewlines), forKey: Keys.fraudPublicKey(environment))
+            defaults.set(
+                fraudKeyVersion.trimmingCharacters(in: .whitespaces), forKey: Keys.fraudKeyVersion(environment))
+        }
     }
 
     /// The value the SDK sends as `Authorization`: `Bearer <token>` in auth-token mode, otherwise

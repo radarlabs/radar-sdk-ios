@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RadarIndoorsProtocol;
 
 @class RadarAddress;
+@class RadarEvent;
 @class RadarTripOptions;
 @class RadarInAppMessage;
 @class RadarRevealRiskToken;

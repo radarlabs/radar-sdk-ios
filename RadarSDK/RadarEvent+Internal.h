@@ -5,37 +5,19 @@
 //  Copyright © 2019 Radar Labs, Inc. All rights reserved.
 //
 
-#import "RadarBeacon.h"
 #import "RadarEvent.h"
-#import "RadarGeofence.h"
-#import "RadarPlace.h"
-#import "RadarTrip.h"
-#import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 
+#if __has_include(<RadarSDK/RadarSDK-Swift.h>)
+#import <RadarSDK/RadarSDK-Swift.h>
+#elif __has_include("RadarSDK-Swift.h")
+#import "RadarSDK-Swift.h"
+#endif
+
+// Internal Objective-C interface of the Swift-implemented RadarEvent (RadarEvent.swift).
 @interface RadarEvent ()
 
-+ (NSArray<RadarEvent *> *_Nullable)eventsFromObject:(id _Nonnull)object;
-- (instancetype _Nullable)initWithId:(NSString *_Nonnull)_id
-                           createdAt:(NSDate *_Nonnull)createdAt
-                     actualCreatedAt:(NSDate *_Nonnull)actualCreatedAt
-                                live:(BOOL)live
-                                type:(RadarEventType)type
-                      conversionName:(NSString *_Nullable)conversionName
-                            geofence:(RadarGeofence *_Nullable)geofence
-                               place:(RadarPlace *_Nullable)place
-                              region:(RadarRegion *_Nullable)region
-                              beacon:(RadarBeacon *_Nullable)beacon
-                                trip:(RadarTrip *_Nullable)trip
-                               fraud:(RadarFraud *_Nullable)fraud
-                     alternatePlaces:(NSArray<RadarPlace *> *_Nullable)alternatePlaces
-                       verifiedPlace:(RadarPlace *_Nullable)verifiedPlace
-                        verification:(RadarEventVerification)verification
-                          confidence:(RadarEventConfidence)confidence
-                            duration:(float)duration
-                            location:(CLLocation *_Nonnull)location
-                            replayed:(BOOL)replayed
-                            metadata:(NSDictionary *_Nullable)metadata;
-- (instancetype _Nullable)initWithObject:(id _Nonnull)object;
++ (NSArray<RadarEvent *> *_Nullable)eventsFromObject:(id _Nullable)object;
+- (instancetype _Nullable)initWithObject:(id _Nullable)object;
 
 @end

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C0DE30050000000000000002 /* VerifiedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE30050000000000000001 /* VerifiedResponse.swift */; };
 		26FEF59A2ABCC0C7ED804196 /* RadarSDKIndoors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD361BF33854ED123BC40BAB /* RadarSDKIndoors.framework */; };
 		34A9408B904A8CEDF1A941EF /* AR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ADD56E28546D24100452E77 /* AR.swift */; };
 		3E65616E4C3D6B6E198644B2 /* SurveyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0357ED46C5457642FBDB83 /* SurveyView.swift */; };
@@ -222,6 +223,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C0DE30050000000000000001 /* VerifiedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedResponse.swift; sourceTree = "<group>"; };
 		0F1E2E96294A65D5419B0059 /* MyMapView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MyMapView.swift; sourceTree = "<group>"; };
 		1ADD56E28546D24100452E77 /* AR.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AR.swift; sourceTree = "<group>"; };
 		4E0357ED46C5457642FBDB83 /* SurveyView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SurveyView.swift; sourceTree = "<group>"; };
@@ -398,6 +400,7 @@
 				BA7792F02FA8FEFD00E197CA /* SettingsStore.swift */,
 				2773B074EE5B97E37FDDBFDA /* RadarEnvironment.swift */,
 				BA7792EE2FA3D1D800E197CA /* LogStream.swift */,
+				C0DE30050000000000000001 /* VerifiedResponse.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -855,6 +858,7 @@
 				BA77933B2FAAA46A00E197CA /* TestsSettingsView.swift in Sources */,
 				BAB2ACB52FB6486000560332 /* ConsoleEntry+Export.swift in Sources */,
 				BA7792EF2FA3D1DD00E197CA /* LogStream.swift in Sources */,
+				C0DE30050000000000000002 /* VerifiedResponse.swift in Sources */,
 				BA77934A2FAB9B9700E197CA /* TripDestinationSource.swift in Sources */,
 				DD236D27230A006700EB88F9 /* AppDelegate.swift in Sources */,
 				BA77932C2FAA663C00E197CA /* TripsPanel.swift in Sources */,

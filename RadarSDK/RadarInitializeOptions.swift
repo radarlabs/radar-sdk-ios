@@ -17,10 +17,6 @@ public class RadarInitializeOptions: NSObject {
     public var autoHandleNotificationDeepLinks: Bool
     public var silentPush: Bool
 
-    /// Whether `trackVerified()` retries against a secondary verified host when the primary
-    /// verified host returns a non-Radar response. Default `true`.
-    public var trackVerifiedAutoFailover: Bool
-
     /// Request and resource timeout in seconds for standard API calls. Default 10 seconds.
     /// Invalid values (non-finite or ≤ 0) fall back to the default; values are
     /// clamped to the range 1…300.
@@ -35,7 +31,6 @@ public class RadarInitializeOptions: NSObject {
         autoLogNotificationConversions = false
         autoHandleNotificationDeepLinks = false
         silentPush = false
-        trackVerifiedAutoFailover = true
         networkTimeoutInterval = RadarInitializeOptions.defaultNetworkTimeoutInterval
         ipChangeDebounceInterval = RadarInitializeOptions.defaultIPChangeDebounceInterval
         super.init()
@@ -45,8 +40,6 @@ public class RadarInitializeOptions: NSObject {
         autoLogNotificationConversions = RadarInitializeOptions.parseBool(dict?["autoLogNotificationConversions"])
         autoHandleNotificationDeepLinks = RadarInitializeOptions.parseBool(dict?["autoHandleNotificationDeepLinks"])
         silentPush = RadarInitializeOptions.parseBool(dict?["silentPush"])
-        trackVerifiedAutoFailover = RadarInitializeOptions.parseBool(
-            dict?["trackVerifiedAutoFailover"], defaultValue: true)
         networkTimeoutInterval = RadarInitializeOptions.safeParseTimeInterval(
             dict?["networkTimeoutInterval"],
             allowsZero: false,
@@ -62,7 +55,6 @@ public class RadarInitializeOptions: NSObject {
             "autoLogNotificationConversions": autoLogNotificationConversions,
             "autoHandleNotificationDeepLinks": autoHandleNotificationDeepLinks,
             "silentPush": silentPush,
-            "trackVerifiedAutoFailover": trackVerifiedAutoFailover,
             "networkTimeoutInterval": networkTimeoutInterval,
             "ipChangeDebounceInterval": ipChangeDebounceInterval,
         ]

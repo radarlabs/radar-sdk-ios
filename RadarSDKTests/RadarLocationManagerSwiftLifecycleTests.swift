@@ -61,6 +61,7 @@ final class TrackingRadarActivityManager: RadarActivityManager, @unchecked Senda
 final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwiftHost, @unchecked Sendable {
     private var startedValue = false
     private var startedIntervalValue: Int32 = 0
+    private var startedContinuousUpdatesValue = false
     var sendingValue = false
     private var timerValue: Timer?
     private(set) var cancelPendingShutdownCallCount = 0
@@ -92,6 +93,10 @@ final class TrackingRadarLocationManagerHost: NSObject, RadarLocationManagerSwif
     func startedInterval() -> Int32 { startedIntervalValue }
 
     func setStartedInterval(_ interval: Int32) { startedIntervalValue = interval }
+
+    func startedContinuousUpdates() -> Bool { startedContinuousUpdatesValue }
+
+    func setStartedContinuousUpdates(_ continuousUpdates: Bool) { startedContinuousUpdatesValue = continuousUpdates }
 
     func sending() -> Bool { sendingValue }
 
@@ -220,6 +225,121 @@ extension RadarSerializedTests {
 
             #expect(locationManager.startUpdatingLocationCallCount == 0)
             #expect(locationManager.stopUpdatingLocationCallCount == 1)
+        }
+
+        @Test("startUpdates restarts updates when a blueBar change turns off continuous updates")
+        func startUpdatesRestartsWhenContinuousUpdatesChange() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: lowPowerLocationManager,
+                interval: 5,
+                blueBar: true
+            )
+            let continuousTimer = host.timer()
+            #expect(host.startedContinuousUpdates() == true)
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: lowPowerLocationManager,
+                interval: 5,
+                blueBar: false
+            )
+            defer { host.timer()?.invalidate() }
+
+            #expect(continuousTimer?.isValid == false)
+            #expect(host.timer() !== continuousTimer)
+            #expect(host.startedContinuousUpdates() == false)
+            #expect(locationManager.startUpdatingLocationCallCount == 1)
+            #expect(locationManager.stopUpdatingLocationCallCount == 1)
+        }
+
+        @Test("startUpdates restarts updates when a blueBar change turns on continuous updates")
+        func startUpdatesRestartsWhenContinuousUpdatesStart() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: lowPowerLocationManager,
+                interval: 5,
+                blueBar: false
+            )
+            let periodicTimer = host.timer()
+            #expect(host.startedContinuousUpdates() == false)
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: lowPowerLocationManager,
+                interval: 5,
+                blueBar: true
+            )
+            defer { host.timer()?.invalidate() }
+
+            #expect(periodicTimer?.isValid == false)
+            #expect(host.timer() !== periodicTimer)
+            #expect(host.startedContinuousUpdates() == true)
+            #expect(locationManager.stopUpdatingLocationCallCount == 1)
+            #expect(locationManager.startUpdatingLocationCallCount == 1)
+        }
+
+        @Test("startUpdates keeps the timer when a blueBar change does not change continuous updates")
+        func startUpdatesKeepsTimerWhenContinuousUpdatesDoNotChange() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: lowPowerLocationManager,
+                interval: 10,
+                blueBar: false
+            )
+            let originalTimer = host.timer()
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: lowPowerLocationManager,
+                interval: 10,
+                blueBar: true
+            )
+            defer { host.timer()?.invalidate() }
+
+            #expect(host.timer() === originalTimer)
+            #expect(host.startedContinuousUpdates() == false)
+            #expect(locationManager.startUpdatingLocationCallCount == 0)
+            #expect(locationManager.stopUpdatingLocationCallCount == 1)
+        }
+
+        @Test("stopUpdates clears the started continuous-updates state")
+        func stopUpdatesClearsContinuousUpdates() {
+            let host = TrackingRadarLocationManagerHost()
+            let locationManager = TrackingCLLocationManager()
+            let lowPowerLocationManager = TrackingCLLocationManager()
+
+            RadarLocationManagerSwift.startUpdates(
+                host: host,
+                locationManager: locationManager,
+                lowPowerLocationManager: lowPowerLocationManager,
+                interval: 5,
+                blueBar: true
+            )
+            let timer = host.timer()
+            RadarLocationManagerSwift.stopUpdates(host: host, locationManager: locationManager)
+
+            #expect(timer?.isValid == false)
+            #expect(host.started() == false)
+            #expect(host.startedContinuousUpdates() == false)
         }
 
         @Test("startUpdates does not replace a timer when the interval is unchanged")
