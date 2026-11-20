@@ -74,7 +74,9 @@ typedef NS_ENUM(NSInteger, RadarStatus) {
     /// Internal server error
     RadarStatusErrorServer,
     /// Unknown error
-    RadarStatusErrorUnknown
+    RadarStatusErrorUnknown,
+    /// SDK version does not support the project's response format
+    RadarStatusErrorUnsupportedSDKVersion
 };
 
 /**

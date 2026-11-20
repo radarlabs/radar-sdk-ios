@@ -1594,6 +1594,9 @@ BOOL _initialized = NO;
     case RadarStatusErrorServer:
         str = @"ERROR_SERVER";
         break;
+    case RadarStatusErrorUnsupportedSDKVersion:
+        str = @"ERROR_UNSUPPORTED_SDK_VERSION";
+        break;
     default:
         str = @"ERROR_UNKNOWN";
     }
