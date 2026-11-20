@@ -144,10 +144,6 @@
     }];
 }
 
-- (RadarEvent * _Nullable)createEventWithDict:(NSDictionary *)dict {
-    return [[RadarEvent alloc] initWithObject:dict];
-}
-
 - (RadarUser * _Nullable)createUserWithDict:(NSDictionary *)dict {
     return [[RadarUser alloc] initWithObject:dict];
 }

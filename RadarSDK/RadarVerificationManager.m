@@ -131,10 +131,6 @@
         });
     }
     
-    // Initializing without options never persists any, so fall back to the default (on).
-    RadarInitializeOptions *initializeOptions = [RadarSettings initializeOptions];
-    BOOL autoFailover = initializeOptions ? initializeOptions.trackVerifiedAutoFailover : YES;
-
     // Every exit calls completionHandler on the main thread, so the wrapper ends the root on each of them. reason and
     // transactionId can come from the app, so they're never recorded.
     RadarTraceSpan *trace = [RadarTraceSpan startWithName:@"radar.track_verified"];
@@ -360,7 +356,7 @@
      traceSpan:trace
      completionHandler:^(RadarStatus status, RadarConfig * _Nullable config) {
         BOOL primaryRadarResponse = (config && config.meta);
-        if (!autoFailover || primaryRadarResponse) {
+        if (primaryRadarResponse) {
             continueWithConfig(status, config, NO);
             return;
         }
@@ -390,7 +386,7 @@
 - (void)scheduleNextIntervalWithLastToken {
     NSTimeInterval minInterval = self.startedInterval;
     
-    if (self.lastToken) {
+    if (self.lastToken && self.lastToken.format != RadarResponseFormatId) {
         NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
         
         // if expiresIn - lastTokenElapsed is shorter than interval, override interval
@@ -484,20 +480,14 @@
     }
 
     NSTimeInterval lastTokenElapsed = [NSProcessInfo processInfo].systemUptime - self.lastTokenSystemUptime;
-    double lastDistanceToStateBorder = -1;
-    if (self.lastToken.user && self.lastToken.user.state) {
-        lastDistanceToStateBorder = self.lastToken.user.state.distanceToBorder;
-    }
-
     BOOL lastTokenValid =
         (lastTokenElapsed < self.lastToken.expiresIn) &&
-        self.lastToken.passed &&
-        (lastDistanceToStateBorder > 1609);
+        self.lastToken.passed;
 
     if (lastTokenValid) {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d; lastDistanceToStateBorder = %f", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed, lastDistanceToStateBorder]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token valid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed]];
     } else {
-        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d; lastDistanceToStateBorder = %f", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed, lastDistanceToStateBorder]];
+        [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Last token invalid | lastToken.expiresIn = %f; lastTokenElapsed = %f; lastToken.passed = %d", self.lastToken.expiresIn, lastTokenElapsed, self.lastToken.passed]];
     }
 
     return lastTokenValid;

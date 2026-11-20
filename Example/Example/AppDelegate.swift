@@ -13,7 +13,7 @@ import UIKit
 import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, RadarVerifiedDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate {
 
     // Default keys, used until you save one in Settings → Environment. hooks/clean-filter keeps
     // real keys out of git.
@@ -51,6 +51,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
 
         Radar.setAppGroup("group.waypoint.data")
         settingsStore.environment.apply(localURL: settingsStore.localURL)
+        // Only calls the fraud SDK's internal API when this environment has a saved override.
+        if let fraudKeyOverride = settingsStore.fraudKeyOverride {
+            if let error = fraudKeyOverride.apply() {
+                logStream.write(error: "fraud key override failed", detail: error)
+            } else {
+                logStream.write(result: "radar-env: \(fraudKeyOverride.summary)")
+            }
+        }
         print("radar-env: \(settingsStore.environmentSummary)")
         logStream.write(result: "radar-env: \(settingsStore.environmentSummary)")
         if settingsStore.useAuthToken {
@@ -62,7 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate, UN
         settingsStore.runKeyCheck(logStream: logStream)
         Radar.setDelegate(logStream)
         wireLiveActivitySubscriptions()
-        Radar.setVerifiedDelegate(self)
+        Radar.setVerifiedDelegate(logStream)
         Radar.setInAppMessageDelegate(MyIAMDelegate(logStream: logStream))
         settingsStore.loadFromSDK()
         mapOverlayRegistry.register(MonitoredRegionsSource())

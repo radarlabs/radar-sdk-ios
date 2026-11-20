@@ -36,6 +36,7 @@
 #import "RadarUtils.h"
 #import "RadarVerificationManager.h"
 #import "RadarVerifiedLocationToken+Internal.h"
+#import "RadarTrackResponseHandler+Internal.h"
 #import "RadarNotificationHelper.h"
 #import <os/log.h>
 #import "RadarSDKFraudProtocol.h"
@@ -743,6 +744,25 @@
                             [RadarSettings updateLastTrackedTime];
 
                             RadarConfig *config = [RadarConfig fromDictionary:res];
+
+                            if ([RadarTrackResponseHandler
+                                    handleResponse:res
+                                    verified:verified
+                                    completionHandler:^(RadarStatus responseStatus,
+                                                        NSDictionary *_Nullable response,
+                                                        RadarVerifiedLocationToken *_Nullable token) {
+                                        if (responseStatus != RadarStatusSuccess) {
+                                            [[RadarDelegateHolder sharedInstance] didFailWithStatus:responseStatus];
+                                            completionHandler(responseStatus, nil, nil, nil, nil, nil, nil);
+                                            return;
+                                        }
+
+                                        [RadarOfflineEventManager reset];
+                                        [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
+                                        completionHandler(RadarStatusSuccess, response, nil, nil, nil, config, token);
+                                    }]) {
+                                return;
+                            }
 
                             id eventsObj = res[@"events"];
                             id userObj = res[@"user"];

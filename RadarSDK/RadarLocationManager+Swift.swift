@@ -32,6 +32,8 @@ import Foundation
     func setStarted(_ started: Bool)
     func startedInterval() -> Int32
     func setStartedInterval(_ interval: Int32)
+    func startedContinuousUpdates() -> Bool
+    func setStartedContinuousUpdates(_ continuousUpdates: Bool)
     func sending() -> Bool
     func setSending(_ sending: Bool)
     func timer() -> Timer?
@@ -83,6 +85,9 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     static let syncBeaconUUIDIdentifierPrefix = "radar_uuid_"
     private static let trackingShutdownDelay: TimeInterval = 10
     private static let immediateShutdownDelay: TimeInterval = 0
+    // With the blue bar, `startUpdates` runs continuous updates for intervals at or below this
+    // value. `startUpdates:blueBar:` in RadarLocationManager.m uses the same value.
+    private static let continuousUpdatesMaxInterval: Int32 = 5
     nonisolated(unsafe) static var permissionsHelper: RadarPermissionsHelping = RadarPermissionsHelperSwift()
     nonisolated(unsafe) static var bootstrapIndoorTracking: () -> Void = { RadarIndoors.bootstrapTrackingIfNeeded() }
     // The region the last `replaceBubbleGeofence(locationManager:location:radius:)` registered.
@@ -167,8 +172,10 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
         interval: Int32,
         blueBar: Bool
     ) {
-        if !host.started() || interval != host.startedInterval() {
-            RadarLogger.shared.debug("🦅 Starting timer | interval = \(interval)")
+        let continuousUpdates = blueBar && interval <= Self.continuousUpdatesMaxInterval
+
+        if !host.started() || interval != host.startedInterval() || continuousUpdates != host.startedContinuousUpdates() {
+            RadarLogger.shared.debug("🦅 Starting timer | interval = \(interval); continuousUpdates = \(continuousUpdates)")
 
             host.cancelPendingShutdown()
             host.timer()?.invalidate()
@@ -181,7 +188,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
                 })
 
             lowPowerLocationManager.startUpdatingLocation()
-            if blueBar && interval <= 5 {
+            if continuousUpdates {
                 locationManager.startUpdatingLocation()
             } else {
                 locationManager.stopUpdatingLocation()
@@ -189,6 +196,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
             host.setStarted(true)
             host.setStartedInterval(interval)
+            host.setStartedContinuousUpdates(continuousUpdates)
         } else {
             RadarLogger.shared.debug("🦅 Already started timer")
         }
@@ -207,6 +215,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
 
         host.setStarted(false)
         host.setStartedInterval(0)
+        host.setStartedContinuousUpdates(false)
 
         if !host.sending() {
             let delay = RadarSettings.tracking ? Self.trackingShutdownDelay : Self.immediateShutdownDelay

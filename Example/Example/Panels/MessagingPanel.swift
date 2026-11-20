@@ -44,7 +44,9 @@ struct MessagingPanel: View {
                     let conversionName = (event?.type == .conversion) ? event?.conversionName : nil
                     let detail = """
                         conversionName: \(conversionName ?? "—")
-                        event: \(String(describing: event))
+                        location: \(event?.location.map { String(describing: $0) } ?? "nil")
+                        actualCreatedAt: \(event?.actualCreatedAt.map { String(describing: $0) } ?? "nil")
+                        event: \(LogStream.prettyJSON(event?.dictionaryValue()) ?? "nil")
                         """
                     logStream.write(
                         status,

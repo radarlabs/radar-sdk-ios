@@ -39,7 +39,6 @@ protocol RadarSwiftBridgeProtocol {
     func canExit() -> Bool
     func getTripOptions() -> RadarTripOptions?
     func logCampaignConversion(name: String, metadata: [String: Any], campaign: String?)
-    func createEvent(dict: [String: Any]) -> RadarEvent?
     func createUser(dict: [String: Any]) -> RadarUser?
     func createGeofence(dict: [String: Any]) -> RadarGeofence?
     func createPlace(dict: [String: Any]) -> RadarPlace?

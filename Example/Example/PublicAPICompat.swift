@@ -15,4 +15,6 @@ private func checkPublicInitializers() {
     // The old RadarUser.h declared no init for either class, so both were public.
     _ = RadarUser()
     _ = RadarUserLocationInsights()
+    // The old RadarEvent.h declared no init, so `RadarEvent()` and `[RadarEvent new]` were public.
+    _ = RadarEvent()
 }

@@ -136,8 +136,8 @@ extension RadarSerializedTests {
             #expect(location == fixture.locationManagerMock.mockLocation)
             expectEventsOk(events)
             // The first event in the fixture has an altitude, so check it's parsed.
-            #expect(events?.first?.location.altitude != -1)
-            #expect(events?.last?.location.altitude == -1)
+            #expect(events?.first?.location.map { $0.altitude != -1 } == true)
+            #expect(events?.last?.location?.altitude == -1)
             expectUserOk(user)
             #expect(user?.location.altitude != -1)
         }
