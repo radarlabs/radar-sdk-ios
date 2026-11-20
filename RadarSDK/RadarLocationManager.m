@@ -22,7 +22,7 @@
 #import "RadarState.h"
 #import "RadarUtils.h"
 #import "RadarReplayBuffer.h"
-#import "RadarActivityManager.h"
+#import "RadarActivityManager+Internal.h"
 #import "RadarNotificationHelper.h"
 #import "RadarIndoorsProtocol.h"
 #import "RadarIndoors.h"
@@ -305,19 +305,9 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
         [[RadarReplayBuffer sharedInstance] flushReplaysWithCompletionHandler:nil completionHandler:nil];
     }
 
+    [RadarLocationManagerSwift stopMotionUpdatesForStopTrackingOnLocationManager:self.locationManager activityManager:self.activityManager];
+
     RadarTrackingOptions *trackingOptions = [RadarSettings trackingOptions];
-    if (trackingOptions.useMotion || trackingOptions.usePressure) {
-        [self.locationManager stopUpdatingHeading];
-        if (self.activityManager) {
-            if (trackingOptions.usePressure) {
-                [self.activityManager stopRelativeAltitudeUpdates];
-                [self.activityManager stopAbsoluteAltitudeUpdates];
-            }
-            if (trackingOptions.useMotion) {
-                [self.activityManager stopActivityUpdates];
-            }
-       }
-    }
 
     // null out startTrackingAfter and stopTrackingAfter in local tracking options
     // so that subsequent trackOnce calls don't restart tracking
@@ -448,24 +438,6 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
     [self updateTracking:location fromInitialize:NO];
 }
 
-// Temporary callbacks used by the Swift motion twin in RadarLocationManager+SwiftMotion.swift.
-// RadarActivityManager stays in Objective-C until it is ported. Keep the shared instance in
-// `activityManager`, so `stopTracking` stops the same instance.
-- (void)startActivityUpdatesWithHandler:(void (^)(CMMotionActivity *activity))handler {
-    self.activityManager = [RadarActivityManager sharedInstance];
-    [self.activityManager startActivityUpdatesWithHandler:handler];
-}
-
-- (void)startRelativeAltitudeWithHandler:(void (^)(CMAltitudeData *_Nullable altitudeData))handler {
-    self.activityManager = [RadarActivityManager sharedInstance];
-    [self.activityManager startRelativeAltitudeWithHandler:handler];
-}
-
-- (void)startAbsoluteAltitudeWithHandler:(void (^)(CMAbsoluteAltitudeData *_Nullable altitudeData))handler {
-    self.activityManager = [RadarActivityManager sharedInstance];
-    [self.activityManager startAbsoluteAltitudeWithHandler:handler];
-}
-
 // The Objective-C path of `updateTracking:fromInitialize:` calls this. With useSwiftLocationManager,
 // the Swift updateTracking twin calls RadarLocationManagerSwift.startMotionUpdates(host:options:).
 - (void)startMotionUpdatesWithOptions:(RadarTrackingOptions *)options {
@@ -585,6 +557,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
                 
 
             [self startMotionUpdatesWithOptions:options];
+            [RadarLocationManagerSwift stopUnusedMotionUpdatesOnLocationManager:self.locationManager activityManager:self.activityManager options:options];
 
             CLLocationAccuracy desiredAccuracy;
             switch (options.desiredAccuracy) {
@@ -653,6 +626,7 @@ static NSString *const kSyncBeaconUUIDIdentifierPrefix = @"radar_uuid_";
             }
         } else {
             [self stopUpdates];
+            [RadarLocationManagerSwift stopUnusedMotionUpdatesOnLocationManager:self.locationManager activityManager:self.activityManager options:nil];
             // initialize and config fetches run this on the main thread, so read the regions in the
             // background to keep the synchronous monitoredRegions read off the main thread.
             // Other callers, like stopTracking, still remove them right away.

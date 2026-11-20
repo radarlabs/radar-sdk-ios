@@ -12,9 +12,10 @@
 #import "RadarDelegate.h"
 #import "RadarMeta.h"
 #import "RadarPermissionsHelper.h"
-#import "RadarActivityManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class RadarActivityManager;
 
 @interface RadarLocationManager : NSObject<CLLocationManagerDelegate>
 
