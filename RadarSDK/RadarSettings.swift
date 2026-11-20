@@ -300,26 +300,36 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
             }
             return nil
         }
-        set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .initializeOptions) }
+        set {
+            networkTimeoutLock.lock()
+            defer { networkTimeoutLock.unlock() }
+            RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .initializeOptions)
+            cachedNetworkTimeout = nil
+        }
     }
 
-    static let defaultNetworkTimeoutInterval: TimeInterval = 10
-    static let minNetworkTimeoutInterval: TimeInterval = 1
-    static let maxNetworkTimeoutInterval: TimeInterval = 300
+    private static let networkTimeoutLock = NSLock()
+    // `networkTimeoutLock` guards this. The store is part of the key, because an app group
+    // switch replaces `RadarUserDefaults.userDefaults`.
+    nonisolated(unsafe) private static var cachedNetworkTimeout: (store: ObjectIdentifier, interval: TimeInterval)?
 
     /// The request and resource timeout for standard API calls, from the stored initialize options.
-    /// The Objective-C and Swift API helpers both use this value.
+    /// The Objective-C and Swift API helpers read it for each request, so it is cached.
     public static var networkTimeoutInterval: TimeInterval {
-        networkTimeoutInterval(for: initializeOptions)
+        networkTimeoutLock.lock()
+        defer { networkTimeoutLock.unlock() }
+
+        let store = ObjectIdentifier(RadarUserDefaults.userDefaults)
+        if let cachedNetworkTimeout, cachedNetworkTimeout.store == store {
+            return cachedNetworkTimeout.interval
+        }
+        let interval = networkTimeoutInterval(for: initializeOptions)
+        cachedNetworkTimeout = (store, interval)
+        return interval
     }
 
-    /// Returns the default for no options or a value that isn't valid (≤ 0, NaN, or infinite).
-    /// Clamps other values to `minNetworkTimeoutInterval`...`maxNetworkTimeoutInterval`.
     static func networkTimeoutInterval(for options: RadarInitializeOptions?) -> TimeInterval {
-        guard let interval = options?.networkTimeoutInterval, interval.isFinite, interval > 0 else {
-            return defaultNetworkTimeoutInterval
-        }
-        return min(max(interval, minNetworkTimeoutInterval), maxNetworkTimeoutInterval)
+        options?.effectiveNetworkTimeoutInterval ?? RadarInitializeOptions.defaultNetworkTimeoutInterval
     }
 
     public static var inSurveyMode: Bool {

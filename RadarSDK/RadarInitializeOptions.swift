@@ -10,7 +10,9 @@ import Foundation
 @objc(RadarInitializeOptions)
 @objcMembers
 public class RadarInitializeOptions: NSObject {
-    private static let defaultNetworkTimeoutInterval: TimeInterval = 10
+    static let defaultNetworkTimeoutInterval: TimeInterval = 10
+    static let minNetworkTimeoutInterval: TimeInterval = 1
+    static let maxNetworkTimeoutInterval: TimeInterval = 300
     private static let defaultIPChangeDebounceInterval: TimeInterval = 10
 
     public var autoLogNotificationConversions: Bool
@@ -55,6 +57,16 @@ public class RadarInitializeOptions: NSObject {
             dict?["ipChangeDebounceInterval"],
             allowsZero: true,
             defaultValue: RadarInitializeOptions.defaultIPChangeDebounceInterval)
+    }
+
+    /// The timeout the API helpers use. A value that isn't valid (≤ 0, NaN, or infinite) uses the
+    /// default. Other values are clamped to `minNetworkTimeoutInterval`...`maxNetworkTimeoutInterval`.
+    var effectiveNetworkTimeoutInterval: TimeInterval {
+        let interval = networkTimeoutInterval
+        guard interval.isFinite, interval > 0 else {
+            return Self.defaultNetworkTimeoutInterval
+        }
+        return min(max(interval, Self.minNetworkTimeoutInterval), Self.maxNetworkTimeoutInterval)
     }
 
     public func dictionaryValue() -> [AnyHashable: Any] {

@@ -16,13 +16,18 @@ extension URLSession: RadarURLSessionProtocol {}
 final class RadarAPIHelper: @unchecked Sendable {
 
     private let injectedSession: RadarURLSessionProtocol?
+    private let timeoutInterval: @Sendable () -> TimeInterval
     private let lock = NSLock()
     private var cachedSession: (timeout: TimeInterval, session: URLSession)?
 
-    /// Tests pass `session`. With no session, the helper makes a `URLSession` that uses
-    /// `RadarSettings.networkTimeoutInterval`.
-    init(session: RadarURLSessionProtocol? = nil) {
+    /// Tests pass `session` or `timeoutInterval`. With no session, the helper makes a `URLSession`
+    /// that uses `timeoutInterval`, which is `RadarSettings.networkTimeoutInterval` by default.
+    init(
+        session: RadarURLSessionProtocol? = nil,
+        timeoutInterval: @escaping @Sendable () -> TimeInterval = { RadarSettings.networkTimeoutInterval }
+    ) {
         self.injectedSession = session
+        self.timeoutInterval = timeoutInterval
     }
 
     /// Returns the session for the next request. The helper can exist before `Radar.initialize`
@@ -32,7 +37,7 @@ final class RadarAPIHelper: @unchecked Sendable {
         if let injectedSession {
             return injectedSession
         }
-        return session(timeout: RadarSettings.networkTimeoutInterval)
+        return session(timeout: timeoutInterval())
     }
 
     private func session(timeout: TimeInterval) -> URLSession {
@@ -48,7 +53,9 @@ final class RadarAPIHelper: @unchecked Sendable {
         config.timeoutIntervalForResource = timeout
         let session = URLSession(configuration: config)
 
-        cachedSession?.session.finishTasksAndInvalidate()
+        // Don't invalidate the old session. A request that already has it can still start a task
+        // or a retry on it, and a task on an invalidated session raises an exception. The timeout
+        // changes at most a few times in a process, so the old sessions cost little memory.
         cachedSession = (timeout, session)
         return session
     }

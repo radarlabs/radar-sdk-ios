@@ -26,6 +26,8 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
 @property (assign, nonatomic) BOOL wait;
 @property (strong, nonatomic) NSURLSession *standardSession;
 @property (strong, nonatomic) NSURLSession *extendedTimeoutSession;
+// The standard timeout the sessions use. Read and written on `queue` after init.
+@property (assign, nonatomic) NSTimeInterval sessionTimeout;
 
 @end
 
@@ -37,20 +39,36 @@ static NSTimeInterval RadarAPIHelperExtendedNetworkTimeoutInterval(NSTimeInterva
         _queue = dispatch_queue_create("io.radar.api", DISPATCH_QUEUE_SERIAL);
         _semaphore = dispatch_semaphore_create(1);
 
-        NSTimeInterval standardTimeout = [RadarSettings networkTimeoutInterval];
-        NSTimeInterval extendedTimeout = RadarAPIHelperExtendedNetworkTimeoutInterval(standardTimeout);
-
-        NSURLSessionConfiguration *standardConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-        standardConfig.timeoutIntervalForRequest = standardTimeout;
-        standardConfig.timeoutIntervalForResource = standardTimeout;
-        _standardSession = [NSURLSession sessionWithConfiguration:standardConfig];
-
-        NSURLSessionConfiguration *extendedConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-        extendedConfig.timeoutIntervalForRequest = extendedTimeout;
-        extendedConfig.timeoutIntervalForResource = extendedTimeout;
-        _extendedTimeoutSession = [NSURLSession sessionWithConfiguration:extendedConfig];
+        [self makeSessionsWithTimeout:[RadarSettings networkTimeoutInterval]];
     }
     return self;
+}
+
+- (void)makeSessionsWithTimeout:(NSTimeInterval)standardTimeout {
+    NSTimeInterval extendedTimeout = RadarAPIHelperExtendedNetworkTimeoutInterval(standardTimeout);
+
+    NSURLSessionConfiguration *standardConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+    standardConfig.timeoutIntervalForRequest = standardTimeout;
+    standardConfig.timeoutIntervalForResource = standardTimeout;
+    self.standardSession = [NSURLSession sessionWithConfiguration:standardConfig];
+
+    NSURLSessionConfiguration *extendedConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+    extendedConfig.timeoutIntervalForRequest = extendedTimeout;
+    extendedConfig.timeoutIntervalForResource = extendedTimeout;
+    self.extendedTimeoutSession = [NSURLSession sessionWithConfiguration:extendedConfig];
+
+    self.sessionTimeout = standardTimeout;
+}
+
+// Call on `queue`. The helper can exist before `Radar.initialize` stores the options, so this
+// reads the timeout for each request and makes new sessions only when it changes. It doesn't
+// invalidate the old sessions, because tasks that already started on them must finish.
+- (NSURLSession *)sessionWithExtendedTimeout:(BOOL)extendedTimeout {
+    NSTimeInterval standardTimeout = [RadarSettings networkTimeoutInterval];
+    if (standardTimeout != self.sessionTimeout) {
+        [self makeSessionsWithTimeout:standardTimeout];
+    }
+    return extendedTimeout ? self.extendedTimeoutSession : self.standardSession;
 }
 
 - (void)requestWithMethod:(NSString *)method
@@ -161,7 +179,7 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                 }
             }
 
-            NSURLSession *session = extendedTimeout ? self.extendedTimeoutSession : self.standardSession;
+            NSURLSession *session = [self sessionWithExtendedTimeout:extendedTimeout];
             NSDate *requestStart = [NSDate date];
 
             void (^dataTaskCompletionHandler)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {

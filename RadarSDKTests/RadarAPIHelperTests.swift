@@ -238,7 +238,19 @@ struct RadarAPIHelperTests {
     }
 }
 
-@Suite(.serialized)
+private final class TimeoutBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storedValue: TimeInterval
+
+    init(_ value: TimeInterval) { storedValue = value }
+
+    var value: TimeInterval {
+        get { lock.withLock { storedValue } }
+        set { lock.withLock { storedValue = newValue } }
+    }
+}
+
+@Suite
 struct RadarNetworkTimeoutTests {
 
     private static func options(timeout: TimeInterval) -> RadarInitializeOptions {
@@ -267,29 +279,25 @@ struct RadarNetworkTimeoutTests {
         #expect(RadarSettings.networkTimeoutInterval(for: Self.options(timeout: input)) == expected)
     }
 
-    @Test func helperSessionUsesStoredTimeout() throws {
-        let savedOptions = RadarSettings.initializeOptions
-        defer { RadarSettings.initializeOptions = savedOptions }
-
+    @Test func helperSessionFollowsTimeoutChanges() throws {
         // The helper exists before the options are stored, like `RadarAPIClient.shared` can.
-        // `session: nil` picks the Swift helper. The Objective-C `RadarAPIHelper` also has `init()`.
-        let helper = RadarAPIHelper(session: nil)
+        let timeout = TimeoutBox(10)
+        let helper = RadarAPIHelper(timeoutInterval: { timeout.value })
 
-        RadarSettings.initializeOptions = Self.options(timeout: 30)
         let first = try #require(helper.currentSession() as? URLSession)
-        #expect(first.configuration.timeoutIntervalForRequest == 30)
-        #expect(first.configuration.timeoutIntervalForResource == 30)
+        #expect(first.configuration.timeoutIntervalForRequest == 10)
+        #expect(first.configuration.timeoutIntervalForResource == 10)
         #expect(try #require(helper.currentSession() as? URLSession) === first)
 
-        RadarSettings.initializeOptions = Self.options(timeout: 45)
+        timeout.value = 30
         let second = try #require(helper.currentSession() as? URLSession)
         #expect(second !== first)
-        #expect(second.configuration.timeoutIntervalForRequest == 45)
-        #expect(second.configuration.timeoutIntervalForResource == 45)
+        #expect(second.configuration.timeoutIntervalForRequest == 30)
+        #expect(second.configuration.timeoutIntervalForResource == 30)
 
-        RadarSettings.initializeOptions = nil
-        let third = try #require(helper.currentSession() as? URLSession)
-        #expect(third.configuration.timeoutIntervalForRequest == 10)
+        // A request that still holds the old session can start a task on it.
+        let task = first.dataTask(with: try #require(URL(string: "https://example.com")))
+        task.cancel()
     }
 
     @Test func helperUsesInjectedSession() {
