@@ -300,32 +300,18 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
             }
             return nil
         }
-        set {
-            networkTimeoutLock.lock()
-            defer { networkTimeoutLock.unlock() }
-            RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .initializeOptions)
-            cachedNetworkTimeout = nil
-        }
+        set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .initializeOptions) }
     }
 
-    private static let networkTimeoutLock = NSLock()
-    // `networkTimeoutLock` guards this. The store is part of the key, because an app group
-    // switch replaces `RadarUserDefaults.userDefaults`.
-    nonisolated(unsafe) private static var cachedNetworkTimeout: (store: ObjectIdentifier, interval: TimeInterval)?
-
-    /// The request and resource timeout for standard API calls, from the stored initialize options.
-    /// The Objective-C and Swift API helpers read it for each request, so it is cached.
+    /// The timeout for standard API calls, from the stored initialize options. The Objective-C and
+    /// Swift API helpers read it for each request. It isn't cached, so it always matches the store.
     public static var networkTimeoutInterval: TimeInterval {
-        networkTimeoutLock.lock()
-        defer { networkTimeoutLock.unlock() }
+        networkTimeoutInterval(for: initializeOptions)
+    }
 
-        let store = ObjectIdentifier(RadarUserDefaults.userDefaults)
-        if let cachedNetworkTimeout, cachedNetworkTimeout.store == store {
-            return cachedNetworkTimeout.interval
-        }
-        let interval = networkTimeoutInterval(for: initializeOptions)
-        cachedNetworkTimeout = (store, interval)
-        return interval
+    /// The largest value `networkTimeoutInterval` can return.
+    public static var maxNetworkTimeoutInterval: TimeInterval {
+        RadarInitializeOptions.maxNetworkTimeoutInterval
     }
 
     static func networkTimeoutInterval(for options: RadarInitializeOptions?) -> TimeInterval {

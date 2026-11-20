@@ -12,61 +12,46 @@ protocol RadarURLSessionProtocol: Sendable {
 }
 extension URLSession: RadarURLSessionProtocol {}
 
-// `lock` guards `cachedSession`. The other stored properties are immutable.
-final class RadarAPIHelper: @unchecked Sendable {
+final class RadarAPIHelper: Sendable {
 
-    private let injectedSession: RadarURLSessionProtocol?
+    let session: RadarURLSessionProtocol
     private let timeoutInterval: @Sendable () -> TimeInterval
-    private let lock = NSLock()
-    private var cachedSession: (timeout: TimeInterval, session: URLSession)?
 
-    /// Tests pass `session` or `timeoutInterval`. With no session, the helper makes a `URLSession`
-    /// that uses `timeoutInterval`, which is `RadarSettings.networkTimeoutInterval` by default.
+    /// Tests pass `session` or `timeoutInterval`. `timeoutInterval` is read for each request, because
+    /// the helper can exist before `Radar.initialize` stores the options. By default it is
+    /// `RadarSettings.networkTimeoutInterval`.
     init(
         session: RadarURLSessionProtocol? = nil,
         timeoutInterval: @escaping @Sendable () -> TimeInterval = { RadarSettings.networkTimeoutInterval }
     ) {
-        self.injectedSession = session
+        self.session = session ?? Self.makeSession()
         self.timeoutInterval = timeoutInterval
     }
 
-    /// Returns the session for the next request. The helper can exist before `Radar.initialize`
-    /// stores the options, so it reads the timeout for each request. It makes a new session only
-    /// when the timeout changes.
-    func currentSession() -> RadarURLSessionProtocol {
-        if let injectedSession {
-            return injectedSession
-        }
-        return session(timeout: timeoutInterval())
-    }
-
-    private func session(timeout: TimeInterval) -> URLSession {
-        lock.lock()
-        defer { lock.unlock() }
-
-        if let cachedSession, cachedSession.timeout == timeout {
-            return cachedSession.session
-        }
-
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = timeout
-        config.timeoutIntervalForResource = timeout
-        let session = URLSession(configuration: config)
-
-        // Don't invalidate the old session. A request that already has it can still start a task
-        // or a retry on it, and a task on an invalidated session raises an exception. The timeout
-        // changes at most a few times in a process, so the old sessions cost little memory.
-        cachedSession = (timeout, session)
-        return session
+    // Each request sets its own `timeoutInterval`, so the session never changes. The session limits
+    // are the largest timeout the options allow. Ephemeral, like the Objective-C helper's standard
+    // session, so responses and cookies aren't stored.
+    private static func makeSession() -> URLSession {
+        let config = URLSessionConfiguration.ephemeral
+        config.timeoutIntervalForRequest = RadarInitializeOptions.maxNetworkTimeoutInterval
+        config.timeoutIntervalForResource = RadarInitializeOptions.maxNetworkTimeoutInterval
+        return URLSession(configuration: config)
     }
 
     func retryingRequest(
         for request: URLRequest,
         prepareRequest: ((URLRequest) throws -> URLRequest)? = nil
     ) async throws -> (Data, URLResponse) {
-        let session = currentSession()
-        let firstRequest = try prepareRequest?(request) ?? request
+        let timeout = timeoutInterval()
+        // Set after `prepareRequest`, so a prepared request can't drop the timeout.
+        func requestForAttempt() throws -> URLRequest {
+            var attempt = try prepareRequest?(request) ?? request
+            attempt.timeoutInterval = timeout
+            return attempt
+        }
 
+        // Prepare outside the `do`, so a preparation error is never retried.
+        let firstRequest = try requestForAttempt()
         do {
             return try await session.data(for: firstRequest)
         } catch {
@@ -76,8 +61,7 @@ final class RadarAPIHelper: @unchecked Sendable {
                 throw error
             }
 
-            let retryRequest = try prepareRequest?(request) ?? request
-            return try await session.data(for: retryRequest)
+            return try await session.data(for: try requestForAttempt())
         }
     }
 

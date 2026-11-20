@@ -79,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setInitializeOptions:(RadarInitializeOptions *)options;
 + (RadarInitializeOptions *)initializeOptions;
 + (NSTimeInterval)networkTimeoutInterval;
++ (NSTimeInterval)maxNetworkTimeoutInterval;
 + (NSString * _Nullable)pushNotificationToken;
 + (void)setPushNotificationToken:(NSString* _Nullable)deviceToken;
 + (NSString * _Nullable)locationExtensionToken;

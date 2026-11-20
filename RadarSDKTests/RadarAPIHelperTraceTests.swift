@@ -209,6 +209,31 @@ final class RadarAPIHelperTraceTests: XCTestCase {
         wait(for: [finished], timeout: 5)
     }
 
+    func test_setsTheTimeoutOnEveryAttempt() throws {
+        TraceStubURLProtocol.enqueue(.failure(.networkConnectionLost), path: path)
+        TraceStubURLProtocol.enqueue(.response(statusCode: 200, body: Data("{}".utf8)), path: path)
+        let finished = expectation(description: "Completion")
+
+        helper.request(
+            withMethod: "GET", url: url, headers: nil, params: nil, sleep: false, logPayload: false,
+            extendedTimeout: false,
+            // A prepared request that drops the timeout still gets it.
+            prepareRequest: { request, _ in URLRequest(url: request.url!, timeoutInterval: 60) },
+            preparationFailureHandler: nil,
+            completionHandler: { _, _, _ in finished.fulfill() }
+        )
+        wait(for: [finished], timeout: 5)
+
+        let expected = RadarAPIHelper.timeoutInterval(withExtendedTimeout: false)
+        XCTAssertEqual(TraceStubURLProtocol.requests(path: path).map(\.timeoutInterval), [expected, expected])
+    }
+
+    func test_extendedTimeoutIsTwoAndAHalfTimesTheStandardTimeout() {
+        XCTAssertEqual(
+            RadarAPIHelper.timeoutInterval(withExtendedTimeout: true),
+            RadarAPIHelper.timeoutInterval(withExtendedTimeout: false) * 2.5)
+    }
+
     /// Sends a GET through the traced overload and returns its status once the completion handler has run.
     private func request(trace: FakeRequestTrace, headers: [String: String]? = nil) -> RadarStatus {
         let finished = expectation(description: "Completion")
