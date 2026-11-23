@@ -148,6 +148,7 @@ make build SDK="iphonesimulator" DESTINATION="platform=iOS Simulator,name=iPhone
 ```
 RadarSDK/           # SDK source — mix of .swift and .m/.h (ObjC being migrated)
 RadarSDKTests/      # Unit tests
+RadarSDKE2ETests/   # E2E tests (see RadarSDKE2ETests/README.md)
 Example/            # Example app
 RadarSDKMotion/     # Motion extension
 RadarSDKFraud/      # Fraud detection extension (git submodule)
