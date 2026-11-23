@@ -234,7 +234,7 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                         status = RadarStatusSuccess;
                     } else if (statusCode == 400) {
                         NSDictionary *meta = [resObj[@"meta"] isKindOfClass:[NSDictionary class]] ? resObj[@"meta"] : nil;
-                        status = [meta[@"errorCode"] isEqual:@"unsupported_sdk_version"]
+                        status = [meta[@"errorType"] isEqual:@"unsupported_sdk_version"]
                             ? RadarStatusErrorUnsupportedSDKVersion
                             : RadarStatusErrorBadRequest;
                     } else if (statusCode == 401) {

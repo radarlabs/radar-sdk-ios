@@ -32,7 +32,7 @@ public final class RadarAPIClient: Sendable {
         if code == 400 {
             if let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
                 let meta = json["meta"] as? [String: Any],
-                meta["errorCode"] as? String == "unsupported_sdk_version"
+                meta["errorType"] as? String == "unsupported_sdk_version"
             {
                 throw RadarError(
                     status: .errorUnsupportedSDKVersion,

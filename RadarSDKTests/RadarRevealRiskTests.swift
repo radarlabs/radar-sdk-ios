@@ -109,6 +109,7 @@ extension RadarSerializedTests {
                 "number",
                 "null",
                 "invalid-meta",
+                "legacy-key",
             ],
             [400, 401, 500]
         )
@@ -120,13 +121,15 @@ extension RadarSerializedTests {
 
             switch scenario {
             case "unsupported":
-                meta["errorCode"] = "unsupported_sdk_version"
+                meta["errorType"] = "unsupported_sdk_version"
             case "unknown":
-                meta["errorCode"] = "another_error"
+                meta["errorType"] = "another_error"
             case "number":
-                meta["errorCode"] = 123
+                meta["errorType"] = 123
             case "null":
-                meta["errorCode"] = NSNull()
+                meta["errorType"] = NSNull()
+            case "legacy-key":
+                meta["errorCode"] = "unsupported_sdk_version"
             default:
                 break
             }

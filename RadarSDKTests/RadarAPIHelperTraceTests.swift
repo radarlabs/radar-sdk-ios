@@ -144,16 +144,16 @@ final class RadarAPIHelperTraceTests: XCTestCase {
     func test_mapsUnsupportedSDKVersionOnlyForMatching400Responses() throws {
         let cases: [(meta: Any, expected400: RadarStatus)] = [
             (
-                ["errorCode": "unsupported_sdk_version"],
+                ["errorType": "unsupported_sdk_version"],
                 .errorUnsupportedSDKVersion
             ),
-            (["errorCode": "another_error"], .errorBadRequest),
-            (["errorCode": 123], .errorBadRequest),
-            (["errorCode": NSNull()], .errorBadRequest),
+            (["errorType": "another_error"], .errorBadRequest),
+            (["errorType": 123], .errorBadRequest),
+            (["errorType": NSNull()], .errorBadRequest),
+            (["errorCode": "unsupported_sdk_version"], .errorBadRequest),
             (["message": "Unsupported SDK version"], .errorBadRequest),
             (NSNull(), .errorBadRequest),
         ]
-
         for statusCode in [400, 401, 500] {
             for scenario in cases {
                 let body = try JSONSerialization.data(
