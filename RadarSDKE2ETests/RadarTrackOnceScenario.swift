@@ -23,14 +23,8 @@ enum RadarTrackOnceScenario {
         let relay = try RadarE2EHTTPRelay(upstream: configuration.baseURL)
         defer { relay.stop() }
 
-        let defaults = UserDefaults.standard
-        let hostKey = "radar-host"
-        let priorHost = defaults.object(forKey: hostKey)
-        defaults.set(relay.host, forKey: hostKey)
-        defer {
-            Radar.setUserId(nil)
-            defaults.set(priorHost, forKey: hostKey)
-        }
+        // Leave the host on the stopped relay so late SDK requests fail locally instead of reaching the default API.
+        UserDefaults.standard.set(relay.host, forKey: "radar-host")
 
         Radar.initialize(publishableKey: configuration.publishableKey)
         let userID = "ios-e2e-" + UUID().uuidString
