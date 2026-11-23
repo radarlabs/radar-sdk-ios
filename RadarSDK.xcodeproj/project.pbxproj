@@ -1557,12 +1557,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A3227000000000000000000E /* RadarE2ETestHost */,
-				A32270000000000000000029 /* RadarSDKE2EPermissionUITests */,
-				A3227000000000000000000F /* RadarSDKE2ETests */,
 				DD236C7D2308797B00EB88F9 /* RadarSDKTests */,
 				0107A9E72621FFB9008AB52F /* RadarSDK */,
 				0107AB3826220308008AB52F /* XCFramework */,
+				A3227000000000000000000E /* RadarE2ETestHost */,
+				A32270000000000000000029 /* RadarSDKE2EPermissionUITests */,
+				A3227000000000000000000F /* RadarSDKE2ETests */,
 			);
 		};
 /* End PBXProject section */
