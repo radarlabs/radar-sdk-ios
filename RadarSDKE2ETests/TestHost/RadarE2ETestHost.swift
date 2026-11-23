@@ -31,13 +31,12 @@ private final class TestHostSceneDelegate: UIResponder, UIWindowSceneDelegate, C
             label.accessibilityIdentifier = "radar-e2e-result"
             label.textAlignment = .center
             label.numberOfLines = 0
-            let stack = UIStackView(arrangedSubviews: [label])
-            stack.translatesAutoresizingMaskIntoConstraints = false
-            controller.view.addSubview(stack)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            controller.view.addSubview(label)
             NSLayoutConstraint.activate([
-                stack.leadingAnchor.constraint(equalTo: controller.view.layoutMarginsGuide.leadingAnchor),
-                stack.trailingAnchor.constraint(equalTo: controller.view.layoutMarginsGuide.trailingAnchor),
-                stack.centerYAnchor.constraint(equalTo: controller.view.centerYAnchor),
+                label.leadingAnchor.constraint(equalTo: controller.view.layoutMarginsGuide.leadingAnchor),
+                label.trailingAnchor.constraint(equalTo: controller.view.layoutMarginsGuide.trailingAnchor),
+                label.centerYAnchor.constraint(equalTo: controller.view.centerYAnchor),
             ])
             resultLabel = label
         }
