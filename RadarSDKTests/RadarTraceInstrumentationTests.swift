@@ -146,6 +146,22 @@ final class RadarTraceInstrumentationTests {
         #expect(Set(spans.keys) == ["child"])
     }
 
+    @Test("Descendants record the root span's name as radar.operation")
+    func descendantsRecordRootNameAsOperation() async throws {
+        let root = RadarTraceSpan.start("radar.track_once", manager: manager)
+        let child = root.child("radar.location.get")
+        child.child("POST /v1/track", kind: .client).end(status: .success)
+        child.end(status: .success)
+        root.end(status: .success)
+
+        let spans = try await harness.uploadedSpans()
+        // The root's name is its span name, so the root doesn't repeat it.
+        #expect(TraceTestHarness.attribute(spans["radar.track_once"], "radar.operation") == nil)
+        for name in ["radar.location.get", "POST /v1/track"] {
+            #expect(TraceTestHarness.stringAttribute(spans[name], "radar.operation") == "radar.track_once", "\(name)")
+        }
+    }
+
     @Test("onEnded runs once when the span ends, and right away when it has ended or doesn't record")
     func onEndedRunsOnceAfterEnd() {
         let root = RadarTraceSpan.start("root", manager: manager)

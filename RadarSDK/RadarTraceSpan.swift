@@ -42,6 +42,8 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
     private let manager: RadarTraceManager?
     private let project: String
     private let sessionId: String
+    /// The root span's name. Every descendant records it as `radar.operation`.
+    private let operation: String
     private let startUnixMillis: UInt64
     private let startMonotonicNanos: UInt64
 
@@ -53,11 +55,14 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
 
     /// Shared span returned when tracing is off. It records nothing, so one instance serves every caller.
     static let noop = RadarTraceSpan(
-        name: "", traceId: "", spanId: "", parentSpanId: nil, kind: .internal, manager: nil, project: "", sessionId: "")
+        name: "", traceId: "", spanId: "", parentSpanId: nil, kind: .internal, manager: nil, project: "", sessionId: "",
+        operation: "")
+
+    private static let operationAttributeKey = "radar.operation"
 
     private init(
         name: String, traceId: String, spanId: String, parentSpanId: String?, kind: RadarSpanKind,
-        manager: RadarTraceManager?, project: String, sessionId: String
+        manager: RadarTraceManager?, project: String, sessionId: String, operation: String
     ) {
         self.name = name
         self.traceId = traceId
@@ -67,6 +72,7 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
         self.manager = manager
         self.project = project
         self.sessionId = sessionId
+        self.operation = operation
         self.startUnixMillis = manager?.clock.wallMillis() ?? 0
         self.startMonotonicNanos = manager?.clock.monotonicNanos() ?? 0
         super.init()
@@ -92,16 +98,21 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
         }
         return RadarTraceSpan(
             name: name, traceId: newTraceId(), spanId: newSpanId(), parentSpanId: nil, kind: .internal,
-            manager: manager, project: project, sessionId: sessionId)
+            manager: manager, project: project, sessionId: sessionId, operation: name)
     }
 
     /// Starts a child span in this trace. For a request to the Radar API, use `.client` and send the child's
     /// `traceparent` with the request. Children of the no-op span are the same no-op span.
+    ///
+    /// The child records its root span's name as `radar.operation`, so spans shared by several operations, such as
+    /// `POST /v1/track`, can be grouped by the operation that made them. Trace backends can't join a span to its root.
     func child(_ name: String, kind: RadarSpanKind = .internal) -> RadarTraceSpan {
         guard let manager else { return self }
-        return RadarTraceSpan(
+        let span = RadarTraceSpan(
             name: name, traceId: traceId, spanId: Self.newSpanId(), parentSpanId: spanId, kind: kind,
-            manager: manager, project: project, sessionId: sessionId)
+            manager: manager, project: project, sessionId: sessionId, operation: operation)
+        span.setString(operation, forKey: Self.operationAttributeKey)
+        return span
     }
 
     /// Temporary Objective-C entry point for `child(_:kind:)` with `.internal`. Objective-C can't see the internal
