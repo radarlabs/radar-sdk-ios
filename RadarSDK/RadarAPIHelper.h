@@ -15,6 +15,10 @@ typedef void (^_Nullable RadarAPICompletionHandler)(RadarStatus status, NSDictio
 
 typedef NSURLRequest *_Nullable (^RadarAPIRequestPreparation)(NSURLRequest *request, NSError *_Nullable *_Nullable error);
 
+// Runs after preparation on every attempt, with the exact request that will be sent. Must call completion
+// exactly once, passing the request to send (the prepared request itself if there's nothing to add).
+typedef void (^RadarAPIRequestAssertion)(NSURLRequest *request, void (^completion)(NSURLRequest *request));
+
 // The client span of a traced request, which RadarAPIHelper starts, propagates, and ends. RadarTraceSpan implements it.
 // It's a protocol rather than RadarTraceSpan because the test bridging header imports this header: Swift tests would
 // otherwise see both an Objective-C declaration and the internal Swift class under the same name. It also lets tests
@@ -58,6 +62,18 @@ typedef NSURLRequest *_Nullable (^RadarAPIRequestPreparation)(NSURLRequest *requ
 preparationFailureHandler:(void (^_Nullable)(NSError *error))preparationFailureHandler
         completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;
 
+- (void)requestWithMethod:(NSString *)method
+                      url:(NSString *)url
+                  headers:(NSDictionary *_Nullable)headers
+                   params:(NSDictionary *_Nullable)params
+                    sleep:(BOOL)sleep
+               logPayload:(BOOL)logPayload
+          extendedTimeout:(BOOL)extendedTimeout
+           prepareRequest:(RadarAPIRequestPreparation _Nullable)prepareRequest
+preparationFailureHandler:(void (^_Nullable)(NSError *error))preparationFailureHandler
+                    trace:(id<RadarAPIRequestTrace> _Nullable)trace
+        completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;
+
 // Every other overload calls this one. trace is the request's client span: it sends trace's traceparent, and ends trace
 // before calling completionHandler, so the hop to the main queue counts toward the caller's span instead.
 - (void)requestWithMethod:(NSString *)method
@@ -68,6 +84,7 @@ preparationFailureHandler:(void (^_Nullable)(NSError *error))preparationFailureH
                logPayload:(BOOL)logPayload
           extendedTimeout:(BOOL)extendedTimeout
            prepareRequest:(RadarAPIRequestPreparation _Nullable)prepareRequest
+            assertRequest:(RadarAPIRequestAssertion _Nullable)assertRequest
 preparationFailureHandler:(void (^_Nullable)(NSError *error))preparationFailureHandler
                     trace:(id<RadarAPIRequestTrace> _Nullable)trace
         completionHandler:(RadarAPICompletionHandler _Nullable)completionHandler;

@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nullable, strong, nonatomic) RadarMeta *meta;
 @property (nullable, copy, nonatomic) NSString *nonce;
+@property (nullable, copy, nonatomic) NSString *appAttestKeyId;
 
 + (RadarConfig *_Nullable)fromDictionary:(NSDictionary *_Nullable)dict;
 

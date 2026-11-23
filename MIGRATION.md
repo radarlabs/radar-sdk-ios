@@ -8,6 +8,11 @@
 - Options saved by an older SDK version, and dictionaries from wrapper SDKs that still send the `trackVerifiedAutoFailover` key, still work. The SDK ignores the key.
 - Before 3.45.0, failover was off by default. If you upgrade from 3.44.x or earlier, or if you set the option to `false`, `trackVerified()` can now send requests to the secondary verified host, `api-verified.radar.com`. If your app limits which hosts it can reach or pins certificates, allow this host.
 
+### Verified tracking with App Attest assertions
+
+- Verified tracking requests can authenticate with an App Attest assertion from a key the device attested once, instead of attesting on every request. This requires both this `RadarSDK` version and a `RadarSDKFraud` version that supports App Attest assertions.
+- `RadarSDKFraud` can still be updated without updating `RadarSDK`. With an older `RadarSDK`, requests are encrypted as before but carry no assertion, so they only pass projects that still use per-request App Attest.
+
 ## 3.46.x to 4.0.0
 
 ### Public API changes
