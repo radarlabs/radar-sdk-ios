@@ -1320,7 +1320,10 @@
 			name = "Recovered References";
 			sourceTree = "<group>";
 		};
-		A3227000000000000000000D /* RadarSDKE2ETests */ = { isa = PBXGroup; children = (A32270000000000000000001 /* RadarE2ETestHost.swift */, A32270000000000000000002 /* RadarE2EConfiguration.swift */, A32270000000000000000003 /* RadarE2EHTTPRelay.swift */, A32270000000000000000004 /* RadarTrackOnceE2ETests.swift */, A3227000000000000000001E /* RadarTrackOnceScenario.swift */, A3227000000000000000001F /* RadarTrackOncePermissionUITests.swift */, ); path = RadarSDKE2ETests; sourceTree = "<group>"; };
+		A3227000000000000000000D /* RadarSDKE2ETests */ = { isa = PBXGroup; children = (A3227000000000000000002D /* Helpers */, A3227000000000000000002E /* TestHost */, A3227000000000000000002F /* XCUITestWrapper */, A32270000000000000000004 /* RadarTrackOnceE2ETests.swift */, A3227000000000000000001E /* RadarTrackOnceScenario.swift */, ); path = RadarSDKE2ETests; sourceTree = "<group>"; };
+		A3227000000000000000002D /* Helpers */ = { isa = PBXGroup; children = (A32270000000000000000002 /* RadarE2EConfiguration.swift */, A32270000000000000000003 /* RadarE2EHTTPRelay.swift */, ); path = Helpers; sourceTree = "<group>"; };
+		A3227000000000000000002E /* TestHost */ = { isa = PBXGroup; children = (A32270000000000000000001 /* RadarE2ETestHost.swift */, ); path = TestHost; sourceTree = "<group>"; };
+		A3227000000000000000002F /* XCUITestWrapper */ = { isa = PBXGroup; children = (A3227000000000000000001F /* RadarTrackOncePermissionUITests.swift */, ); path = XCUITestWrapper; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
