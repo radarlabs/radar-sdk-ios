@@ -24,7 +24,7 @@ The host app gives Core Location an iOS process to run in. `RadarTrackOnceScenar
 You need:
 
 - A dedicated simulator. Set `SIMULATOR_UDID` to its UDID, which `xcrun simctl list devices` prints.
-- A Radar test project whose SDK configuration has `syncAfterSetUser`, `trackOnceOnAppOpen`, and `startTrackingOnInitialize` turned off. Otherwise the SDK can send extra track requests and the run fails.
+- A Radar test project whose SDK configuration has `syncAfterSetUser`, `trackOnceOnAppOpen`, and `startTrackingOnInitialize` turned off, and whose tracking options set replay to none. Otherwise the SDK can send extra or replayed track requests and the run fails.
 - Two environment variables, set in the shell that runs `xcodebuild`.
 
 `TEST_RUNNER_RADAR_E2E_BASE_URL` is the API origin. It must use HTTPS, or HTTP on `localhost` or `127.0.0.1`, and have no path or query.
@@ -55,11 +55,12 @@ xcodebuild -project RadarSDK.xcodeproj -scheme RadarSDKE2ETests \
 
 ## Run RadarSDKE2EPermissionUITests
 
-This scheme runs the same scenario. The wrapper launches the host app and taps "Allow While Using App" when the prompt appears. Uninstall the host app first. This resets its location permission so the prompt appears, and it succeeds when the app is not installed.
+Uninstall the host app and reset its location permission first, so the wrapper sees the prompt and taps "Allow While Using App".
 
 ```sh
 xcrun simctl bootstatus "$SIMULATOR_UDID" -b
 xcrun simctl uninstall "$SIMULATOR_UDID" io.radar.RadarE2ETestHost
+xcrun simctl privacy "$SIMULATOR_UDID" reset location io.radar.RadarE2ETestHost
 xcrun simctl location "$SIMULATOR_UDID" set 40.78382,-73.97536
 
 xcodebuild -project RadarSDK.xcodeproj -scheme RadarSDKE2EPermissionUITests \
