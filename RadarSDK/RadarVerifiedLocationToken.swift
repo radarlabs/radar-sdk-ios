@@ -45,6 +45,14 @@ public final class RadarVerifiedLocationToken: NSObject {
     /// The response dictionary.
     public let fullDict: [AnyHashable: Any]?
 
+    /// The level of the check that ran. `unknown` if the response does not include it.
+    public private(set) var verificationLevel: RadarVerificationLevel = .unknown
+
+    /// The level that the app must run next. `precise` means that the app must run a precise
+    /// check. `unknown` means that no further check is necessary.
+    /// Use this property, not `passed`, to decide on a step-up. The backend must verify the result.
+    public private(set) var requiredVerificationLevel: RadarVerificationLevel = .unknown
+
     override init() {
         format = .jws
         user = nil
@@ -169,6 +177,7 @@ public final class RadarVerifiedLocationToken: NSObject {
                 keys: [
                     "meta", "format", "_id", "token",
                     "expiresAt", "expiresIn", "passed",
+                    "verificationLevel", "requiredVerificationLevel",
                 ]
             )
 
@@ -208,10 +217,20 @@ public final class RadarVerifiedLocationToken: NSObject {
                 passed: false,
                 fullDict: Self.clearDictionary(
                     dict,
-                    keys: ["meta", "format", "_id"]
+                    keys: [
+                        "meta", "format", "_id",
+                        "verificationLevel", "requiredVerificationLevel",
+                    ]
                 )
             )
         }
+
+        verificationLevel = RadarVerificationLevel(
+            responseValue: dict["verificationLevel"]
+        )
+        requiredVerificationLevel = RadarVerificationLevel(
+            responseValue: dict["requiredVerificationLevel"]
+        )
     }
 
     private static func clearDictionary(
