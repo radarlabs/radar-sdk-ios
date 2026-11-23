@@ -95,7 +95,7 @@ format-check:
 
 format:
 	./clang_format.sh
-	swift-format format -i -r --parallel RadarSDK RadarSDKTests
+	swift-format format -i -r --parallel RadarSDK RadarSDKTests RadarSDKE2ETests
 
 clean-pretty:
 	set -o pipefail && xcodebuild $(XC_ARGS) clean | xcpretty
