@@ -180,6 +180,16 @@ final class RadarTraceSpan: NSObject, @unchecked Sendable {
         setAttribute(key, .bool(value))
     }
 
+    /// Copies the attributes in `keys` that `source` has set onto this span, so a child can be grouped by its parent's
+    /// attributes. Keys `source` hasn't set are skipped.
+    func copyAttributes(from source: RadarTraceSpan, keys: Set<String>) {
+        guard isRecording else { return }
+        let values = source.lock.withLock { source.attributes.filter { keys.contains($0.key) } }
+        for (key, value) in values {
+            setAttribute(key, value)
+        }
+    }
+
     /// Ignored on the no-op span and after `end(status:)`.
     private func setAttribute(_ key: String, _ value: RadarTraceAttributeValue) {
         guard manager != nil else { return }

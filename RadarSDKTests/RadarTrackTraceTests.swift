@@ -45,11 +45,18 @@ extension RadarSerializedTests {
             let get = try #require(spans["radar.location.get"])
             #expect(get["parentSpanId"] as? String == rootId)
             #expect(TraceTestHarness.doubleAttribute(get, "radar.location.accuracy_m") == 65)
+            #expect(TraceTestHarness.stringAttribute(get, "radar.operation") == "radar.track_once")
+            // Copied from the root, so location latency can be grouped by them.
+            for key in ["radar.location.desired_accuracy", "radar.app.foreground", "radar.location.accuracy_authorization"] {
+                let value = try #require(TraceTestHarness.attribute(root, key), "\(key)")
+                #expect(TraceTestHarness.attribute(get, key) as NSDictionary? == value as NSDictionary, "\(key)")
+            }
 
             let track = try #require(spans["POST /v1/track"])
             #expect(track["parentSpanId"] as? String == rootId)
             #expect(track["kind"] as? Int == RadarSpanKind.client.rawValue)
             #expect(track["status"] == nil)
+            #expect(TraceTestHarness.stringAttribute(track, "radar.operation") == "radar.track_once")
             let trackSpanId = try #require(track["spanId"] as? String)
             let traceId = try #require(root["traceId"] as? String)
             #expect(fixture.apiHelperMock.lastHeaders?["traceparent"] as? String == "00-\(traceId)-\(trackSpanId)-01")
