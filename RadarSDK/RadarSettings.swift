@@ -303,6 +303,11 @@ internal class RadarSettings: NSObject {  // swiftlint:disable:this type_body_le
         set { RadarUserDefaults.set(newValue?.dictionaryValue(), forKey: .initializeOptions) }
     }
 
+    /// The timeout for standard API calls, from the stored initialize options.
+    static var networkTimeoutInterval: TimeInterval {
+        initializeOptions?.effectiveNetworkTimeoutInterval ?? RadarInitializeOptions.defaultNetworkTimeoutInterval
+    }
+
     public static var inSurveyMode: Bool {
         get { return RadarUserDefaults.bool(forKey: .inSurveyMode) }
         set { RadarUserDefaults.set(newValue, forKey: .inSurveyMode) }
