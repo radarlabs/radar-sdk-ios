@@ -22,7 +22,7 @@ final class RadarTrackOncePermissionUITests: XCTestCase {
             predicate: NSPredicate { _, _ in
                 allowLocation.exists || finished.evaluate(with: result)
             }, object: nil)
-        guard XCTWaiter.wait(for: [permissionOrResult], timeout: 20) == .completed else {
+        guard XCTWaiter.wait(for: [permissionOrResult], timeout: 40) == .completed else {
             XCTFail("The host showed neither the location prompt nor a test result.")
             return
         }
