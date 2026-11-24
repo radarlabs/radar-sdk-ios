@@ -126,7 +126,6 @@ final class RadarTrackVerifiedIPTests: XCTestCase {
     private func track(
         response: [AnyHashable: Any],
         location: CLLocation?,
-        verified: Bool = true,
         status: RadarStatus = .success
     ) -> Result {
         helper.mockStatus = status
@@ -137,7 +136,7 @@ final class RadarTrackVerifiedIPTests: XCTestCase {
 
         RadarTrackTestBridge.track(
             withPreparedPayload: nil,
-            verified: verified,
+            verified: true,
             secondary: false,
             location: location,
             reason: "ip reason"
@@ -225,13 +224,6 @@ final class RadarTrackVerifiedIPTests: XCTestCase {
         XCTAssertEqual(result.status, .errorNetwork)
         XCTAssertTrue(RadarReplayBuffer.sharedInstance.flushableReplays.isEmpty)
         XCTAssertEqual(delegate.failures, [.errorNetwork])
-    }
-
-    func test_ipRequestRequiresVerified() {
-        let result = track(response: jwsResponse(), location: nil, verified: false)
-
-        XCTAssertEqual(result.status, .errorBadRequest)
-        XCTAssertNil(helper.lastUrl)
     }
 
     func test_ipJWSResponseWithoutEventsFails() {

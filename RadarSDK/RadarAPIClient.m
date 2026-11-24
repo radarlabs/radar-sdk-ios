@@ -289,7 +289,7 @@
           completionHandler:completionHandler];
 }
 
-- (void)trackWithLocation:(CLLocation *_Nullable)location
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
@@ -326,7 +326,7 @@
           completionHandler:completionHandler];
 }
 
-- (void)trackWithLocation:(CLLocation *_Nullable)location
+- (void)trackWithLocation:(CLLocation *_Nonnull)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
@@ -344,13 +344,108 @@
  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                 traceSpan:(RadarTraceSpan *_Nullable)traceSpan
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [self trackInternalWithLocation:location
+                            stopped:stopped
+                         foreground:foreground
+                             source:source
+                           replayed:replayed
+                            beacons:beacons
+                     indoorLocation:indoorLocation
+                           verified:verified
+               preparedFraudPayload:preparedFraudPayload
+                expectedCountryCode:expectedCountryCode
+                  expectedStateCode:expectedStateCode
+                    expectedAddress:expectedAddress
+                             reason:reason
+                      transactionId:transactionId
+                       revealRiskId:revealRiskId
+           useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                          traceSpan:traceSpan
+                  completionHandler:completionHandler];
+}
+
+- (void)trackIPWithStopped:(BOOL)stopped
+                foreground:(BOOL)foreground
+                    source:(RadarLocationSource)source
+      preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
+       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+         expectedStateCode:(NSString *_Nullable)expectedStateCode
+           expectedAddress:(NSString *_Nullable)expectedAddress
+                    reason:(NSString *_Nullable)reason
+             transactionId:(NSString *_Nullable)transactionId
+              revealRiskId:(NSString *_Nullable)revealRiskId
+  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [self trackIPWithStopped:stopped
+                  foreground:foreground
+                      source:source
+        preparedFraudPayload:preparedFraudPayload
+         expectedCountryCode:expectedCountryCode
+           expectedStateCode:expectedStateCode
+             expectedAddress:expectedAddress
+                      reason:reason
+               transactionId:transactionId
+                revealRiskId:revealRiskId
+    useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                   traceSpan:nil
+           completionHandler:completionHandler];
+}
+
+- (void)trackIPWithStopped:(BOOL)stopped
+                foreground:(BOOL)foreground
+                    source:(RadarLocationSource)source
+      preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
+       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+         expectedStateCode:(NSString *_Nullable)expectedStateCode
+           expectedAddress:(NSString *_Nullable)expectedAddress
+                    reason:(NSString *_Nullable)reason
+             transactionId:(NSString *_Nullable)transactionId
+              revealRiskId:(NSString *_Nullable)revealRiskId
+  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+                 traceSpan:(RadarTraceSpan *_Nullable)traceSpan
+         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [self trackInternalWithLocation:nil
+                            stopped:stopped
+                         foreground:foreground
+                             source:source
+                           replayed:NO
+                            beacons:nil
+                     indoorLocation:nil
+                           verified:YES
+               preparedFraudPayload:preparedFraudPayload
+                expectedCountryCode:expectedCountryCode
+                  expectedStateCode:expectedStateCode
+                    expectedAddress:expectedAddress
+                             reason:reason
+                      transactionId:transactionId
+                       revealRiskId:revealRiskId
+           useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                          traceSpan:traceSpan
+                  completionHandler:completionHandler];
+}
+
+// A nil location is only valid for a verified request (see trackIPWithStopped:).
+- (void)trackInternalWithLocation:(CLLocation *_Nullable)location
+                          stopped:(BOOL)stopped
+                       foreground:(BOOL)foreground
+                           source:(RadarLocationSource)source
+                         replayed:(BOOL)replayed
+                          beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+                   indoorLocation:(CLLocation *_Nullable)indoorLocation
+                         verified:(BOOL)verified
+             preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
+              expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+                expectedStateCode:(NSString *_Nullable)expectedStateCode
+                  expectedAddress:(NSString *_Nullable)expectedAddress
+                           reason:(NSString *_Nullable)reason
+                    transactionId:(NSString *_Nullable)transactionId
+                     revealRiskId:(NSString *_Nullable)revealRiskId
+         useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+                        traceSpan:(RadarTraceSpan *_Nullable)traceSpan
+                completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
-    }
-    // A nil location sends an IP-only verified check. Only verified checks can run without a location.
-    if (!location && !verified) {
-        return completionHandler(RadarStatusErrorBadRequest, nil, nil, nil, nil, nil, nil);
     }
     NSMutableDictionary *params = [NSMutableDictionary new];
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
@@ -379,30 +474,7 @@
         params[@"sessionId"] = sessionId;
     }
     if (location) {
-        params[@"latitude"] = @(location.coordinate.latitude);
-        params[@"longitude"] = @(location.coordinate.longitude);
-        CLLocationAccuracy accuracy = location.horizontalAccuracy;
-        if (accuracy <= 0) {
-            accuracy = 1;
-        }
-        params[@"accuracy"] = @(accuracy);
-        params[@"altitude"] = @(location.altitude);
-        params[@"verticalAccuracy"] = @(location.verticalAccuracy);
-        params[@"speed"] = @(location.speed);
-        params[@"speedAccuracy"] = @(location.speedAccuracy);
-        params[@"course"] = @(location.course);
-        if (@available(iOS 13.4, *)) {
-            params[@"courseAccuracy"] = @(location.courseAccuracy);
-        }
-        if (location.floor) {
-            params[@"floorLevel"] = @(location.floor.level);
-        }
-        long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
-        long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
-        if (sdkConfiguration.useForegroundLocationUpdatedAtMsDiff || !foreground) {
-            params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
-        }
-        params[@"locationMs"] = @(locationMs);
+        [self addLocationParams:params location:location foreground:foreground sdkConfiguration:sdkConfiguration];
     } else {
         params[@"verificationLevel"] = @"ip";
     }
@@ -500,55 +572,12 @@
     }
     
     NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
-    if (location && options.useMotion) {
-        locationMetadata[@"motionActivityData"] = RadarState.shared.lastMotionActivityData;
-        locationMetadata[@"heading"] = RadarState.shared.lastHeadingData;
-        locationMetadata[@"speed"] = @(location.speed);
-        locationMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
-        locationMetadata[@"course"] = @(location.course);
-
-        if (@available(iOS 13.4, *)) {
-            locationMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
-        }
-
-        locationMetadata[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
-        locationMetadata[@"altitude"] = @(location.altitude);
-
-        if (@available(iOS 15, *)) {
-            locationMetadata[@"ellipsoidalAltitude"] = @(location.ellipsoidalAltitude);
-            locationMetadata[@"isProducedByAccessory"] = @([location.sourceInformation isProducedByAccessory]);
-            locationMetadata[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
-        }
-    }
-
-    if (location && options.usePressure) {
-        locationMetadata[@"altitude"] = @(location.altitude);
-        locationMetadata[@"floor"] = @([location.floor level]);
-        locationMetadata[@"pressureHPa"] = RadarState.shared.lastRelativeAltitudeData;
-        NSString *motionAuth = RadarState.shared.motionAuthorizationString;
-        if (motionAuth) {
-            params[@"motionAuthorization"] = motionAuth;
-        }
-        NSDictionary *pressureDict = RadarState.shared.lastRelativeAltitudeData;
-        if (pressureDict) {
-            NSNumber *pressure = pressureDict[@"pressure"];
-            NSNumber *relAlt = pressureDict[@"relativeAltitude"];
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Including pressure metadata: pressure=%@ hPa, relative=%@ m", pressure, relAlt]];
-        } else {
-            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"usePressure enabled but no recent pressure data available; sending without pressureHPa"];
-        }
-    }
-
-    // RadarIndoors.getLocation only returns a location with a usable (valid, non-origin) coordinate,
-    // so the nil check alone is enough here.
-    if (location && options.useIndoorScan && indoorLocation) {
-        locationMetadata[@"indoorMLLatitude"] = @(indoorLocation.coordinate.latitude);
-        locationMetadata[@"indoorMLLongitude"] = @(indoorLocation.coordinate.longitude);
-        locationMetadata[@"deviceLatitude"] = params[@"latitude"];
-        locationMetadata[@"deviceLongitude"] = params[@"longitude"];
-        // CRITICAL: Overwrite the reported coordinates with the indoor ML model's prediction.
-        params[@"latitude"] = @(indoorLocation.coordinate.latitude);
-        params[@"longitude"] = @(indoorLocation.coordinate.longitude);
+    if (location) {
+        [self addLocationMetadata:locationMetadata
+                           params:params
+                         location:location
+                   indoorLocation:indoorLocation
+                          options:options];
     }
 
     if (locationMetadata.count > 0) {
@@ -589,6 +618,95 @@
                                                          traceSpan:traceSpan
                                                 completionHandler:completionHandler];
     }];
+}
+
+// Writes the device location fields of a track request. An IP-only request has none of them.
+- (void)addLocationParams:(NSMutableDictionary *)params
+                 location:(CLLocation *)location
+               foreground:(BOOL)foreground
+         sdkConfiguration:(RadarSdkConfiguration *)sdkConfiguration {
+    params[@"latitude"] = @(location.coordinate.latitude);
+    params[@"longitude"] = @(location.coordinate.longitude);
+    CLLocationAccuracy accuracy = location.horizontalAccuracy;
+    if (accuracy <= 0) {
+        accuracy = 1;
+    }
+    params[@"accuracy"] = @(accuracy);
+    params[@"altitude"] = @(location.altitude);
+    params[@"verticalAccuracy"] = @(location.verticalAccuracy);
+    params[@"speed"] = @(location.speed);
+    params[@"speedAccuracy"] = @(location.speedAccuracy);
+    params[@"course"] = @(location.course);
+    if (@available(iOS 13.4, *)) {
+        params[@"courseAccuracy"] = @(location.courseAccuracy);
+    }
+    if (location.floor) {
+        params[@"floorLevel"] = @(location.floor.level);
+    }
+    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+    long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
+    if (sdkConfiguration.useForegroundLocationUpdatedAtMsDiff || !foreground) {
+        params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
+    }
+    params[@"locationMs"] = @(locationMs);
+}
+
+// Writes the motion, pressure, and indoor fields that come from the device location.
+- (void)addLocationMetadata:(NSMutableDictionary *)locationMetadata
+                     params:(NSMutableDictionary *)params
+                   location:(CLLocation *)location
+             indoorLocation:(CLLocation *_Nullable)indoorLocation
+                    options:(RadarTrackingOptions *)options {
+    if (options.useMotion) {
+        locationMetadata[@"motionActivityData"] = RadarState.shared.lastMotionActivityData;
+        locationMetadata[@"heading"] = RadarState.shared.lastHeadingData;
+        locationMetadata[@"speed"] = @(location.speed);
+        locationMetadata[@"speedAccuracy"] = @(location.speedAccuracy);
+        locationMetadata[@"course"] = @(location.course);
+
+        if (@available(iOS 13.4, *)) {
+            locationMetadata[@"courseAccuracy"] = @(location.courseAccuracy);
+        }
+
+        locationMetadata[@"battery"] = @([[UIDevice currentDevice] batteryLevel]);
+        locationMetadata[@"altitude"] = @(location.altitude);
+
+        if (@available(iOS 15, *)) {
+            locationMetadata[@"ellipsoidalAltitude"] = @(location.ellipsoidalAltitude);
+            locationMetadata[@"isProducedByAccessory"] = @([location.sourceInformation isProducedByAccessory]);
+            locationMetadata[@"isSimulatedBySoftware"] = @([location.sourceInformation isSimulatedBySoftware]);
+        }
+    }
+
+    if (options.usePressure) {
+        locationMetadata[@"altitude"] = @(location.altitude);
+        locationMetadata[@"floor"] = @([location.floor level]);
+        locationMetadata[@"pressureHPa"] = RadarState.shared.lastRelativeAltitudeData;
+        NSString *motionAuth = RadarState.shared.motionAuthorizationString;
+        if (motionAuth) {
+            params[@"motionAuthorization"] = motionAuth;
+        }
+        NSDictionary *pressureDict = RadarState.shared.lastRelativeAltitudeData;
+        if (pressureDict) {
+            NSNumber *pressure = pressureDict[@"pressure"];
+            NSNumber *relAlt = pressureDict[@"relativeAltitude"];
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelDebug message:[NSString stringWithFormat:@"Including pressure metadata: pressure=%@ hPa, relative=%@ m", pressure, relAlt]];
+        } else {
+            [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelWarning message:@"usePressure enabled but no recent pressure data available; sending without pressureHPa"];
+        }
+    }
+
+    // RadarIndoors.getLocation only returns a location with a usable (valid, non-origin) coordinate,
+    // so the nil check alone is enough here.
+    if (options.useIndoorScan && indoorLocation) {
+        locationMetadata[@"indoorMLLatitude"] = @(indoorLocation.coordinate.latitude);
+        locationMetadata[@"indoorMLLongitude"] = @(indoorLocation.coordinate.longitude);
+        locationMetadata[@"deviceLatitude"] = params[@"latitude"];
+        locationMetadata[@"deviceLongitude"] = params[@"longitude"];
+        // CRITICAL: Overwrite the reported coordinates with the indoor ML model's prediction.
+        params[@"latitude"] = @(indoorLocation.coordinate.latitude);
+        params[@"longitude"] = @(indoorLocation.coordinate.longitude);
+    }
 }
 
 // A JWS response to an IP-only check: deliver the token and the events, but do not change location,
