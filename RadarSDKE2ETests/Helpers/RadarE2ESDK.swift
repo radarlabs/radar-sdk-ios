@@ -12,27 +12,34 @@ struct RadarE2EFailure: LocalizedError {
 }
 
 /// Drives the Radar SDK against the live API. Create one per test, and call `reset()` when the test ends.
+///
+/// Failure messages never include log lines, headers or the publishable key. They name the field that mismatched and its value.
 @MainActor
 final class RadarE2ESDK: NSObject, RadarDelegate {
-    /// What `trackOnce` reported, plus the track requests the SDK logged while it ran.
+    /// What `trackOnce` reported, plus the track requests and responses the SDK logged while it ran.
     struct TrackOnceOutcome: @unchecked Sendable {  // RadarUser and RadarEvent are not Sendable; the outcome stays on the main actor.
         let status: RadarStatus
         let location: CLLocation?
         let events: [RadarEvent]?
         let user: RadarUser?
-        let trackRequestCount: Int
+        var trackExchanges: [RadarE2ETrackLog.Exchange] = []
+
+        var trackRequestCount: Int { trackExchanges.count }
     }
 
     let userID = "ios-e2e-" + UUID().uuidString
 
     private static let trackOnceTimeoutSeconds: UInt64 = 25
-    private let trackRequestMarker: String
-    private var loggedTrackRequests = 0
+    private static let logSettleTimeoutSeconds: UInt64 = 5
+    private static let fixtureToleranceMeters: CLLocationDistance = 100
+    private static let foregroundSource = "FOREGROUND_LOCATION"
+    private var trackLog: RadarE2ETrackLog
+    private var logArrived: AsyncStream<Void>.Continuation?
 
     init(configuration: RadarE2EConfiguration) {
         let absoluteString = configuration.baseURL.absoluteString
         let host = absoluteString.hasSuffix("/") ? String(absoluteString.dropLast()) : absoluteString
-        trackRequestMarker = "method = POST; url = \(host)/v1/track"
+        trackLog = RadarE2ETrackLog(host: host)
         super.init()
         UserDefaults.standard.set(host, forKey: "radar-host")
         Radar.setLogLevel(.debug)
@@ -43,54 +50,61 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
 
     nonisolated func didLog(message: String) {
         MainActor.assumeIsolated {
-            if message.contains(trackRequestMarker) {
-                loggedTrackRequests += 1
-            }
+            trackLog.record(message)
+            logArrived?.yield()
         }
     }
 
-    /// Calls `Radar.trackOnce` and waits for its callback. Throws if the callback never arrives.
+    /// Calls `Radar.trackOnce`, waits for its callback, then waits for the SDK to log the track response.
+    /// Throws if the callback never arrives. A missing log line shows up in `trackExchanges`, not as a throw.
     func trackOnce(desiredAccuracy: RadarTrackingOptionsDesiredAccuracy = .medium, beacons: Bool = false) async throws -> TrackOnceOutcome {
-        let requestsBefore = loggedTrackRequests
-        let (outcomes, continuation) = AsyncStream<TrackOnceOutcome>.makeStream(bufferingPolicy: .bufferingNewest(1))
+        let exchangesBefore = trackLog.exchanges.count
+        let (callbacks, callback) = AsyncStream<TrackOnceOutcome>.makeStream(bufferingPolicy: .bufferingNewest(1))
         let timeout = Task {
             try await Task.sleep(nanoseconds: Self.trackOnceTimeoutSeconds * 1_000_000_000)
-            continuation.finish()
+            callback.finish()
         }
         defer { timeout.cancel() }
 
         Radar.trackOnce(desiredAccuracy: desiredAccuracy, beacons: beacons) { status, location, events, user in
-            continuation.yield(
-                TrackOnceOutcome(
-                    status: status, location: location, events: events, user: user,
-                    trackRequestCount: self.loggedTrackRequests - requestsBefore))
-            continuation.finish()
+            callback.yield(TrackOnceOutcome(status: status, location: location, events: events, user: user))
+            callback.finish()
         }
-        var iterator = outcomes.makeAsyncIterator()
-        guard let outcome = await iterator.next() else {
+        var iterator = callbacks.makeAsyncIterator()
+        guard var outcome = await iterator.next() else {
             throw RadarE2EFailure("trackOnce did not call back within \(Self.trackOnceTimeoutSeconds) seconds.")
         }
+        await waitForTrackLogs(since: exchangesBefore, expectingTrack: outcome.status == .success)
+        outcome.trackExchanges = trackLog.exchanges(since: exchangesBefore)
         return outcome
     }
 
-    /// Throws unless `trackOnce` succeeded, the server echoed the foreground fixture update for this user, and the SDK sent one track request.
+    /// Throws unless `trackOnce` succeeded and the SDK callback, the logged track request and the logged server response all agree on a foreground update for this user at the fixture.
     func assertForegroundSuccess(_ outcome: TrackOnceOutcome) throws {
-        try check(outcome.status == .success, "trackOnce returned \(Radar.stringForStatus(outcome.status)).")
-        guard let user = outcome.user else { throw RadarE2EFailure("trackOnce returned no user.") }
-        try check(user.userId == userID, "The server returned a different user ID.")
-        try check(user.location.distance(from: RadarE2EConfiguration.location) < 100, "The server location was more than 100 m from the fixture.")
-        try check(user.foreground, "The server did not mark the update as foreground.")
-        try check(user.source == .foregroundLocation, "The server recorded \(Radar.stringForLocationSource(user.source)), not FOREGROUND_LOCATION.")
-        try check(outcome.trackRequestCount == 1, "Expected one track request, observed \(outcome.trackRequestCount).")
-        try check(!Radar.isTracking(), "Background tracking was on after trackOnce.")
+        try assertCallback(outcome)
+        guard outcome.trackExchanges.count == 1, let exchange = outcome.trackExchanges.first else {
+            throw RadarE2EFailure(
+                "Expected one track request, observed \(outcome.trackRequestCount). If it is 0, the SDK may not be logging at debug level. See RadarSDKE2ETests/README.md.")
+        }
+        try assertRequest(exchange)
+        try assertResponse(exchange)
     }
 
-    /// Runs a named scenario and summarizes it for a UI test.
+    /// Runs a named scenario and summarizes it for a UI test. When `trackOnce` succeeds, a failed `assertForegroundSuccess` is reported in `failure`.
     func run(_ scenario: RadarE2EScenario) async -> RadarE2EResult {
         switch scenario {
         case .trackOnce:
             do {
-                return result(for: try await trackOnce())
+                let outcome = try await trackOnce()
+                var failure: String?
+                if outcome.status == .success {
+                    do {
+                        try assertForegroundSuccess(outcome)
+                    } catch {
+                        failure = error.localizedDescription
+                    }
+                }
+                return result(for: outcome, failure: failure)
             } catch {
                 return .failed(error.localizedDescription)
             }
@@ -102,14 +116,79 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
         Radar.setDelegate(nil)
     }
 
-    private func result(for outcome: TrackOnceOutcome) -> RadarE2EResult {
+    private func waitForTrackLogs(since index: Int, expectingTrack: Bool) async {
+        let (ticks, tick) = AsyncStream<Void>.makeStream(bufferingPolicy: .bufferingNewest(1))
+        logArrived = tick
+        let deadline = Task {
+            try await Task.sleep(nanoseconds: Self.logSettleTimeoutSeconds * 1_000_000_000)
+            tick.finish()
+        }
+        defer {
+            deadline.cancel()
+            logArrived = nil
+        }
+        var iterator = ticks.makeAsyncIterator()
+        while !trackLog.isSettled(since: index, expectingTrack: expectingTrack) {
+            guard await iterator.next() != nil else { return }
+        }
+    }
+
+    private func assertCallback(_ outcome: TrackOnceOutcome) throws {
+        try check(outcome.status == .success, "trackOnce returned \(Radar.stringForStatus(outcome.status)).")
+        guard let user = outcome.user else { throw RadarE2EFailure("trackOnce returned no user.") }
+        try check(user.userId == userID, "The SDK user's userId was \(user.userId ?? "missing"), not \(userID).")
+        try check(isNearFixture(user.location), "The SDK user's location was more than 100 m from the fixture.")
+        try check(user.foreground, "The SDK user was not marked foreground.")
+        try check(user.source == .foregroundLocation, "The SDK user's source was \(Radar.stringForLocationSource(user.source)), not \(Self.foregroundSource).")
+        try check(!Radar.isTracking(), "Background tracking was on after trackOnce.")
+    }
+
+    private func assertRequest(_ exchange: RadarE2ETrackLog.Exchange) throws {
+        guard let request = exchange.request else { throw RadarE2EFailure("The SDK did not log the track request params.") }
+        try check(request.foreground == true, "The track request foreground was \(describe(request.foreground)), not true.")
+        try check(request.source == Self.foregroundSource, "The track request source was \(describe(request.source)), not \(Self.foregroundSource).")
+        try check(request.userId == userID, "The track request userId was \(describe(request.userId)), not \(userID).")
+        try check(
+            isNearFixture(latitude: request.latitude, longitude: request.longitude),
+            "The track request location was \(describe(request.latitude)), \(describe(request.longitude)), more than 100 m from the fixture.")
+    }
+
+    private func assertResponse(_ exchange: RadarE2ETrackLog.Exchange) throws {
+        try check(exchange.statusCode == 200, "The track response statusCode was \(describe(exchange.statusCode)), not 200.")
+        guard let user = exchange.response?.user else { throw RadarE2EFailure("The SDK did not log a track response with a user.") }
+        if let code = exchange.response?.meta?.code {
+            try check(code == 200, "The track response meta.code was \(code), not 200.")
+        }
+        try check(user.userId == userID, "The track response user.userId was \(describe(user.userId)), not \(userID).")
+        try check(user.foreground == true, "The track response user.foreground was \(describe(user.foreground)), not true.")
+        try check(user.source == Self.foregroundSource, "The track response user.source was \(describe(user.source)), not \(Self.foregroundSource).")
+        let coordinates = user.location?.coordinates ?? []
+        try check(
+            coordinates.count == 2 && isNearFixture(latitude: coordinates[1], longitude: coordinates[0]),
+            "The track response user.location.coordinates were \(coordinates), more than 100 m from the fixture.")
+    }
+
+    private func result(for outcome: TrackOnceOutcome, failure: String?) -> RadarE2EResult {
         RadarE2EResult(
             status: Radar.stringForStatus(outcome.status),
             userIdMatches: outcome.user?.userId == userID,
             foreground: outcome.user?.foreground,
             source: outcome.user.map { Radar.stringForLocationSource($0.source) },
             trackRequestCount: outcome.trackRequestCount,
-            failure: nil)
+            failure: failure)
+    }
+
+    private func isNearFixture(_ location: CLLocation) -> Bool {
+        location.distance(from: RadarE2EConfiguration.location) < Self.fixtureToleranceMeters
+    }
+
+    private func isNearFixture(latitude: Double?, longitude: Double?) -> Bool {
+        guard let latitude, let longitude else { return false }
+        return isNearFixture(CLLocation(latitude: latitude, longitude: longitude))
+    }
+
+    private func describe<T>(_ value: T?) -> String {
+        value.map { "\($0)" } ?? "missing"
     }
 
     private func check(_ condition: Bool, _ message: @autoclosure () -> String) throws {

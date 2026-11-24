@@ -8,7 +8,7 @@ final class RadarTrackOncePermissionUITests: RadarE2EPermissionUITestCase {
 
     func testTrackOnceAfterAllowOnce() throws {
         let result = try run(.trackOnce, request: .whenInUse, answers: [.allowOnce])
-        XCTAssertEqual(result.status, "SUCCESS", "\(result)")
+        assertForegroundSuccess(result)
     }
 
     func testTrackOnceAfterDontAllow() throws {
@@ -19,6 +19,6 @@ final class RadarTrackOncePermissionUITests: RadarE2EPermissionUITestCase {
 
     func testTrackOnceAfterChangeToAlwaysAllow() throws {
         let result = try run(.trackOnce, request: .always, answers: [.allowWhileUsing, .changeToAlwaysAllow])
-        XCTAssertEqual(result.status, "SUCCESS", "\(result)")
+        assertForegroundSuccess(result)
     }
 }

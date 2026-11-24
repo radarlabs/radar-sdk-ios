@@ -54,9 +54,10 @@ class RadarE2EPermissionUITestCase: XCTestCase {
         return try JSONDecoder().decode(RadarE2EResult.self, from: Data(json.utf8))
     }
 
-    /// Fails unless `trackOnce` succeeded with one foreground track request for this run's user.
+    /// Fails unless `trackOnce` succeeded and the host's request, response and callback checks all passed.
     func assertForegroundSuccess(_ result: RadarE2EResult) {
         XCTAssertEqual(result.status, "SUCCESS", "\(result)")
+        XCTAssertNil(result.failure)
         XCTAssertTrue(result.userIdMatches)
         XCTAssertEqual(result.foreground, true)
         XCTAssertEqual(result.source, "FOREGROUND_LOCATION")
