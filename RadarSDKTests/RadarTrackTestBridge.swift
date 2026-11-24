@@ -33,7 +33,6 @@ enum RadarTrackTestBridge {
             client.trackIP(
                 withStopped: false,
                 foreground: true,
-                source: .foregroundLocation,
                 preparedFraudPayload: payload,
                 expectedCountryCode: nil,
                 expectedStateCode: nil,

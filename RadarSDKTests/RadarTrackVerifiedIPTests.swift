@@ -119,6 +119,7 @@ final class RadarTrackVerifiedIPTests: XCTestCase {
     private struct Result {
         let status: RadarStatus
         let events: [RadarEvent]?
+        let user: RadarUser?
         let nearbyGeofences: [RadarGeofence]?
         let token: RadarVerifiedLocationToken?
     }
@@ -140,13 +141,13 @@ final class RadarTrackVerifiedIPTests: XCTestCase {
             secondary: false,
             location: location,
             reason: "ip reason"
-        ) { status, _, events, _, nearbyGeofences, _, token in
-            result = Result(status: status, events: events, nearbyGeofences: nearbyGeofences, token: token)
+        ) { status, _, events, user, nearbyGeofences, _, token in
+            result = Result(status: status, events: events, user: user, nearbyGeofences: nearbyGeofences, token: token)
             finished.fulfill()
         }
 
         wait(for: [finished], timeout: 5)
-        return result ?? Result(status: .errorUnknown, events: nil, nearbyGeofences: nil, token: nil)
+        return result ?? Result(status: .errorUnknown, events: nil, user: nil, nearbyGeofences: nil, token: nil)
     }
 
     private func stateSnapshot() -> [NSObject?] {
@@ -185,11 +186,41 @@ final class RadarTrackVerifiedIPTests: XCTestCase {
         XCTAssertEqual(result.status, .success)
         XCTAssertEqual(result.token?.verificationLevel, .ip)
         XCTAssertNil(result.nearbyGeofences)
+        XCTAssertNotNil(result.user)
         XCTAssertEqual(delegate.tokens.count, 1)
         XCTAssertEqual(delegate.eventUpdates, 1)
         XCTAssertEqual(delegate.locationUpdates, 0)
         XCTAssertTrue(delegate.failures.isEmpty)
         XCTAssertEqual(stateSnapshot(), before)
+    }
+
+    func test_ipJWSResponseWithoutUserLocationStillDeliversTokenAndEvents() {
+        var response = jwsResponse()
+        var user = response["user"] as? [String: Any] ?? [:]
+        user["location"] = nil
+        response["user"] = user
+        let before = stateSnapshot()
+
+        let result = track(response: response, location: nil)
+
+        XCTAssertEqual(result.status, .success)
+        XCTAssertNil(result.user)
+        XCTAssertEqual(delegate.eventUpdates, 1)
+        XCTAssertEqual(delegate.tokens.first?.verificationLevel, .ip)
+        XCTAssertEqual(stateSnapshot(), before)
+    }
+
+    func test_ipRequestIsNotBatched() throws {
+        let options = RadarTrackingOptions.presetContinuous
+        options.batchSize = 10
+        RadarSettings.trackingOptions = options
+
+        let result = track(response: jwsResponse(), location: nil)
+
+        XCTAssertEqual(result.status, .success)
+        XCTAssertNotNil(result.token)
+        let params = try XCTUnwrap(helper.lastParams as? [String: Any])
+        XCTAssertEqual(params["source"] as? String, "FOREGROUND_LOCATION")
     }
 
     func test_ipReducedResponsesUseTheIPLevelWhenTheServerOmitsIt() {

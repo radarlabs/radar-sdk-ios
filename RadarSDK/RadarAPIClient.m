@@ -366,7 +366,6 @@
 
 - (void)trackIPWithStopped:(BOOL)stopped
                 foreground:(BOOL)foreground
-                    source:(RadarLocationSource)source
       preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
        expectedCountryCode:(NSString *_Nullable)expectedCountryCode
          expectedStateCode:(NSString *_Nullable)expectedStateCode
@@ -378,7 +377,6 @@
          completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     [self trackIPWithStopped:stopped
                   foreground:foreground
-                      source:source
         preparedFraudPayload:preparedFraudPayload
          expectedCountryCode:expectedCountryCode
            expectedStateCode:expectedStateCode
@@ -393,7 +391,6 @@
 
 - (void)trackIPWithStopped:(BOOL)stopped
                 foreground:(BOOL)foreground
-                    source:(RadarLocationSource)source
       preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
        expectedCountryCode:(NSString *_Nullable)expectedCountryCode
          expectedStateCode:(NSString *_Nullable)expectedStateCode
@@ -404,10 +401,11 @@
   useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                  traceSpan:(RadarTraceSpan *_Nullable)traceSpan
          completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    // A foreground source also keeps the request out of the track batch.
     [self trackInternalWithLocation:nil
                             stopped:stopped
                          foreground:foreground
-                             source:source
+                             source:RadarLocationSourceForegroundLocation
                            replayed:NO
                             beacons:nil
                      indoorLocation:nil
@@ -715,10 +713,11 @@
                      config:(RadarConfig *)config
           completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:res[@"events"]];
-    RadarUser *user = [[RadarUser alloc] initWithObject:res[@"user"]];
     RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res
                                                                  requestedVerificationLevel:RadarVerificationLevelIp];
-    if (!events || !user || !token) {
+    // The user is optional: it is nil when the response user has no location.
+    RadarUser *user = token.user;
+    if (!events || !token) {
         [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorServer];
         completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
         return;

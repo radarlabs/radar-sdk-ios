@@ -51,10 +51,9 @@ NS_ASSUME_NONNULL_BEGIN
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
 // Sends an IP-only verified check: the request has no device location, and the response does not change location,
-// geofence, place, region, beacon, or trip state.
+// geofence, place, region, beacon, or trip state. The source is always foreground, so the request is never batched.
 - (void)trackIPWithStopped:(BOOL)stopped
                 foreground:(BOOL)foreground
-                    source:(RadarLocationSource)source
       preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
        expectedCountryCode:(NSString *_Nullable)expectedCountryCode
          expectedStateCode:(NSString *_Nullable)expectedStateCode

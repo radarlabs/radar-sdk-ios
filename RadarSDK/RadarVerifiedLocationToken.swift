@@ -70,8 +70,34 @@ public final class RadarVerifiedLocationToken: NSObject {
 
     // Preserve the existing initializer and Objective-C selector.
     @objc(initWithUser:events:token:expiresAt:expiresIn:passed:failureReasons:_id:fullDict:)
-    init(
+    convenience init(
         user: RadarUser,
+        events: [RadarEvent],
+        token: String,
+        expiresAt: Date,
+        expiresIn: TimeInterval,
+        passed: Bool,
+        failureReasons: [String],
+        _id: String?,  // swiftlint:disable:this identifier_name
+        fullDict: [AnyHashable: Any]
+    ) {
+        self.init(
+            jwsUser: user,
+            events: events,
+            token: token,
+            expiresAt: expiresAt,
+            expiresIn: expiresIn,
+            passed: passed,
+            failureReasons: failureReasons,
+            _id: _id,
+            fullDict: fullDict
+        )
+    }
+
+    /// A JWS token. The user is nil only for an IP check whose user has no location.
+    @nonobjc
+    private init(
+        jwsUser user: RadarUser?,
         events: [RadarEvent],
         token: String,
         expiresAt: Date,
@@ -166,12 +192,16 @@ public final class RadarVerifiedLocationToken: NSObject {
                 .compactMap { $0 as? String } ?? []
             let id = dict["_id"] as? String
 
-            guard let user, let events, let token, let expiresAt else {
+            // An IP check's user can have no location, so it does not parse. Only an IP check
+            // can have a token without a user.
+            guard user != nil || requestedVerificationLevel == .ip,
+                let events, let token, let expiresAt
+            else {
                 return nil
             }
 
             self.init(
-                user: user,
+                jwsUser: user,
                 events: events,
                 token: token,
                 expiresAt: expiresAt,
