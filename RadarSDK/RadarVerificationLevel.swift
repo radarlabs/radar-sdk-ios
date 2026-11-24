@@ -10,7 +10,7 @@ import Foundation
 /// The level of a verified location check.
 @objc(RadarVerificationLevel)
 public enum RadarVerificationLevel: Int {
-    /// The response did not include a known level.
+    /// No known level. For `requiredVerificationLevel`, this means that no step-up is required.
     case unknown = 0
 
     /// A check that uses device, network, and IP signals, but not the device location.

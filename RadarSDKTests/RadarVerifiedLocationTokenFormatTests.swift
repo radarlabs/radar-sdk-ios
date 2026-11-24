@@ -314,15 +314,32 @@ struct RadarTokenVerificationLevelTests {
     }
 
     @Test(arguments: ["jws", "jwe", "id"])
-    func missingVerificationLevelsAreUnknown(format: String) throws {
+    func missingVerificationLevelUsesTheRequestedLevel(format: String) throws {
         let token = try #require(RadarVerifiedLocationToken(object: object(format: format)))
 
-        #expect(token.verificationLevel == .unknown)
+        #expect(token.verificationLevel == .precise)
         #expect(token.requiredVerificationLevel == .unknown)
+
+        let ipToken = try #require(
+            RadarVerifiedLocationToken(object: object(format: format), requestedVerificationLevel: .ip)
+        )
+        #expect(ipToken.verificationLevel == .ip)
+        #expect(ipToken.requiredVerificationLevel == .unknown)
     }
 
     @Test(arguments: ["jws", "jwe", "id"])
-    func invalidVerificationLevelsDoNotRejectTheToken(format: String) throws {
+    func responseLevelWinsOverTheRequestedLevel(format: String) throws {
+        var precise = object(format: format)
+        precise["verificationLevel"] = "precise"
+        let token = try #require(
+            RadarVerifiedLocationToken(object: precise, requestedVerificationLevel: .ip)
+        )
+
+        #expect(token.verificationLevel == .precise)
+    }
+
+    @Test(arguments: ["jws", "jwe", "id"])
+    func invalidVerificationLevelsUseTheFallbackAndDoNotRejectTheToken(format: String) throws {
         let values: [Any] = ["unknown", "", "IP", NSNull(), 42, true, ["ip"]]
 
         for value in values {
@@ -333,9 +350,14 @@ struct RadarTokenVerificationLevelTests {
                 RadarVerifiedLocationToken(object: invalid),
                 "\(format): \(value)"
             )
+            let ipToken = try #require(
+                RadarVerifiedLocationToken(object: invalid, requestedVerificationLevel: .ip),
+                "\(format): \(value)"
+            )
 
-            #expect(token.verificationLevel == .unknown, "\(format): \(value)")
+            #expect(token.verificationLevel == .precise, "\(format): \(value)")
             #expect(token.requiredVerificationLevel == .unknown, "\(format): \(value)")
+            #expect(ipToken.verificationLevel == .ip, "\(format): \(value)")
         }
     }
 
@@ -352,10 +374,10 @@ struct RadarTokenVerificationLevelTests {
     }
 
     @Test
-    func emptyTokenHasUnknownVerificationLevels() {
+    func emptyTokenDefaultsToPreciseWithNoStepUp() {
         let token = RadarVerifiedLocationToken()
 
-        #expect(token.verificationLevel == .unknown)
+        #expect(token.verificationLevel == .precise)
         #expect(token.requiredVerificationLevel == .unknown)
     }
 
