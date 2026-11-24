@@ -21,6 +21,26 @@ final class RadarTrackResponseHandler: NSObject {
             RadarVerifiedLocationToken?
         ) -> Void
     ) -> Bool {
+        handleResponse(
+            response,
+            verified: verified,
+            isTrackingVerified: { Radar.isTrackingVerified() },
+            stopTrackingVerified: { Radar.stopTrackingVerified() },
+            completionHandler: completionHandler
+        )
+    }
+
+    static func handleResponse(
+        _ response: [AnyHashable: Any],
+        verified: Bool,
+        isTrackingVerified: () -> Bool,
+        stopTrackingVerified: () -> Void,
+        completionHandler: (
+            RadarStatus,
+            [AnyHashable: Any]?,
+            RadarVerifiedLocationToken?
+        ) -> Void
+    ) -> Bool {
         guard verified else {
             return false
         }
@@ -31,6 +51,16 @@ final class RadarTrackResponseHandler: NSObject {
             )
         else {
             completionHandler(.errorServer, nil, nil)
+            return true
+        }
+
+        if format == .id && isTrackingVerified() {
+            stopTrackingVerified()
+            RadarLogger.shared.error(
+                "ID responses do not support startTrackingVerified().",
+                type: .sdkError
+            )
+            completionHandler(.errorBadRequest, nil, nil)
             return true
         }
 

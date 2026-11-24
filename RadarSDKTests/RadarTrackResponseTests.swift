@@ -35,6 +35,93 @@ private final class TrackResponseDelegate: NSObject, RadarDelegate, RadarVerifie
     }
 }
 
+extension RadarTrackResponseTests {
+    func test_IDResponseStopsTrackingBeforeReturningBadRequest() {
+        let idResponse: [AnyHashable: Any] = ["format": "id", "_id": "lookup-id"]
+        var tracking = true
+        var calls: [String] = []
+
+        let handled = RadarTrackResponseHandler.handleResponse(
+            idResponse,
+            verified: true,
+            isTrackingVerified: { tracking },
+            stopTrackingVerified: {
+                tracking = false
+                calls.append("stop")
+            },
+            completionHandler: { status, response, token in
+                calls.append("completion")
+                XCTAssertFalse(tracking)
+                XCTAssertEqual(status, .errorBadRequest)
+                XCTAssertNil(response)
+                XCTAssertNil(token)
+            }
+        )
+
+        XCTAssertTrue(handled)
+        XCTAssertFalse(tracking)
+        XCTAssertEqual(calls, ["stop", "completion"])
+
+        var oneShotCallbacks = 0
+        let oneShotHandled = RadarTrackResponseHandler.handleResponse(
+            idResponse,
+            verified: true,
+            isTrackingVerified: { tracking },
+            stopTrackingVerified: { XCTFail("Standalone ID must not stop tracking") },
+            completionHandler: { status, response, token in
+                oneShotCallbacks += 1
+                XCTAssertEqual(status, .success)
+                XCTAssertEqual(response?["_id"] as? String, "lookup-id")
+                XCTAssertEqual(token?.format, .id)
+            }
+        )
+
+        XCTAssertTrue(oneShotHandled)
+        XCTAssertEqual(oneShotCallbacks, 1)
+    }
+
+    func test_otherResponsesDoNotStopContinuousTracking() {
+        struct Scenario {
+            let response: [AnyHashable: Any]
+            let verified: Bool
+            let handled: Bool
+        }
+
+        var jws = legacyResponse()
+        jws["format"] = "jws"
+
+        let cases = [
+            Scenario(response: legacyResponse(), verified: true, handled: false),
+            Scenario(response: jws, verified: true, handled: false),
+            Scenario(response: jweResponse(), verified: true, handled: true),
+            Scenario(response: ["format": "id", "_id": "lookup-id"], verified: false, handled: false),
+        ]
+
+        for scenario in cases {
+            var callbackCount = 0
+
+            let handled = RadarTrackResponseHandler.handleResponse(
+                scenario.response,
+                verified: scenario.verified,
+                isTrackingVerified: { true },
+                stopTrackingVerified: {
+                    XCTFail("This response must not stop verified tracking")
+                },
+                completionHandler: { status, response, token in
+                    callbackCount += 1
+                    XCTAssertEqual(status, .success)
+                    XCTAssertNotNil(response)
+                    XCTAssertEqual(token?.format, .jwe)
+                }
+            )
+
+            XCTAssertEqual(handled, scenario.handled)
+            XCTAssertEqual(callbackCount, scenario.handled ? 1 : 0)
+        }
+    }
+
+}
+
 final class RadarTrackResponseTests: XCTestCase {
     private func jweResponse(passed: Bool = true) -> [AnyHashable: Any] {
         [

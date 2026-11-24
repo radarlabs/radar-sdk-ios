@@ -25,7 +25,7 @@ private final class RefreshSchedulingManager: RadarVerificationManager {
 }
 
 final class RadarVerifiedRefreshSchedulingTests: XCTestCase {
-    func test_IDUsesConfiguredInterval() throws {
+    func test_cachedIDFromOneShotDoesNotDriveRefreshExpiry() throws {
         let token = try XCTUnwrap(
             RadarVerifiedLocationToken(object: [
                 "format": "id",
@@ -35,7 +35,8 @@ final class RadarVerifiedRefreshSchedulingTests: XCTestCase {
 
         let delay = try scheduledDelay(for: token)
 
-        // Configured interval of 300 seconds, minus the early refresh margin.
+        // A prior one-shot ID can remain cached before a continuous request completes.
+        // Its missing expiry must not override the configured refresh interval.
         XCTAssertEqual(delay, 290, accuracy: 0.1)
     }
 
