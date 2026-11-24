@@ -241,3 +241,80 @@ extension RadarVerifiedHostOverrideTests {
         }
     }
 }
+
+extension RadarVerifiedHostOverrideTests {
+    func test_trackVerifiedOptions_defaultsMatchTheExistingDefaults() {
+        let options = RadarTrackVerifiedOptions()
+
+        XCTAssertFalse(options.beacons)
+        XCTAssertEqual(options.desiredAccuracy, .medium)
+        XCTAssertNil(options.reason)
+        XCTAssertNil(options.transactionId)
+
+        options.beacons = true
+        options.desiredAccuracy = .high
+        options.reason = "reason"
+        options.transactionId = "transaction"
+        XCTAssertEqual(options.value(forKey: "beacons") as? Bool, true)
+        XCTAssertEqual(
+            (options.value(forKey: "desiredAccuracy") as? NSNumber)?.intValue,
+            RadarTrackingOptionsDesiredAccuracy.high.rawValue
+        )
+        XCTAssertEqual(options.value(forKey: "reason") as? String, "reason")
+        XCTAssertEqual(options.value(forKey: "transactionId") as? String, "transaction")
+    }
+
+    func test_trackVerifiedOptions_forwardsReasonAndTransactionId() throws {
+        let client = RadarAPIClient.sharedInstance()
+        let originalHelper = client.apiHelper
+        let originalAnonymous = RadarSettings.anonymousTrackingEnabled
+        let buffer = RadarReplayBuffer.sharedInstance
+        let originalReplays = buffer.mutableReplayBuffer
+        let manager = try XCTUnwrap(ObjCVerificationManager.shared)
+        defer {
+            client.apiHelper = originalHelper
+            RadarSettings.anonymousTrackingEnabled = originalAnonymous
+            buffer.mutableReplayBuffer = originalReplays
+            manager.instance.setValue(nil, forKey: "trackVerifiedLocationManager")
+            manager.instance.setValue(nil, forKey: "trackVerifiedPayloadFactory")
+        }
+        RadarSettings.anonymousTrackingEnabled = false
+        buffer.mutableReplayBuffer = []
+
+        let helper = MainQueueAPIHelperMock()
+        helper.mockStatus = .success
+        helper.mockResponse = ["meta": ["config": [:]]]
+        let trackURL = "\(RadarSettings.verifiedHost)/v1/track"
+        helper.setMockStatus(.errorServer, forMethod: trackURL)
+        client.apiHelper = helper
+
+        let instance = makeCollectedFraudInstance(result: ["payload": MockFraudEnvelope.payload])
+        let fraudSDK = try XCTUnwrap(RadarSDKFraud(instance: instance))
+        manager.instance.setValue(TrackVerifiedLocationManagerMock(), forKey: "trackVerifiedLocationManager")
+        let factory: @convention(block) ([String: Any]) -> NSObject = { options in
+            RadarTrackVerifiedRequestPreparer(fraudSDK: fraudSDK, options: options)
+        }
+        manager.instance.setValue(factory as AnyObject, forKey: "trackVerifiedPayloadFactory")
+
+        let options = RadarTrackVerifiedOptions()
+        options.reason = "options reason"
+        options.transactionId = "options-tx"
+
+        let finished = expectation(description: "trackVerified(options:) completes")
+        Radar.trackVerified(options: options) { status, token in
+            XCTAssertEqual(status, .errorServer)
+            XCTAssertNil(token)
+            finished.fulfill()
+        }
+        wait(for: [finished], timeout: 5)
+
+        XCTAssertEqual(helper.lastUrl, trackURL)
+        let prepared = try XCTUnwrap(instance.result?["preparedPayload"] as? MockPreparedFraudPayloadInstance)
+        let context = try XCTUnwrap(prepared.capturedOptions.first)
+        let coreBody = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: try XCTUnwrap(context["body"] as? Data)) as? [String: Any]
+        )
+        XCTAssertEqual(coreBody["reason"] as? String, "options reason")
+        XCTAssertEqual(coreBody["transactionId"] as? String, "options-tx")
+    }
+}

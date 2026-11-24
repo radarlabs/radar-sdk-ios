@@ -482,6 +482,14 @@ BOOL _initialized = NO;
     [[RadarVerificationManager sharedInstance] trackVerifiedWithBeacons:beacons desiredAccuracy:desiredAccuracy reason:reason transactionId:transactionId completionHandler:completionHandler];
 }
 
++ (void)trackVerifiedWithOptions:(RadarTrackVerifiedOptions *)options completionHandler:(RadarTrackVerifiedCompletionHandler)completionHandler {
+    [self trackVerifiedWithBeacons:options.beacons
+                   desiredAccuracy:options.desiredAccuracy
+                            reason:options.reason
+                     transactionId:options.transactionId
+                 completionHandler:completionHandler];
+}
+
 + (void)revealRiskWithCompletionHandler:(RadarRevealRiskCompletionHandler)completionHandler {
     [[RadarLogger sharedInstance] logWithLevel:RadarLogLevelInfo type:RadarLogTypeSDKCall message:@"revealRisk()"];
     [[RadarRevealRiskManager shared] revealRiskWithUseSecondaryVerifiedHost:NO

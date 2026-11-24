@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RadarInAppMessage;
 @class RadarRevealRiskToken;
 @class RadarInitializeOptions;
+@class RadarTrackVerifiedOptions;
 @class RadarTripLeg;
 @class RadarRouteMatrix;
 @class RadarRoutes;
@@ -646,6 +647,18 @@ typedef void (^_Nonnull RadarIndoorsScanCompletionHandler)(NSString *_Nullable r
  @see https://radar.com/documentation/fraud
  */
 + (void)trackVerifiedWithBeacons:(BOOL)beacons desiredAccuracy:(RadarTrackingOptionsDesiredAccuracy)desiredAccuracy reason:(NSString *_Nullable)reason transactionId:(NSString *_Nullable)transactionId completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(beacons:desiredAccuracy:reason:transactionId:completionHandler:));
+
+/**
+ Tracks the user's location with device integrity information for location verification use cases.
+
+ @warning Note that you must configure SSL pinning before calling this method.
+
+ @param options The options for the location check.
+ @param completionHandler An optional completion handler.
+
+ @see https://radar.com/documentation/fraud
+ */
++ (void)trackVerifiedWithOptions:(RadarTrackVerifiedOptions *_Nonnull)options completionHandler:(RadarTrackVerifiedCompletionHandler _Nullable)completionHandler NS_SWIFT_NAME(trackVerified(options:completionHandler:));
 
 /**
  Starts tracking the user's location with device integrity information for location verification use cases.

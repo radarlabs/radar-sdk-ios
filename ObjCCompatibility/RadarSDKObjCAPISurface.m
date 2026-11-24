@@ -517,6 +517,19 @@ RADAR_API_SURFACE NSArray<NSDictionary *> *_Nullable call_RadarTripOrder_class_a
 }
 RADAR_API_SURFACE NSDictionary *_Nonnull call_RadarTripOrder_dictionaryValue(RadarTripOrder *obj) { return [obj dictionaryValue]; }
 
+#pragma mark - RadarTrackVerifiedOptions
+
+RADAR_API_SURFACE Class class_RadarTrackVerifiedOptions(void) { return [RadarTrackVerifiedOptions class]; }
+RADAR_API_SURFACE BOOL get_RadarTrackVerifiedOptions_beacons(RadarTrackVerifiedOptions *obj) { return obj.beacons; }
+RADAR_API_SURFACE void set_RadarTrackVerifiedOptions_beacons(RadarTrackVerifiedOptions *obj, BOOL value) { obj.beacons = value; }
+RADAR_API_SURFACE RadarTrackingOptionsDesiredAccuracy get_RadarTrackVerifiedOptions_desiredAccuracy(RadarTrackVerifiedOptions *obj) { return obj.desiredAccuracy; }
+RADAR_API_SURFACE void set_RadarTrackVerifiedOptions_desiredAccuracy(RadarTrackVerifiedOptions *obj, RadarTrackingOptionsDesiredAccuracy value) { obj.desiredAccuracy = value; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarTrackVerifiedOptions_reason(RadarTrackVerifiedOptions *obj) { return obj.reason; }
+RADAR_API_SURFACE void set_RadarTrackVerifiedOptions_reason(RadarTrackVerifiedOptions *obj, NSString *_Nullable value) { obj.reason = value; }
+RADAR_API_SURFACE NSString *_Nullable get_RadarTrackVerifiedOptions_transactionId(RadarTrackVerifiedOptions *obj) { return obj.transactionId; }
+RADAR_API_SURFACE void set_RadarTrackVerifiedOptions_transactionId(RadarTrackVerifiedOptions *obj, NSString *_Nullable value) { obj.transactionId = value; }
+RADAR_API_SURFACE RadarTrackVerifiedOptions *_Nonnull call_RadarTrackVerifiedOptions_init(void) { return [[RadarTrackVerifiedOptions alloc] init]; }
+
 #pragma mark - RadarVerifiedLocationToken
 
 RADAR_API_SURFACE Class class_RadarVerifiedLocationToken(void) { return [RadarVerifiedLocationToken class]; }
