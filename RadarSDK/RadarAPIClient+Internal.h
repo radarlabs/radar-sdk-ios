@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
                 traceSpan:(RadarTraceSpan *_Nullable)traceSpan
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)trackWithLocation:(CLLocation *_Nonnull)location
+- (void)trackWithLocation:(CLLocation *_Nullable)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source

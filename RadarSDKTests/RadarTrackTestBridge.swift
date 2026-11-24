@@ -21,11 +21,13 @@ enum RadarTrackTestBridge {
         withPreparedPayload payload: NSObject?,
         verified: Bool,
         secondary: Bool,
+        location: CLLocation? = CLLocation(latitude: 40.0, longitude: -73.0),
+        reason: String? = nil,
         completion: @escaping RadarTrackAPICompletionHandler
     ) {
         let callback = TrackCompletion(completion)
         RadarAPIClient.sharedInstance().track(
-            with: CLLocation(latitude: 40.0, longitude: -73.0),
+            with: location,
             stopped: false,
             foreground: true,
             source: .foregroundLocation,
@@ -37,7 +39,7 @@ enum RadarTrackTestBridge {
             expectedCountryCode: nil,
             expectedStateCode: nil,
             expectedAddress: nil,
-            reason: nil,
+            reason: reason,
             transactionId: nil,
             revealRiskId: nil,
             useSecondaryVerifiedHost: secondary,

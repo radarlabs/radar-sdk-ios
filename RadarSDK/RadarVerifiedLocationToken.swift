@@ -132,7 +132,7 @@ public final class RadarVerifiedLocationToken: NSObject {
 
     /// Parses a verified track response. `requestedVerificationLevel` is the level that the SDK
     /// requested. It is the `verificationLevel` when the response does not include a known level.
-    @nonobjc
+    @objc(initWithObject:requestedVerificationLevel:)
     convenience init?(  // swiftlint:disable:this function_body_length
         object: Any,
         requestedVerificationLevel: RadarVerificationLevel

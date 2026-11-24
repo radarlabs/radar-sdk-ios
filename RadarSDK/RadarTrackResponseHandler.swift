@@ -11,10 +11,11 @@ import Foundation
 @objc(RadarTrackResponseHandler)
 final class RadarTrackResponseHandler: NSObject {
     /// Returns false when the existing Track response path should continue.
-    @objc(handleResponse:verified:completionHandler:)
+    @objc(handleResponse:verified:requestedVerificationLevel:completionHandler:)
     static func handleResponse(
         _ response: [AnyHashable: Any],
         verified: Bool,
+        requestedVerificationLevel: RadarVerificationLevel,
         completionHandler: (
             RadarStatus,
             [AnyHashable: Any]?,
@@ -68,7 +69,12 @@ final class RadarTrackResponseHandler: NSObject {
             return false
         }
 
-        guard let token = RadarVerifiedLocationToken(object: response) else {
+        guard
+            let token = RadarVerifiedLocationToken(
+                object: response,
+                requestedVerificationLevel: requestedVerificationLevel
+            )
+        else {
             completionHandler(.errorServer, nil, nil)
             return true
         }

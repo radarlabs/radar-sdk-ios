@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)handleResponse:(NSDictionary *)response
              verified:(BOOL)verified
+    requestedVerificationLevel:(RadarVerificationLevel)requestedVerificationLevel
     completionHandler:(void (^)(RadarStatus status,
                                 NSDictionary *_Nullable response,
                                 RadarVerifiedLocationToken *_Nullable token))completionHandler;

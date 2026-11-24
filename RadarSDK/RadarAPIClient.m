@@ -289,7 +289,7 @@
           completionHandler:completionHandler];
 }
 
-- (void)trackWithLocation:(CLLocation *_Nonnull)location
+- (void)trackWithLocation:(CLLocation *_Nullable)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
@@ -326,7 +326,7 @@
           completionHandler:completionHandler];
 }
 
-- (void)trackWithLocation:(CLLocation *_Nonnull)location
+- (void)trackWithLocation:(CLLocation *_Nullable)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
@@ -347,6 +347,10 @@
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
+    }
+    // A nil location sends an IP-only verified check. Only verified checks can run without a location.
+    if (!location && !verified) {
+        return completionHandler(RadarStatusErrorBadRequest, nil, nil, nil, nil, nil, nil);
     }
     NSMutableDictionary *params = [NSMutableDictionary new];
     RadarSdkConfiguration *sdkConfiguration = [RadarSettings sdkConfiguration];
@@ -374,30 +378,34 @@
         sessionId = [RadarSettings sessionId];
         params[@"sessionId"] = sessionId;
     }
-    params[@"latitude"] = @(location.coordinate.latitude);
-    params[@"longitude"] = @(location.coordinate.longitude);
-    CLLocationAccuracy accuracy = location.horizontalAccuracy;
-    if (accuracy <= 0) {
-        accuracy = 1;
+    if (location) {
+        params[@"latitude"] = @(location.coordinate.latitude);
+        params[@"longitude"] = @(location.coordinate.longitude);
+        CLLocationAccuracy accuracy = location.horizontalAccuracy;
+        if (accuracy <= 0) {
+            accuracy = 1;
+        }
+        params[@"accuracy"] = @(accuracy);
+        params[@"altitude"] = @(location.altitude);
+        params[@"verticalAccuracy"] = @(location.verticalAccuracy);
+        params[@"speed"] = @(location.speed);
+        params[@"speedAccuracy"] = @(location.speedAccuracy);
+        params[@"course"] = @(location.course);
+        if (@available(iOS 13.4, *)) {
+            params[@"courseAccuracy"] = @(location.courseAccuracy);
+        }
+        if (location.floor) {
+            params[@"floorLevel"] = @(location.floor.level);
+        }
+        long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+        long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
+        if (sdkConfiguration.useForegroundLocationUpdatedAtMsDiff || !foreground) {
+            params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
+        }
+        params[@"locationMs"] = @(locationMs);
+    } else {
+        params[@"verificationLevel"] = @"ip";
     }
-    params[@"accuracy"] = @(accuracy);
-    params[@"altitude"] = @(location.altitude);
-    params[@"verticalAccuracy"] = @(location.verticalAccuracy);
-    params[@"speed"] = @(location.speed);
-    params[@"speedAccuracy"] = @(location.speedAccuracy);
-    params[@"course"] = @(location.course);
-    if (@available(iOS 13.4, *)) {
-        params[@"courseAccuracy"] = @(location.courseAccuracy);
-    }
-    if (location.floor) {
-        params[@"floorLevel"] = @(location.floor.level);
-    }
-    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
-    long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
-    if (sdkConfiguration.useForegroundLocationUpdatedAtMsDiff || !foreground) {
-        params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
-    }
-    params[@"locationMs"] = @(locationMs);
     params[@"foreground"] = @(foreground);
     params[@"stopped"] = @(stopped);
     params[@"replayed"] = @(replayed);
@@ -434,7 +442,7 @@
         params[@"tripOptions"] = tripParams;
     }
     RadarTrackingOptions *options = [Radar getTrackingOptions];
-    if (options.syncGeofences) {
+    if (location && options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
     }
     if (beacons) {
@@ -492,7 +500,7 @@
     }
     
     NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
-    if (options.useMotion) {
+    if (location && options.useMotion) {
         locationMetadata[@"motionActivityData"] = RadarState.shared.lastMotionActivityData;
         locationMetadata[@"heading"] = RadarState.shared.lastHeadingData;
         locationMetadata[@"speed"] = @(location.speed);
@@ -513,7 +521,7 @@
         }
     }
 
-    if (options.usePressure) {
+    if (location && options.usePressure) {
         locationMetadata[@"altitude"] = @(location.altitude);
         locationMetadata[@"floor"] = @([location.floor level]);
         locationMetadata[@"pressureHPa"] = RadarState.shared.lastRelativeAltitudeData;
@@ -533,7 +541,7 @@
 
     // RadarIndoors.getLocation only returns a location with a usable (valid, non-origin) coordinate,
     // so the nil check alone is enough here.
-    if (options.useIndoorScan && indoorLocation) {
+    if (location && options.useIndoorScan && indoorLocation) {
         locationMetadata[@"indoorMLLatitude"] = @(indoorLocation.coordinate.latitude);
         locationMetadata[@"indoorMLLongitude"] = @(indoorLocation.coordinate.longitude);
         locationMetadata[@"deviceLatitude"] = params[@"latitude"];
@@ -588,7 +596,7 @@
             preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
                         options:(RadarTrackingOptions *)options
                         stopped:(BOOL)stopped
-                        location:(CLLocation *)location
+                        location:(CLLocation *_Nullable)location
                         source:(RadarLocationSource)source
                         verified:(BOOL)verified
         useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
@@ -661,6 +669,12 @@
     } else {
         RadarAPICompletionHandler handleResponse = ^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                             if (status != RadarStatusSuccess || !res) {
+                                if (!location) {
+                                    // An IP-only check has no location to replay or to generate offline events from.
+                                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+                                    return completionHandler(status, nil, nil, nil, nil, nil, nil);
+                                }
+
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
@@ -717,10 +731,13 @@
                             [RadarSettings updateLastTrackedTime];
 
                             RadarConfig *config = [RadarConfig fromDictionary:res];
+                            RadarVerificationLevel requestedVerificationLevel =
+                                location ? RadarVerificationLevelPrecise : RadarVerificationLevelIp;
 
                             if ([RadarTrackResponseHandler
                                     handleResponse:res
                                     verified:verified
+                                    requestedVerificationLevel:requestedVerificationLevel
                                     completionHandler:^(RadarStatus responseStatus,
                                                         NSDictionary *_Nullable response,
                                                         RadarVerifiedLocationToken *_Nullable token) {
@@ -735,6 +752,26 @@
                                         completionHandler(RadarStatusSuccess, response, nil, nil, nil, config, token);
                                     }]) {
                                 return;
+                            }
+
+                            if (!location) {
+                                // IP-only JWS response: deliver the token and the events, but do not change
+                                // location, geofence, place, region, beacon, or trip state.
+                                NSArray<RadarEvent *> *ipEvents = [RadarEvent eventsFromObject:res[@"events"]];
+                                RadarUser *ipUser = [[RadarUser alloc] initWithObject:res[@"user"]];
+                                RadarVerifiedLocationToken *ipToken =
+                                    [[RadarVerifiedLocationToken alloc] initWithObject:res
+                                                            requestedVerificationLevel:requestedVerificationLevel];
+                                if (!ipEvents || !ipUser || !ipToken) {
+                                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorServer];
+                                    return completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
+                                }
+
+                                if (ipEvents.count) {
+                                    [[RadarDelegateHolder sharedInstance] didReceiveEvents:ipEvents user:ipUser];
+                                }
+                                [[RadarDelegateHolder sharedInstance] didUpdateToken:ipToken];
+                                return completionHandler(RadarStatusSuccess, res, ipEvents, ipUser, nil, config, ipToken);
                             }
 
                             id eventsObj = res[@"events"];

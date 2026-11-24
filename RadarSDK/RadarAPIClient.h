@@ -91,7 +91,7 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
            indoorLocation:(CLLocation *_Nullable)indoorLocation
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
-- (void)trackWithLocation:(CLLocation *_Nonnull)location
+- (void)trackWithLocation:(CLLocation *_Nullable)location
                   stopped:(BOOL)stopped
                foreground:(BOOL)foreground
                    source:(RadarLocationSource)source
