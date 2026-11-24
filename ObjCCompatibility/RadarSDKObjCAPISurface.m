@@ -531,6 +531,8 @@ RADAR_API_SURFACE NSString *_Nullable get_RadarVerifiedLocationToken__id(RadarVe
 RADAR_API_SURFACE NSDictionary *_Nullable get_RadarVerifiedLocationToken_fullDict(RadarVerifiedLocationToken *obj) { return obj.fullDict; }
 RADAR_API_SURFACE NSDictionary *_Nonnull call_RadarVerifiedLocationToken_dictionaryValue(RadarVerifiedLocationToken *obj) { return [obj dictionaryValue]; }
 RADAR_API_SURFACE enum RadarResponseFormat get_RadarVerifiedLocationToken_format(RadarVerifiedLocationToken *obj) { return obj.format; }
+RADAR_API_SURFACE enum RadarVerificationLevel get_RadarVerifiedLocationToken_verificationLevel(RadarVerifiedLocationToken *obj) { return obj.verificationLevel; }
+RADAR_API_SURFACE enum RadarVerificationLevel get_RadarVerifiedLocationToken_requiredVerificationLevel(RadarVerifiedLocationToken *obj) { return obj.requiredVerificationLevel; }
 
 #pragma mark - RadarAddress
 

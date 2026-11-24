@@ -45,6 +45,15 @@ public final class RadarVerifiedLocationToken: NSObject {
     /// The response dictionary.
     public let fullDict: [AnyHashable: Any]?
 
+    /// The level of the check that ran. If the response does not include a known level, this is the
+    /// level that the SDK requested. Default `precise`.
+    public private(set) var verificationLevel: RadarVerificationLevel = .precise
+
+    /// The level that the app must run next. `precise` means that the app must run a precise
+    /// check. `unknown` means that no step-up is required.
+    /// Use this property, not `passed`, to decide on a step-up. The backend must verify the result.
+    public private(set) var requiredVerificationLevel: RadarVerificationLevel = .unknown
+
     override init() {
         format = .jws
         user = nil
@@ -117,7 +126,17 @@ public final class RadarVerifiedLocationToken: NSObject {
     }
 
     @objc(initWithObject:)
-    convenience init?(object: Any) {  // swiftlint:disable:this function_body_length
+    convenience init?(object: Any) {
+        self.init(object: object, requestedVerificationLevel: .precise)
+    }
+
+    /// Parses a verified track response. `requestedVerificationLevel` is the level that the SDK
+    /// requested. It is the `verificationLevel` when the response does not include a known level.
+    @nonobjc
+    convenience init?(  // swiftlint:disable:this function_body_length
+        object: Any,
+        requestedVerificationLevel: RadarVerificationLevel
+    ) {
         guard let dict = object as? NSDictionary,
             let format = RadarResponseFormat(responseValue: dict["format"])
         else {
@@ -169,6 +188,7 @@ public final class RadarVerifiedLocationToken: NSObject {
                 keys: [
                     "meta", "format", "_id", "token",
                     "expiresAt", "expiresIn", "passed",
+                    "verificationLevel", "requiredVerificationLevel",
                 ]
             )
 
@@ -208,10 +228,19 @@ public final class RadarVerifiedLocationToken: NSObject {
                 passed: false,
                 fullDict: Self.clearDictionary(
                     dict,
-                    keys: ["meta", "format", "_id"]
+                    keys: [
+                        "meta", "format", "_id",
+                        "verificationLevel", "requiredVerificationLevel",
+                    ]
                 )
             )
         }
+
+        let responseLevel = RadarVerificationLevel(responseValue: dict["verificationLevel"])
+        verificationLevel = responseLevel == .unknown ? requestedVerificationLevel : responseLevel
+        requiredVerificationLevel = RadarVerificationLevel(
+            responseValue: dict["requiredVerificationLevel"]
+        )
     }
 
     private static func clearDictionary(

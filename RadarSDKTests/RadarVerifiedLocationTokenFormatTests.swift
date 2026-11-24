@@ -260,3 +260,141 @@ struct RadarVerifiedLocationTokenFormatTests {
         )
     }
 }
+
+@Suite("RadarVerifiedLocationToken verification levels")
+struct RadarTokenVerificationLevelTests {
+    private func object(format: String) -> [String: Any] {
+        switch format {
+        case "jwe":
+            return [
+                "format": "jwe",
+                "_id": "evaluation-id",
+                "token": "opaque-token",
+                "expiresAt": "2026-11-11T12:00:00.000Z",
+                "expiresIn": 90,
+                "passed": true,
+                "meta": ["code": 200],
+            ]
+        case "id":
+            return ["format": "id", "_id": "lookup-id", "meta": ["code": 200]]
+        default:
+            return [
+                "format": "jws",
+                "_id": "evaluation-id",
+                "token": "signed-token",
+                "expiresAt": "2026-11-11T12:00:00.000Z",
+                "expiresIn": 90,
+                "passed": true,
+                "user": [
+                    "_id": "user-id",
+                    "location": ["coordinates": [-73.9, 40.7]],
+                ],
+                "events": [],
+                "failureReasons": [],
+            ]
+        }
+    }
+
+    @Test(arguments: ["jws", "jwe", "id"])
+    func parsesVerificationLevels(format: String) throws {
+        var stepUp = object(format: format)
+        stepUp["verificationLevel"] = "ip"
+        stepUp["requiredVerificationLevel"] = "precise"
+        let stepUpToken = try #require(RadarVerifiedLocationToken(object: stepUp))
+
+        #expect(stepUpToken.verificationLevel == .ip)
+        #expect(stepUpToken.requiredVerificationLevel == .precise)
+
+        var precise = object(format: format)
+        precise["verificationLevel"] = "precise"
+        let preciseToken = try #require(RadarVerifiedLocationToken(object: precise))
+
+        #expect(preciseToken.verificationLevel == .precise)
+        #expect(preciseToken.requiredVerificationLevel == .unknown)
+    }
+
+    @Test(arguments: ["jws", "jwe", "id"])
+    func missingVerificationLevelUsesTheRequestedLevel(format: String) throws {
+        let token = try #require(RadarVerifiedLocationToken(object: object(format: format)))
+
+        #expect(token.verificationLevel == .precise)
+        #expect(token.requiredVerificationLevel == .unknown)
+
+        let ipToken = try #require(
+            RadarVerifiedLocationToken(object: object(format: format), requestedVerificationLevel: .ip)
+        )
+        #expect(ipToken.verificationLevel == .ip)
+        #expect(ipToken.requiredVerificationLevel == .unknown)
+    }
+
+    @Test(arguments: ["jws", "jwe", "id"])
+    func responseLevelWinsOverTheRequestedLevel(format: String) throws {
+        var precise = object(format: format)
+        precise["verificationLevel"] = "precise"
+        let token = try #require(
+            RadarVerifiedLocationToken(object: precise, requestedVerificationLevel: .ip)
+        )
+
+        #expect(token.verificationLevel == .precise)
+    }
+
+    @Test(arguments: ["jws", "jwe", "id"])
+    func invalidVerificationLevelsUseTheFallbackAndDoNotRejectTheToken(format: String) throws {
+        let values: [Any] = ["unknown", "", "IP", NSNull(), 42, true, ["ip"]]
+
+        for value in values {
+            var invalid = object(format: format)
+            invalid["verificationLevel"] = value
+            invalid["requiredVerificationLevel"] = value
+            let token = try #require(
+                RadarVerifiedLocationToken(object: invalid),
+                "\(format): \(value)"
+            )
+            let ipToken = try #require(
+                RadarVerifiedLocationToken(object: invalid, requestedVerificationLevel: .ip),
+                "\(format): \(value)"
+            )
+
+            #expect(token.verificationLevel == .precise, "\(format): \(value)")
+            #expect(token.requiredVerificationLevel == .unknown, "\(format): \(value)")
+            #expect(ipToken.verificationLevel == .ip, "\(format): \(value)")
+        }
+    }
+
+    @Test(arguments: ["jwe", "id"])
+    func reducedResponsesKeepVerificationLevels(format: String) throws {
+        var stepUp = object(format: format)
+        stepUp["verificationLevel"] = "ip"
+        stepUp["requiredVerificationLevel"] = "precise"
+        let token = try #require(RadarVerifiedLocationToken(object: stepUp))
+        let dictionary = token.dictionaryValue()
+
+        #expect(dictionary["verificationLevel"] as? String == "ip")
+        #expect(dictionary["requiredVerificationLevel"] as? String == "precise")
+    }
+
+    @Test
+    func emptyTokenDefaultsToPreciseWithNoStepUp() {
+        let token = RadarVerifiedLocationToken()
+
+        #expect(token.verificationLevel == .precise)
+        #expect(token.requiredVerificationLevel == .unknown)
+    }
+
+    @Test
+    func exposesVerificationLevelsToObjectiveC() throws {
+        var stepUp = object(format: "jwe")
+        stepUp["verificationLevel"] = "ip"
+        stepUp["requiredVerificationLevel"] = "precise"
+        let token = try #require(RadarVerifiedLocationToken(object: stepUp))
+
+        #expect(
+            (token.value(forKey: "verificationLevel") as? NSNumber)?.intValue
+                == RadarVerificationLevel.ip.rawValue
+        )
+        #expect(
+            (token.value(forKey: "requiredVerificationLevel") as? NSNumber)?.intValue
+                == RadarVerificationLevel.precise.rawValue
+        )
+    }
+}
