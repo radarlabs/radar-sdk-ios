@@ -591,6 +591,28 @@
     }];
 }
 
+// A JWS response to an IP-only check: deliver the token and the events, but do not change location,
+// geofence, place, region, beacon, or trip state.
+- (void)handleIPJWSResponse:(NSDictionary *)res
+                     config:(RadarConfig *)config
+          completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:res[@"events"]];
+    RadarUser *user = [[RadarUser alloc] initWithObject:res[@"user"]];
+    RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res
+                                                                 requestedVerificationLevel:RadarVerificationLevelIp];
+    if (!events || !user || !token) {
+        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorServer];
+        completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
+        return;
+    }
+
+    if (events.count) {
+        [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
+    }
+    [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
+    completionHandler(RadarStatusSuccess, res, events, user, nil, config, token);
+}
+
 - (void)makeTrackRequestWithParams:(NSDictionary *)params
                          sessionId:(NSString *_Nullable)sessionId
             preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
@@ -755,23 +777,9 @@
                             }
 
                             if (!location) {
-                                // IP-only JWS response: deliver the token and the events, but do not change
-                                // location, geofence, place, region, beacon, or trip state.
-                                NSArray<RadarEvent *> *ipEvents = [RadarEvent eventsFromObject:res[@"events"]];
-                                RadarUser *ipUser = [[RadarUser alloc] initWithObject:res[@"user"]];
-                                RadarVerifiedLocationToken *ipToken =
-                                    [[RadarVerifiedLocationToken alloc] initWithObject:res
-                                                            requestedVerificationLevel:requestedVerificationLevel];
-                                if (!ipEvents || !ipUser || !ipToken) {
-                                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorServer];
-                                    return completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
-                                }
-
-                                if (ipEvents.count) {
-                                    [[RadarDelegateHolder sharedInstance] didReceiveEvents:ipEvents user:ipUser];
-                                }
-                                [[RadarDelegateHolder sharedInstance] didUpdateToken:ipToken];
-                                return completionHandler(RadarStatusSuccess, res, ipEvents, ipUser, nil, config, ipToken);
+                                // The handler above returned for every verified format except JWS, and only a
+                                // verified request can omit the location, so this is a JWS response to an IP check.
+                                return [self handleIPJWSResponse:res config:config completionHandler:completionHandler];
                             }
 
                             id eventsObj = res[@"events"];
