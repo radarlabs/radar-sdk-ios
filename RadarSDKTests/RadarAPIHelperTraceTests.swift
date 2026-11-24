@@ -141,6 +141,49 @@ final class RadarAPIHelperTraceTests: XCTestCase {
         XCTAssertEqual(trace.events, ["started", "end ERROR_NOT_FOUND", "completion"])
     }
 
+    func test_mapsUnsupportedSDKVersionOnlyForMatching400Responses() throws {
+        let cases: [(meta: Any, expected400: RadarStatus)] = [
+            (
+                ["errorType": "unsupported_sdk_version"],
+                .errorUnsupportedSDKVersion
+            ),
+            (["errorType": "another_error"], .errorBadRequest),
+            (["errorType": 123], .errorBadRequest),
+            (["errorType": NSNull()], .errorBadRequest),
+            (["errorCode": "unsupported_sdk_version"], .errorBadRequest),
+            (["message": "Unsupported SDK version"], .errorBadRequest),
+            (NSNull(), .errorBadRequest),
+        ]
+        for statusCode in [400, 401, 500] {
+            for scenario in cases {
+                let body = try JSONSerialization.data(
+                    withJSONObject: ["meta": scenario.meta]
+                )
+                TraceStubURLProtocol.enqueue(
+                    .response(statusCode: statusCode, body: body),
+                    path: path
+                )
+                let trace = FakeRequestTrace(traceparent: nil)
+                let expected: RadarStatus =
+                    switch statusCode {
+                    case 400: scenario.expected400
+                    case 401: .errorUnauthorized
+                    default: .errorServer
+                    }
+
+                XCTAssertEqual(request(trace: trace), expected)
+                XCTAssertEqual(
+                    trace.events,
+                    [
+                        "started",
+                        "end \(Radar.stringForStatus(expected))",
+                        "completion",
+                    ]
+                )
+            }
+        }
+    }
+
     func test_endsTraceWithServerError_forABodyThatIsNotJSON() {
         TraceStubURLProtocol.enqueue(.response(statusCode: 502, body: Data("<html>".utf8)), path: path)
         let trace = FakeRequestTrace(traceparent: nil)

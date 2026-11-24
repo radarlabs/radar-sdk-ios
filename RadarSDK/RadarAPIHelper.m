@@ -233,7 +233,10 @@ preparationFailureHandler:(void (^)(NSError *))preparationFailureHandler
                     if (statusCode >= 200 && statusCode < 400) {
                         status = RadarStatusSuccess;
                     } else if (statusCode == 400) {
-                        status = RadarStatusErrorBadRequest;
+                        NSDictionary *meta = [resObj[@"meta"] isKindOfClass:[NSDictionary class]] ? resObj[@"meta"] : nil;
+                        status = [meta[@"errorType"] isEqual:@"unsupported_sdk_version"]
+                            ? RadarStatusErrorUnsupportedSDKVersion
+                            : RadarStatusErrorBadRequest;
                     } else if (statusCode == 401) {
                         status = RadarStatusErrorUnauthorized;
                     } else if (statusCode == 402) {

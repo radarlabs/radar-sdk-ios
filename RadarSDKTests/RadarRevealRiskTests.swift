@@ -100,6 +100,75 @@ extension RadarSerializedTests {
             )
         }
 
+        @Test(
+            "Reveal maps only the matching unsupported SDK error",
+            arguments: [
+                "unsupported",
+                "unknown",
+                "missing",
+                "number",
+                "null",
+                "invalid-meta",
+                "legacy-key",
+            ],
+            [400, 401, 500]
+        )
+        func revealRiskMapsUnsupportedSDKVersion(
+            scenario: String,
+            statusCode: Int
+        ) async throws {
+            var meta: [String: Any] = ["code": statusCode, "message": "SDK update required."]
+
+            switch scenario {
+            case "unsupported":
+                meta["errorType"] = "unsupported_sdk_version"
+            case "unknown":
+                meta["errorType"] = "another_error"
+            case "number":
+                meta["errorType"] = 123
+            case "null":
+                meta["errorType"] = NSNull()
+            case "legacy-key":
+                meta["errorCode"] = "unsupported_sdk_version"
+            default:
+                break
+            }
+
+            var body: [String: Any] = ["meta": meta]
+            if scenario == "invalid-meta" {
+                body["meta"] = NSNull()
+            }
+
+            let session = MockURLSession()
+            session.on({ $0.url?.path == "/v1/reveal/risk" }, body, statusCode: statusCode)
+            let manager = makeManager(sealResult: ["payload": MockFraudEnvelope.payload], session: session)
+
+            let expected: RadarStatus =
+                switch statusCode {
+                case 400:
+                    scenario == "unsupported"
+                        ? .errorUnsupportedSDKVersion
+                        : .errorBadRequest
+                case 401:
+                    .errorUnauthorized
+                default:
+                    .errorServer
+                }
+
+            let error = await #expect(throws: RadarError.self) {
+                _ = try await manager.revealRisk(useSecondaryVerifiedHost: false)
+            }
+            #expect(error?.status == expected)
+
+            let callbackStatus: RadarStatus = await withCheckedContinuation { continuation in
+                manager.revealRisk(useSecondaryVerifiedHost: false) { status, token in
+                    #expect(token == nil)
+                    continuation.resume(returning: status)
+                }
+            }
+            #expect(callbackStatus == expected)
+        }
+
         @Test("revealRisk sends an encrypted body with or without a compatibility marker", arguments: [false, true])
         func revealRiskCallsFraudSDKThenAPI(hasCompatibilityMarker: Bool) async throws {
             let responseData = try #require(try? JSONSerialization.data(withJSONObject: RadarRevealRiskTests.revealRiskResponse))

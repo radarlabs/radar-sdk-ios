@@ -15,6 +15,15 @@ import UIKit
 @Suite
 struct RadarUtilsTests {
 
+    @Test func unsupportedSDKVersionStatusPreservesExistingValues() {
+        #expect(RadarStatus.errorUnknown.rawValue == 14)
+        #expect(RadarStatus.errorUnsupportedSDKVersion.rawValue == 15)
+        #expect(
+            Radar.stringForStatus(.errorUnsupportedSDKVersion)
+                == "ERROR_UNSUPPORTED_SDK_VERSION"
+        )
+    }
+
     @Test @MainActor func deviceOSVersionMatchesUIDevice() {
         #expect(RadarUtils.deviceOSVersion == UIDevice.current.systemVersion)
     }

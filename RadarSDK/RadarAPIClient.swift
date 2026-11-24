@@ -28,8 +28,17 @@ public final class RadarAPIClient: Sendable {
         }
     }
 
-    private func assertResponseCode(_ code: Int) throws {
+    private func assertResponseCode(_ code: Int, data: Data) throws {
         if code == 400 {
+            if let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+                let meta = json["meta"] as? [String: Any],
+                meta["errorType"] as? String == "unsupported_sdk_version"
+            {
+                throw RadarError(
+                    status: .errorUnsupportedSDKVersion,
+                    message: meta["message"] as? String ?? "Unsupported SDK version"
+                )
+            }
             throw RadarError(status: .errorBadRequest, message: "Bad request")
         } else if code == 401 {
             throw RadarError(status: .errorUnauthorized, message: "Unauthorized")
@@ -190,7 +199,7 @@ public final class RadarAPIClient: Sendable {
             }
         )
 
-        try assertResponseCode(response.statusCode)
+        try assertResponseCode(response.statusCode, data: data)
 
         guard let result = RadarRevealRiskToken.fromData(data) else {
             throw APIError(data: data, response: response, message: "Failed to parse reveal risk response")
@@ -215,7 +224,7 @@ public final class RadarAPIClient: Sendable {
 
         let (data, response) = try await apiHelper.radarRequest(host: host, method: "GET", url: "config")
 
-        try assertResponseCode(response.statusCode)
+        try assertResponseCode(response.statusCode, data: data)
 
         let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
         return RadarConfig.from(dictionary: json)
@@ -246,7 +255,7 @@ public final class RadarAPIClient: Sendable {
 
         let (data, response) = try await apiHelper.radarRequest(method: "GET", url: "search/beacons", query: query)
 
-        try assertResponseCode(response.statusCode)
+        try assertResponseCode(response.statusCode, data: data)
 
         guard let res = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw APIError(data: data, response: response, message: "Failed to parse search beacons response")
@@ -299,7 +308,7 @@ extension RadarAPIClient {
 
         let (data, response) = try await apiHelper.radarRequest(method: "GET", url: "addresses/validate", query: query)
 
-        try assertResponseCode(response.statusCode)
+        try assertResponseCode(response.statusCode, data: data)
 
         guard let res = try JSONSerialization.jsonObject(with: data) as? [String: Any],
             let addressObj = res["address"],
@@ -327,7 +336,7 @@ extension RadarAPIClient {
         let (data, response) = try await apiHelper.radarRequest(
             method: "POST", url: "search/autocomplete/select", body: ["resultId": resultId])
 
-        try assertResponseCode(response.statusCode)
+        try assertResponseCode(response.statusCode, data: data)
 
         guard !data.isEmpty else {
             return nil
