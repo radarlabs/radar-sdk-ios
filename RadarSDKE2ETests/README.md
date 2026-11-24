@@ -34,7 +34,7 @@ A successful `trackOnce` must pass three checks that agree with each other.
 - The `/v1/track` request in the SDK's log has `foreground` true, source `FOREGROUND_LOCATION`, this run's user ID, and a location within 100 m of the fixture. It is the only track request, and replays count as track requests.
 - The server response in the SDK's log has status 200 and the same user ID, foreground flag, source, and location. `meta.code` must be 200 when the response has one.
 
-A failure names the field that mismatched and its value. It never includes log lines, headers, or the key.
+The harness forces the SDK's log level to debug for each run, whatever the project's SDK configuration says. A failure names the field that mismatched and its value. It never includes log lines, headers, or the key.
 
 ## Setup
 
@@ -42,14 +42,13 @@ You need:
 
 - A dedicated simulator. Set `SIMULATOR_UDID` to its UDID, which `xcrun simctl list devices` prints.
 - A Radar test project whose SDK configuration has `syncAfterSetUser`, `trackOnceOnAppOpen`, and `startTrackingOnInitialize` turned off, and whose tracking options set replay to none. Otherwise the SDK can send extra or replayed track requests and the run fails.
-- A test project SDK log level of `debug`. The checks read the SDK's debug log. `Radar.setLogLevel(.debug)` only sends the level to the server as client configuration, and the SDK applies the level in the server's config response. The harness stores `debug` before the first request, but a config response with a lower level turns logging off. Then a successful run fails with `Expected one track request, observed 0`.
 - Two environment variables, set in the shell that runs `xcodebuild`.
 
-`TEST_RUNNER_RADAR_E2E_BASE_URL` is the API origin. It must use HTTPS, or HTTP on `localhost` or `127.0.0.1`, and have no path or query.
+`TEST_RUNNER_RADAR_E2E_BASE_URL` is the Radar API origin for the key's environment, not the dashboard or the marketing site. It must use HTTPS, or HTTP on `localhost` or `127.0.0.1`, and have no path or query.
 
 `TEST_RUNNER_RADAR_E2E_PUBLISHABLE_KEY` is the project's test publishable key. It must start with `prj_test_pk_`.
 
-`xcodebuild` strips the `TEST_RUNNER_` prefix, so the tests read `RADAR_E2E_BASE_URL` and `RADAR_E2E_PUBLISHABLE_KEY`. Keep the key out of the repo and pass it only through the environment. At debug level the SDK writes request headers, including the key, to the device console, and it caches the key in the test host's UserDefaults on the simulator. Each test starts from clean SDK defaults.
+`xcodebuild` strips the `TEST_RUNNER_` prefix, so the tests read `RADAR_E2E_BASE_URL` and `RADAR_E2E_PUBLISHABLE_KEY`. Keep the key out of the repo and pass it only through the environment. The harness silences the SDK's console output, because at debug level the SDK prints request headers, including the key. The SDK still caches the key in the test host's UserDefaults on the simulator. Each test starts from clean SDK defaults.
 
 ## Run RadarSDKE2ETests
 
