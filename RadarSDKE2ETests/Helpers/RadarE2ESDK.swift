@@ -46,6 +46,8 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
             UserDefaults.standard.removePersistentDomain(forName: domain)
         }
         UserDefaults.standard.set(host, forKey: "radar-host")
+        // Debug logging must be on before the first request: the SDK only applies `setLogLevel` after the server's config response.
+        UserDefaults.standard.set(RadarLogLevel.debug.rawValue, forKey: "radar-logLevel")
         Radar.setLogLevel(.debug)
         Radar.setDelegate(self)
         Radar.initialize(publishableKey: configuration.publishableKey)

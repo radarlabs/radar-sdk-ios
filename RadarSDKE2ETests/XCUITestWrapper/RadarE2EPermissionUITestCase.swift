@@ -3,21 +3,12 @@ import XCTest
 /// Base class for UI tests that run a `RadarE2ETestHost` scenario behind the system location prompts.
 @MainActor
 class RadarE2EPermissionUITestCase: XCTestCase {
-    /// A button on the system location prompt, with every label iOS has shown for it.
-    enum PromptAnswer {
-        case allowWhileUsing
-        case allowOnce
-        case dontAllow
-        case changeToAlwaysAllow
-
-        fileprivate var buttonLabels: [String] {
-            switch self {
-            case .allowWhileUsing: ["Allow While Using App", "Allow While Using the App"]
-            case .allowOnce: ["Allow Once"]
-            case .dontAllow: ["Don\u{2019}t Allow", "Don't Allow"]
-            case .changeToAlwaysAllow: ["Change to Always Allow"]
-            }
-        }
+    /// A button on the system location prompt. Each raw value is its label on the iOS 26.2 simulator.
+    enum PromptAnswer: String {
+        case allowOnce = "Allow Once"
+        case allowWhileUsing = "Allow While Using App"
+        case dontAllow = "Don\u{2019}t Allow"
+        case changeToAlwaysAllow = "Change to Always Allow"
     }
 
     private static let promptTimeout: TimeInterval = 20
@@ -42,7 +33,7 @@ class RadarE2EPermissionUITestCase: XCTestCase {
 
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
         for answer in answers {
-            let button = springboard.alerts.buttons.matching(NSPredicate(format: "label IN %@", answer.buttonLabels)).firstMatch
+            let button = springboard.alerts.buttons[answer.rawValue]
             XCTAssertTrue(button.waitForExistence(timeout: Self.promptTimeout), "The location prompt never offered \(answer).")
             button.tap()
         }
