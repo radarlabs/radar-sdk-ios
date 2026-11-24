@@ -41,6 +41,10 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
         let host = absoluteString.hasSuffix("/") ? String(absoluteString.dropLast()) : absoluteString
         trackLog = RadarE2ETrackLog(host: host)
         super.init()
+        // The SDK persists its cached location permission, log level and config across launches. Start each run clean.
+        if let domain = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: domain)
+        }
         UserDefaults.standard.set(host, forKey: "radar-host")
         Radar.setLogLevel(.debug)
         Radar.setDelegate(self)
