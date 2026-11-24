@@ -1,5 +1,6 @@
 import CoreLocation
-import RadarSDK
+
+@testable import RadarSDK
 
 struct RadarE2EFailure: LocalizedError {
     let message: String
@@ -29,12 +30,10 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
 
     let userID = "ios-e2e-" + UUID().uuidString
 
-    private static let trackOnceTimeoutSeconds: UInt64 = 25
-    private static let logSettleTimeoutSeconds: UInt64 = 5
+    private static let trackOnceTimeoutSeconds = 25
     private static let fixtureToleranceMeters: CLLocationDistance = 100
     private static let foregroundSource = "FOREGROUND_LOCATION"
     private var trackLog: RadarE2ETrackLog
-    private var logArrived: AsyncStream<Void>.Continuation?
 
     init(configuration: RadarE2EConfiguration) {
         let absoluteString = configuration.baseURL.absoluteString
@@ -46,9 +45,8 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
             UserDefaults.standard.removePersistentDomain(forName: domain)
         }
         UserDefaults.standard.set(host, forKey: "radar-host")
-        // Debug logging must be on before the first request: the SDK only applies `setLogLevel` after the server's config response.
-        UserDefaults.standard.set(RadarLogLevel.debug.rawValue, forKey: "radar-logLevel")
-        Radar.setLogLevel(.debug)
+        // The override forces debug logs regardless of the server's config and keeps the SDK from printing them, headers and key included, to the console.
+        RadarLogger.shared.logLevelOverride = .debug
         Radar.setDelegate(self)
         Radar.initialize(publishableKey: configuration.publishableKey)
         Radar.setUserId(userID)
@@ -57,19 +55,17 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
     nonisolated func didLog(message: String) {
         MainActor.assumeIsolated {
             trackLog.record(message)
-            logArrived?.yield()
         }
     }
 
-    /// Calls `Radar.trackOnce`, waits for its callback, then waits for the SDK to log the track response.
-    /// Throws if the callback never arrives. A missing log line shows up in `trackExchanges`, not as a throw.
+    /// Calls `Radar.trackOnce`, waits for its callback, then for the SDK's pending log lines to reach the delegate.
+    /// Throws if the callback never arrives. A request or response the SDK did not log shows up in `trackExchanges`, not as a throw.
     func trackOnce(desiredAccuracy: RadarTrackingOptionsDesiredAccuracy = .medium, beacons: Bool = false) async throws -> TrackOnceOutcome {
         let exchangesBefore = trackLog.exchanges.count
         let (callbacks, callback) = AsyncStream<TrackOnceOutcome>.makeStream(bufferingPolicy: .bufferingNewest(1))
-        let timeout = Task {
-            try await Task.sleep(nanoseconds: Self.trackOnceTimeoutSeconds * 1_000_000_000)
-            callback.finish()
-        }
+        // Not a sleeping Task: a cancelled `Task.sleep` throws CancellationError, and XCTest then reports that in place of the test's own failure.
+        let timeout = DispatchWorkItem { callback.finish() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(Self.trackOnceTimeoutSeconds), execute: timeout)
         defer { timeout.cancel() }
 
         Radar.trackOnce(desiredAccuracy: desiredAccuracy, beacons: beacons) { status, location, events, user in
@@ -80,7 +76,7 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
         guard var outcome = await iterator.next() else {
             throw RadarE2EFailure("trackOnce did not call back within \(Self.trackOnceTimeoutSeconds) seconds.")
         }
-        await waitForTrackLogs(since: exchangesBefore, expectingTrack: outcome.status == .success)
+        await RadarLogger.shared.awaitPendingLogs()
         outcome.trackExchanges = trackLog.exchanges(since: exchangesBefore)
         return outcome
     }
@@ -89,8 +85,7 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
     func assertForegroundSuccess(_ outcome: TrackOnceOutcome) throws {
         try assertCallback(outcome)
         guard outcome.trackExchanges.count == 1, let exchange = outcome.trackExchanges.first else {
-            throw RadarE2EFailure(
-                "Expected one track request, observed \(outcome.trackRequestCount). If it is 0, the SDK may not be logging at debug level. See RadarSDKE2ETests/README.md.")
+            throw RadarE2EFailure("Expected one track request, observed \(outcome.trackRequestCount).")
         }
         try assertRequest(exchange)
         try assertResponse(exchange)
@@ -120,23 +115,7 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
     func reset() {
         Radar.stopTracking()
         Radar.setDelegate(nil)
-    }
-
-    private func waitForTrackLogs(since index: Int, expectingTrack: Bool) async {
-        let (ticks, tick) = AsyncStream<Void>.makeStream(bufferingPolicy: .bufferingNewest(1))
-        logArrived = tick
-        let deadline = Task {
-            try await Task.sleep(nanoseconds: Self.logSettleTimeoutSeconds * 1_000_000_000)
-            tick.finish()
-        }
-        defer {
-            deadline.cancel()
-            logArrived = nil
-        }
-        var iterator = ticks.makeAsyncIterator()
-        while !trackLog.isSettled(since: index, expectingTrack: expectingTrack) {
-            guard await iterator.next() != nil else { return }
-        }
+        RadarLogger.shared.logLevelOverride = nil
     }
 
     private func assertCallback(_ outcome: TrackOnceOutcome) throws {
@@ -160,7 +139,8 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
     }
 
     private func assertResponse(_ exchange: RadarE2ETrackLog.Exchange) throws {
-        try check(exchange.statusCode == 200, "The track response statusCode was \(describe(exchange.statusCode)), not 200.")
+        guard let statusCode = exchange.statusCode else { throw RadarE2EFailure("The SDK logged the track request but no track response.") }
+        try check(statusCode == 200, "The track response statusCode was \(statusCode), not 200.")
         guard let user = exchange.response?.user else { throw RadarE2EFailure("The SDK did not log a track response with a user.") }
         if let code = exchange.response?.meta?.code {
             try check(code == 200, "The track response meta.code was \(code), not 200.")

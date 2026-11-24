@@ -70,12 +70,6 @@ struct RadarE2ETrackLog {
         Array(exchanges.dropFirst(index))
     }
 
-    /// True once every exchange since `index` has its response, and, when a track request is expected, at least one exists.
-    func isSettled(since index: Int, expectingTrack: Bool) -> Bool {
-        let recent = exchanges(since: index)
-        return (!expectingTrack || !recent.isEmpty) && recent.allSatisfy { $0.statusCode != nil }
-    }
-
     /// The SDK logger appends ` | backgroundTimeRemaining = …` to every message it hands to the delegate.
     private static func withoutLogSuffix(_ message: String) -> String {
         guard let suffix = message.range(of: " | backgroundTimeRemaining", options: .backwards) else { return message }

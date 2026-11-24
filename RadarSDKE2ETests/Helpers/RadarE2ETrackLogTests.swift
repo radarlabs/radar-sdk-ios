@@ -92,16 +92,6 @@ final class RadarE2ETrackLogTests: XCTestCase {
         XCTAssertEqual(log.exchanges.count, 0)
     }
 
-    func testIsSettledWaitsForTheResponseToEveryRequest() {
-        var log = makeLog()
-        XCTAssertFalse(log.isSettled(since: 0, expectingTrack: true))
-        XCTAssertTrue(log.isSettled(since: 0, expectingTrack: false))
-        log.record(requestLine("/v1/track"))
-        XCTAssertFalse(log.isSettled(since: 0, expectingTrack: false))
-        log.record(responseLine("/v1/track"))
-        XCTAssertTrue(log.isSettled(since: 0, expectingTrack: true))
-    }
-
     func testExchangesSinceSkipsEarlierExchanges() {
         var log = makeLog()
         log.record(requestLine("/v1/track"))
