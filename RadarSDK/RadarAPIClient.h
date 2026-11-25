@@ -109,6 +109,20 @@ typedef void (^_Nonnull RadarSyncLogsAPICompletionHandler)(RadarStatus status);
  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
 
+// Sends an IP-only verified check: the request has no device location, and the response does not change location,
+// geofence, place, region, beacon, or trip state. The source is always foreground, so the request is never batched.
+- (void)trackIPWithStopped:(BOOL)stopped
+                foreground:(BOOL)foreground
+      preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
+       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+         expectedStateCode:(NSString *_Nullable)expectedStateCode
+           expectedAddress:(NSString *_Nullable)expectedAddress
+                    reason:(NSString *_Nullable)reason
+             transactionId:(NSString *_Nullable)transactionId
+              revealRiskId:(NSString *_Nullable)revealRiskId
+  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler;
+
 - (void)flushReplays:(NSArray<NSDictionary *> *_Nonnull)replays completionHandler:(RadarFlushReplaysAPICompletionHandler _Nonnull)completionHandler;
 
 - (void)verifyEventId:(NSString *_Nonnull)eventId verification:(RadarEventVerification)verification verifiedPlaceId:(NSString *_Nullable)verifiedPlaceId;

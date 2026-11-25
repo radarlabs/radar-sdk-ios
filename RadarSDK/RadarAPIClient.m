@@ -344,6 +344,103 @@
  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
                 traceSpan:(RadarTraceSpan *_Nullable)traceSpan
         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [self trackInternalWithLocation:location
+                            stopped:stopped
+                         foreground:foreground
+                             source:source
+                           replayed:replayed
+                            beacons:beacons
+                     indoorLocation:indoorLocation
+                           verified:verified
+               preparedFraudPayload:preparedFraudPayload
+                expectedCountryCode:expectedCountryCode
+                  expectedStateCode:expectedStateCode
+                    expectedAddress:expectedAddress
+                             reason:reason
+                      transactionId:transactionId
+                       revealRiskId:revealRiskId
+           useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                          traceSpan:traceSpan
+                  completionHandler:completionHandler];
+}
+
+- (void)trackIPWithStopped:(BOOL)stopped
+                foreground:(BOOL)foreground
+      preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
+       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+         expectedStateCode:(NSString *_Nullable)expectedStateCode
+           expectedAddress:(NSString *_Nullable)expectedAddress
+                    reason:(NSString *_Nullable)reason
+             transactionId:(NSString *_Nullable)transactionId
+              revealRiskId:(NSString *_Nullable)revealRiskId
+  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [self trackIPWithStopped:stopped
+                  foreground:foreground
+        preparedFraudPayload:preparedFraudPayload
+         expectedCountryCode:expectedCountryCode
+           expectedStateCode:expectedStateCode
+             expectedAddress:expectedAddress
+                      reason:reason
+               transactionId:transactionId
+                revealRiskId:revealRiskId
+    useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                   traceSpan:nil
+           completionHandler:completionHandler];
+}
+
+- (void)trackIPWithStopped:(BOOL)stopped
+                foreground:(BOOL)foreground
+      preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
+       expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+         expectedStateCode:(NSString *_Nullable)expectedStateCode
+           expectedAddress:(NSString *_Nullable)expectedAddress
+                    reason:(NSString *_Nullable)reason
+             transactionId:(NSString *_Nullable)transactionId
+              revealRiskId:(NSString *_Nullable)revealRiskId
+  useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+                 traceSpan:(RadarTraceSpan *_Nullable)traceSpan
+         completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    // A foreground source also keeps the request out of the track batch.
+    [self trackInternalWithLocation:nil
+                            stopped:stopped
+                         foreground:foreground
+                             source:RadarLocationSourceForegroundLocation
+                           replayed:NO
+                            beacons:nil
+                     indoorLocation:nil
+                           verified:YES
+               preparedFraudPayload:preparedFraudPayload
+                expectedCountryCode:expectedCountryCode
+                  expectedStateCode:expectedStateCode
+                    expectedAddress:expectedAddress
+                             reason:reason
+                      transactionId:transactionId
+                       revealRiskId:revealRiskId
+           useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                          traceSpan:traceSpan
+                  completionHandler:completionHandler];
+}
+
+// A nil location is only valid for a verified request (see trackIPWithStopped:).
+- (void)trackInternalWithLocation:(CLLocation *_Nullable)location
+                          stopped:(BOOL)stopped
+                       foreground:(BOOL)foreground
+                           source:(RadarLocationSource)source
+                         replayed:(BOOL)replayed
+                          beacons:(NSArray<RadarBeacon *> *_Nullable)beacons
+                   indoorLocation:(CLLocation *_Nullable)indoorLocation
+                         verified:(BOOL)verified
+             preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
+              expectedCountryCode:(NSString *_Nullable)expectedCountryCode
+                expectedStateCode:(NSString *_Nullable)expectedStateCode
+                  expectedAddress:(NSString *_Nullable)expectedAddress
+                           reason:(NSString *_Nullable)reason
+                    transactionId:(NSString *_Nullable)transactionId
+                     revealRiskId:(NSString *_Nullable)revealRiskId
+         useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
+                        traceSpan:(RadarTraceSpan *_Nullable)traceSpan
+                completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
     NSString *publishableKey = [RadarSettings publishableKey];
     if (!publishableKey) {
         return completionHandler(RadarStatusErrorPublishableKey, nil, nil, nil, nil, nil, nil);
@@ -374,30 +471,11 @@
         sessionId = [RadarSettings sessionId];
         params[@"sessionId"] = sessionId;
     }
-    params[@"latitude"] = @(location.coordinate.latitude);
-    params[@"longitude"] = @(location.coordinate.longitude);
-    CLLocationAccuracy accuracy = location.horizontalAccuracy;
-    if (accuracy <= 0) {
-        accuracy = 1;
+    if (location) {
+        [self addLocationParams:params location:location foreground:foreground sdkConfiguration:sdkConfiguration];
+    } else {
+        params[@"verificationLevel"] = @"ip";
     }
-    params[@"accuracy"] = @(accuracy);
-    params[@"altitude"] = @(location.altitude);
-    params[@"verticalAccuracy"] = @(location.verticalAccuracy);
-    params[@"speed"] = @(location.speed);
-    params[@"speedAccuracy"] = @(location.speedAccuracy);
-    params[@"course"] = @(location.course);
-    if (@available(iOS 13.4, *)) {
-        params[@"courseAccuracy"] = @(location.courseAccuracy);
-    }
-    if (location.floor) {
-        params[@"floorLevel"] = @(location.floor.level);
-    }
-    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
-    long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
-    if (sdkConfiguration.useForegroundLocationUpdatedAtMsDiff || !foreground) {
-        params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
-    }
-    params[@"locationMs"] = @(locationMs);
     params[@"foreground"] = @(foreground);
     params[@"stopped"] = @(stopped);
     params[@"replayed"] = @(replayed);
@@ -434,7 +512,7 @@
         params[@"tripOptions"] = tripParams;
     }
     RadarTrackingOptions *options = [Radar getTrackingOptions];
-    if (options.syncGeofences) {
+    if (location && options.syncGeofences) {
         params[@"nearbyGeofences"] = @(YES);
     }
     if (beacons) {
@@ -492,6 +570,91 @@
     }
     
     NSMutableDictionary *locationMetadata = [NSMutableDictionary new];
+    if (location) {
+        [self addLocationMetadata:locationMetadata
+                           params:params
+                         location:location
+                   indoorLocation:indoorLocation
+                          options:options];
+    }
+
+    if (locationMetadata.count > 0) {
+        params[@"locationMetadata"] = locationMetadata;
+    }
+
+    // Include stored altitudeAdjustments from previous track responses
+    NSArray<NSDictionary *> *altitudeAdjustments = RadarState.shared.altitudeAdjustments;
+    if (altitudeAdjustments && altitudeAdjustments.count > 0) {
+        params[@"altitudeAdjustments"] = altitudeAdjustments;
+    }
+
+    if (anonymous) {
+        [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
+                                                verified:verified
+                                        completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
+
+                                        }];
+    }
+
+    [RadarNotificationUtils getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
+        if (notificationsDelivered) {
+            params[@"notificationDiff"] = notificationsDelivered;
+        }
+
+        [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
+                                                         sessionId:sessionId
+                                            preparedFraudPayload:preparedFraudPayload
+                                                            options:options
+                                                            stopped:stopped
+                                                        location:location
+                                                            source:source
+                                                        verified:verified
+                                          useSecondaryVerifiedHost:useSecondaryVerifiedHost
+                                                    publishableKey:publishableKey
+                                            notificationsRemaining:notificationsRemaining
+                                            locationMetadata:locationMetadata
+                                                         traceSpan:traceSpan
+                                                completionHandler:completionHandler];
+    }];
+}
+
+// Writes the device location fields of a track request. An IP-only request has none of them.
+- (void)addLocationParams:(NSMutableDictionary *)params
+                 location:(CLLocation *)location
+               foreground:(BOOL)foreground
+         sdkConfiguration:(RadarSdkConfiguration *)sdkConfiguration {
+    params[@"latitude"] = @(location.coordinate.latitude);
+    params[@"longitude"] = @(location.coordinate.longitude);
+    CLLocationAccuracy accuracy = location.horizontalAccuracy;
+    if (accuracy <= 0) {
+        accuracy = 1;
+    }
+    params[@"accuracy"] = @(accuracy);
+    params[@"altitude"] = @(location.altitude);
+    params[@"verticalAccuracy"] = @(location.verticalAccuracy);
+    params[@"speed"] = @(location.speed);
+    params[@"speedAccuracy"] = @(location.speedAccuracy);
+    params[@"course"] = @(location.course);
+    if (@available(iOS 13.4, *)) {
+        params[@"courseAccuracy"] = @(location.courseAccuracy);
+    }
+    if (location.floor) {
+        params[@"floorLevel"] = @(location.floor.level);
+    }
+    long nowMs = (long)([NSDate date].timeIntervalSince1970 * 1000);
+    long locationMs = (long)(location.timestamp.timeIntervalSince1970 * 1000);
+    if (sdkConfiguration.useForegroundLocationUpdatedAtMsDiff || !foreground) {
+        params[@"updatedAtMsDiff"] = @(nowMs - locationMs);
+    }
+    params[@"locationMs"] = @(locationMs);
+}
+
+// Writes the motion, pressure, and indoor fields that come from the device location.
+- (void)addLocationMetadata:(NSMutableDictionary *)locationMetadata
+                     params:(NSMutableDictionary *)params
+                   location:(CLLocation *)location
+             indoorLocation:(CLLocation *_Nullable)indoorLocation
+                    options:(RadarTrackingOptions *)options {
     if (options.useMotion) {
         locationMetadata[@"motionActivityData"] = RadarState.shared.lastMotionActivityData;
         locationMetadata[@"heading"] = RadarState.shared.lastHeadingData;
@@ -542,45 +705,34 @@
         params[@"latitude"] = @(indoorLocation.coordinate.latitude);
         params[@"longitude"] = @(indoorLocation.coordinate.longitude);
     }
+}
 
-    if (locationMetadata.count > 0) {
-        params[@"locationMetadata"] = locationMetadata;
+// Sends status to the delegate as a failure, then completes the track request with it.
+- (void)failTrack:(RadarStatus)status completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+    completionHandler(status, nil, nil, nil, nil, nil, nil);
+}
+
+// A JWS response to an IP-only check: deliver the token and the events, but do not change location,
+// geofence, place, region, beacon, or trip state.
+- (void)handleIPJWSResponse:(NSDictionary *)res
+                     config:(RadarConfig *)config
+          completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    NSArray<RadarEvent *> *events = [RadarEvent eventsFromObject:res[@"events"]];
+    RadarVerifiedLocationToken *token = [[RadarVerifiedLocationToken alloc] initWithObject:res
+                                                                 requestedVerificationLevel:RadarVerificationLevelIp];
+    // The user is optional: it is nil when the response user has no location.
+    RadarUser *user = token.user;
+    if (!events || !token) {
+        [self failTrack:RadarStatusErrorServer completionHandler:completionHandler];
+        return;
     }
 
-    // Include stored altitudeAdjustments from previous track responses
-    NSArray<NSDictionary *> *altitudeAdjustments = RadarState.shared.altitudeAdjustments;
-    if (altitudeAdjustments && altitudeAdjustments.count > 0) {
-        params[@"altitudeAdjustments"] = altitudeAdjustments;
+    if (events.count) {
+        [[RadarDelegateHolder sharedInstance] didReceiveEvents:events user:user];
     }
-
-    if (anonymous) {
-        [[RadarAPIClient sharedInstance] getConfigForUsage:@"track"
-                                                verified:verified
-                                        completionHandler:^(RadarStatus status, RadarConfig *_Nullable config){
-
-                                        }];
-    }
-
-    [RadarNotificationUtils getNotificationDiffWithCompletionHandler:^(NSArray *notificationsDelivered, NSArray *notificationsRemaining) {
-        if (notificationsDelivered) {
-            params[@"notificationDiff"] = notificationsDelivered;
-        }
-
-        [[RadarAPIClient sharedInstance] makeTrackRequestWithParams:params
-                                                         sessionId:sessionId
-                                            preparedFraudPayload:preparedFraudPayload
-                                                            options:options
-                                                            stopped:stopped
-                                                        location:location
-                                                            source:source
-                                                        verified:verified
-                                          useSecondaryVerifiedHost:useSecondaryVerifiedHost
-                                                    publishableKey:publishableKey
-                                            notificationsRemaining:notificationsRemaining
-                                            locationMetadata:locationMetadata
-                                                         traceSpan:traceSpan
-                                                completionHandler:completionHandler];
-    }];
+    [[RadarDelegateHolder sharedInstance] didUpdateToken:token];
+    completionHandler(RadarStatusSuccess, res, events, user, nil, config, token);
 }
 
 - (void)makeTrackRequestWithParams:(NSDictionary *)params
@@ -588,7 +740,7 @@
             preparedFraudPayload:(RadarPreparedFraudPayloadWrapper *_Nullable)preparedFraudPayload
                         options:(RadarTrackingOptions *)options
                         stopped:(BOOL)stopped
-                        location:(CLLocation *)location
+                        location:(CLLocation *_Nullable)location
                         source:(RadarLocationSource)source
                         verified:(BOOL)verified
         useSecondaryVerifiedHost:(BOOL)useSecondaryVerifiedHost
@@ -661,6 +813,11 @@
     } else {
         RadarAPICompletionHandler handleResponse = ^(RadarStatus status, NSDictionary *_Nullable res, NSError *_Nullable error) {
                             if (status != RadarStatusSuccess || !res) {
+                                if (!location) {
+                                    // An IP-only check has no location to replay or to generate offline events from.
+                                    return [self failTrack:status completionHandler:completionHandler];
+                                }
+
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
                                     // create a copy of params that we can use to write to the buffer in case of request failure
                                     NSMutableDictionary *bufferParams = [params mutableCopy];
@@ -708,25 +865,33 @@
                             }
             
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
-                            [RadarState.shared setLastFailedStoppedLocation:nil];
+                            // An IP-only check sends no location, so it does not reset the stop to replay or
+                            // the time of the last location sync.
+                            if (location) {
+                                [RadarState.shared setLastFailedStoppedLocation:nil];
+                            }
                             [Radar flushLogs];
                             if (sessionId) {
                                 [self applySamplingDecisionForSessionId:sessionId response:res settingsKey:@"featureSettings" traceSpan:traceSpan];
                             }
                             [[RadarTraceManager sharedInstance] flushAfterSpan:traceSpan];
-                            [RadarSettings updateLastTrackedTime];
+                            if (location) {
+                                [RadarSettings updateLastTrackedTime];
+                            }
 
                             RadarConfig *config = [RadarConfig fromDictionary:res];
+                            RadarVerificationLevel requestedVerificationLevel =
+                                location ? RadarVerificationLevelPrecise : RadarVerificationLevelIp;
 
                             if ([RadarTrackResponseHandler
                                     handleResponse:res
                                     verified:verified
+                                    requestedVerificationLevel:requestedVerificationLevel
                                     completionHandler:^(RadarStatus responseStatus,
                                                         NSDictionary *_Nullable response,
                                                         RadarVerifiedLocationToken *_Nullable token) {
                                         if (responseStatus != RadarStatusSuccess) {
-                                            [[RadarDelegateHolder sharedInstance] didFailWithStatus:responseStatus];
-                                            completionHandler(responseStatus, nil, nil, nil, nil, nil, nil);
+                                            [self failTrack:responseStatus completionHandler:completionHandler];
                                             return;
                                         }
 
@@ -735,6 +900,12 @@
                                         completionHandler(RadarStatusSuccess, response, nil, nil, nil, config, token);
                                     }]) {
                                 return;
+                            }
+
+                            if (!location) {
+                                // The handler above returned for every verified format except JWS, and only a
+                                // verified request can omit the location, so this is a JWS response to an IP check.
+                                return [self handleIPJWSResponse:res config:config completionHandler:completionHandler];
                             }
 
                             id eventsObj = res[@"events"];

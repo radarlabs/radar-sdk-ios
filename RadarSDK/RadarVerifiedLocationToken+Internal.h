@@ -26,5 +26,7 @@
                                   _id:(NSString *_Nullable)_id
                              fullDict:(NSDictionary *_Nonnull)fullDict;
 - (instancetype _Nullable)initWithObject:(id _Nonnull)object;
+- (instancetype _Nullable)initWithObject:(id _Nonnull)object
+              requestedVerificationLevel:(RadarVerificationLevel)requestedVerificationLevel;
 
 @end
