@@ -707,6 +707,12 @@
     }
 }
 
+// Sends status to the delegate as a failure, then completes the track request with it.
+- (void)failTrack:(RadarStatus)status completionHandler:(RadarTrackAPICompletionHandler _Nonnull)completionHandler {
+    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
+    completionHandler(status, nil, nil, nil, nil, nil, nil);
+}
+
 // A JWS response to an IP-only check: deliver the token and the events, but do not change location,
 // geofence, place, region, beacon, or trip state.
 - (void)handleIPJWSResponse:(NSDictionary *)res
@@ -718,8 +724,7 @@
     // The user is optional: it is nil when the response user has no location.
     RadarUser *user = token.user;
     if (!events || !token) {
-        [[RadarDelegateHolder sharedInstance] didFailWithStatus:RadarStatusErrorServer];
-        completionHandler(RadarStatusErrorServer, nil, nil, nil, nil, nil, nil);
+        [self failTrack:RadarStatusErrorServer completionHandler:completionHandler];
         return;
     }
 
@@ -810,8 +815,7 @@
                             if (status != RadarStatusSuccess || !res) {
                                 if (!location) {
                                     // An IP-only check has no location to replay or to generate offline events from.
-                                    [[RadarDelegateHolder sharedInstance] didFailWithStatus:status];
-                                    return completionHandler(status, nil, nil, nil, nil, nil, nil);
+                                    return [self failTrack:status completionHandler:completionHandler];
                                 }
 
                                 if (options.replay == RadarTrackingOptionsReplayAll) {
@@ -881,8 +885,7 @@
                                                         NSDictionary *_Nullable response,
                                                         RadarVerifiedLocationToken *_Nullable token) {
                                         if (responseStatus != RadarStatusSuccess) {
-                                            [[RadarDelegateHolder sharedInstance] didFailWithStatus:responseStatus];
-                                            completionHandler(responseStatus, nil, nil, nil, nil, nil, nil);
+                                            [self failTrack:responseStatus completionHandler:completionHandler];
                                             return;
                                         }
 
