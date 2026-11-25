@@ -10,14 +10,23 @@ import Foundation
 
 // Location instrumentation: `radar.location.*` attributes and the `radar.location.get` span.
 extension RadarTraceSpan {
-    /// Traces getting a location as a `radar.location.get` child of this span. The child starts now and ends with
-    /// the result's status before `handler` runs.
+    /// Root attributes that change how long getting a location takes. `radar.location.get` copies them, so its
+    /// latency can be grouped by them without joining it to its root.
+    private static let locationGetRootContext: Set<String> = [
+        "radar.location.desired_accuracy",
+        "radar.app.foreground",
+        "radar.location.accuracy_authorization",
+    ]
+
+    /// Traces getting a location as a `radar.location.get` child of this span, with this span's desired accuracy and
+    /// app state. The child starts now and ends with the result's status before `handler` runs.
     @objc(tracingLocationHandler:)
     func tracingLocationHandler(
         _ handler: @escaping (RadarStatus, CLLocation?, Bool) -> Void
     ) -> (RadarStatus, CLLocation?, Bool) -> Void {
         guard isRecording else { return handler }
         let span = child("radar.location.get")
+        span.copyAttributes(from: self, keys: Self.locationGetRootContext)
         return { status, location, stopped in
             if let location {
                 span.recordLocationQuality(location)
