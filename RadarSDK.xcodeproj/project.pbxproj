@@ -393,7 +393,33 @@
 		F7261113E4B3D084CCBFF4E8 /* RadarIndoorsUpdateTrackingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FFFC29F8BCE53F30E3180F /* RadarIndoorsUpdateTrackingTests.swift */; };
 		FE10A60A2F2BC91E0058ECD4 /* RadarRevealRiskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE10A6092F2BC9160058ECD4 /* RadarRevealRiskManager.swift */; };
 		FE9417182E1C2964008ECBEB /* RadarIndoorsProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9417172E1C2958008ECBEB /* RadarIndoorsProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A32270000000000000000005 /* RadarE2ETestHost.swift in Sources */ = { isa = PBXBuildFile; fileRef = A32270000000000000000001 /* RadarE2ETestHost.swift */; };
+		A32270000000000000000006 /* RadarE2EConfiguration.swift in Sources */ = { isa = PBXBuildFile; fileRef = A32270000000000000000002 /* RadarE2EConfiguration.swift */; };
+		A32270000000000000000008 /* RadarTrackOnceE2ETests.swift in Sources */ = { isa = PBXBuildFile; fileRef = A32270000000000000000004 /* RadarTrackOnceE2ETests.swift */; };
+		A32270000000000000000009 /* RadarSDK.framework in Frameworks */ = { isa = PBXBuildFile; fileRef = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */; };
+		A3227000000000000000000A /* RadarSDK.framework in Embed Frameworks */ = { isa = PBXBuildFile; fileRef = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A32270000000000000000021 /* RadarTrackOncePermissionUITests.swift in Sources */ = { isa = PBXBuildFile; fileRef = A3227000000000000000001F /* RadarTrackOncePermissionUITests.swift */; };
+		A32270000000000000000023 /* RadarSDK.framework in Frameworks */ = { isa = PBXBuildFile; fileRef = 0107A9E82621FFB9008AB52F /* RadarSDK.framework */; };
+		A32270000000000000000035 /* RadarE2ESDK.swift in Sources */ = { isa = PBXBuildFile; fileRef = A32270000000000000000030 /* RadarE2ESDK.swift */; };
+		A32270000000000000000036 /* RadarE2ESDK.swift in Sources */ = { isa = PBXBuildFile; fileRef = A32270000000000000000030 /* RadarE2ESDK.swift */; };
+		A32270000000000000000037 /* RadarE2EScenario.swift in Sources */ = { isa = PBXBuildFile; fileRef = A32270000000000000000031 /* RadarE2EScenario.swift */; };
+		A32270000000000000000038 /* RadarE2EScenario.swift in Sources */ = { isa = PBXBuildFile; fileRef = A32270000000000000000031 /* RadarE2EScenario.swift */; };
+		A32270000000000000000039 /* RadarE2EScenario.swift in Sources */ = { isa = PBXBuildFile; fileRef = A32270000000000000000031 /* RadarE2EScenario.swift */; };
+		A3227000000000000000003A /* RadarE2EPermissionUITestCase.swift in Sources */ = { isa = PBXBuildFile; fileRef = A32270000000000000000032 /* RadarE2EPermissionUITestCase.swift */; };
+		A3227000000000000000003D /* RadarE2ETrackLog.swift in Sources */ = { isa = PBXBuildFile; fileRef = A3227000000000000000003B /* RadarE2ETrackLog.swift */; };
+		A3227000000000000000003E /* RadarE2ETrackLog.swift in Sources */ = { isa = PBXBuildFile; fileRef = A3227000000000000000003B /* RadarE2ETrackLog.swift */; };
+		A3227000000000000000003F /* RadarE2ETrackLogTests.swift in Sources */ = { isa = PBXBuildFile; fileRef = A3227000000000000000003C /* RadarE2ETrackLogTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A32270000000000000000018 /* PBXContainerItemProxy */ = { isa = PBXContainerItemProxy; containerPortal = DD236C6C2308797B00EB88F9 /* Project object */; proxyType = 1; remoteGlobalIDString = 0107A9E72621FFB9008AB52F; remoteInfo = RadarSDK; };
+		A32270000000000000000019 /* PBXContainerItemProxy */ = { isa = PBXContainerItemProxy; containerPortal = DD236C6C2308797B00EB88F9 /* Project object */; proxyType = 1; remoteGlobalIDString = A3227000000000000000000E; remoteInfo = RadarE2ETestHost; };
+		A32270000000000000000027 /* PBXContainerItemProxy */ = { isa = PBXContainerItemProxy; containerPortal = DD236C6C2308797B00EB88F9 /* Project object */; proxyType = 1; remoteGlobalIDString = A3227000000000000000000E; remoteInfo = RadarE2ETestHost; };
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A32270000000000000000012 /* Embed Frameworks */ = { isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 10; files = (A3227000000000000000000A /* RadarSDK.framework in Embed Frameworks */, ); name = "Embed Frameworks"; runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		BEEF0A0030C2000000000001 /* RadarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarEvent.swift; sourceTree = "<group>"; };
@@ -786,6 +812,18 @@
 		FAD31BCABC664F8C8DC2F442 /* RadarTrackingUpdateTraceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackingUpdateTraceTests.swift; sourceTree = "<group>"; };
 		FE10A6092F2BC9160058ECD4 /* RadarRevealRiskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarRevealRiskManager.swift; sourceTree = "<group>"; };
 		FE9417172E1C2958008ECBEB /* RadarIndoorsProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RadarIndoorsProtocol.h; sourceTree = "<group>"; };
+		A32270000000000000000001 /* RadarE2ETestHost.swift */ = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarE2ETestHost.swift; sourceTree = "<group>"; };
+		A32270000000000000000002 /* RadarE2EConfiguration.swift */ = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarE2EConfiguration.swift; sourceTree = "<group>"; };
+		A32270000000000000000004 /* RadarTrackOnceE2ETests.swift */ = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackOnceE2ETests.swift; sourceTree = "<group>"; };
+		A3227000000000000000000B /* RadarE2ETestHost.app */ = { isa = PBXFileReference; explicitFileType = wrapper.application; path = RadarE2ETestHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A3227000000000000000000C /* RadarSDKE2ETests.xctest */ = { isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = RadarSDKE2ETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A3227000000000000000001F /* RadarTrackOncePermissionUITests.swift */ = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarTrackOncePermissionUITests.swift; sourceTree = "<group>"; };
+		A32270000000000000000025 /* RadarSDKE2EPermissionUITests.xctest */ = { isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = RadarSDKE2EPermissionUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A32270000000000000000030 /* RadarE2ESDK.swift */ = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarE2ESDK.swift; sourceTree = "<group>"; };
+		A32270000000000000000031 /* RadarE2EScenario.swift */ = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarE2EScenario.swift; sourceTree = "<group>"; };
+		A32270000000000000000032 /* RadarE2EPermissionUITestCase.swift */ = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarE2EPermissionUITestCase.swift; sourceTree = "<group>"; };
+		A3227000000000000000003B /* RadarE2ETrackLog.swift */ = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarE2ETrackLog.swift; sourceTree = "<group>"; };
+		A3227000000000000000003C /* RadarE2ETrackLogTests.swift */ = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarE2ETrackLogTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -804,6 +842,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A32270000000000000000013 /* Frameworks */ = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A32270000000000000000009 /* RadarSDK.framework in Frameworks */, ); runOnlyForDeploymentPostprocessing = 0; };
+		A32270000000000000000024 /* Frameworks */ = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A32270000000000000000023 /* RadarSDK.framework in Frameworks */, ); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -896,6 +936,7 @@
 				96D3F20627C6B291007578B9 /* README.md */,
 				96711A8F2790C87A009ED205 /* Package.swift */,
 				DD236C772308797B00EB88F9 /* RadarSDK */,
+				A3227000000000000000000D /* RadarSDKE2ETests */,
 				DD236C822308797B00EB88F9 /* RadarSDKTests */,
 				DD236C762308797B00EB88F9 /* Products */,
 				DDC637F2238C7F9C00747FD4 /* Frameworks */,
@@ -906,6 +947,9 @@
 		DD236C762308797B00EB88F9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				A3227000000000000000000B /* RadarE2ETestHost.app */,
+				A32270000000000000000025 /* RadarSDKE2EPermissionUITests.xctest */,
+				A3227000000000000000000C /* RadarSDKE2ETests.xctest */,
 				DD236C7E2308797B00EB88F9 /* RadarSDKTests.xctest */,
 				0107A9E82621FFB9008AB52F /* RadarSDK.framework */,
 			);
@@ -1291,6 +1335,12 @@
 			name = "Recovered References";
 			sourceTree = "<group>";
 		};
+		A3227000000000000000000D /* RadarSDKE2ETests */ = { isa = PBXGroup; children = (A3227000000000000000002D /* Helpers */, A32270000000000000000033 /* Scenarios */, A32270000000000000000034 /* TrackOnce */, A3227000000000000000002E /* TestHost */, A3227000000000000000002F /* XCUITestWrapper */, ); path = RadarSDKE2ETests; sourceTree = "<group>"; };
+		A3227000000000000000002D /* Helpers */ = { isa = PBXGroup; children = (A32270000000000000000002 /* RadarE2EConfiguration.swift */, A32270000000000000000030 /* RadarE2ESDK.swift */, A3227000000000000000003B /* RadarE2ETrackLog.swift */, A3227000000000000000003C /* RadarE2ETrackLogTests.swift */, ); path = Helpers; sourceTree = "<group>"; };
+		A3227000000000000000002E /* TestHost */ = { isa = PBXGroup; children = (A32270000000000000000001 /* RadarE2ETestHost.swift */, ); path = TestHost; sourceTree = "<group>"; };
+		A3227000000000000000002F /* XCUITestWrapper */ = { isa = PBXGroup; children = (A32270000000000000000032 /* RadarE2EPermissionUITestCase.swift */, A3227000000000000000001F /* RadarTrackOncePermissionUITests.swift */, ); path = XCUITestWrapper; sourceTree = "<group>"; };
+		A32270000000000000000033 /* Scenarios */ = { isa = PBXGroup; children = (A32270000000000000000031 /* RadarE2EScenario.swift */, ); path = Scenarios; sourceTree = "<group>"; };
+		A32270000000000000000034 /* TrackOnce */ = { isa = PBXGroup; children = (A32270000000000000000004 /* RadarTrackOnceE2ETests.swift */, ); path = TrackOnce; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1435,6 +1485,54 @@
 			productReference = DD236C7E2308797B00EB88F9 /* RadarSDKTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		A3227000000000000000000E /* RadarE2ETestHost */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A32270000000000000000014 /* Build configuration list for PBXNativeTarget "RadarE2ETestHost" */;
+			buildPhases = (
+				A32270000000000000000010 /* Sources */,
+				A32270000000000000000024 /* Frameworks */,
+				A32270000000000000000012 /* Embed Frameworks */,
+			);
+			buildRules = ();
+			dependencies = (
+				A3227000000000000000001A /* PBXTargetDependency */,
+			);
+			name = RadarE2ETestHost;
+			productName = RadarE2ETestHost;
+			productReference = A3227000000000000000000B /* RadarE2ETestHost.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A3227000000000000000000F /* RadarSDKE2ETests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A32270000000000000000015 /* Build configuration list for PBXNativeTarget "RadarSDKE2ETests" */;
+			buildPhases = (
+				A32270000000000000000011 /* Sources */,
+				A32270000000000000000013 /* Frameworks */,
+			);
+			buildRules = ();
+			dependencies = (
+				A3227000000000000000001B /* PBXTargetDependency */,
+			);
+			name = RadarSDKE2ETests;
+			productName = RadarSDKE2ETests;
+			productReference = A3227000000000000000000C /* RadarSDKE2ETests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A32270000000000000000029 /* RadarSDKE2EPermissionUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A3227000000000000000002A /* Build configuration list for PBXNativeTarget "RadarSDKE2EPermissionUITests" */;
+			buildPhases = (
+				A32270000000000000000026 /* Sources */,
+			);
+			buildRules = ();
+			dependencies = (
+				A32270000000000000000028 /* PBXTargetDependency */,
+			);
+			name = RadarSDKE2EPermissionUITests;
+			productName = RadarSDKE2EPermissionUITests;
+			productReference = A32270000000000000000025 /* RadarSDKE2EPermissionUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1445,6 +1543,9 @@
 				LastUpgradeCheck = 1620;
 				ORGANIZATIONNAME = "Radar Labs, Inc.";
 				TargetAttributes = {
+					A32270000000000000000029 = {
+						TestTargetID = A3227000000000000000000E;
+					};
 					0107A9E72621FFB9008AB52F = {
 						CreatedOnToolsVersion = 12.4;
 						LastSwiftMigration = 1640;
@@ -1476,6 +1577,9 @@
 				DD236C7D2308797B00EB88F9 /* RadarSDKTests */,
 				0107A9E72621FFB9008AB52F /* RadarSDK */,
 				0107AB3826220308008AB52F /* XCFramework */,
+				A3227000000000000000000E /* RadarE2ETestHost */,
+				A32270000000000000000029 /* RadarSDKE2EPermissionUITests */,
+				A3227000000000000000000F /* RadarSDKE2ETests */,
 			);
 		};
 /* End PBXProject section */
@@ -1809,7 +1913,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A32270000000000000000010 /* Sources */ = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A32270000000000000000005 /* RadarE2ETestHost.swift in Sources */, A32270000000000000000006 /* RadarE2EConfiguration.swift in Sources */, A32270000000000000000035 /* RadarE2ESDK.swift in Sources */, A32270000000000000000037 /* RadarE2EScenario.swift in Sources */, A3227000000000000000003D /* RadarE2ETrackLog.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
+		A32270000000000000000011 /* Sources */ = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A32270000000000000000006 /* RadarE2EConfiguration.swift in Sources */, A32270000000000000000008 /* RadarTrackOnceE2ETests.swift in Sources */, A32270000000000000000036 /* RadarE2ESDK.swift in Sources */, A32270000000000000000038 /* RadarE2EScenario.swift in Sources */, A3227000000000000000003E /* RadarE2ETrackLog.swift in Sources */, A3227000000000000000003F /* RadarE2ETrackLogTests.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
+		A32270000000000000000026 /* Sources */ = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A32270000000000000000021 /* RadarTrackOncePermissionUITests.swift in Sources */, A3227000000000000000003A /* RadarE2EPermissionUITestCase.swift in Sources */, A32270000000000000000039 /* RadarE2EScenario.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A3227000000000000000001A /* PBXTargetDependency */ = { isa = PBXTargetDependency; target = 0107A9E72621FFB9008AB52F /* RadarSDK */; targetProxy = A32270000000000000000018 /* PBXContainerItemProxy */; };
+		A3227000000000000000001B /* PBXTargetDependency */ = { isa = PBXTargetDependency; target = A3227000000000000000000E /* RadarE2ETestHost */; targetProxy = A32270000000000000000019 /* PBXContainerItemProxy */; };
+		A32270000000000000000028 /* PBXTargetDependency */ = { isa = PBXTargetDependency; target = A3227000000000000000000E /* RadarE2ETestHost */; targetProxy = A32270000000000000000027 /* PBXContainerItemProxy */; };
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0107A9ED2621FFB9008AB52F /* Debug */ = {
@@ -2069,6 +2182,94 @@
 			};
 			name = Release;
 		};
+		A32270000000000000000016 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Provide a location for SDK integration tests.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Provide a location for SDK integration tests.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarE2ETestHost;
+			};
+			name = Debug;
+		};
+		A3227000000000000000001C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Provide a location for SDK integration tests.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Provide a location for SDK integration tests.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarE2ETestHost;
+			};
+			name = Release;
+		};
+		A32270000000000000000017 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarSDKE2ETests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RadarE2ETestHost.app/RadarE2ETestHost";
+			};
+			name = Debug;
+		};
+		A3227000000000000000001D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarSDKE2ETests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RadarE2ETestHost.app/RadarE2ETestHost";
+			};
+			name = Release;
+		};
+		A3227000000000000000002B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarSDKE2EPermissionUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = RadarE2ETestHost;
+			};
+			name = Debug;
+		};
+		A3227000000000000000002C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = io.radar.RadarSDKE2EPermissionUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = RadarE2ETestHost;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2104,6 +2305,33 @@
 			buildConfigurations = (
 				DD236C8D2308797B00EB88F9 /* Debug */,
 				DD236C8E2308797B00EB88F9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A32270000000000000000014 /* Build configuration list for PBXNativeTarget "RadarE2ETestHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A32270000000000000000016 /* Debug */,
+				A3227000000000000000001C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A32270000000000000000015 /* Build configuration list for PBXNativeTarget "RadarSDKE2ETests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A32270000000000000000017 /* Debug */,
+				A3227000000000000000001D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A3227000000000000000002A /* Build configuration list for PBXNativeTarget "RadarSDKE2EPermissionUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A3227000000000000000002B /* Debug */,
+				A3227000000000000000002C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

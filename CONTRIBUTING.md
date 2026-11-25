@@ -56,6 +56,7 @@ SwiftLint uses a baseline (`.swiftlint-baseline.json`) so only **new** violation
 - Frameworks: XCTest, plus Swift Testing for newer suites. Tests live in `RadarSDKTests/`.
 - A few Swift Testing suites (`InAppMessageTest`, `RadarSettingsTest`, `RadarNotificationHelperTest`) run as a separate CI step; `make test` covers the full set locally.
 - Prefer extending existing test helpers and mocks over introducing new patterns. Add or update tests for any behavior change.
+- End-to-end tests that run the SDK against the live Radar API live in `RadarSDKE2ETests/`. See `RadarSDKE2ETests/README.md` to run them.
 
 ## Public API & breaking changes
 

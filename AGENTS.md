@@ -141,13 +141,14 @@ make build SDK="iphonesimulator" DESTINATION="platform=iOS Simulator,name=iPhone
 
 ## Formatting
 
-`make format` reformats the **entire** repo (`clang_format.sh` + `swift-format -i -r RadarSDK RadarSDKTests`), not just your changed files. Since formatting is not enforced repo-wide, running it on a scoped change produces a large unrelated diff. For a focused change, format only the files you touched (e.g. `swift-format -i <path>`) rather than running `make format`.
+`make format` reformats the **entire** repo (`clang_format.sh` + `swift-format -i -r RadarSDK RadarSDKTests RadarSDKE2ETests`), not just your changed files. Since formatting is not enforced repo-wide, running it on a scoped change produces a large unrelated diff. For a focused change, format only the files you touched (e.g. `swift-format -i <path>`) rather than running `make format`.
 
 ## Project Structure
 
 ```
 RadarSDK/           # SDK source — mix of .swift and .m/.h (ObjC being migrated)
 RadarSDKTests/      # Unit tests
+RadarSDKE2ETests/   # E2E tests (see RadarSDKE2ETests/README.md)
 Example/            # Example app
 RadarSDKMotion/     # Motion extension
 RadarSDKFraud/      # Fraud detection extension (git submodule)

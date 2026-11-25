@@ -1,6 +1,7 @@
 included:
   - RadarSDK
   - RadarSDKTests
+  - RadarSDKE2ETests
 
 excluded:
   - Carthage
