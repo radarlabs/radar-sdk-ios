@@ -41,23 +41,51 @@ extension RadarTraceManager {
         }
     }
 
+    /// The cross-platform framework calling the SDK, matching the `X-Radar-X-Platform-SDK-*` headers: `Native` with no
+    /// version for apps that call the SDK directly, or a wrapper's type and version.
+    struct XPlatform: Equatable, Sendable {
+        let type: String
+        let version: String?
+
+        static let native = XPlatform(type: "Native", version: nil)
+
+        static var current: XPlatform {
+            guard RadarSettings.xPlatform, let type = RadarSettings.xPlatformSDKType else { return .native }
+            return XPlatform(type: type, version: RadarSettings.xPlatformSDKVersion)
+        }
+    }
+
+    /// The SDK that recorded a span, which `otlpPayload` puts on the batch's resource. `xPlatformType` and
+    /// `xPlatformVersion` are nil for spans stored before they were recorded; the server fills them in from the upload's
+    /// headers.
+    struct SpanSource: Equatable {
+        let sdkVersion: String
+        let xPlatformType: String?
+        let xPlatformVersion: String?
+    }
+
     /// Wraps spans in an OTLP ExportTraceServiceRequest.
     ///
     /// Device attributes are read at upload time, so spans recorded before an OS update are labeled with the new
     /// `os.version`.
-    static func otlpPayload(spans: [[String: Any]], sdkVersion: String) -> [String: Any] {
-        let resource: [String: Any] = [
-            "attributes": [
-                attribute("service.name", "radar-client"),
-                attribute("os.type", "ios"),
-                attribute("radar.sdk.version", sdkVersion),
-                attribute("os.version", RadarUtils.deviceOSVersion),
-                attribute("device.manufacturer", RadarUtils.deviceMake),
-                attribute("device.model.identifier", RadarUtils.deviceModel),
-            ]
+    static func otlpPayload(spans: [[String: Any]], source: SpanSource) -> [String: Any] {
+        var attributes = [
+            attribute("service.name", "radar-client"),
+            attribute("os.type", "ios"),
+            attribute("radar.sdk.version", source.sdkVersion),
+            attribute("os.version", RadarUtils.deviceOSVersion),
+            attribute("device.manufacturer", RadarUtils.deviceMake),
+            attribute("device.model.identifier", RadarUtils.deviceModel),
         ]
+        if let xPlatformType = source.xPlatformType {
+            attributes.append(attribute("radar.sdk.xplatform.type", xPlatformType))
+        }
+        if let xPlatformVersion = source.xPlatformVersion {
+            attributes.append(attribute("radar.sdk.xplatform.version", xPlatformVersion))
+        }
+        let resource: [String: Any] = ["attributes": attributes]
         let scopeSpans: [String: Any] = [
-            "scope": ["name": "io.radar.sdk", "version": sdkVersion],
+            "scope": ["name": "io.radar.sdk", "version": source.sdkVersion],
             "spans": spans,
         ]
         return ["resourceSpans": [["resource": resource, "scopeSpans": [scopeSpans]]]]
