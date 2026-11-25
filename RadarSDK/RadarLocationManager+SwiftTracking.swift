@@ -39,6 +39,11 @@ extension RadarLocationManagerSwift {
             applyTrackingOptions(options, host: host, location: location)
         } else {
             stopUpdates(host: host, locationManager: host.locationManager)
+            stopUnusedMotionUpdates(
+                locationManager: host.locationManager,
+                activityManager: host.activityManager as? RadarActivityManager,
+                options: nil
+            )
             // initialize and config fetches run this on the main thread, so read the regions in the
             // background to keep the synchronous `monitoredRegions` read off the main thread.
             // Other callers, like stopTracking, still remove them right away.
@@ -79,6 +84,11 @@ extension RadarLocationManagerSwift {
         if options.useMotion || options.usePressure {
             startMotionUpdates(host: host, options: options)
         }
+        stopUnusedMotionUpdates(
+            locationManager: locationManager,
+            activityManager: host.activityManager as? RadarActivityManager,
+            options: options
+        )
 
         locationManager.desiredAccuracy = clLocationAccuracy(for: options.desiredAccuracy)
 

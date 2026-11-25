@@ -54,15 +54,10 @@ import Foundation
     var locationManager: CLLocationManager { get }
     var lowPowerLocationManager: CLLocationManager { get }
 
-    // `RadarActivityManager` is still Objective-C and its header isn't visible from Swift. The host
-    // starts the shared activity manager and keeps it, so `stopTracking` stops the same instance.
-    // `startMotionUpdates(host:options:)` handles the updates.
-    @objc(startActivityUpdatesWithHandler:)
-    func startActivityUpdates(handler: @escaping (CMMotionActivity) -> Void)
-    @objc(startRelativeAltitudeWithHandler:)
-    func startRelativeAltitude(handler: @escaping (CMAltitudeData?) -> Void)
-    @objc(startAbsoluteAltitudeWithHandler:)
-    func startAbsoluteAltitude(handler: @escaping (CMAbsoluteAltitudeData?) -> Void)
+    // The activity manager that `startMotionUpdates(host:options:)` started, so `stopTracking` stops
+    // the same instance. It is always a `RadarActivityManager`. The type is `AnyObject` because this
+    // protocol is public and `RadarActivityManager` is internal.
+    var activityManager: AnyObject? { get set }
 }
 
 private final class RadarLocationManagerSwiftHostBox: @unchecked Sendable {
@@ -131,7 +126,7 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
     }
 
     @objc(stopTrackingOnLocationManager:activityManager:)
-    static func stopTracking(locationManager: CLLocationManager, activityManager: AnyObject?) {
+    static func stopTracking(locationManager: CLLocationManager, activityManager: RadarActivityManager?) {
         RadarSettings.tracking = false
 
         RadarSwift.bridge?.stopIndoorTracking()
@@ -141,22 +136,9 @@ final class RadarLocationManagerSwift: NSObject {  // swiftlint:disable:this typ
             RadarSwift.bridge?.flushReplays()
         }
 
+        stopMotionUpdatesForStopTracking(locationManager: locationManager, activityManager: activityManager)
+
         let trackingOptions = RadarSettings.trackingOptions ?? .presetEfficient
-        if trackingOptions.useMotion || trackingOptions.usePressure {
-            locationManager.stopUpdatingHeading()
-
-            if let activityManager {
-                // This class is internal, so call its existing Objective-C selectors without exposing it to Swift.
-                if trackingOptions.usePressure {
-                    (activityManager as? NSObject)?.perform(#selector(RadarMotionProtocol.stopRelativeAltitudeUpdates))
-                    (activityManager as? NSObject)?.perform(#selector(RadarMotionProtocol.stopAbsoluteAltitudeUpdates))
-                }
-                if trackingOptions.useMotion {
-                    (activityManager as? NSObject)?.perform(#selector(RadarMotionProtocol.stopActivityUpdates))
-                }
-            }
-        }
-
         trackingOptions.startTrackingAfter = nil
         trackingOptions.stopTrackingAfter = nil
         RadarSettings.trackingOptions = trackingOptions

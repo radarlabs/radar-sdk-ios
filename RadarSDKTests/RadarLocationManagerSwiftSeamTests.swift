@@ -199,19 +199,22 @@ extension RadarSerializedTests {
             let originalBridge = RadarSwift.bridge
             let manager = RadarLocationManager.sharedInstance()
             let originalLocationManager = manager.locationManager
-            let originalActivityManager = manager.activityManager
+            // `RadarLocationManager.h` forward-declares the Swift `RadarActivityManager`, so Swift
+            // doesn't import the `activityManager` property. Use key-value coding.
+            let originalActivityManager = manager.value(forKey: "activityManager")
             RadarSwift.bridge = bridge
             defer {
                 RadarSwift.bridge = originalBridge
                 manager.locationManager = originalLocationManager
-                manager.activityManager = originalActivityManager
+                manager.setValue(originalActivityManager, forKey: "activityManager")
                 RadarLocationManagerSwiftTestHelpers.clearState()
             }
 
             RadarSettings.sdkConfiguration = RadarSdkConfiguration(dict: ["useSwiftLocationManager": true])
             RadarSettings.tracking = true
             manager.locationManager = TrackingCLLocationManager()
-            manager.activityManager = TrackingRadarActivityManager()
+            let activityManager = TrackingRadarActivityManager()
+            manager.setValue(activityManager, forKey: "activityManager")
 
             manager.stopTracking()
 
