@@ -26,6 +26,8 @@ struct RadarE2EResult: Codable {
     let source: String?
     let trackRequestCount: Int
     let failure: String?
+    /// The host's location authorization when the run ended, such as `authorizedWhenInUse`. The host app sets it.
+    var locationAuthorization: String?
 
     static func failed(_ message: String) -> RadarE2EResult {
         RadarE2EResult(status: "FAILED", userIdMatches: false, foreground: nil, source: nil, trackRequestCount: 0, failure: message)

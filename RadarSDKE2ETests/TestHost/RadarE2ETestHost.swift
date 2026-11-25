@@ -15,6 +15,11 @@ final class RadarE2ETestHost: UIResponder, UIApplicationDelegate {
 }
 
 private final class TestHostSceneDelegate: UIResponder, UIWindowSceneDelegate, CLLocationManagerDelegate {
+    /// How long to wait for an authorization change once the Always prompt closes. Choosing Change to Always Allow can reactivate the scene before the change arrives.
+    private static let alwaysPromptClosedGraceSeconds = 1
+    /// How long to wait for any answer to the Always prompt before running with the permission the app has.
+    private static let alwaysPromptTimeoutSeconds = 15
+
     var window: UIWindow?
     private var resultLabel: UILabel?
     private var requestedRun: (scenario: RadarE2EScenario, permission: RadarE2EPermissionRequest)?
@@ -43,6 +48,10 @@ private final class TestHostSceneDelegate: UIResponder, UIWindowSceneDelegate, C
     func sceneDidBecomeActive(_ scene: UIScene) {
         guard requestedRun != nil, !runStarted else { return }
         locationManager.delegate = self
+        if requestedAlways {
+            // The scene becomes active again when the Always prompt closes. Keep Only While Using leaves the status unchanged, so no authorization change follows.
+            startIfStillWaiting(afterSeconds: Self.alwaysPromptClosedGraceSeconds)
+        }
         advance()
     }
 
@@ -90,11 +99,21 @@ private final class TestHostSceneDelegate: UIResponder, UIWindowSceneDelegate, C
         case (.always, .authorizedWhenInUse) where !requestedAlways:
             requestedAlways = true
             locationManager.requestAlwaysAuthorization()
+            startIfStillWaiting(afterSeconds: Self.alwaysPromptTimeoutSeconds)
         case (.always, .authorizedWhenInUse):
-            // Wait for the Always prompt's answer; the next authorization change calls advance() again.
+            // Wait for the Always prompt's answer: an authorization change, the prompt closing, or the timeout.
             return
         default:
             start(requestedRun.scenario)
+        }
+    }
+
+    /// Starts the run after a delay unless an authorization change starts it first.
+    private func startIfStillWaiting(afterSeconds seconds: Int) {
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(seconds) * NSEC_PER_SEC)
+            guard let self, let requestedRun = self.requestedRun, !self.runStarted else { return }
+            self.start(requestedRun.scenario)
         }
     }
 
@@ -112,7 +131,20 @@ private final class TestHostSceneDelegate: UIResponder, UIWindowSceneDelegate, C
     }
 
     private func show(_ result: RadarE2EResult) {
+        var result = result
+        result.locationAuthorization = Self.name(of: locationManager.authorizationStatus)
         resultLabel?.text = "Done"
         resultLabel?.accessibilityValue = (try? JSONEncoder().encode(result)).flatMap { String(data: $0, encoding: .utf8) }
+    }
+
+    private static func name(of status: CLAuthorizationStatus) -> String {
+        switch status {
+        case .notDetermined: "notDetermined"
+        case .restricted: "restricted"
+        case .denied: "denied"
+        case .authorizedAlways: "authorizedAlways"
+        case .authorizedWhenInUse: "authorizedWhenInUse"
+        @unknown default: "unknown"
+        }
     }
 }

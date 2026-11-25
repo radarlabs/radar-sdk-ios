@@ -9,6 +9,7 @@ class RadarE2EPermissionUITestCase: XCTestCase {
         case allowWhileUsing = "Allow While Using App"
         case dontAllow = "Don\u{2019}t Allow"
         case changeToAlwaysAllow = "Change to Always Allow"
+        case keepOnlyWhileUsing = "Keep Only While Using"
     }
 
     private static let promptTimeout: TimeInterval = 20
