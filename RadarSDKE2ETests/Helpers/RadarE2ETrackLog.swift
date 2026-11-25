@@ -46,6 +46,7 @@ struct RadarE2ETrackLog {
     }
 
     private(set) var exchanges: [Exchange] = []
+    private var unmatchedResponses: [Exchange] = []
     private let trackURLs: Set<String>
 
     init(host: String) {
@@ -56,13 +57,25 @@ struct RadarE2ETrackLog {
         guard message.contains("Radar API ") else { return }
         let line = Self.withoutLogSuffix(message)
         if let url = Self.text(in: line, after: "Radar API request | method = POST; url = ", before: "; headers = "), trackURLs.contains(url) {
-            exchanges.append(Exchange(url: url, request: Self.text(in: line, after: "; params = ").flatMap(Self.decode)))
+            var exchange = Exchange(url: url, request: Self.text(in: line, after: "; params = ").flatMap(Self.decode))
+            // The SDK delivers each log line in its own task, so a response can arrive before its request.
+            if let index = unmatchedResponses.firstIndex(where: { $0.url == url }) {
+                let early = unmatchedResponses.remove(at: index)
+                exchange.statusCode = early.statusCode
+                exchange.response = early.response
+            }
+            exchanges.append(exchange)
         } else if let url = Self.text(in: line, after: "Radar API response | method = POST; url = ", before: "; statusCode = "),
-            let status = Self.text(in: line, after: "; statusCode = ", before: ";").flatMap({ Int($0) }),
-            let index = exchanges.firstIndex(where: { $0.url == url && $0.statusCode == nil })
+            trackURLs.contains(url),
+            let status = Self.text(in: line, after: "; statusCode = ", before: ";").flatMap({ Int($0) })
         {
-            exchanges[index].statusCode = status
-            exchanges[index].response = Self.text(in: line, after: "; res = ").flatMap(Self.decode)
+            let response: RadarE2ETrackResponse? = Self.text(in: line, after: "; res = ").flatMap(Self.decode)
+            if let index = exchanges.firstIndex(where: { $0.url == url && $0.statusCode == nil }) {
+                exchanges[index].statusCode = status
+                exchanges[index].response = response
+            } else {
+                unmatchedResponses.append(Exchange(url: url, request: nil, statusCode: status, response: response))
+            }
         }
     }
 

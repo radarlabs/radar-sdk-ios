@@ -92,6 +92,14 @@ final class RadarE2ETrackLogTests: XCTestCase {
         XCTAssertEqual(log.exchanges.count, 0)
     }
 
+    func testRecordPairsResponseDeliveredBeforeItsRequest() {
+        var log = makeLog()
+        log.record(responseLine("/v1/track", res: #"{"user":\#(Self.foregroundUser)}"#))
+        log.record(requestLine("/v1/track"))
+        XCTAssertEqual(log.exchanges.first?.statusCode, 200)
+        XCTAssertEqual(log.exchanges.first?.response?.user?.userId, "ios-e2e-1")
+    }
+
     func testExchangesSinceSkipsEarlierExchanges() {
         var log = makeLog()
         log.record(requestLine("/v1/track"))
