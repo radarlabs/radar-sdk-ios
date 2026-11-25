@@ -1,0 +1,18 @@
+{
+  "addressLabel": "20 Jay Street",
+  "borough": "Brooklyn",
+  "city": "New York",
+  "confidence": "exact",
+  "country": "United States",
+  "countryCode": "US",
+  "countryFlag": "🇺🇸",
+  "county": "Kings County",
+  "formattedAddress": "20 Jay Street, Brooklyn, New York, NY 11201 USA",
+  "latitude": 40.7039,
+  "longitude": -73.9867,
+  "neighborhood": "DUMBO",
+  "number": "20",
+  "postalCode": "11201",
+  "state": "New York",
+  "stateCode": "NY"
+}
