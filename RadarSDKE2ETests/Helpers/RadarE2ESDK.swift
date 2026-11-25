@@ -115,7 +115,8 @@ final class RadarE2ESDK: NSObject, RadarDelegate {
     func reset() {
         Radar.stopTracking()
         Radar.setDelegate(nil)
-        RadarLogger.shared.logLevelOverride = nil
+        // Keep an override set: with none, the SDK prints late log lines, including request headers, to the console.
+        RadarLogger.shared.logLevelOverride = RadarLogLevel.none
     }
 
     private func assertCallback(_ outcome: TrackOnceOutcome) throws {
