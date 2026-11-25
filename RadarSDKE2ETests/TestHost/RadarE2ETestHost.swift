@@ -90,6 +90,9 @@ private final class TestHostSceneDelegate: UIResponder, UIWindowSceneDelegate, C
         case (.always, .authorizedWhenInUse) where !requestedAlways:
             requestedAlways = true
             locationManager.requestAlwaysAuthorization()
+        case (.always, .authorizedWhenInUse):
+            // Wait for the Always prompt's answer; the next authorization change calls advance() again.
+            return
         default:
             start(requestedRun.scenario)
         }
