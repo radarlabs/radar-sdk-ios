@@ -42,7 +42,7 @@ final class RadarTrackVerifiedIPTests: XCTestCase {
     private let stateKeys: [RadarUserDefaults.Key] = [
         .id, .trip, .tripOptions, .userDebug, .radarUser,
         .canExit, .geofenceIds, .placeId, .regionIds,
-        .beaconIds, .altitudeAdjustments,
+        .beaconIds, .altitudeAdjustments, .lastFailedStoppedLocation, .lastTrackedTime,
     ]
 
     override func setUp() {
@@ -79,6 +79,8 @@ final class RadarTrackVerifiedIPTests: XCTestCase {
         RadarState.shared.geofenceIds = ["existing-geofence"]
         RadarState.shared.canExit = true
         RadarState.shared.altitudeAdjustments = [["adjustment": 1]]
+        RadarState.shared.lastFailedStoppedLocation = CLLocation(latitude: 1.0, longitude: 2.0)
+        RadarUserDefaults.set(Date(timeIntervalSince1970: 1_000), forKey: .lastTrackedTime)
 
         helper = MainQueueAPIHelperMock()
         helper.mockStatus = .success

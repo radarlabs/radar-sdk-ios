@@ -865,13 +865,19 @@
                             }
             
                             [[RadarReplayBuffer sharedInstance] clearBuffer];
-                            [RadarState.shared setLastFailedStoppedLocation:nil];
+                            // An IP-only check sends no location, so it does not reset the stop to replay or
+                            // the time of the last location sync.
+                            if (location) {
+                                [RadarState.shared setLastFailedStoppedLocation:nil];
+                            }
                             [Radar flushLogs];
                             if (sessionId) {
                                 [self applySamplingDecisionForSessionId:sessionId response:res settingsKey:@"featureSettings" traceSpan:traceSpan];
                             }
                             [[RadarTraceManager sharedInstance] flushAfterSpan:traceSpan];
-                            [RadarSettings updateLastTrackedTime];
+                            if (location) {
+                                [RadarSettings updateLastTrackedTime];
+                            }
 
                             RadarConfig *config = [RadarConfig fromDictionary:res];
                             RadarVerificationLevel requestedVerificationLevel =
