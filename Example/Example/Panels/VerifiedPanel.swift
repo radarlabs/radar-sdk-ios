@@ -42,6 +42,19 @@ struct VerifiedPanel: View {
                     )
                 }
             }
+            ActionButton("trackVerified (options)") {
+                // Exercises trackVerified(options:completionHandler:).
+                let options = RadarTrackVerifiedOptions()
+                options.reason = "example"
+                options.transactionId = "example-tx"
+                Radar.trackVerified(options: options) { (status, token) in
+                    logStream.writeVerifiedResponse(
+                        status,
+                        action: "trackVerified (options)",
+                        response: token.map(VerifiedResponse.init)
+                    )
+                }
+            }
             ActionButton("trackVerified (beacons)") {
                 let start = Date()
                 Radar.trackVerified(beacons: true, desiredAccuracy: .medium) { (status, token) in
